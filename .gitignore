@@ -1,0 +1,16 @@
+# ESPN login: never commit
+espn-login.txt
+
+# Raw ESPN downloads include every member's ESPN account ID; keep them off GitHub.
+# Only the hand-written corrections in data/ are tracked.
+data/*
+!data/overrides.json
+!data/trades_*.json
+
+# Built output (GitHub builds its own copy)
+public/
+site/data.js
+
+# Local preview helpers
+.claude/
+serve.js

@@ -1,0 +1,7 @@
+[
+  { "wk": 4, "teams": [2, 4], "got": { "2": ["Stefon Diggs|WR"], "4": ["Javonte Williams|RB"] } },
+  { "wk": 4, "teams": [1, 7], "got": { "1": ["Chuba Hubbard|RB"], "7": ["Rashee Rice|WR"] } },
+  { "wk": 5, "teams": [3, 4], "got": { "3": ["Isaiah Likely|TE", "Emeka Egbuka|WR", "Denzel Boston|WR"], "4": ["Ashton Jeanty|RB"] } },
+  { "wk": 5, "teams": [4, 5], "got": { "4": ["Justin Jefferson|WR"], "5": ["Davante Adams|WR", "Ashton Jeanty|RB"] } },
+  { "wk": 6, "teams": [1, 4], "got": { "1": ["George Pickens|WR", "Ollie Gordon II|RB"], "4": ["Chuba Hubbard|RB", "DeVonta Smith|WR"] } }
+]
