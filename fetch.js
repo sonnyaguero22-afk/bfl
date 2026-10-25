@@ -60,4 +60,11 @@ async function get(url, file, headers = {}) {
     });
     console.log(`${y}: ${L.teams.length} teams, ${last} weeks downloaded`);
   }
+  // NFL game states and clocks, so live win chances know who still has to play
+  if (process.argv.slice(2).includes("current")) {
+    try {
+      const res = await fetch("https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard");
+      if (res.ok) { fs.writeFileSync(path.join(DATA, "nfl_scoreboard.json"), await res.text()); console.log("NFL scoreboard saved"); }
+    } catch (err) { console.log(`NFL scoreboard unavailable (${err.message})`); }
+  }
 })();

@@ -164,6 +164,22 @@ for (const year of years) {
     finalTrades = [...manual, ...inferred.filter((t) => t.wk > upTo)];
   }
 
+  // Share of each NFL team's game still to play this week: 1 before kickoff, 0 when final
+  // or on bye, in between by the game clock. Null when the saved scoreboard is for another week.
+  let nflClock = null;
+  if (exists("nfl_scoreboard.json")) {
+    const sb = load("nfl_scoreboard.json");
+    if (sb.season && sb.season.year === +year && sb.week && sb.week.number === L.status.latestScoringPeriod) {
+      const games = {};
+      for (const ev of sb.events || []) {
+        const st = ev.status || {}, state = st.type && st.type.state;
+        const played = Math.min(60, (Math.max(1, st.period || 1) - 1) * 15 + (15 - (st.clock || 0) / 60));
+        const f = state === "pre" ? 1 : state === "post" ? 0 : Math.max(0, 1 - played / 60);
+        for (const c of ev.competitions[0].competitors) games[+c.team.id] = f;
+      }
+      nflClock = (proTeamId) => games[proTeamId] ?? 0;
+    }
+  }
   // Live scores for the week in progress
   if (exists(`wk_${year}_${L.status.currentMatchupPeriod}.json`)) {
     const W = load(`wk_${year}_${L.status.currentMatchupPeriod}.json`);
@@ -174,8 +190,26 @@ for (const year of years) {
       m.live = true;
       m.hp = r2(s.home.totalPointsLive || 0);
       m.ap = r2(s.away.totalPointsLive || 0);
-      // ESPN's live projected final (points so far plus what's left), for live win chances
-      if (s.home.totalProjectedPoints != null) { m.hproj = r2(s.home.totalProjectedPoints); m.aproj = r2(s.away.totalProjectedPoints); }
+      // Live projected finals: points so far plus what each starter is still expected to score.
+      // (ESPN's totalProjectedPoints is only the pre-game total, so it can't be used here.)
+      if (nflClock) {
+        for (const [side, key] of [[s.home, "h"], [s.away, "a"]]) {
+          // Each player's remaining points can miss by about 60% either way (booms and busts)
+          let rem = 0, left = 0, vr = 0;
+          for (const e of (side.rosterForCurrentScoringPeriod || { entries: [] }).entries) {
+            if (e.lineupSlotId === 20 || e.lineupSlotId === 21) continue; // bench / IR
+            const p = e.playerPoolEntry.player;
+            const pj = (p.stats || []).find((x) => x.statSourceId === 1 && x.scoringPeriodId === m.wk);
+            const f = nflClock(p.proTeamId), r = (pj ? pj.appliedTotal : 0) * f;
+            if (f > 0) left++;
+            rem += r;
+            vr += (0.6 * r) ** 2;
+          }
+          m[key + "proj"] = r2(m[key + "p"] + rem);
+          m[key + "left"] = left;
+          m[key + "var"] = r2(vr);
+        }
+      }
     }
   }
 
