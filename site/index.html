@@ -353,8 +353,10 @@ table.compact .team { min-width: 0; }
 const D = window.LEAGUE;
 const $ = (s, el = document) => el.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const f1 = (n) => (Math.round(n * 10) / 10).toFixed(1);
-const f2 = (n) => Number(n).toFixed(2);
+// Numbers with thousands separators (1,229.7)
+const fmtN = (n, d) => Number(n).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+const f1 = (n) => fmtN(Math.round(n * 10) / 10, 1);
+const f2 = (n) => fmtN(n, 2);
 const roman = (n) => ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV"][n] || String(n);
 const pct = (w, l, t) => (w + l + t ? (w + t / 2) / (w + l + t) : 0).toFixed(3).replace(/^0/, "");
 const ord = (n) => n + (["th", "st", "nd", "rd"][((n % 100) - 20) % 10] || ["th", "st", "nd", "rd"][n % 100] || "th");
@@ -889,6 +891,15 @@ function records() {
     for (const p of s.lineups[wk][id]) if (p.slot !== "BN" && p.slot !== "IR") perf.push({ s, wk: +wk, t: s.byId[id], p });
   }
   const st = streaks();
+  // Every finished game the underdog won, with the winner's pre-game win chance
+  const upsets = [];
+  for (const s of D.seasons) for (const m of s.played) {
+    if (!m.a || !m.win) continue;
+    const p = teamWin(s, m, m.win);
+    if (p == null || p >= 0.5) continue;
+    const l = m.win === m.h ? m.a : m.h;
+    upsets.push({ s, m, p, w: s.byId[m.win], l: s.byId[l], ws: m.win === m.h ? m.hp : m.ap, ls: m.win === m.h ? m.ap : m.hp });
+  }
   const when = (x) => `${x.from.year} wk ${x.from.wk} → ${x.to.year} wk ${x.to.wk}${x.active ? " · still going" : ""}`;
   const stWho = (x) => `${mgrName(x.mgr)} <span class="muted">(${[...x.teams].map(esc).join(" / ")})</span>`;
   const byLen = (a, b) => b.len - a.len || b.to.year - a.to.year || b.to.wk - a.to.wk;
@@ -899,6 +910,7 @@ function records() {
     board("Longest losing streak", top(st.filter((x) => x.r === "L"), byLen), (x) => `${x.len} L`, stWho, when, "Streaks carry over between seasons. Only streaks of 3+ are listed."),
   ])}
   ${group("Single games", [
+    board("Biggest upset", top(upsets, (a, b) => a.p - b.p), (x) => winPct(x.p), (x) => `${esc(x.w.name)} <span class="muted">(${esc(D.managers[x.w.mgr].first)})</span> over ${esc(x.l.name)}`, (x) => `${f2(x.ws)}–${f2(x.ls)} · ${x.s.year} ${x.m.wk > x.s.regWeeks ? "playoffs" : "wk " + x.m.wk}`, "Ranked by the winner's chance to win going into the game."),
     board("Most points in a week", top(all, (a, b) => b.pts - a.pts), (x) => f2(x.pts), tn, ctx),
     board("Fewest points in a week", top(all, (a, b) => a.pts - b.pts), (x) => f2(x.pts), tn, ctx),
     board("Biggest blowout", top(wins, (a, b) => (b.pts - b.oppPts) - (a.pts - a.oppPts)), (x) => "+" + f2(x.pts - x.oppPts), tn, (x) => `${f2(x.pts)}–${f2(x.oppPts)} · ${ctx(x)}`),
@@ -988,7 +1000,7 @@ function groupStarts(keyFn) {
     pts: sum(a, (x) => x.pts), proj: sum(a, (x) => x.proj), diff: sum(a, (x) => x.diff), avg: sum(a, (x) => x.diff) / a.length,
   }));
 }
-const sgn = (n, d = 1) => (n > 0 ? "+" : n < 0 ? "−" : "") + Math.abs(n).toFixed(d);
+const sgn = (n, d = 1) => (n > 0 ? "+" : n < 0 ? "−" : "") + fmtN(Math.abs(n), d);
 
 function overratedView() {
   const career = groupStarts((x) => x.p.k);
