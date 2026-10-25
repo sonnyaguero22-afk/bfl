@@ -229,11 +229,13 @@ if (exists("overrides.json")) {
   for (const k of Object.keys(managers)) if (!used.has(k)) delete managers[k];
 }
 
+// Where everyone was each season (hand-maintained, data/locations.json)
+const locations = exists("locations.json") ? load("locations.json") : null;
 // Stable manager order (first season they appear, then team ID) so badge colors never shuffle
 const order = [];
 for (const s of seasons) for (const t of [...s.teams].sort((a, b) => a.id - b.id)) if (!order.includes(t.mgr)) order.push(t.mgr);
 const orderedManagers = Object.fromEntries(order.filter((k) => managers[k]).map((k) => [k, managers[k]]));
-const dataJs = "window.LEAGUE = " + JSON.stringify({ league: "Buckaroo Football League", firstYear: 2023, built: new Date().toISOString(), managers: orderedManagers, seasons }) + ";\n";
+const dataJs = "window.LEAGUE = " + JSON.stringify({ league: "Buckaroo Football League", firstYear: 2023, built: new Date().toISOString(), managers: orderedManagers, seasons, locations }) + ";\n";
 fs.mkdirSync(path.join(__dirname, "site"), { recursive: true });
 fs.writeFileSync(path.join(__dirname, "site", "data.js"), dataJs);
 // public/ is the standalone website: site/index.html is a page body, so give it a full document shell

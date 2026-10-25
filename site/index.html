@@ -2,6 +2,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <style>
 /* Layout: frosted top bar with segmented controls; one content column of grouped cards. Dark is the default; light only on an explicit light choice. */
@@ -269,6 +270,29 @@ select, input[type="search"] { border: 0; background: var(--sunk); border-radius
 .recs + .note { margin-top: 0; }
 ol.bums { counter-reset: r 0; border-top: 0; padding-top: 0; }
 ol.bums li { counter-increment: r; }
+/* Map */
+.mapwrap { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 12px; align-items: start; }
+#map { height: 520px; overflow: hidden; isolation: isolate; z-index: 0; background: var(--sunk); }
+.maplist { display: grid; gap: 10px; max-height: 520px; overflow-y: auto; }
+.maprows { display: grid; gap: 8px; }
+.maprows small { display: block; color: var(--muted); font-size: 12px; }
+ol.path { counter-reset: none; border-top: 0; padding-top: 0; }
+ol.path li::before { content: "→"; color: var(--muted); }
+ol.path li:first-child::before { content: "•"; }
+.pin { background: none; border: 0; }
+.pinstack { display: flex; transform: translate(-50%, -50%); width: max-content; }
+.pinstack .badge { box-shadow: 0 0 0 2px var(--bg), 0 2px 6px rgba(0,0,0,.4); }
+.pinstack > span + span { margin-left: -8px; }
+.pinstack .was { opacity: .45; }
+.leaflet-container { font: inherit; background: var(--sunk); }
+.leaflet-popup-content-wrapper, .leaflet-popup-tip { background: var(--surface); color: var(--ink); box-shadow: 0 4px 16px rgba(0,0,0,.35); }
+.leaflet-popup-content { margin: 10px 14px; line-height: 1.45; font-size: 13.5px; }
+.leaflet-container a.leaflet-popup-close-button { color: var(--muted); }
+.leaflet-control-attribution { background: color-mix(in oklab, var(--surface) 80%, transparent) !important; color: var(--muted); }
+.leaflet-control-attribution a { color: var(--muted); }
+.leaflet-bar a { background: var(--surface); color: var(--ink); border-color: var(--line); }
+@media (max-width: 760px) { .mapwrap { grid-template-columns: 1fr; } #map { height: 360px; } .maplist { max-height: none; } }
+.whereline { font-size: 14px; color: var(--ink); }
 .callout { background: var(--brass-soft); border-radius: 12px; padding: 12px 16px; font-size: 14px; margin: 0 0 20px; max-width: 760px; }
 @media (prefers-reduced-motion: no-preference) {
   main > * { animation: rise .35s ease-out both; }
@@ -289,6 +313,7 @@ ol.bums li { counter-increment: r; }
 <main class="wrap" id="app"></main>
 <footer class="wrap" id="foot"></footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="data.js"></script>
 <script>
 (() => {
@@ -430,7 +455,7 @@ function parseHash() {
   if ((m = h.match(/^(\d{4})(?:-(\w+))?$/)) && years.includes(+m[1])) { if (+m[1] !== state.year) { state.standWeek = null; state.rosterWeek = null; } state.view = "season"; state.year = +m[1]; state.tab = TABS.some((t) => t[0] === m[2]) ? m[2] : "standings"; }
   else if ((m = h.match(/^mgr-(\w+)$/)) && D.managers[m[1]]) { state.view = "mgr"; state.mgr = m[1]; }
   else if ((m = h.match(/^p-([a-z0-9-]+)$/)) && P[m[1]]) { state.view = "player"; state.pk = m[1]; }
-  else if (["trophies", "managers", "players", "overrated", "transactions", "h2h", "records"].includes(h)) state.view = h;
+  else if (["trophies", "managers", "map", "players", "overrated", "transactions", "h2h", "records"].includes(h)) state.view = h;
   else state.view = "trophies"; // no or unknown hash: the home page
 }
 // Each page gets its own history entry so the browser's back button returns to it,
@@ -443,7 +468,7 @@ document.addEventListener("click", (e) => { const b = e.target.closest("[data-go
 
 // ---------- Chrome ----------
 function chrome() {
-  const nav = [["trophies", "Buckaroo Bowls"], ["managers", "Managers"], ["players", "Players"], ["overrated", "Overrated"], ["transactions", "Transactions"], ["h2h", "Head to head"], ["records", "Record book"]];
+  const nav = [["trophies", "Buckaroo Bowls"], ["managers", "Managers"], ["map", "Map"], ["players", "Players"], ["overrated", "Overrated"], ["transactions", "Transactions"], ["h2h", "Head to head"], ["records", "Record book"]];
   const curNav = state.view === "mgr" ? "managers" : state.view === "player" ? "players" : state.view;
   $("#topnav").innerHTML = nav.map(([k, l]) => `<button data-go="${k}" aria-current="${curNav === k}">${l}</button>`).join("");
   $("#rail").innerHTML = `<span class="lbl">Seasons</span>` + years.map((y) => {
@@ -681,7 +706,7 @@ function mgrView() {
     return `<tr><td><button class="mlink" data-go="${s.year}"><b>${s.year}</b></button></td><td>${badge(t, 1)} ${esc(t.name)}</td><td class="n">${t.w}-${t.l}${t.t ? "-" + t.t : ""}</td><td class="n">${f2(t.pf)}</td><td class="n">${f2(t.pa)}</td><td>${s.done ? (t.final === 1 ? `<span class="pill gold">🏆 Champion</span>` : ord(t.final)) : `<span class="pill live">${ord(rank)} now</span>`}</td></tr>`; }).join("");
   const opps = mgrKeys.filter((o) => o !== k).map((o) => { const g = r.g.filter((x) => x.oppMgr === o); const w = g.filter((x) => x.won).length, t = g.filter((x) => x.tie).length; return { o, w, l: g.length - w - t, t, pf: g.reduce((a, x) => a + x.pts, 0), pa: g.reduce((a, x) => a + x.oppPts, 0), n: g.length }; }).sort((a, b) => (b.w - b.l) - (a.w - a.l));
   const gameLine = (x) => x ? `<b class="num">${f2(x.pts)}</b> <span class="muted">· ${x.year} wk ${x.wk} vs ${esc(x.opp.name)} (${x.won ? "W" : "L"})</span>` : "—";
-  return `<div class="vhead"><div style="display:flex;gap:14px;align-items:center">${mbadge(k)}<div><div class="eyebrow">Manager</div><h2>${mgrName(k)}</h2></div></div>
+  return `<div class="vhead"><div style="display:flex;gap:14px;align-items:center">${mbadge(k)}<div><div class="eyebrow">Manager</div><h2>${mgrName(k)}</h2>${(() => { const j = LOC ? journey(k) : []; return j.length ? `<p class="whereline"><button class="mlink" data-go="map">📍</button> ${j.map((s) => `${placeLabel(s.pk)} <span class="muted num">${s.years.join(", ")}</span>`).join(` <span class="muted">→</span> `)}</p>` : ""; })()}</div></div>
     <button class="pill" data-go="managers" style="border:0;cursor:pointer">← All managers</button></div>
   <div class="strip">
     <div class="box stat"><div class="k">Career record</div><div class="v num">${r.w}-${r.l}${r.t ? "-" + r.t : ""}</div><div class="s">${pct(r.w, r.l, r.t)} win pct · regular season</div></div>
@@ -882,6 +907,104 @@ function overratedView() {
     <p class="note">${s.done ? "" : "Season in progress, so only players who already have " + MIN_STARTS + "+ starts show up. "}Live games aren't counted until they finish.</p></section>`;
 }
 
+// ---------- Map: where everyone was each season ----------
+const LOC = D.locations;
+const LOC_YEARS = LOC ? Object.keys(LOC.seasons).map(Number).sort((a, b) => a - b) : [];
+const placesOf = (y, k) => { const v = LOC && LOC.seasons[y] && LOC.seasons[y][k]; return v == null ? [] : [].concat(v); };
+const placeLabel = (pk) => { const p = LOC.places[pk]; return `${esc(p.name)}${p.detail ? ` <span class="muted">· ${esc(p.detail)}</span>` : ""}`; };
+const miles = (a, b) => { const r = (x) => (x * Math.PI) / 180; const h = Math.sin(r(b.lat - a.lat) / 2) ** 2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(r(b.lon - a.lon) / 2) ** 2; return 2 * 3958.8 * Math.asin(Math.sqrt(h)); };
+// Draw far-east places west of the US so routes cross the Pacific, not Europe
+const ll = (pk) => { const p = LOC.places[pk]; return [p.lat, p.lon > 60 ? p.lon - 360 : p.lon]; };
+const mgrColor = (k) => `hsl(${hue[k]} 62% 60%)`;
+const fmtMi = (n) => Math.round(n).toLocaleString() + " mi";
+// Each manager's path: one stop per place, in order
+function journey(k) {
+  const stops = [];
+  for (const y of LOC_YEARS) for (const pk of placesOf(y, k)) { const last = stops[stops.length - 1]; if (last && last.pk === pk) last.years.push(y); else stops.push({ pk, years: [y] }); }
+  for (const s of stops) s.years = [...new Set(s.years)];
+  return stops;
+}
+let mapObj = null;
+
+function mapView() {
+  if (!LOC) return `<p class="muted">No locations yet.</p>`;
+  const sel = state.mapYear === "all" ? "all" : LOC_YEARS.includes(+state.mapYear) ? +state.mapYear : LOC_YEARS[LOC_YEARS.length - 1];
+  state.mapYear = sel;
+  const pills = `<div class="weekbar" style="margin:0">${LOC_YEARS.map((y) => `<button data-mapyear="${y}" aria-current="${sel === y}">${y}</button>`).join("")}<button data-mapyear="all" aria-current="${sel === "all"}">All years</button></div>`;
+  let side, strip;
+  if (sel !== "all") {
+    const who = Object.keys(LOC.seasons[sel]).filter((k) => D.managers[k]);
+    const at = {};
+    for (const k of who) { const ps = placesOf(sel, k); (at[ps[ps.length - 1]] = at[ps[ps.length - 1]] || []).push({ k, from: ps.length > 1 ? ps.slice(0, -1) : null }); }
+    const groups = Object.entries(at).sort((a, b) => b[1].length - a[1].length);
+    let far = null;
+    for (let i = 0; i < who.length; i++) for (let j = i + 1; j < who.length; j++) {
+      const a = placesOf(sel, who[i]).slice(-1)[0], b = placesOf(sel, who[j]).slice(-1)[0];
+      const d = miles(LOC.places[a], LOC.places[b]);
+      if (!far || d > far.d) far = { d, a: who[i], b: who[j] };
+    }
+    strip = `<div class="strip">
+      <div class="box stat"><div class="k">Biggest hub</div><div class="v">${esc(LOC.places[groups[0][0]].name)}</div><div class="s">${groups[0][1].length} of ${who.length} managers</div></div>
+      <div class="box stat"><div class="k">Farthest apart</div><div class="v num">${far ? fmtMi(far.d) : "—"}</div><div class="s">${far ? `${esc(D.managers[far.a].first)} and ${esc(D.managers[far.b].first)}` : ""}</div></div>
+      <div class="box stat"><div class="k">Spread across</div><div class="v num">${groups.length} places</div><div class="s">${who.length} managers in ${sel}</div></div></div>`;
+    side = groups.map(([pk, list]) => `<div class="box rec"><div class="k">${placeLabel(pk)}</div>
+      <div class="maprows">${list.map((x) => `<button class="mlink team" data-go="mgr-${x.k}" style="min-width:0">${mbadge(x.k, 1)}<span><b>${mgrName(x.k)}</b>${x.from ? `<small>Started the season in ${x.from.map((f) => esc(LOC.places[f].name)).join(", ")}</small>` : ""}</span></button>`).join("")}</div></div>`).join("");
+  } else {
+    const rows = mgrKeys.map((k) => { const j = journey(k); let d = 0; for (let i = 1; i < j.length; i++) d += miles(LOC.places[j[i - 1].pk], LOC.places[j[i].pk]); return { k, j, d }; }).filter((x) => x.j.length);
+    const most = [...rows].sort((a, b) => b.d - a.d)[0], stay = rows.filter((x) => x.j.length === 1);
+    strip = `<div class="strip">
+      <div class="box stat"><div class="k">Most miles moved</div><div class="v num">${fmtMi(most.d)}</div><div class="s">${esc(D.managers[most.k].first)} · ${most.j.length - 1} moves</div></div>
+      <div class="box stat"><div class="k">Never moved</div><div class="v">${stay.length}</div><div class="s">${stay.map((x) => esc(D.managers[x.k].first)).join(", ") || "Nobody"}</div></div></div>`;
+    side = [...rows].sort((a, b) => b.d - a.d).map((r) => `<div class="box rec"><div class="k" style="display:flex;justify-content:space-between;gap:8px"><button class="mlink team" data-go="mgr-${r.k}" style="min-width:0">${mbadge(r.k, 1)}<b>${mgrName(r.k)}</b></button><span class="num muted">${r.d ? fmtMi(r.d) : "stayed put"}</span></div>
+      <ol class="path">${r.j.map((s) => `<li><span>${placeLabel(s.pk)}</span><span class="num muted">${s.years.join(", ")}</span></li>`).join("")}</ol></div>`).join("");
+  }
+  return `<div class="vhead"><div><div class="eyebrow">Around the league</div><h2>Map</h2><p>Where every manager was each season.${sel === "all" ? " Lines trace each person's moves." : ""}</p></div>${pills}</div>
+  ${strip}<div class="mapwrap"><div id="map" class="box" role="img" aria-label="Map of manager locations"></div><div class="maplist">${side}</div></div>`;
+}
+
+function initMap() {
+  const el = document.getElementById("map");
+  if (!el) return;
+  if (!window.L) { el.innerHTML = `<p class="muted" style="padding:16px">The map couldn't load right now. The list shows where everyone is.</p>`; return; }
+  const light = document.documentElement.dataset.theme === "light";
+  mapObj = L.map(el, { scrollWheelZoom: false, zoomSnap: 0.5 });
+  // Esri's gray canvas basemap (free, no key) plus its place-name labels on top
+  const esri = (name) => `https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/${name}/MapServer/tile/{z}/{y}/{x}`;
+  const shade = light ? "Light" : "Dark";
+  L.tileLayer(esri(`World_${shade}_Gray_Base`), { attribution: "Tiles &copy; Esri, HERE, Garmin, &copy; OpenStreetMap contributors", maxZoom: 12 }).addTo(mapObj);
+  L.tileLayer(esri(`World_${shade}_Gray_Reference`), { maxZoom: 12 }).addTo(mapObj);
+  const pts = [];
+  const pin = (html) => L.divIcon({ className: "pin", html: `<div class="pinstack">${html}</div>`, iconSize: null });
+  if (state.mapYear !== "all") {
+    const y = state.mapYear, at = {};
+    for (const k of Object.keys(LOC.seasons[y]).filter((k) => D.managers[k])) {
+      const ps = placesOf(y, k);
+      ps.forEach((pk, i) => (at[pk] = at[pk] || []).push({ k, past: i < ps.length - 1 }));
+      for (let i = 1; i < ps.length; i++) L.polyline([ll(ps[i - 1]), ll(ps[i])], { color: mgrColor(k), weight: 2, dashArray: "6 6", opacity: 0.8 }).addTo(mapObj);
+    }
+    for (const pk in at) {
+      const html = at[pk].map((x) => `<span class="${x.past ? "was" : ""}">${mbadge(x.k)}</span>`).join("");
+      L.marker(ll(pk), { icon: pin(html), title: LOC.places[pk].name }).addTo(mapObj)
+        .bindPopup(`<b>${placeLabel(pk)}</b><br>${at[pk].map((x) => `${mgrName(x.k)}${x.past ? " (earlier this season)" : ""}`).join("<br>")}`);
+      pts.push(ll(pk));
+    }
+  } else {
+    const last = {};
+    for (const k of mgrKeys) {
+      const j = journey(k);
+      if (!j.length) continue;
+      if (j.length > 1) L.polyline(j.map((s) => ll(s.pk)), { color: mgrColor(k), weight: 3, opacity: 0.85 }).addTo(mapObj);
+      for (const s of j.slice(0, -1)) L.circleMarker(ll(s.pk), { radius: 4, color: mgrColor(k), fillColor: mgrColor(k), fillOpacity: 1, weight: 0 }).addTo(mapObj).bindPopup(`${mgrName(k)}: ${placeLabel(s.pk)} (${s.years.join(", ")})`);
+      const end = j[j.length - 1].pk;
+      (last[end] = last[end] || []).push(k);
+      j.forEach((s) => pts.push(ll(s.pk)));
+    }
+    for (const pk in last) L.marker(ll(pk), { icon: pin(last[pk].map((k) => mbadge(k)).join("")), title: LOC.places[pk].name }).addTo(mapObj)
+      .bindPopup(`<b>${placeLabel(pk)}</b><br>Now: ${last[pk].map(mgrName).join(", ")}`);
+  }
+  if (pts.length) mapObj.fitBounds(pts, { padding: [36, 36], maxZoom: 7 });
+}
+
 // ---------- All-time transactions ----------
 const TX = D.seasons.flatMap((s) => [
   ...s.moves.map((m) => ({ s, y: s.year, wk: m.wk, o: m.date, type: m.add.length ? "add" : "drop", t: s.byId[m.tm], m })),
@@ -921,15 +1044,18 @@ function txRows() {
 // ---------- Render ----------
 function render() {
   chrome();
+  if (mapObj) { mapObj.remove(); mapObj = null; }
   const v = state.view;
-  $("#app").innerHTML = v === "season" ? seasonView() : v === "mgr" ? mgrView() : v === "managers" ? managers() : v === "players" ? playersView() : v === "player" ? playerView() : v === "overrated" ? overratedView() : v === "transactions" ? txView() : v === "h2h" ? h2h() : v === "records" ? records() : trophies();
+  $("#app").innerHTML = v === "season" ? seasonView() : v === "mgr" ? mgrView() : v === "managers" ? managers() : v === "players" ? playersView() : v === "player" ? playerView() : v === "map" ? mapView() : v === "overrated" ? overratedView() : v === "transactions" ? txView() : v === "h2h" ? h2h() : v === "records" ? records() : trophies();
   document.title = "Buckaroo League History";
+  if (v === "map") initMap();
   const cur = $(".yr[aria-current=true]"); if (cur) cur.scrollIntoView({ block: "nearest", inline: "nearest" });
 }
 $("#app").addEventListener("click", (e) => {
   const w = e.target.closest("[data-week]"); if (w) { state.week = +w.dataset.week; state.open = null; render(); return; }
   const mb = e.target.closest("[data-more]"); if (mb) { const open = mb.closest(".rec").classList.toggle("open"); mb.setAttribute("aria-expanded", open); mb.textContent = open ? "Show top 10" : "Show top " + (mb.closest(".rec").querySelectorAll("li").length + 1); return; }
   const o = e.target.closest("[data-open]"); if (o) { state.open = state.open === o.dataset.open ? null : o.dataset.open; render(); return; }
+  const my = e.target.closest("[data-mapyear]"); if (my) { state.mapYear = my.dataset.mapyear === "all" ? "all" : +my.dataset.mapyear; render(); return; }
   const by = e.target.closest("[data-bumyear]"); if (by) { state.bumYear = +by.dataset.bumyear; render(); return; }
   const r = e.target.closest("[data-roster]"); if (r) { state.rosterTeam = +r.dataset.roster; render(); }
 });

@@ -6,6 +6,7 @@ espn-login.txt
 data/*
 !data/overrides.json
 !data/trades_*.json
+!data/locations.json
 
 # Built output (GitHub builds its own copy)
 public/

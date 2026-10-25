@@ -1,0 +1,22 @@
+{
+  "_about": "Where each manager was each season. Keep places city/state level: the site is public. A manager who moved mid-season gets a list, oldest first.",
+  "places": {
+    "athens-ga":     { "name": "Athens, GA",        "detail": "UGA",     "lat": 33.948, "lon": -83.377 },
+    "cambridge-ma":  { "name": "Cambridge, MA",     "detail": "Harvard", "lat": 42.377, "lon": -71.117 },
+    "chicago":       { "name": "Chicago, IL",                            "lat": 41.878, "lon": -87.630 },
+    "st-louis":      { "name": "St. Louis, MO",     "detail": "WashU",   "lat": 38.648, "lon": -90.305 },
+    "raleigh":       { "name": "Raleigh, NC",                            "lat": 35.780, "lon": -78.639 },
+    "boston":        { "name": "Boston, MA",                             "lat": 42.360, "lon": -71.058 },
+    "buffalo":       { "name": "Buffalo area, NY",                       "lat": 42.886, "lon": -78.878 },
+    "arizona":       { "name": "Arizona",                                "lat": 34.048, "lon": -111.094 },
+    "washington":    { "name": "Washington State",                       "lat": 47.400, "lon": -120.500 },
+    "south-korea":   { "name": "South Korea",                            "lat": 36.500, "lon": 127.800 },
+    "milwaukee":     { "name": "Milwaukee, WI",                          "lat": 43.039, "lon": -87.906 }
+  },
+  "seasons": {
+    "2023": { "sonny": "cambridge-ma", "kaushal": "athens-ga", "alan": "chicago", "mekhi": "chicago", "ramon": "chicago", "randy": "st-louis" },
+    "2024": { "sonny": "raleigh", "kaushal": "athens-ga", "alan": "chicago", "mekhi": "chicago", "ramon": "chicago", "randy": "chicago" },
+    "2025": { "sonny": "boston", "kaushal": "athens-ga", "ramon": "buffalo", "alan": "chicago", "mekhi": "chicago", "randy": "chicago" },
+    "2026": { "sonny": "boston", "randy": "arizona", "mekhi": ["south-korea", "washington"], "alan": "chicago", "zoe": "milwaukee", "jordan": "milwaukee", "ramon": "buffalo", "kaushal": "athens-ga" }
+  }
+}
