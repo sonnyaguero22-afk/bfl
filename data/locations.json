@@ -60,7 +60,10 @@
       "lon": -87.906
     },
     "boot-camp": {
-      "name": "Boot camp"
+      "name": "North Carolina",
+      "detail": "Boot camp",
+      "lat": 35.56,
+      "lon": -79.39
     }
   },
   "seasons": {
