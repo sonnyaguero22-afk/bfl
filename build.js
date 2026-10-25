@@ -70,6 +70,10 @@ for (const year of years) {
       tier: s.playoffTierType, // NONE, WINNERS_BRACKET, LOSERS_CONSOLATION_LADDER, ...
     }))
     ;
+  // Regular-season games not played yet (the odds simulator needs the rest of the schedule)
+  const future = L.schedule
+    .filter((s) => s.away && s.matchupPeriodId > L.status.currentMatchupPeriod && s.matchupPeriodId <= ss.matchupPeriodCount)
+    .map((s) => ({ wk: s.matchupPeriodId, h: s.home.teamId, a: s.away.teamId }));
   // Byes in playoffs (no away team)
   const byes = L.schedule.filter((s) => !s.away).map((s) => ({ wk: s.matchupPeriodId, h: s.home.teamId, tier: s.playoffTierType }));
 
@@ -184,7 +188,7 @@ for (const year of years) {
 
   seasons.push({
     year: +year, name: L.settings.name, done, curWeek: L.status.currentMatchupPeriod, regWeeks,
-    playoffTeams: ss.playoffTeamCount, periods: ss.matchupPeriods, teams, matchups, byes, lineups, draft, moves, trades: finalTrades, rosters,
+    playoffTeams: ss.playoffTeamCount, periods: ss.matchupPeriods, teams, future, matchups, byes, lineups, draft, moves, trades: finalTrades, rosters,
   });
   console.log(`${year}: ${teams.length} teams, ${matchups.length} matchups, ${Object.keys(lineups).length} weeks of lineups, ${draft.length} picks, ${moves.length} moves, ${trades.length} trades`);
 }
@@ -227,6 +231,17 @@ if (exists("overrides.json")) {
   }
   const used = new Set(seasons.flatMap((s) => s.teams.map((t) => t.mgr)));
   for (const k of Object.keys(managers)) if (!used.has(k)) delete managers[k];
+}
+
+// Title / playoff / last-place odds after every week (see odds.js)
+const { seasonOdds } = require("./odds");
+for (const s of seasons) {
+  // seasonOdds needs the finished-game list and week mapping the page also uses
+  s.played = s.matchups.filter((m) => m.win !== null && !m.live);
+  s.sp2mp = {};
+  for (const mp in s.periods || {}) for (const sp of s.periods[mp]) s.sp2mp[sp] = +mp;
+  s.odds = seasonOdds(s);
+  delete s.played; delete s.sp2mp;
 }
 
 // Where everyone was each season (hand-maintained, data/locations.json)

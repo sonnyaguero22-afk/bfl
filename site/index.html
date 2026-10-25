@@ -293,6 +293,20 @@ ol.path li:first-child::before { content: "•"; }
 .leaflet-bar a { background: var(--surface); color: var(--ink); border-color: var(--line); }
 @media (max-width: 760px) { .mapwrap { grid-template-columns: 1fr; } #map { height: 360px; } .maplist { max-height: none; } }
 .whereline { font-size: 14px; color: var(--ink); }
+/* Odds chart */
+.oddschart { width: 100%; height: auto; display: block; }
+.oddschart .grid { stroke: var(--line); stroke-width: 1; }
+.oddschart .ax { fill: var(--muted); font-size: 11px; font-family: var(--f-body); }
+@media (max-width: 560px) { .oddschart .ax { font-size: 22px; } .oddschart .ln polyline { stroke-width: 4; } }
+.oddschart .pozone { fill: var(--gold-soft); }
+.oddschart .ln polyline { fill: none; stroke: hsl(var(--h) var(--mgr-s) var(--mgr-l)); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
+.oddschart .ln circle { fill: hsl(var(--h) var(--mgr-s) var(--mgr-l)); }
+.oddschart .ln.dim { opacity: .18; }
+.oddschart .ln.on polyline { stroke-width: 3.5; }
+tr.sel td { background: var(--brass-soft); }
+ol.swing { counter-reset: none; border-top: 0; padding-top: 0; }
+ol.swing li::before { content: none; }
+.gmeta .odds { font-variant-numeric: tabular-nums; }
 .callout { background: var(--brass-soft); border-radius: 12px; padding: 12px 16px; font-size: 14px; margin: 0 0 20px; max-width: 760px; }
 @media (prefers-reduced-motion: no-preference) {
   main > * { animation: rise .35s ease-out both; }
@@ -446,13 +460,13 @@ const board = (title, list, val, who, sub, note) => !list.length ? "" : `<div cl
   ${list.length > 10 ? `<button class="morebtn" data-more aria-expanded="false">Show top ${list.length}</button>` : ""}${note ? `<div class="ctx">${note}</div>` : ""}</div>`;
 
 // ---------- Routing ----------
-const TABS = [["standings", "Standings"], ["weekly", "Weekly scores"], ["draft", "Draft board"], ["trades", "Trades"], ["moves", "Adds & drops"], ["rosters", "Rosters"]];
+const TABS = [["standings", "Standings"], ["odds", "Title odds"], ["weekly", "Weekly scores"], ["draft", "Draft board"], ["trades", "Trades"], ["moves", "Adds & drops"], ["rosters", "Rosters"]];
 const state = { view: "trophies", year: lastYear, tab: "standings", week: null, open: null, moveTeam: "all", rosterTeam: null };
 
 function parseHash() {
   const h = (location.hash || "").slice(1);
   let m;
-  if ((m = h.match(/^(\d{4})(?:-(\w+))?$/)) && years.includes(+m[1])) { if (+m[1] !== state.year) { state.standWeek = null; state.rosterWeek = null; } state.view = "season"; state.year = +m[1]; state.tab = TABS.some((t) => t[0] === m[2]) ? m[2] : "standings"; }
+  if ((m = h.match(/^(\d{4})(?:-(\w+))?$/)) && years.includes(+m[1])) { if (+m[1] !== state.year) { state.standWeek = null; state.rosterWeek = null; state.oddsFocus = null; } state.view = "season"; state.year = +m[1]; state.tab = TABS.some((t) => t[0] === m[2]) ? m[2] : "standings"; }
   else if ((m = h.match(/^mgr-(\w+)$/)) && D.managers[m[1]]) { state.view = "mgr"; state.mgr = m[1]; }
   else if ((m = h.match(/^p-([a-z0-9-]+)$/)) && P[m[1]]) { state.view = "player"; state.pk = m[1]; }
   else if (["trophies", "managers", "map", "players", "overrated", "transactions", "h2h", "records"].includes(h)) state.view = h;
@@ -489,7 +503,7 @@ function seasonView() {
   const leader = s.standings[0];
   const champ = s.done ? s.teams.find((t) => t.final === 1) : null;
   const status = s.done ? `Champion: ${esc(champ.name)} (${mgrName(champ.mgr)})` : `Week ${s.curWeek} of ${s.regWeeks} · regular season in progress`;
-  const tabBody = { standings, weekly, draft, trades, moves, rosters }[state.tab](s);
+  const tabBody = { standings, odds: oddsTab, weekly, draft, trades, moves, rosters }[state.tab](s);
   return `<div class="vhead"><div><div class="eyebrow">Buckaroo Bowl ${roman(n)}</div><h2>${y} Season</h2><p>${status}</p></div>
     ${!s.done ? `<span class="pill live">● In progress</span>` : `<span class="pill gold">Final</span>`}</div>
     ${(s.notes || []).map((n) => `<p class="callout">${esc(n)}</p>`).join("")}
@@ -594,12 +608,16 @@ function weekly(s) {
   const ms = s.matchups.filter((m) => m.wk === wk);
   // Record as it stood after this week's game (or going into it, if it's still live)
   const recNow = Object.fromEntries(asOf(s, wk).rows.map((x) => [x.t.id, x]));
+  // Title odds going into this game and after it
+  const oddsAt = (id, N) => { const i = s.odds ? s.odds.weeks.indexOf(N) : -1; return i >= 0 ? s.odds.t[id].c[i] : null; };
+  const oddsLabel = (id) => { const b = oddsAt(id, wk - 1), a = oddsAt(id, wk); if (b == null) return ""; const d = a == null ? 0 : a - b;
+    return `<br><span class="odds">Title odds ${pct1(b)}${a == null ? "" : ` → <span class="${d > 0.5 ? "w" : d < -0.5 ? "l" : ""}">${pct1(a)}</span>`}</span>`; };
   const recLabel = (id) => { const x = recNow[id]; const po = wk > s.regWeeks;
     return `${recStr(x)}${po ? " reg. season" : ms.some((m) => m.live) ? " going in" : ""}${!po && x.streak ? ` · <span class="${x.streak[0] === "W" ? "w" : x.streak[0] === "L" ? "l" : ""}">${x.streak}</span>` : ""}`; };
   const tierName = { WINNERS_BRACKET: "Playoffs", LOSERS_CONSOLATION_LADDER: "Consolation", WINNERS_CONSOLATION_LADDER: "Consolation" };
   const cards = ms.map((m, i) => {
     const key = `${wk}-${m.h}`, open = state.open === key;
-    const side = (id, p) => { const t = s.byId[id]; const lost = m.win !== null && m.win !== id && m.win !== 0; return `<div class="side${lost ? " lost" : ""}"><span class="team">${badge(t)}<span><b>${esc(t.name)}</b><small>${mgrName(t.mgr)} · ${recLabel(id)}</small></span></span><span class="pts">${f2(p)}</span></div>`; };
+    const side = (id, p) => { const t = s.byId[id]; const lost = m.win !== null && m.win !== id && m.win !== 0; return `<div class="side${lost ? " lost" : ""}"><span class="team">${badge(t)}<span><b>${esc(t.name)}</b><small>${mgrName(t.mgr)} · ${recLabel(id)}${oddsLabel(id)}</small></span></span><span class="pts">${f2(p)}</span></div>`; };
     const margin = Math.abs(m.hp - m.ap);
     return `<div class="box game${open ? " open" : ""}"><button data-open="${key}" aria-expanded="${open}">${side(m.h, m.hp)}${side(m.a, m.ap)}
       <div class="gmeta"><span>${m.live ? `<span class="pill live">● Live</span>` : tierName[m.tier] ? `<span class="pill gold">${tierName[m.tier]}</span>` : m.win !== null ? `Margin ${f2(margin)}` : ""}</span><span>${open ? "Hide lineups ▲" : "Show lineups ▼"}</span></div></button>
@@ -672,6 +690,64 @@ function rosters(s) {
   <div class="box scroll"><table><thead><tr><th>Slot</th><th>Player</th><th>Pos</th><th>NFL</th><th>How they got him</th><th class="n">${wk === "final" ? "Season pts" : `Wk ${wk} pts`}</th></tr></thead><tbody>
   ${R.map((p) => `<tr class="${p.slot === "BN" || p.slot === "IR" ? "muted" : ""}"><td class="num muted">${esc(p.slot)}</td><td><b>${pn(p.n)}</b></td><td>${posTag(p.pos)}</td><td class="muted">${esc(p.pro)}</td><td>${howGot(p.n)}</td><td class="n">${f1(p.pts)}</td></tr>`).join("")}
   </tbody></table></div><p class="note">${wk === "final" ? (s.done ? "Final roster at season's end. Season points count everything the player scored that year, on any team." : "Current roster as of the last data pull. Season points count everything the player has scored this year, on any team.") : `Lineup and points for NFL week ${wk}. Bench players are dimmed.`}</p>`;
+}
+
+// ---------- Title odds (computed at build time in odds.js) ----------
+const ODDS_METRIC = { c: "Win the Bowl", p: "Make playoffs", l: "Finish last" };
+const wkLabel = (s, N) => (N === 0 ? "Draft" : N <= s.regWeeks ? `Wk ${N}` : N === s.regWeeks + 1 && s.playoffTeams > 2 ? "Semis" : "Final");
+const pct1 = (v) => (v >= 99.95 ? "100%" : v > 0 && v < 0.5 ? "<1%" : `${Math.round(v)}%`);
+// What happened to a team between checkpoints N-1 and N
+function oddsReason(s, id, N) {
+  const bits = [];
+  const g = s.matchups.find((m) => m.wk === N && (m.h === id || m.a === id) && m.win !== null && !m.live);
+  if (g) { const mine = g.h === id ? g.hp : g.ap, theirs = g.h === id ? g.ap : g.hp, opp = s.byId[g.h === id ? g.a : g.h];
+    bits.push(`${g.win === id ? "Beat" : g.win === 0 ? "Tied" : "Lost to"} ${esc(opp.name)} ${f1(mine)}–${f1(theirs)}`); }
+  for (const tr of s.trades.filter((t) => t.wk === N + 1 && t.teams.includes(id))) { const got = (tr.got[id] || []).map((x) => esc(x.split("|")[0])); if (got.length) bits.push(`Traded for ${got.join(", ")}`); }
+  const adds = s.moves.filter((m) => m.tm === id && m.wk === N + 1).flatMap((m) => m.add.map((x) => esc(x.split("|")[0])));
+  if (adds.length) bits.push(`Picked up ${adds.slice(0, 3).join(", ")}${adds.length > 3 ? ` +${adds.length - 3}` : ""}`);
+  return bits.join(" · ");
+}
+function oddsChart(s, key) {
+  const o = s.odds, W = 800, H = 300, L = 40, R = 16, T = 14, B = 34;
+  const n = o.weeks.length, x = (i) => L + (n === 1 ? 0 : (i * (W - L - R)) / (n - 1)), y = (v) => T + ((100 - v) * (H - T - B)) / 100;
+  const focus = state.oddsFocus;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" class="oddschart" role="img" aria-label="${ODDS_METRIC[key]} odds by week">`;
+  for (const v of [0, 25, 50, 75, 100]) svg += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" class="grid"/><text x="${L - 8}" y="${y(v) + 4}" class="ax" text-anchor="end">${v}%</text>`;
+  if (s.regWeeks < o.weeks[n - 1]) svg += `<rect x="${x(s.regWeeks)}" y="${T}" width="${x(n - 1) - x(s.regWeeks)}" height="${H - T - B}" class="pozone"/><text x="${(x(s.regWeeks) + x(n - 1)) / 2}" y="${T + 12}" class="ax" text-anchor="middle">Playoffs</text>`;
+  const step = n > 12 ? 2 : 1;
+  o.weeks.forEach((N, i) => { if (i % step === 0 || i === n - 1) svg += `<text x="${x(i)}" y="${H - 10}" class="ax" text-anchor="middle">${wkLabel(s, N).replace("Wk ", "")}</text>`; });
+  const order = [...s.teams].sort((a, b) => (a.id === focus) - (b.id === focus));
+  for (const t of order) {
+    const v = o.t[t.id][key], pts = v.map((p, i) => `${x(i).toFixed(1)},${y(p).toFixed(1)}`).join(" ");
+    const dim = focus && focus !== t.id;
+    svg += `<g style="--h:${hue[t.mgr]}" class="ln${dim ? " dim" : ""}${focus === t.id ? " on" : ""}"><polyline points="${pts}"/><circle cx="${x(n - 1)}" cy="${y(v[n - 1])}" r="4"/></g>`;
+  }
+  return svg + `</svg>`;
+}
+function oddsTab(s) {
+  const o = s.odds;
+  if (!o) return `<p class="muted">Not enough data to simulate this season yet.</p>`;
+  const key = ODDS_METRIC[state.oddsKey] ? state.oddsKey : "c";
+  const n = o.weeks.length, last = n - 1;
+  const rows = [...s.teams].sort((a, b) => o.t[b.id][key][last] - o.t[a.id][key][last] || o.t[b.id].c[last] - o.t[a.id].c[last]);
+  const pills = `<div class="weekbar" style="margin:0">${Object.entries(ODDS_METRIC).map(([k, l]) => `<button data-oddskey="${k}" aria-current="${k === key}">${l}</button>`).join("")}</div>`;
+  const legend = `<div class="box scroll"><table><thead><tr><th>Team</th><th class="n">Draft day</th><th class="n">Best</th><th class="n">Worst</th><th class="n">Last week</th><th class="n">${s.done ? "Final" : "Now"}</th></tr></thead><tbody>
+    ${rows.map((t) => { const v = o.t[t.id][key], d = last ? v[last] - v[last - 1] : 0;
+      return `<tr class="${state.oddsFocus === t.id ? "sel" : ""}"><td><button class="mlink team" data-oddsteam="${t.id}" style="min-width:0">${badge(t, 1)}<span><b>${esc(t.name)}</b><small>${mgrName(t.mgr)}</small></span></button></td>
+      <td class="n">${pct1(v[0])}</td><td class="n">${pct1(Math.max(...v))} <span class="muted">${wkLabel(s, o.weeks[v.indexOf(Math.max(...v))])}</span></td><td class="n">${pct1(Math.min(...v))}</td>
+      <td class="n ${d > 0.5 ? "w" : d < -0.5 ? "l" : "muted"}">${d > 0.5 ? "▲" : d < -0.5 ? "▼" : ""} ${Math.abs(d) >= 0.5 ? Math.round(Math.abs(d)) + " pts" : "—"}</td><td class="n"><b>${pct1(v[last])}</b></td></tr>`; }).join("")}</tbody></table></div>`;
+  // Biggest week-to-week swings in title odds
+  const swings = [];
+  for (const t of s.teams) { const v = o.t[t.id].c; for (let i = 1; i < n; i++) if (o.weeks[i] <= s.regWeeks) swings.push({ t, N: o.weeks[i], from: v[i - 1], to: v[i], d: v[i] - v[i - 1] }); }
+  const sw = (list, up) => list.map((x) => `<li><span>${badge(x.t, 1)} <b>${esc(x.t.name)}</b> <span class="muted">· after week ${x.N}</span><small class="ctx sub">${oddsReason(s, x.t.id, x.N) || "No game or moves recorded"}</small></span><span class="num ${up ? "w" : "l"}">${pct1(x.from)} → ${pct1(x.to)}</span></li>`).join("");
+  const ups = [...swings].sort((a, b) => b.d - a.d).slice(0, 8).filter((x) => x.d > 0), downs = [...swings].sort((a, b) => a.d - b.d).slice(0, 8).filter((x) => x.d < 0);
+  return `<div class="vhead" style="margin-bottom:12px"><div><h3 style="margin:0">${{ c: "Chances to win the Buckaroo Bowl", p: "Chances to make the playoffs", l: "Chances to finish last" }[key]}, week by week</h3><p>${s.done ? "How the race looked at every point of the season." : `Updated after every finished week. Week ${s.curWeek} counts once its games are final.`} Click a team to highlight it.</p></div>${pills}</div>
+  <div class="box" style="padding:10px 8px 4px">${oddsChart(s, key)}</div>
+  <section style="margin-top:16px">${legend}</section>
+  <section><h3>Biggest swings in title odds</h3><div class="recs">
+    <div class="box rec"><div class="k">Biggest jumps</div><ol class="swing">${sw(ups, true) || "<li class=muted>None</li>"}</ol></div>
+    <div class="box rec"><div class="k">Biggest drops</div><ol class="swing">${sw(downs, false) || "<li class=muted>None</li>"}</ol></div></div>
+  <p class="note">How it works: after each week the rest of the season, playoffs included, is played out ${o.sims.toLocaleString()} times. A team's strength blends its scoring so far (pulled toward the league average early on) with ESPN's projection for its next starting lineup, so pickups and trades move the needle right away. Weekly scores vary by about ${Math.round(o.sd)} points either way. Pickups and trades listed with a week are the ones made before the next game.</p></section>`;
 }
 
 // ---------- League-wide views ----------
@@ -1055,6 +1131,8 @@ $("#app").addEventListener("click", (e) => {
   const w = e.target.closest("[data-week]"); if (w) { state.week = +w.dataset.week; state.open = null; render(); return; }
   const mb = e.target.closest("[data-more]"); if (mb) { const open = mb.closest(".rec").classList.toggle("open"); mb.setAttribute("aria-expanded", open); mb.textContent = open ? "Show top 10" : "Show top " + (mb.closest(".rec").querySelectorAll("li").length + 1); return; }
   const o = e.target.closest("[data-open]"); if (o) { state.open = state.open === o.dataset.open ? null : o.dataset.open; render(); return; }
+  const ok = e.target.closest("[data-oddskey]"); if (ok) { state.oddsKey = ok.dataset.oddskey; render(); return; }
+  const ot = e.target.closest("[data-oddsteam]"); if (ot) { state.oddsFocus = state.oddsFocus === +ot.dataset.oddsteam ? null : +ot.dataset.oddsteam; render(); return; }
   const my = e.target.closest("[data-mapyear]"); if (my) { state.mapYear = my.dataset.mapyear === "all" ? "all" : +my.dataset.mapyear; render(); return; }
   const by = e.target.closest("[data-bumyear]"); if (by) { state.bumYear = +by.dataset.bumyear; render(); return; }
   const r = e.target.closest("[data-roster]"); if (r) { state.rosterTeam = +r.dataset.roster; render(); }
