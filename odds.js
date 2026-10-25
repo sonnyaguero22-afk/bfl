@@ -76,7 +76,7 @@ function seasonOdds(s) {
     const cnt = Object.fromEntries(ids.map((id) => [id, { c: 0, p: 0, l: 0 }]));
     const playRound = (mp, a, b) => {
       // A round that already happened keeps its real winner
-      if (s.done && mp <= N) { const m = s.matchups.find((x) => x.wk === mp && x.tier === "WINNERS_BRACKET" && [x.h, x.a].includes(a) && [x.h, x.a].includes(b)); if (m && m.win) return m.win; }
+      if (s.done && mp <= N) { const m = s.matchups.find((x) => x.wk === mp && [x.h, x.a].includes(a) && [x.h, x.a].includes(b)); if (m && m.win) return m.win; }
       const len = spans(mp).length;
       const sa = mean[a] * len + gauss() * sd * Math.sqrt(len), sb = mean[b] * len + gauss() * sd * Math.sqrt(len);
       return sa >= sb ? a : b;
@@ -93,11 +93,20 @@ function seasonOdds(s) {
         }
         seeds = [...ids].sort((a, b) => rec[b].w - rec[a].w || rec[b].pf - rec[a].pf);
       }
-      cnt[seeds[seeds.length - 1]].l++;
       const field = seeds.slice(0, po);
       field.forEach((id) => cnt[id].p++);
       // Bracket: 1v4 & 2v3, or the top seed gets a bye with 3 teams; winners meet in the final
       const r1mp = s.regWeeks + 1, r2mp = s.regWeeks + 2;
+      // Last place is settled by the losers' ladder among the non-playoff teams, as ESPN does it:
+      // 2 teams: the final-round game's loser. 3 teams: the loser of the top two (the worst seed
+      // sits out). 4 teams: the two first-round losers meet and that loser is last.
+      const bottom = seeds.slice(po), lastMp = po >= 3 ? r2mp : r1mp;
+      const loser = (mp, a, b) => (playRound(mp, a, b) === a ? b : a);
+      let lastTeam = seeds[seeds.length - 1];
+      if (bottom.length === 2) lastTeam = loser(lastMp, bottom[0], bottom[1]);
+      else if (bottom.length === 3) lastTeam = loser(r1mp, bottom[0], bottom[1]);
+      else if (bottom.length === 4) lastTeam = loser(lastMp, loser(r1mp, bottom[0], bottom[3]), loser(r1mp, bottom[1], bottom[2]));
+      cnt[lastTeam].l++;
       let champ;
       if (po >= 4) { const w1 = playRound(r1mp, field[0], field[3]), w2 = playRound(r1mp, field[1], field[2]); champ = playRound(r2mp, w1, w2); }
       else if (po === 3) { const w = playRound(r1mp, field[1], field[2]); champ = playRound(r2mp, field[0], w); }

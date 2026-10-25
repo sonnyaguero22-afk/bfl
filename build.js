@@ -262,10 +262,13 @@ if (exists("overrides.json")) {
       const t = s.teams.find((x) => x.id === +id);
       if (!t) continue;
       if (o.mgr) t.mgr = o.mgr;
+      // A team that changed hands mid-season: who ran it (and its name) from which week
+      if (o.eras) t.eras = o.eras;
       if (o.note) (s.notes = s.notes || []).push(o.note);
     }
   }
-  const used = new Set(seasons.flatMap((s) => s.teams.map((t) => t.mgr)));
+  for (const [k, m] of Object.entries(O.extraManagers || {})) managers[k] = m;
+  const used = new Set(seasons.flatMap((s) => s.teams.flatMap((t) => [t.mgr, ...(t.eras || []).map((e) => e.mgr)])));
   for (const k of Object.keys(managers)) if (!used.has(k)) delete managers[k];
 }
 
@@ -284,7 +287,7 @@ for (const s of seasons) {
 const locations = exists("locations.json") ? load("locations.json") : null;
 // Stable manager order (first season they appear, then team ID) so badge colors never shuffle
 const order = [];
-for (const s of seasons) for (const t of [...s.teams].sort((a, b) => a.id - b.id)) if (!order.includes(t.mgr)) order.push(t.mgr);
+for (const s of seasons) for (const t of [...s.teams].sort((a, b) => a.id - b.id)) for (const k of [t.mgr, ...(t.eras || []).map((e) => e.mgr)]) if (!order.includes(k)) order.push(k);
 const orderedManagers = Object.fromEntries(order.filter((k) => managers[k]).map((k) => [k, managers[k]]));
 const dataJs = "window.LEAGUE = " + JSON.stringify({ league: "Buckaroo Football League", firstYear: 2023, built: new Date().toISOString(), managers: orderedManagers, seasons, locations }) + ";\n";
 fs.mkdirSync(path.join(__dirname, "site"), { recursive: true });

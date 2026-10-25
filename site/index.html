@@ -367,7 +367,16 @@ const lastYear = Math.max(...D.seasons.map((s) => s.year), D.firstYear);
 const years = []; for (let y = D.firstYear; y <= lastYear; y++) years.push(y);
 const S = Object.fromEntries(D.seasons.map((s) => [s.year, s]));
 const mgrKeys = Object.keys(D.managers);
-const hue = Object.fromEntries(mgrKeys.map((k, i) => [k, Math.round((i * 360) / mgrKeys.length + 215) % 360]));
+// Real people, without the "No manager" placeholder for a team that lost its owner
+const PEOPLE = mgrKeys.filter((k) => k !== "nomanager");
+const hue = Object.fromEntries(PEOPLE.map((k, i) => [k, Math.round((i * 360) / PEOPLE.length + 215) % 360]));
+hue.nomanager = 0;
+const gray = (k) => (k === "nomanager" ? ";--mgr-s:0%" : "");
+// Who ran a team, and what it was called, in a given week (teams can change hands mid-season)
+const eraAt = (t, wk) => { let e = (t.eras || [])[0] || null; for (const x of t.eras || []) if (wk >= x.from) e = x; return e; };
+const mgrAt = (t, wk) => (eraAt(t, wk) || t).mgr;
+const nameAt = (t, wk) => (eraAt(t, wk) || t).name;
+const eraLine = (t) => t.eras.map((e, i) => `${D.managers[e.mgr].name} ${i < t.eras.length - 1 ? `wk ${e.from}–${t.eras[i + 1].from - 1}` : `wk ${e.from}+`}`).join(" · ");
 
 for (const s of D.seasons) {
   s.byId = Object.fromEntries(s.teams.map((t) => [t.id, t]));
@@ -406,7 +415,7 @@ for (const s of D.seasons) for (const m of s.played) {
   const po = m.tier && m.tier !== "NONE";
   const span = s.spans(m.wk).length;
   for (const [id, p, oid, op] of [[m.h, m.hp, m.a, m.ap], [m.a, m.ap, m.h, m.hp]]) {
-    games.push({ year: s.year, wk: m.wk, tm: s.byId[id], mgr: s.byId[id].mgr, pts: p, opp: s.byId[oid], oppMgr: s.byId[oid].mgr, oppPts: op, won: m.win === id, tie: m.win === 0, po, tier: m.tier, span });
+    games.push({ year: s.year, wk: m.wk, tm: s.byId[id], mgr: mgrAt(s.byId[id], m.wk), nm: nameAt(s.byId[id], m.wk), pts: p, opp: s.byId[oid], oppMgr: mgrAt(s.byId[oid], m.wk), oppNm: nameAt(s.byId[oid], m.wk), oppPts: op, won: m.win === id, tie: m.win === 0, po, tier: m.tier, span });
   }
 }
 
@@ -422,18 +431,18 @@ for (const s of D.seasons) {
       const gm = s.matchups.find((m) => m.wk === mp && (m.h === +id || m.a === +id) && (m.win !== null || m.live));
       if (!gm) continue;
       const t = s.byId[id];
-      for (const e of s.lineups[wk][id]) player(e.n, e.pos, e.pro).weeks.push({ y: s.year, wk: +wk, t, mgr: t.mgr, slot: e.slot, pts: e.pts, proj: e.proj, fin: gm.win !== null, start: e.slot !== "BN" && e.slot !== "IR" });
+      for (const e of s.lineups[wk][id]) player(e.n, e.pos, e.pro).weeks.push({ y: s.year, wk: +wk, t, mgr: mgrAt(t, mp), slot: e.slot, pts: e.pts, proj: e.proj, fin: gm.win !== null, start: e.slot !== "BN" && e.slot !== "IR" });
     }
   }
-  for (const d of s.draft) { const t = s.byId[d.tm]; player(d.n, d.pos, d.pro).ev.push({ y: s.year, wk: 0, o: d.pk, type: "draft", t, mgr: t.mgr, lab: "Draft", txt: `Drafted in round ${d.rd}, pick ${d.pk}${d.keeper ? " (keeper)" : ""}` }); }
+  for (const d of s.draft) { const t = s.byId[d.tm]; player(d.n, d.pos, d.pro).ev.push({ y: s.year, wk: 0, o: d.pk, type: "draft", t, mgr: mgrAt(t, 1), lab: "Draft", txt: `Drafted in round ${d.rd}, pick ${d.pk}${d.keeper ? " (keeper)" : ""}` }); }
   for (const m of s.moves) {
     const t = s.byId[m.tm];
-    for (const x of m.drop) { const [n, pos] = x.split("|"); player(n, pos).ev.push({ y: s.year, wk: m.wk, o: m.date, type: "drop", t, mgr: t.mgr, lab: `Wk ${m.wk}`, txt: "Dropped" }); }
-    for (const x of m.add) { const [n, pos] = x.split("|"); player(n, pos).ev.push({ y: s.year, wk: m.wk, o: m.date + 1, type: "add", t, mgr: t.mgr, lab: `Wk ${m.wk}`, txt: `Picked up off ${m.kind === "Waiver" ? "waivers" : "free agency"}${m.bid ? ` for $${m.bid}` : ""}` }); }
+    for (const x of m.drop) { const [n, pos] = x.split("|"); player(n, pos).ev.push({ y: s.year, wk: m.wk, o: m.date, type: "drop", t, mgr: mgrAt(t, m.wk), lab: `Wk ${m.wk}`, txt: "Dropped" }); }
+    for (const x of m.add) { const [n, pos] = x.split("|"); player(n, pos).ev.push({ y: s.year, wk: m.wk, o: m.date + 1, type: "add", t, mgr: mgrAt(t, m.wk), lab: `Wk ${m.wk}`, txt: `Picked up off ${m.kind === "Waiver" ? "waivers" : "free agency"}${m.bid ? ` for $${m.bid}` : ""}` }); }
   }
   for (const tr of s.trades) for (const to in tr.got) {
     const t = s.byId[to], from = s.byId[tr.teams.find((x) => x !== +to)];
-    for (const x of tr.got[to]) { const [n, pos] = x.split("|"); player(n, pos).ev.push({ y: s.year, wk: tr.wk - 0.5, o: 0, type: "trade", t, mgr: t.mgr, from, lab: `Before wk ${tr.wk}`, txt: `Traded over from ${from.name} (${D.managers[from.mgr].first})` }); }
+    for (const x of tr.got[to]) { const [n, pos] = x.split("|"); player(n, pos).ev.push({ y: s.year, wk: tr.wk - 0.5, o: 0, type: "trade", t, mgr: mgrAt(t, tr.wk), from, lab: `Before wk ${tr.wk}`, txt: `Traded over from ${nameAt(from, tr.wk)} (${D.managers[mgrAt(from, tr.wk)].first})` }); }
   }
 }
 const sum = (a, f) => a.reduce((x, y) => x + f(y), 0);
@@ -456,8 +465,8 @@ function mgrStats(k) {
   const w = reg.filter((x) => x.won).length, t = reg.filter((x) => x.tie).length, l = reg.length - w - t;
   const pw = g.filter((x) => x.po && x.tier === "WINNERS_BRACKET" && x.won).length;
   const pl = g.filter((x) => x.po && x.tier === "WINNERS_BRACKET" && !x.won && !x.tie).length;
-  const seasons = D.seasons.filter((s) => s.teams.some((tm) => tm.mgr === k));
-  const titles = seasons.filter((s) => s.done && s.teams.find((tm) => tm.mgr === k).final === 1).map((s) => s.year);
+  const seasons = D.seasons.filter((s) => s.teams.some((tm) => tm.mgr === k || (tm.eras || []).some((e) => e.mgr === k)));
+  const titles = seasons.filter((s) => s.done && s.teams.some((tm) => tm.final === 1 && mgrAt(tm, 99) === k)).map((s) => s.year);
   const pf = reg.reduce((a, x) => a + x.pts, 0);
   const best = g.filter((x) => x.span === 1).sort((a, b) => b.pts - a.pts)[0];
   const worst = g.filter((x) => x.span === 1).sort((a, b) => a.pts - b.pts)[0];
@@ -466,9 +475,9 @@ function mgrStats(k) {
 }
 
 // ---------- Pieces ----------
-const badge = (t, sm) => `<span class="badge${sm ? " sm" : ""}" style="--h:${hue[t.mgr]}" aria-hidden="true">${esc((t.abbrev || D.managers[t.mgr].first).slice(0, 4))}</span>`;
-const mbadge = (k, sm) => `<span class="badge${sm ? " sm" : ""}" style="--h:${hue[k]}" aria-hidden="true">${esc(D.managers[k].first.slice(0, 2).toUpperCase())}</span>`;
-const teamCell = (t, sub) => `<button class="mlink team" data-go="mgr-${t.mgr}">${badge(t)}<span><b>${esc(t.name)}</b><small>${esc(sub ?? D.managers[t.mgr].name)}</small></span></button>`;
+const badge = (t, sm) => `<span class="badge${sm ? " sm" : ""}" style="--h:${hue[t.mgr]}${gray(t.mgr)}" aria-hidden="true">${esc((t.abbrev || D.managers[t.mgr].first).slice(0, 4))}</span>`;
+const mbadge = (k, sm) => `<span class="badge${sm ? " sm" : ""}" style="--h:${hue[k]}${gray(k)}" aria-hidden="true">${esc(D.managers[k].first.slice(0, 2).toUpperCase())}</span>`;
+const teamCell = (t, sub) => `<button class="mlink team" data-go="mgr-${t.mgr}">${badge(t)}<span><b>${esc(t.name)}</b><small>${esc(sub ?? (t.eras ? eraLine(t) : D.managers[t.mgr].name))}</small></span></button>`;
 const mgrName = (k) => esc(D.managers[k].name);
 const posTag = (p) => p ? `<span class="posdot" style="--pc:${posVar(p)}">${esc(p)}</span>` : "";
 const pn = (n) => P[slug(n)] ? `<button class="plink" data-go="p-${slug(n)}">${esc(n)}</button>` : esc(n);
@@ -638,7 +647,7 @@ function weekly(s) {
       if (m.win === null) return `<br><span class="odds">${m.live ? "Live win chance" : "Win chance"} <b>${winPct(p)}</b>${toGo(m, id)}</span>`;
       const upset = m.win === id && p < 0.35;
       return `<br><span class="odds">${upset ? `<span class="pill gold">Upset</span> ` : ""}Was ${winPct(p)} to win</span>`; };
-    const side = (id, p) => { const t = s.byId[id]; const lost = m.win !== null && m.win !== id && m.win !== 0; return `<div class="side${lost ? " lost" : ""}"><span class="team">${badge(t)}<span><b>${esc(t.name)}</b><small>${mgrName(t.mgr)} · ${recLabel(id)}${winLabel(id)}</small></span></span><span class="pts">${f2(p)}</span></div>`; };
+    const side = (id, p) => { const t = s.byId[id]; const lost = m.win !== null && m.win !== id && m.win !== 0; return `<div class="side${lost ? " lost" : ""}"><span class="team">${badge(t)}<span><b>${esc(nameAt(t, m.wk))}</b><small>${mgrName(mgrAt(t, m.wk))} · ${recLabel(id)}${winLabel(id)}</small></span></span><span class="pts">${f2(p)}</span></div>`; };
     const margin = Math.abs(m.hp - m.ap);
     return `<div class="box game${open ? " open" : ""}"><button data-open="${key}" aria-expanded="${open}">${side(m.h, m.hp)}${side(m.a, m.ap)}
       <div class="gmeta"><span>${m.live ? `<span class="pill live">● Live</span>` : tierName[m.tier] ? `<span class="pill gold">${tierName[m.tier]}</span>` : m.win !== null ? `Margin ${f2(margin)}` : ""}</span><span>${open ? "Hide lineups ▲" : "Show lineups ▼"}</span></div></button>
@@ -807,14 +816,14 @@ function trophies() {
     return `<button class="box bowl" data-go="${y}" style="text-align:left;cursor:pointer"><div class="rn">${roman(n)}</div><div class="yr2">${y}</div>
       <dl><dt>Champion</dt><dd>${esc(c.name)} · ${mgrName(c.mgr)}</dd>${ru ? `<dt>Runner-up</dt><dd>${esc(ru.name)}</dd>` : ""}${last ? `<dt>Last place</dt><dd>${esc(last.name)}</dd>` : ""}</dl></button>`;
   }).join("");
-  const champs = mgrKeys.map((k) => [k, mgrStats(k).titles.length]).filter((x) => x[1]).sort((a, b) => b[1] - a[1]);
+  const champs = PEOPLE.map((k) => [k, mgrStats(k).titles.length]).filter((x) => x[1]).sort((a, b) => b[1] - a[1]);
   return `<div class="vhead"><div><div class="eyebrow">Trophy room</div><h2>The Buckaroo Bowls</h2><p>Every championship since the league started in ${D.firstYear}.</p></div></div>
     <div class="bowls">${cards}</div>
     <section><h3>Rings by manager</h3>${champs.length ? `<div class="box scroll"><table><tbody>${champs.map(([k, n]) => `<tr><td><button class="mlink team" data-go="mgr-${k}">${mbadge(k)}<b>${mgrName(k)}</b></button></td><td class="n rings">${"🏆".repeat(n)}</td></tr>`).join("")}</tbody></table></div>` : `<p class="muted">No completed seasons loaded yet. Champions show up here as past seasons are added.</p>`}</section>`;
 }
 
 function managers() {
-  const rows = mgrKeys.map((k) => ({ k, ...mgrStats(k) })).sort((a, b) => b.titles.length - a.titles.length || (b.w / (b.w + b.l || 1)) - (a.w / (a.w + a.l || 1)));
+  const rows = PEOPLE.map((k) => ({ k, ...mgrStats(k) })).sort((a, b) => b.titles.length - a.titles.length || (b.w / (b.w + b.l || 1)) - (a.w / (a.w + a.l || 1)));
   return `<div class="vhead"><div><div class="eyebrow">All-time</div><h2>Managers</h2><p>Career regular-season numbers across every loaded season.</p></div></div>
   <div class="mgrs">${rows.map((r) => `<button class="box mgr" data-go="mgr-${r.k}"><div class="top">${mbadge(r.k)}<span><b>${mgrName(r.k)}</b><small class="muted">${r.seasons.length} season${r.seasons.length === 1 ? "" : "s"} · now “${esc(r.seasons[r.seasons.length - 1].teams.find((t) => t.mgr === r.k).name)}”</small></span></div>
     <div class="nums"><div>Record<b>${r.w}-${r.l}${r.t ? "-" + r.t : ""}</b></div><div>Win %<b>${pct(r.w, r.l, r.t)}</b></div><div>Pts/gm<b>${f1(r.ppg)}</b></div></div>
@@ -823,7 +832,9 @@ function managers() {
 
 function mgrView() {
   const k = state.mgr, r = mgrStats(k);
-  const seasonRows = r.seasons.map((s) => { const t = s.teams.find((x) => x.mgr === k); const rank = s.standings.indexOf(t) + 1;
+  const seasonRows = r.seasons.map((s) => { const t = s.teams.find((x) => x.mgr === k || (x.eras || []).some((e) => e.mgr === k)); const rank = s.standings.indexOf(t) + 1;
+    if (t.eras) { const mine = t.eras.filter((e) => e.mgr === k), rg = r.g.filter((x) => x.year === s.year && !x.po), w = rg.filter((x) => x.won).length, l = rg.length - w, left = t.eras[t.eras.length - 1].mgr !== k;
+      return `<tr><td><button class="mlink" data-go="${s.year}"><b>${s.year}</b></button></td><td>${badge(t, 1)} ${mine.map((e) => esc(e.name)).join(" / ")}</td><td class="n">${w}-${l}</td><td class="n">${f2(sum(rg, (x) => x.pts))}</td><td class="n">${f2(sum(rg, (x) => x.oppPts))}</td><td>${left ? `<span class="pill">Left after wk ${t.eras[t.eras.indexOf(mine[mine.length - 1]) + 1].from - 1}</span>` : s.done ? ord(t.final) : ""}</td></tr>`; }
     return `<tr><td><button class="mlink" data-go="${s.year}"><b>${s.year}</b></button></td><td>${badge(t, 1)} ${esc(t.name)}</td><td class="n">${t.w}-${t.l}${t.t ? "-" + t.t : ""}</td><td class="n">${f2(t.pf)}</td><td class="n">${f2(t.pa)}</td><td>${s.done ? (t.final === 1 ? `<span class="pill gold">🏆 Champion</span>` : ord(t.final)) : `<span class="pill live">${ord(rank)} now</span>`}</td></tr>`; }).join("");
   const opps = mgrKeys.filter((o) => o !== k).map((o) => { const g = r.g.filter((x) => x.oppMgr === o); const w = g.filter((x) => x.won).length, t = g.filter((x) => x.tie).length; return { o, w, l: g.length - w - t, t, pf: g.reduce((a, x) => a + x.pts, 0), pa: g.reduce((a, x) => a + x.oppPts, 0), n: g.length }; }).sort((a, b) => (b.w - b.l) - (a.w - a.l));
   const gameLine = (x) => x ? `<b class="num">${f2(x.pts)}</b> <span class="muted">· ${x.year} wk ${x.wk} vs ${esc(x.opp.name)} (${x.won ? "W" : "L"})</span>` : "—";
@@ -849,7 +860,7 @@ function mgrView() {
 }
 
 function h2h() {
-  const ks = [...mgrKeys].sort((a, b) => D.managers[a].first.localeCompare(D.managers[b].first));
+  const ks = [...PEOPLE].sort((a, b) => D.managers[a].first.localeCompare(D.managers[b].first));
   const rec = (a, b) => { const g = games.filter((x) => x.mgr === a && x.oppMgr === b); const w = g.filter((x) => x.won).length, t = g.filter((x) => x.tie).length; return [w, g.length - w - t, t, g.length]; };
   return `<div class="vhead"><div><div class="eyebrow">All-time</div><h2>Head to head</h2><p>Read across: each row manager's record against each column manager. Playoff games included.</p></div></div>
   <div class="box scroll"><table class="h2h"><thead><tr><th></th>${ks.map((k) => `<th class="n" style="text-align:center">${mbadge(k, 1)}<br>${esc(D.managers[k].first)}</th>`).join("")}<th class="n">Total</th></tr></thead><tbody>
@@ -861,14 +872,14 @@ function h2h() {
 // Win and losing streaks per manager, carried across seasons, playoffs included
 function streaks() {
   const out = [];
-  for (const k of mgrKeys) {
+  for (const k of PEOPLE) {
     const g = games.filter((x) => x.mgr === k).sort((a, b) => a.year - b.year || a.wk - b.wk);
     let run = null;
     const close = (active) => { if (run && run.len >= 3) out.push({ ...run, active }); };
     g.forEach((x, i) => {
       const r = x.won ? "W" : x.tie ? "T" : "L";
-      if (run && run.r === r) { run.len++; run.to = x; run.teams.add(x.tm.name); }
-      else { close(false); run = r === "T" ? null : { mgr: k, r, len: 1, from: x, to: x, teams: new Set([x.tm.name]) }; }
+      if (run && run.r === r) { run.len++; run.to = x; run.teams.add(x.nm); }
+      else { close(false); run = r === "T" ? null : { mgr: k, r, len: 1, from: x, to: x, teams: new Set([x.nm]) }; }
       if (i === g.length - 1) close(true);
     });
   }
@@ -878,9 +889,9 @@ function streaks() {
 function records() {
   const all = games.filter((x) => x.span === 1); // two-week playoff rounds would swamp single-week records
   const top = (arr, f, n = 25) => [...arr].sort(f).slice(0, n);
-  const ctx = (x) => `${x.year} wk ${x.wk} vs ${esc(x.opp.name)}`;
-  const tn = (x) => `${esc(x.tm.name)} <span class="muted">(${esc(D.managers[x.mgr].first)})</span>`;
-  const tmn = (t) => `${esc(t.name)} <span class="muted">(${esc(D.managers[t.mgr].first)})</span>`;
+  const ctx = (x) => `${x.year} wk ${x.wk} vs ${esc(x.oppNm)}`;
+  const tn = (x) => `${esc(x.nm)} <span class="muted">(${esc(D.managers[x.mgr].first)})</span>`;
+  const tmn = (t) => `${esc(t.name)} <span class="muted">(${t.eras ? t.eras.map((e) => esc(D.managers[e.mgr].first)).join(" / ") : esc(D.managers[t.mgr].first)})</span>`;
   const wins = all.filter((x) => x.won);
   const seasonsT = D.seasons.flatMap((s) => s.teams.map((t) => ({ s, t })));
   const gp = (t) => t.w + t.l + t.t;
@@ -913,7 +924,7 @@ function records() {
     board("Longest losing streak", top(st.filter((x) => x.r === "L"), byLen), (x) => `${x.len} L`, stWho, when, "Streaks carry over between seasons. Only streaks of 3+ are listed."),
   ])}
   ${group("Single games", [
-    board("Biggest upset", top(upsets, (a, b) => a.p - b.p), (x) => winPct(x.p), (x) => `${esc(x.w.name)} <span class="muted">(${esc(D.managers[x.w.mgr].first)})</span> over ${esc(x.l.name)}`, (x) => `${f2(x.ws)}–${f2(x.ls)} · ${x.s.year} ${x.m.wk > x.s.regWeeks ? "playoffs" : "wk " + x.m.wk}`, "Ranked by the winner's chance to win going into the game."),
+    board("Biggest upset", top(upsets, (a, b) => a.p - b.p), (x) => winPct(x.p), (x) => `${esc(nameAt(x.w, x.m.wk))} <span class="muted">(${esc(D.managers[mgrAt(x.w, x.m.wk)].first)})</span> over ${esc(nameAt(x.l, x.m.wk))}`, (x) => `${f2(x.ws)}–${f2(x.ls)} · ${x.s.year} ${x.m.wk > x.s.regWeeks ? "playoffs" : "wk " + x.m.wk}`, "Ranked by the winner's chance to win going into the game."),
     board("Most points in a week", top(all, (a, b) => b.pts - a.pts), (x) => f2(x.pts), tn, ctx),
     board("Fewest points in a week", top(all, (a, b) => a.pts - b.pts), (x) => f2(x.pts), tn, ctx),
     board("Biggest blowout", top(wins, (a, b) => (b.pts - b.oppPts) - (a.pts - a.oppPts)), (x) => "+" + f2(x.pts - x.oppPts), tn, (x) => `${f2(x.pts)}–${f2(x.oppPts)} · ${ctx(x)}`),
@@ -946,7 +957,7 @@ function playersView() {
     board("Most traveled", by((p) => p.mgrs.length * 1000 + p.wks), (p) => p.mgrs.length, pWho, (p) => `Rostered by ${firsts(p.mgrs)}`),
     board("Waiver-wire yo-yo", by((p) => p.adds + p.drops), (p) => p.adds + p.drops, pWho, (p) => `${p.adds} pickups, ${p.drops} drops`),
   ].join("");
-  const favs = mgrKeys.map((k) => { const mp = mgrPlayers(k); if (!mp.length) return "";
+  const favs = PEOPLE.map((k) => { const mp = mgrPlayers(k); if (!mp.length) return "";
     const fav = [...mp].sort((a, b) => b.wks - a.wks || b.ptsS - a.ptsS)[0], reg = [...mp].sort((a, b) => b.ptsB - a.ptsB)[0], mvp = [...mp].sort((a, b) => b.ptsS - a.ptsS)[0];
     return `<tr><td><button class="mlink team" data-go="mgr-${k}" style="min-width:0">${mbadge(k, 1)}<b>${mgrName(k)}</b></button></td>
       <td>${pWho(fav.p)} <span class="muted num">${fav.wks} wks</span></td><td>${pWho(mvp.p)} <span class="muted num">${f1(mvp.ptsS)}</span></td><td>${pWho(reg.p)} <span class="muted num">${f1(reg.ptsB)}</span></td></tr>`; }).join("");

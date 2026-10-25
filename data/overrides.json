@@ -2,11 +2,18 @@
   "managers": {
     "emily": { "key": "ramon", "name": "Ramon", "first": "Ramon" }
   },
+  "extraManagers": {
+    "nomanager": { "key": "nomanager", "name": "No manager", "first": "No manager" }
+  },
   "teams": {
     "2025": {
       "3": {
         "mgr": "ramon",
-        "note": "Ramon was removed from the league for inactivity after his week 9 game against Alan, which Ramon's Remains won 94.76–92.02. The team played out the season without a manager."
+        "eras": [
+          { "from": 1, "mgr": "ramon", "name": "Araleasers" },
+          { "from": 9, "mgr": "nomanager", "name": "Ramon's Remains" }
+        ],
+        "note": "Ramon ran Araleasers through week 8, then was removed from the league for inactivity. The team was renamed Ramon's Remains and played out the season without a manager, starting with a 94.76–92.02 win over Alan in week 9. Games from week 9 on don't count toward Ramon's record."
       }
     }
   }
