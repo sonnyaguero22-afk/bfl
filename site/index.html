@@ -431,8 +431,14 @@ function parseHash() {
   else if ((m = h.match(/^mgr-(\w+)$/)) && D.managers[m[1]]) { state.view = "mgr"; state.mgr = m[1]; }
   else if ((m = h.match(/^p-([a-z0-9-]+)$/)) && P[m[1]]) { state.view = "player"; state.pk = m[1]; }
   else if (["trophies", "managers", "players", "overrated", "transactions", "h2h", "records"].includes(h)) state.view = h;
+  else state.view = "trophies"; // no or unknown hash: the home page
 }
-function go(token) { history.replaceState(null, "", "#" + token); parseHash(); render(); window.scrollTo({ top: 0 }); }
+// Each page gets its own history entry so the browser's back button returns to it,
+// at the same scroll position you left it
+function go(token) {
+  try { history.replaceState({ scroll: window.scrollY }, "", location.hash || "#"); history.pushState({ scroll: 0 }, "", "#" + token); } catch (e) {}
+  parseHash(); render(); window.scrollTo({ top: 0 });
+}
 document.addEventListener("click", (e) => { const b = e.target.closest("[data-go]"); if (b) { e.preventDefault(); go(b.dataset.go); } });
 
 // ---------- Chrome ----------
@@ -940,7 +946,9 @@ $("#app").addEventListener("input", (e) => {
   if (e.target.id === "pq") { state.pq = e.target.value; $("#plist").innerHTML = playerRows(); }
   if (e.target.id === "txq") { state.txq = e.target.value; $("#txlist").innerHTML = txRows(); }
 });
-window.addEventListener("hashchange", () => { parseHash(); render(); });
+window.addEventListener("popstate", (e) => { parseHash(); render(); window.scrollTo({ top: (e.state && e.state.scroll) || 0 }); });
+// A hash typed or pasted by hand (no history state of ours)
+window.addEventListener("hashchange", () => { if (!history.state) { parseHash(); render(); } });
 parseHash(); render();
 })();
 </script>
