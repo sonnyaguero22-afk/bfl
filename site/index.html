@@ -457,6 +457,25 @@ for (const p of PL) {
   p.years = [...new Set([...p.ev.map((e) => e.y), ...p.weeks.map((w) => w.y)])].sort();
 }
 // Per-manager view of a player
+// Best pickups: players nobody drafted that season, picked up later, scored for the team that
+// grabbed them. One row per player, team and season; only starts after the pickup count.
+const PICKUP_MIN_STARTS = 3;
+const PICKUPS = [];
+for (const p of PL) {
+  const seen = new Set();
+  for (const e of p.ev) {
+    if (e.type !== "add" || p.ev.some((d) => d.type === "draft" && d.y === e.y)) continue;
+    const key = e.y + "|" + e.t.id;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const st = p.weeks.filter((w) => w.y === e.y && w.t.id === e.t.id && w.wk >= e.wk && w.start && w.fin);
+    if (st.length < PICKUP_MIN_STARTS) continue;
+    const pts = sum(st, (w) => w.pts), best = [...st].sort((a, b) => b.pts - a.pts)[0];
+    PICKUPS.push({ p, y: e.y, wk: e.wk, t: e.t, mgr: e.mgr, starts: st.length, pts, ppg: pts / st.length, best });
+  }
+}
+const pickupWho = (x) => `${posTag(x.p.pos)}${pn(x.p.n)}`;
+const pickupSub = (x) => `Picked up by ${esc(x.t.name)} (${esc(D.managers[x.mgr].first)}) · ${x.y} wk ${x.wk} · ${x.starts} starts`;
 const mgrPlayers = (k) => PL.map((p) => { const ws = p.weeks.filter((w) => w.mgr === k); return { p, wks: ws.length, starts: ws.filter((w) => w.start).length, ptsS: sum(ws.filter((w) => w.start), (w) => w.pts), ptsB: sum(ws.filter((w) => w.slot === "BN"), (w) => w.pts), years: [...new Set(ws.map((w) => w.y))] }; }).filter((x) => x.wks);
 
 function mgrStats(k) {
@@ -693,7 +712,9 @@ function moves(s) {
   const opts = `<option value="all">All teams</option>` + s.teams.map((t) => `<option value="${t.id}"${String(f) === String(t.id) ? " selected" : ""}>${esc(t.name)}</option>`).join("");
   const counts = Object.fromEntries(s.teams.map((t) => [t.id, s.moves.filter((m) => m.tm === t.id).length]));
   const most = [...s.teams].sort((a, b) => counts[b.id] - counts[a.id])[0];
-  return `<div class="filters"><label for="moveTeam" class="muted">Team</label><select id="moveTeam">${opts}</select><span class="note" style="margin:0">${list.length} moves · busiest: ${esc(most.name)} (${counts[most.id]})</span></div>
+  const seasonPicks = PICKUPS.filter((x) => x.y === s.year).sort((a, b) => b.pts - a.pts).slice(0, 10);
+  const picksBoard = seasonPicks.length ? `<section style="margin:0 0 24px"><div class="recs">${board(`Best pickups of ${s.year}`, seasonPicks, (x) => f1(x.pts), pickupWho, pickupSub, `Undrafted players, points in their starts after the pickup (${PICKUP_MIN_STARTS}+ starts).`)}</div></section>` : "";
+  return picksBoard + `<div class="filters"><label for="moveTeam" class="muted">Team</label><select id="moveTeam">${opts}</select><span class="note" style="margin:0">${list.length} moves · busiest: ${esc(most.name)} (${counts[most.id]})</span></div>
   <div class="box scroll"><table><thead><tr><th class="n">Wk</th><th>Team</th><th>Added</th><th>Dropped</th><th>Type</th></tr></thead><tbody>
   ${list.map((m) => `<tr><td class="n">${m.wk}</td><td>${teamCell(s.byId[m.tm])}</td>
     <td>${addList(m.add)}</td><td>${dropList(m.drop)}</td>
@@ -935,6 +956,8 @@ function records() {
   ])}
   ${group("Players", [
     board("Most points by a player in a week", top(perf, (a, b) => b.p.pts - a.p.pts), (x) => f1(x.p.pts), (x) => `${posTag(x.p.pos)}${pn(x.p.n)}`, (x) => `Started by ${esc(x.t.name)} · ${x.s.year} wk ${x.wk}`),
+    board("Best pickups", [...PICKUPS].sort((a, b) => b.pts - a.pts).slice(0, 25), (x) => f1(x.pts), pickupWho, pickupSub, `Undrafted players, counting only their starts for the team that picked them up (${PICKUP_MIN_STARTS}+ starts).`),
+    board("Best pickups, points per start", [...PICKUPS].sort((a, b) => b.ppg - a.ppg).slice(0, 25), (x) => f1(x.ppg), pickupWho, pickupSub, `Same rules: undrafted, ${PICKUP_MIN_STARTS}+ starts after the pickup.`),
     board("Most points left on the bench", top(bench, (a, b) => b.p - a.p), (x) => f1(x.p), (x) => tmn(x.t), (x) => `${x.s.year} wk ${x.wk}`),
   ])}
   ${group("Seasons", [
@@ -1056,6 +1079,7 @@ const placesOf = (y, k) => { const v = LOC && LOC.seasons[y] && LOC.seasons[y][k
 const placeLabel = (pk) => { const p = LOC.places[pk]; return `${esc(p.name)}${p.detail ? ` <span class="muted">· ${esc(p.detail)}</span>` : ""}`; };
 const miles = (a, b) => { const r = (x) => (x * Math.PI) / 180; const h = Math.sin(r(b.lat - a.lat) / 2) ** 2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(r(b.lon - a.lon) / 2) ** 2; return 2 * 3958.8 * Math.asin(Math.sqrt(h)); };
 // Draw far-east places west of the US so routes cross the Pacific, not Europe
+const mapped = (pk) => LOC.places[pk].lat != null; // e.g. "Boot camp" is listed but never pinned
 const ll = (pk) => { const p = LOC.places[pk]; return [p.lat, p.lon > 60 ? p.lon - 360 : p.lon]; };
 const mgrColor = (k) => `hsl(${hue[k]} 62% 60%)`;
 const fmtMi = (n) => Math.round(n).toLocaleString() + " mi";
@@ -1082,6 +1106,7 @@ function mapView() {
     let far = null;
     for (let i = 0; i < who.length; i++) for (let j = i + 1; j < who.length; j++) {
       const a = placesOf(sel, who[i]).slice(-1)[0], b = placesOf(sel, who[j]).slice(-1)[0];
+      if (!mapped(a) || !mapped(b)) continue;
       const d = miles(LOC.places[a], LOC.places[b]);
       if (!far || d > far.d) far = { d, a: who[i], b: who[j] };
     }
@@ -1090,9 +1115,9 @@ function mapView() {
       <div class="box stat"><div class="k">Farthest apart</div><div class="v num">${far ? fmtMi(far.d) : "—"}</div><div class="s">${far ? `${esc(D.managers[far.a].first)} and ${esc(D.managers[far.b].first)}` : ""}</div></div>
       <div class="box stat"><div class="k">Spread across</div><div class="v num">${groups.length} places</div><div class="s">${who.length} managers in ${sel}</div></div></div>`;
     side = groups.map(([pk, list]) => `<div class="box rec"><div class="k">${placeLabel(pk)}</div>
-      <div class="maprows">${list.map((x) => `<button class="mlink team" data-go="mgr-${x.k}" style="min-width:0">${mbadge(x.k, 1)}<span><b>${mgrName(x.k)}</b>${x.from ? `<small>Started the season in ${x.from.map((f) => esc(LOC.places[f].name)).join(", ")}</small>` : ""}</span></button>`).join("")}</div></div>`).join("");
+      <div class="maprows">${list.map((x) => `<button class="mlink team" data-go="mgr-${x.k}" style="min-width:0">${mbadge(x.k, 1)}<span><b>${mgrName(x.k)}</b>${x.from ? `<small>Earlier this season: ${x.from.map((f) => esc(LOC.places[f].name)).join(", ")}</small>` : ""}</span></button>`).join("")}</div></div>`).join("");
   } else {
-    const rows = mgrKeys.map((k) => { const j = journey(k); let d = 0; for (let i = 1; i < j.length; i++) d += miles(LOC.places[j[i - 1].pk], LOC.places[j[i].pk]); return { k, j, d }; }).filter((x) => x.j.length);
+    const rows = PEOPLE.map((k) => { const j = journey(k), jm = j.filter((s) => mapped(s.pk)); let d = 0; for (let i = 1; i < jm.length; i++) d += miles(LOC.places[jm[i - 1].pk], LOC.places[jm[i].pk]); return { k, j, d }; }).filter((x) => x.j.length);
     const most = [...rows].sort((a, b) => b.d - a.d)[0], stay = rows.filter((x) => x.j.length === 1);
     strip = `<div class="strip">
       <div class="box stat"><div class="k">Most miles moved</div><div class="v num">${fmtMi(most.d)}</div><div class="s">${esc(D.managers[most.k].first)} · ${most.j.length - 1} moves</div></div>
@@ -1121,8 +1146,9 @@ function initMap() {
     const y = state.mapYear, at = {};
     for (const k of Object.keys(LOC.seasons[y]).filter((k) => D.managers[k])) {
       const ps = placesOf(y, k);
-      ps.forEach((pk, i) => (at[pk] = at[pk] || []).push({ k, past: i < ps.length - 1 }));
-      for (let i = 1; i < ps.length; i++) L.polyline([ll(ps[i - 1]), ll(ps[i])], { color: mgrColor(k), weight: 2, dashArray: "6 6", opacity: 0.8 }).addTo(mapObj);
+      ps.forEach((pk, i) => { if (mapped(pk)) (at[pk] = at[pk] || []).push({ k, past: i < ps.length - 1 }); });
+      const pm = ps.filter(mapped);
+      for (let i = 1; i < pm.length; i++) L.polyline([ll(pm[i - 1]), ll(pm[i])], { color: mgrColor(k), weight: 2, dashArray: "6 6", opacity: 0.8 }).addTo(mapObj);
     }
     for (const pk in at) {
       const html = at[pk].map((x) => `<span class="${x.past ? "was" : ""}">${mbadge(x.k)}</span>`).join("");
@@ -1133,7 +1159,7 @@ function initMap() {
   } else {
     const last = {};
     for (const k of mgrKeys) {
-      const j = journey(k);
+      const j = journey(k).filter((x) => mapped(x.pk));
       if (!j.length) continue;
       if (j.length > 1) L.polyline(j.map((s) => ll(s.pk)), { color: mgrColor(k), weight: 3, opacity: 0.85 }).addTo(mapObj);
       for (const s of j.slice(0, -1)) L.circleMarker(ll(s.pk), { radius: 4, color: mgrColor(k), fillColor: mgrColor(k), fillOpacity: 1, weight: 0 }).addTo(mapObj).bindPopup(`${mgrName(k)}: ${placeLabel(s.pk)} (${s.years.join(", ")})`);
