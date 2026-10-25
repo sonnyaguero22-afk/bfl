@@ -627,16 +627,16 @@ function weekly(s) {
   const ms = s.matchups.filter((m) => m.wk === wk);
   // Record as it stood after this week's game (or going into it, if it's still live)
   const recNow = Object.fromEntries(asOf(s, wk).rows.map((x) => [x.t.id, x]));
-  // Title odds going into this game and after it
-  const oddsAt = (id, N) => { const i = s.odds ? s.odds.weeks.indexOf(N) : -1; return i >= 0 ? s.odds.t[id].c[i] : null; };
-  const oddsLabel = (id) => { const b = oddsAt(id, wk - 1), a = oddsAt(id, wk); if (b == null) return ""; const d = a == null ? 0 : a - b;
-    return `<br><span class="odds">Title odds ${pct1(b)}${a == null ? "" : ` → <span class="${d > 0.5 ? "w" : d < -0.5 ? "l" : ""}">${pct1(a)}</span>`}</span>`; };
   const recLabel = (id) => { const x = recNow[id]; const po = wk > s.regWeeks;
     return `${recStr(x)}${po ? " reg. season" : ms.some((m) => m.live) ? " going in" : ""}${!po && x.streak ? ` · <span class="${x.streak[0] === "W" ? "w" : x.streak[0] === "L" ? "l" : ""}">${x.streak}</span>` : ""}`; };
   const tierName = { WINNERS_BRACKET: "Playoffs", LOSERS_CONSOLATION_LADDER: "Consolation", WINNERS_CONSOLATION_LADDER: "Consolation" };
   const cards = ms.map((m, i) => {
     const key = `${wk}-${m.h}`, open = state.open === key;
-    const side = (id, p) => { const t = s.byId[id]; const lost = m.win !== null && m.win !== id && m.win !== 0; return `<div class="side${lost ? " lost" : ""}"><span class="team">${badge(t)}<span><b>${esc(t.name)}</b><small>${mgrName(t.mgr)} · ${recLabel(id)}${oddsLabel(id)}</small></span></span><span class="pts">${f2(p)}</span></div>`; };
+    const winLabel = (id) => { const p = teamWin(s, m, id); if (p == null) return "";
+      if (m.win === null) return `<br><span class="odds">${m.live ? "Live win chance" : "Win chance"} <b>${winPct(p)}</b></span>`;
+      const upset = m.win === id && p < 0.35;
+      return `<br><span class="odds">${upset ? `<span class="pill gold">Upset</span> ` : ""}Was ${winPct(p)} to win</span>`; };
+    const side = (id, p) => { const t = s.byId[id]; const lost = m.win !== null && m.win !== id && m.win !== 0; return `<div class="side${lost ? " lost" : ""}"><span class="team">${badge(t)}<span><b>${esc(t.name)}</b><small>${mgrName(t.mgr)} · ${recLabel(id)}${winLabel(id)}</small></span></span><span class="pts">${f2(p)}</span></div>`; };
     const margin = Math.abs(m.hp - m.ap);
     return `<div class="box game${open ? " open" : ""}"><button data-open="${key}" aria-expanded="${open}">${side(m.h, m.hp)}${side(m.a, m.ap)}
       <div class="gmeta"><span>${m.live ? `<span class="pill live">● Live</span>` : tierName[m.tier] ? `<span class="pill gold">${tierName[m.tier]}</span>` : m.win !== null ? `Margin ${f2(margin)}` : ""}</span><span>${open ? "Hide lineups ▲" : "Show lineups ▼"}</span></div></button>
@@ -715,6 +715,27 @@ function rosters(s) {
 const ODDS_METRIC = { c: "Win the Bowl", p: "Make playoffs", l: "Finish last" };
 const wkLabel = (s, N) => (N === 0 ? "Draft" : N <= s.regWeeks ? `Wk ${N}` : N === s.regWeeks + 1 && s.playoffTeams > 2 ? "Semis" : "Final");
 const pct1 = (v) => (v >= 99.95 ? "100%" : v > 0 && v < 0.5 ? "<1%" : `${Math.round(v)}%`);
+// ---------- Game win chances ----------
+const erf = (x) => { const t = 1 / (1 + 0.3275911 * Math.abs(x)); const y = 1 - ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x); return x >= 0 ? y : -y; };
+const Phi = (z) => 0.5 * (1 + erf(z / Math.SQRT2));
+// Chance the home team wins (0-1). Live games use ESPN's live projected finals, with less
+// uncertainty the less there is left to play; otherwise team strength going into the week.
+function winProb(s, m) {
+  if (!s.odds || !m.a) return null;
+  const sd = s.odds.sd || 20;
+  if (m.live && m.hproj != null) {
+    const full = m.hproj + m.aproj, left = Math.max(0, m.hproj - m.hp) + Math.max(0, m.aproj - m.ap);
+    const spread = sd * Math.SQRT2 * Math.sqrt(full > 0 ? Math.min(1, left / full) : 0), diff = m.hproj - m.aproj;
+    return spread < 0.01 ? (diff > 0 ? 1 : diff < 0 ? 0 : 0.5) : Phi(diff / spread);
+  }
+  let i = -1;
+  s.odds.weeks.forEach((N, j) => { if (N <= m.wk - 1) i = j; });
+  if (i < 0) return null;
+  const len = s.spans(m.wk).length, mh = s.odds.t[m.h].str[i], ma = s.odds.t[m.a].str[i];
+  return Phi(((mh - ma) * len) / (sd * Math.sqrt(2 * len)));
+}
+const winPct = (p) => (p >= 0.995 ? ">99%" : p <= 0.005 ? "<1%" : `${Math.round(p * 100)}%`);
+const teamWin = (s, m, id) => { const p = winProb(s, m); return p == null ? null : id === m.h ? p : 1 - p; };
 // What happened to a team between checkpoints N-1 and N
 function oddsReason(s, id, N) {
   const bits = [];
@@ -1153,7 +1174,7 @@ function home() {
 
   // Scoreboard
   const sbSide = (m, id, p) => { const t = s.byId[id], lost = m.win !== null && m.win !== id && m.win !== 0, lead = m.live && p > (id === m.h ? m.ap : m.hp);
-    return `<div class="sbrow${lost ? " lost" : ""}">${badge(t, 1)}<span class="sbname">${esc(t.name)}<small>${rec[id] ? recStr(rec[id]) : ""}${odd(id) != null ? ` · ${pct1(odd(id))} title` : ""}</small></span><span class="sbpts${lead ? " lead" : ""}">${f1(p)}</span></div>`; };
+    return `<div class="sbrow${lost ? " lost" : ""}">${badge(t, 1)}<span class="sbname">${esc(t.name)}<small>${rec[id] ? recStr(rec[id]) : ""}${m.win === null && teamWin(s, m, id) != null ? ` · ${winPct(teamWin(s, m, id))} to win` : ""}</small></span><span class="sbpts${lead ? " lead" : ""}">${f1(p)}</span></div>`; };
   const scoreCards = games.map((m) => `<button class="box sbgame" data-goweek="${s.year}|${wk}"><div class="sbtop"><span>${m.live ? `<span class="pill live">● Live</span>` : m.win !== null ? `<span class="pill">Final</span>` : `<span class="pill">Upcoming</span>`}</span><span class="muted">${m.tier && m.tier !== "NONE" ? (m.tier === "WINNERS_BRACKET" ? "Playoffs" : "Consolation") : ""}</span></div>${sbSide(m, m.h, m.hp)}${sbSide(m, m.a, m.ap)}</button>`).join("");
 
   // Standings snapshot with odds

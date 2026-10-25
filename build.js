@@ -174,6 +174,8 @@ for (const year of years) {
       m.live = true;
       m.hp = r2(s.home.totalPointsLive || 0);
       m.ap = r2(s.away.totalPointsLive || 0);
+      // ESPN's live projected final (points so far plus what's left), for live win chances
+      if (s.home.totalProjectedPoints != null) { m.hproj = r2(s.home.totalProjectedPoints); m.aproj = r2(s.away.totalProjectedPoints); }
     }
   }
 
