@@ -12,6 +12,10 @@ const SLOT = { 0: "QB", 2: "RB", 4: "WR", 6: "TE", 16: "D/ST", 17: "K", 20: "BN"
 const POS = { 1: "QB", 2: "RB", 3: "WR", 4: "TE", 5: "K", 16: "D/ST" };
 const PRO = { 0: "FA", 1: "ATL", 2: "BUF", 3: "CHI", 4: "CIN", 5: "CLE", 6: "DAL", 7: "DEN", 8: "DET", 9: "GB", 10: "TEN", 11: "IND", 12: "KC", 13: "LV", 14: "LAR", 15: "MIA", 16: "MIN", 17: "NE", 18: "NO", 19: "NYG", 20: "NYJ", 21: "PHI", 22: "ARI", 23: "PIT", 24: "LAC", 25: "SF", 26: "SEA", 27: "TB", 28: "WSH", 29: "CAR", 30: "JAX", 33: "BAL", 34: "HOU" };
 const r2 = (n) => Math.round(n * 100) / 100;
+// Normal distribution helper for live win chances
+const erf = (x) => { const t = 1 / (1 + 0.3275911 * Math.abs(x)); const y = 1 - ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x); return x >= 0 ? y : -y; };
+const Phi = (z) => 0.5 * (1 + erf(z / Math.SQRT2));
+const HISTORY = path.join(__dirname, "history");
 
 // Stable short key per manager (so we never publish ESPN account IDs)
 const managerKeys = {};
@@ -213,6 +217,28 @@ for (const year of years) {
     }
   }
 
+  // In-game win chance history: GitHub saves one point per update while a game is on
+  // (history/live_<year>.json, kept in the repo). Local builds only read it.
+  const histFile = path.join(HISTORY, `live_${year}.json`);
+  const wp = fs.existsSync(histFile) ? JSON.parse(fs.readFileSync(histFile, "utf8")) : {};
+  if (process.env.GITHUB_ACTIONS === "true") {
+    let changed = false;
+    const now = Date.now();
+    for (const m of matchups) {
+      const key = `${m.wk}-${m.h}-${m.a}`, pts = wp[key];
+      if (m.live && m.hproj != null) {
+        const spread = Math.sqrt((m.hvar || 0) + (m.avar || 0)), diff = m.hproj - m.aproj;
+        const p = spread < 0.01 ? (diff > 0 ? 1 : diff < 0 ? 0 : 0.5) : Phi(diff / spread);
+        (wp[key] = wp[key] || []).push([now, Math.round(p * 1000) / 1000, m.hp, m.ap]);
+        changed = true;
+      } else if (pts && m.win !== null && !m.live) {
+        const fin = m.win === m.h ? 1 : m.win === m.a ? 0 : 0.5;
+        if (pts[pts.length - 1][1] !== fin || pts[pts.length - 1][2] !== m.hp) { pts.push([now, fin, m.hp, m.ap]); changed = true; }
+      }
+    }
+    if (changed) { fs.mkdirSync(HISTORY, { recursive: true }); fs.writeFileSync(histFile, JSON.stringify(wp)); }
+  }
+
   // Current rosters
   const rosters = {};
   for (const t of L.teams) {
@@ -224,7 +250,7 @@ for (const year of years) {
 
   seasons.push({
     year: +year, name: L.settings.name, done, curWeek: L.status.currentMatchupPeriod, regWeeks,
-    playoffTeams: ss.playoffTeamCount, periods: ss.matchupPeriods, teams, future, matchups, byes, lineups, draft, moves, trades: finalTrades, rosters,
+    playoffTeams: ss.playoffTeamCount, periods: ss.matchupPeriods, teams, future, matchups, byes, lineups, draft, moves, trades: finalTrades, rosters, wp,
   });
   console.log(`${year}: ${teams.length} teams, ${matchups.length} matchups, ${Object.keys(lineups).length} weeks of lineups, ${draft.length} picks, ${moves.length} moves, ${trades.length} trades`);
 }
@@ -283,13 +309,21 @@ for (const s of seasons) {
   delete s.played; delete s.sp2mp;
 }
 
+// AI-written news saved by news.js (news/*.json), newest first, plus each team's latest bio
+const NEWSDIR = path.join(__dirname, "news");
+const articles = fs.existsSync(NEWSDIR) ? fs.readdirSync(NEWSDIR).filter((f) => f.endsWith(".json")).map((f) => JSON.parse(fs.readFileSync(path.join(NEWSDIR, f), "utf8"))) : [];
+articles.sort((a, b) => b.year - a.year || (b.wk ?? 99) - (a.wk ?? 99) || b.created.localeCompare(a.created));
+const bios = {};
+for (const a of [...articles].reverse()) if (a.bios) for (const id in a.bios) (bios[a.year] = bios[a.year] || {})[id] = { wk: a.wk, bio: a.bios[id] };
+const news = { articles: articles.map(({ usage, model, bios: _b, ...a }) => a), bios };
+
 // Where everyone was each season (hand-maintained, data/locations.json)
 const locations = exists("locations.json") ? load("locations.json") : null;
 // Stable manager order (first season they appear, then team ID) so badge colors never shuffle
 const order = [];
 for (const s of seasons) for (const t of [...s.teams].sort((a, b) => a.id - b.id)) for (const k of [t.mgr, ...(t.eras || []).map((e) => e.mgr)]) if (!order.includes(k)) order.push(k);
 const orderedManagers = Object.fromEntries(order.filter((k) => managers[k]).map((k) => [k, managers[k]]));
-const dataJs = "window.LEAGUE = " + JSON.stringify({ league: "Buckaroo Football League", firstYear: 2023, built: new Date().toISOString(), managers: orderedManagers, seasons, locations }) + ";\n";
+const dataJs = "window.LEAGUE = " + JSON.stringify({ league: "Buckaroo Football League", firstYear: 2023, built: new Date().toISOString(), managers: orderedManagers, seasons, locations, news }) + ";\n";
 fs.mkdirSync(path.join(__dirname, "site"), { recursive: true });
 fs.writeFileSync(path.join(__dirname, "site", "data.js"), dataJs);
 // public/ is the standalone website: site/index.html is a page body, so give it a full document shell

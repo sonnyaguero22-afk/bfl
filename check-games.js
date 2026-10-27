@@ -1,6 +1,6 @@
 // Decides whether this hourly run should update the site.
-// Update when an NFL game is live or ended in the last couple of hours,
-// once a day at 9am Eastern otherwise, and always on manual runs.
+// Update when an NFL game is live or ended in the last few hours (runs every 15 minutes),
+// once a day around 9am Eastern otherwise, and always on manual runs.
 // Writes run=true/false for GitHub Actions.
 const fs = require("fs");
 
@@ -12,7 +12,8 @@ function decide(why, run) {
 (async () => {
   if (process.env.GITHUB_EVENT_NAME && process.env.GITHUB_EVENT_NAME !== "schedule") return decide("started by hand or by a code change", true);
   const etHour = +new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", hour: "numeric", hourCycle: "h23" }).format(new Date());
-  if (etHour === 9) return decide("daily 9am ET update", true);
+  const etMin = new Date().getUTCMinutes(); // Eastern time is a whole-hour offset from UTC
+  if (etHour === 9 && etMin < 30) return decide("daily 9am ET update", true);
   try {
     const res = await fetch("https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard");
     const sb = await res.json();

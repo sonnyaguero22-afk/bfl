@@ -1,11 +1,11 @@
 # Keeps the league site up to date on GitHub Pages.
-# Runs every hour; check-games.js decides whether to actually update
-# (hourly while NFL games are on, otherwise once a day at 9am ET).
+# Runs every 15 minutes; check-games.js decides whether to actually update
+# (every 15 minutes while NFL games are on, otherwise once a day at 9am ET).
 name: Update league site
 
 on:
   schedule:
-    - cron: "17 * * * *"
+    - cron: "7,22,37,52 * * * *"
   workflow_dispatch:
   push:
     branches: [main]
@@ -44,6 +44,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Install dependencies
+        run: npm ci
       - name: Download the current season from ESPN
         run: node fetch.js current
         env:
@@ -51,12 +53,22 @@ jobs:
           ESPN_SWID: ${{ secrets.ESPN_SWID }}
       - name: Build the site
         run: node build.js
-      - name: Save any newly finished season
+      - name: Write league news
+        run: node news.js
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      - name: Rebuild with the latest news
+        run: node build.js
+      - name: Save finished seasons, live win chances and news
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
-          git add archive
-          git diff --cached --quiet || (git commit -m "Archive finished season" && git push)
+          git add archive history news
+          if ! git diff --cached --quiet; then
+            git commit -m "Update league history"
+            git pull --rebase origin main
+            git push
+          fi
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

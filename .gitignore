@@ -15,3 +15,6 @@ site/data.js
 # Local preview helpers
 .claude/
 serve.js
+
+# Dependencies
+node_modules/

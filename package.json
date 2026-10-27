@@ -1,0 +1,13 @@
+{
+  "name": "buckaroo-league-site",
+  "private": true,
+  "description": "Buckaroo Football League history site: ESPN data, odds, and AI-written league news",
+  "scripts": {
+    "fetch": "node fetch.js current",
+    "build": "node build.js",
+    "news": "node news.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.3.0"
+  }
+}
