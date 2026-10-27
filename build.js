@@ -322,9 +322,9 @@ for (const s of seasons) for (const m of s.matchups) {
   if (!m._sides) continue;
   const g = simGame(playerModel, m._sides[0], m._sides[1], s.year * 1000 + m.wk * 10 + m.h);
   m.psim = Math.round(g.home * 1000) / 1000;
-  // The biggest swing on each side, then the next biggest overall
+  // The biggest swing on each side
   const top = [0, 1].map((k) => g.watch.find((x) => x.side === k)).filter(Boolean);
-  const pick = [...top, ...g.watch.filter((x) => !top.includes(x))].slice(0, 3).sort((a, b) => (b.boom - b.bust) - (a.boom - a.bust));
+  const pick = top.sort((a, b) => (b.boom - b.bust) - (a.boom - a.bust));
   m.watch = pick.map(({ side, n, pos, pro, proj, boom, bust, boomAt, bustAt }) => ({ id: side ? m.a : m.h, n, pos, pro: pro.startsWith("FA-") ? "FA" : pro, proj, boom, bust, boomAt, bustAt }));
   // QB + own receiver both still to play on one side: they boom and bust together
   m.stacks = [0, 1].flatMap((k) => { const L = m._sides[k].filter((p) => p.left > 0); return L.filter((p) => p.pos === "QB").flatMap((q) => L.filter((r) => (r.pos === "WR" || r.pos === "TE") && r.pro === q.pro).map((r) => ({ id: k ? m.a : m.h, qb: q.n, rec: r.n }))); });

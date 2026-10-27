@@ -367,6 +367,7 @@ table.compact .team { min-width: 0; }
 .post { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 10px; }
 .post.take { grid-template-columns: minmax(0, 1fr); }
 .watch { padding: 10px 14px 12px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
+.wname, .wname .plink, .pl.watchp .nm > .plink, .pl.watchp .nm > b { color: var(--gold); font-weight: 700; }
 .watch .k { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .wrow { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; font-size: 13.5px; line-height: 1.35; }
 .tick { color: var(--brass); font-weight: 800; font-size: 12px; }
@@ -707,7 +708,10 @@ function lineupWeek(s, wk, id) {
   if (!L) return `<div class="muted">No lineup data for this week.</div>`;
   const sorted = [...L].sort((a, b) => SLOTS.indexOf(a.slot) - SLOTS.indexOf(b.slot) || b.pts - a.pts);
   const start = sorted.filter((p) => p.slot !== "BN" && p.slot !== "IR"), bench = sorted.filter((p) => p.slot === "BN" || p.slot === "IR");
-  const row = (p) => `<div class="pl${p.slot === "BN" || p.slot === "IR" ? " bn" : ""}"><span class="slot">${esc(p.slot)}</span><span class="nm">${pn(p.n)} <small>${esc(p.pos)} · ${esc(p.pro)}${p.st ? ` · <b>${p.st === "bye" ? "BYE" : "OUT"}</b>` : ""}</small></span><span class="p">${f1(p.pts)}</span></div>`;
+  // This game's Ones to Watch stand out in the lineup
+  const gm = s.matchups.find((m) => m.watch && (m.h === id || m.a === id) && s.spans(m.wk).includes(+wk));
+  const watched = new Set(gm ? gm.watch.filter((x) => x.id === id).map((x) => x.n) : []);
+  const row = (p) => `<div class="pl${p.slot === "BN" || p.slot === "IR" ? " bn" : ""}${watched.has(p.n) ? " watchp" : ""}"><span class="slot">${esc(p.slot)}</span><span class="nm">${pn(p.n)} <small>${esc(p.pos)} · ${esc(p.pro)}${p.st ? ` · <b>${p.st === "bye" ? "BYE" : "OUT"}</b>` : ""}</small></span><span class="p">${f1(p.pts)}</span></div>`;
   const bpts = bench.filter((p) => p.slot === "BN").reduce((a, p) => a + p.pts, 0);
   return `${start.map(row).join("")}<div class="bnhead"><span>Bench</span><span class="num">${f1(bpts)} pts left on bench</span></div>${bench.map(row).join("")}`;
 }
@@ -731,8 +735,7 @@ function weekly(s) {
     const margin = Math.abs(m.hp - m.ap);
     return `<div class="box game${open ? " open" : ""}"><button data-open="${key}" aria-expanded="${open}">${side(m.h, m.hp)}${side(m.a, m.ap)}
       <div class="gmeta"><span>${m.on ? `<span class="pill live">● Live</span>` : m.live ? `<span class="pill">In Progress</span>` : tierName[m.tier] ? `<span class="pill gold">${tierName[m.tier]}</span>` : m.win !== null ? `Margin ${f2(margin)}` : ""}</span><span>${open ? "Hide Lineups ▲" : "Show Lineups ▼"}</span></div></button>
-      ${watchHtml(s, m)}
-      ${open ? `<div class="wpwrap">${wpChart(s, m)}</div><div class="lineups"><div>${lineupCol(s, wk, m.h)}</div><div>${lineupCol(s, wk, m.a)}</div></div>` : ""}</div>`;
+      ${open ? `${watchHtml(s, m)}<div class="wpwrap">${wpChart(s, m)}</div><div class="lineups"><div>${lineupCol(s, wk, m.h)}</div><div>${lineupCol(s, wk, m.a)}</div></div>` : ""}</div>`;
   }).join("");
   const byes = s.byes.filter((b) => b.wk === wk).map((b) => `<span class="pill">${esc(s.byId[b.h].name)} has a bye</span>`).join(" ");
   return bar + `<div class="games">${cards}</div>${byes ? `<p class="note">${byes}</p>` : ""}<p class="note">Click a game to see both starting lineups and the bench.${ms.some((m) => kickedAt(s.byId[m.h], wk) || kickedAt(s.byId[m.a], wk)) ? " * Kicked for inactivity: the team played on without its manager, and the game still counts on his record." : ""}${!s.done ? " Scores for the week in progress are a snapshot from when the data was last pulled." : ""}</p>`;
@@ -818,7 +821,7 @@ function watchHtml(s, m) {
   const who = (id) => mgrName(mgrAt(s.byId[id], m.wk));
   const stack = (x) => (m.stacks || []).find((k) => k.id === x.id && (k.qb === x.n || k.rec === x.n));
   return `<div class="watch"><div class="k" title="The players whose games swing this matchup most. The point lines are each player's top-20% and bottom-20% outcomes, from his projection, his position and his own history.">Ones to Watch <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500">· big game = his top 20%, dud = his bottom 20%</span></div>${m.watch.map((x) => { const st = stack(x);
-    return `<div class="wrow">${badge(s.byId[x.id], 1)}<span><b>${pn(x.n)}</b> <small class="muted">${esc(x.pos)} · ${esc(x.pro)} · proj ${f1(x.proj)}</small><br><small>${x.boomAt != null ? `If he scores <b>${x.boomAt}+</b>, ${esc(who(x.id))} wins <b>${x.boom}%</b> · under <b>${x.bustAt}</b>, <b>${x.bust}%</b>` : `If he booms, ${esc(who(x.id))} wins <b>${x.boom}%</b> · if he busts, <b>${x.bust}%</b>`}${st ? ` · <span class="pill">Stack: ${esc(st.qb === x.n ? st.rec : st.qb)}</span>` : ""}</small></span></div>`; }).join("")}</div>`;
+    return `<div class="wrow">${badge(s.byId[x.id], 1)}<span><b class="wname">${pn(x.n)}</b> <small class="muted">${esc(x.pos)} · ${esc(x.pro)} · proj ${f1(x.proj)}</small><br><small>${x.boomAt != null ? `If he scores <b>${x.boomAt}+</b>, ${esc(who(x.id))} wins <b>${x.boom}%</b> · under <b>${x.bustAt}</b>, <b>${x.bust}%</b>` : `If he booms, ${esc(who(x.id))} wins <b>${x.boom}%</b> · if he busts, <b>${x.bust}%</b>`}${st ? ` · <span class="pill">Stack: ${esc(st.qb === x.n ? st.rec : st.qb)}</span>` : ""}</small></span></div>`; }).join("")}</div>`;
 }
 // Chance the home team wins (0-1). Live games use ESPN's live projected finals, with less
 // uncertainty the less there is left to play; otherwise team strength going into the week.
