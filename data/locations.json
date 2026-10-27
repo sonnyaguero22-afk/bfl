@@ -59,9 +59,8 @@
       "lat": 43.039,
       "lon": -87.906
     },
-    "boot-camp": {
+    "north-carolina": {
       "name": "North Carolina",
-      "detail": "Boot camp",
       "lat": 35.56,
       "lon": -79.39
     }
@@ -92,7 +91,7 @@
       "ramon": "buffalo",
       "alan": "chicago",
       "mekhi": [
-        "boot-camp",
+        "north-carolina",
         "washington"
       ],
       "randy": "chicago"
