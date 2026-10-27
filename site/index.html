@@ -550,7 +550,9 @@ function mgrStats(k) {
 
 // ---------- Pieces ----------
 const badge = (t, sm) => `<span class="badge${sm ? " sm" : ""}" style="--h:${hue[t.mgr]}${gray(t.mgr)}" aria-hidden="true">${esc((t.abbrev || D.managers[t.mgr].first).slice(0, 4))}</span>`;
-const mbadge = (k, sm) => `<span class="badge${sm ? " sm" : ""}" style="--h:${hue[k]}${gray(k)}" aria-hidden="true">${esc(D.managers[k].first.slice(0, 2).toUpperCase())}</span>`;
+const mbadge = (k, sm, txt) => `<span class="badge${sm ? " sm" : ""}" style="--h:${hue[k]}${gray(k)}" aria-hidden="true">${esc(txt || D.managers[k].first.slice(0, 2).toUpperCase())}</span>`;
+// Map pins use first and last initials ("Sonny A." → SA); Zoe is Z²
+const initials = (k) => k === "zoe" ? "Z²" : D.managers[k].name.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 const teamCell = (t, sub) => `<button class="mlink team" data-go="mgr-${t.mgr}">${badge(t)}<span><b>${esc(t.name)}</b><small>${esc(sub ?? (t.eras ? eraLine(t) : D.managers[t.mgr].name))}</small></span></button>`;
 const mgrName = (k) => esc(D.managers[k].name);
 const posTag = (p) => p ? `<span class="posdot" style="--pc:${posVar(p)}">${esc(p)}</span>` : "";
@@ -1239,7 +1241,7 @@ function initMap() {
       for (let i = 1; i < pm.length; i++) L.polyline([ll(pm[i - 1]), ll(pm[i])], { color: mgrColor(k), weight: 2, dashArray: "6 6", opacity: 0.8 }).addTo(mapObj);
     }
     for (const pk in at) {
-      const html = at[pk].map((x) => `<span class="${x.past ? "was" : ""}">${mbadge(x.k)}</span>`).join("");
+      const html = at[pk].map((x) => `<span class="${x.past ? "was" : ""}">${mbadge(x.k, 0, initials(x.k))}</span>`).join("");
       L.marker(ll(pk), { icon: pin(html), title: LOC.places[pk].name }).addTo(mapObj)
         .bindPopup(`<b>${placeLabel(pk)}</b><br>${at[pk].map((x) => `${mgrName(x.k)}${x.past ? " (earlier this season)" : ""}`).join("<br>")}`);
       pts.push(ll(pk));
@@ -1255,7 +1257,7 @@ function initMap() {
       (last[end] = last[end] || []).push(k);
       j.forEach((s) => pts.push(ll(s.pk)));
     }
-    for (const pk in last) L.marker(ll(pk), { icon: pin(last[pk].map((k) => mbadge(k)).join("")), title: LOC.places[pk].name }).addTo(mapObj)
+    for (const pk in last) L.marker(ll(pk), { icon: pin(last[pk].map((k) => mbadge(k, 0, initials(k))).join("")), title: LOC.places[pk].name }).addTo(mapObj)
       .bindPopup(`<b>${placeLabel(pk)}</b><br>Now: ${last[pk].map(mgrName).join(", ")}`);
   }
   if (pts.length) mapObj.fitBounds(pts, { padding: [36, 36], maxZoom: 7 });

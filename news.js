@@ -185,7 +185,7 @@ function careerFacts(k) {
 function leagueBackground() {
   const champs = D.seasons.filter((s) => s.done).map((s) => { const t = s.teams.find((x) => x.final === 1), l = s.teams.find((x) => x.final === s.teams.length); return `Buckaroo Bowl ${["I", "II", "III", "IV", "V", "VI", "VII", "VIII"][s.year - D.firstYear] || s.year - D.firstYear + 1} (${s.year}): champion ${who(t, 99)}; last place ${who(l, 99)}.`; });
   const cur = D.seasons[D.seasons.length - 1];
-  const teams = cur.teams.map((t) => `${t.name} = ${mgr(t.mgr)}`).join("; ");
+  const teams = cur.teams.map((t) => `${t.name} = ${mgr(t.mgr)} (official account @${t.name.replace(/[^A-Za-z0-9]/g, "")})`).join("; ");
   const notes = D.seasons.flatMap((s) => (s.notes || []).map((n) => `${s.year}: ${n}`));
   return [
     `The Buckaroo Football League is a fantasy football league among friends on ESPN, founded in ${D.firstYear}. It had 6 teams through 2025 and 8 teams from 2026. The championship is the Buckaroo Bowl, numbered with Roman numerals from Bowl I in ${D.firstYear}. Last place is decided by a consolation ladder.`,
@@ -213,7 +213,7 @@ Rules:
 - Social posts come from fictional accounts only: made-up fans, team fan clubs, pundits, and "insiders". Never write as, or tag, real NFL players, journalists, or celebrities.
 - Most social posts come from fans and pundits. Add 1 to 3 posts from the league's verified accounts, written the way real clubs and reporters post, like the news feed in Football Manager:
   - kind "league": Buckaroo Football League (@BuckarooFL), neutral and official: results, milestones, standings.
-  - kind "team": a team's official account, named after the team, with its exact team name in the team field. On-brand and upbeat, like a club: matchday results, player of the week, "welcome to the club" after a trade. Never written as the manager.
+  - kind "team": a team's official account, named after the team, with its exact team name in the team field and the handle listed for it under Current teams. On-brand and upbeat, like a club: matchday results, player of the week, "welcome to the club" after a trade. Never written as the manager.
   - kind "reporter": the league's two beat reporters, Dana Whitfield (@DanaWhitfieldBFL), the insider who breaks news, and Marcus Pell (@MarcusPellWrites), the columnist with opinions.
   - Keep the same name and handle for the same account every time. Set team to "" for every post that isn't kind "team".
 - A player marked "on bye" or "did not play" scored nothing because he didn't play. Say so plainly; never treat it as a bad game or a bust. Starting one is the manager's lineup mistake, not the player's.
