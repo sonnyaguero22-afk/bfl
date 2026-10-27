@@ -1,11 +1,15 @@
 // Championship / playoff / last-place odds after every week of a season, by Monte Carlo.
-// After week N, each team's strength is a blend of:
-//   - its points per game so far, pulled toward the league average early on, and
-//   - ESPN's projection for its starting lineup the next week (so pickups and trades show up right away).
+// After week N, each team gets two strengths:
+//   - next week: ESPN's projection for the lineup it has actually set, holes included. Tested on
+//     2023-25 (127 games), this picked 68% of winners vs 55% for season averages blended in.
+//   - later weeks: a blend of points per game (pulled toward the league average) and next week's
+//     lineup projection with holes filled, played with a wider spread, since games 2+ weeks out
+//     tested as close to coin flips.
 // The rest of the regular season and the bracket are then played out SIMS times.
 const SIMS = 5000;
-const PRIOR_GAMES = 2;   // how many league-average games each team starts with
-const PROJ_WEIGHT = 0.35; // share of the next-week lineup projection in a team's strength
+const PRIOR_GAMES = 5;    // how many league-average games each team starts with
+const PROJ_WEIGHT = 0.6;  // share of the lineup projection in a team's later-weeks strength
+const FAR_SPREAD = 1.9;   // later weeks' spread, as a multiple of the weekly score spread
 
 // Small seeded random generator so the odds don't wobble from one rebuild to the next
 function rng(seed) {
@@ -47,9 +51,16 @@ function seasonOdds(s) {
     return (live.reduce((a, p) => a + p.proj, 0) / live.length) * st.length * calib;
   };
 
+  // The lineup a team has actually set for a week, as ESPN projects it (byes and injuries count as zero)
+  const setFor = (id, mp) => {
+    const L = (s.lineups[spans(mp)[0]] || {})[id]; if (!L) return null;
+    const st = L.filter(isStart);
+    return st.length ? st.reduce((a, p) => a + (p.proj || 0), 0) * calib : null;
+  };
+
   const lastCheck = s.done ? Math.max(...s.matchups.map((m) => m.wk)) : Math.min(lastDone, s.regWeeks);
   const weeks = [];
-  const out = Object.fromEntries(ids.map((id) => [id, { c: [], p: [], l: [], str: [] }]));
+  const out = Object.fromEntries(ids.map((id) => [id, { c: [], p: [], l: [], str: [], far: [] }]));
   const po = s.playoffTeams;
   const seedActual = Object.fromEntries(s.teams.map((t) => [t.id, t.seed]));
 
@@ -61,16 +72,20 @@ function seasonOdds(s) {
       base[m.h].pf += m.hp; base[m.a].pf += m.ap; base[m.h].g++; base[m.a].g++; base[m.h].pts += m.hp; base[m.a].pts += m.ap;
       if (m.win === m.h) base[m.h].w++; else if (m.win === m.a) base[m.a].w++; else { base[m.h].w += 0.5; base[m.a].w += 0.5; }
     }
-    const mean = {};
+    const far = {}, next = {};
     for (const id of ids) {
       const b = base[id];
       const avg = (b.pts + PRIOR_GAMES * leagueAvg) / (b.g + PRIOR_GAMES);
       const pj = projFor(id, N + 1);
-      mean[id] = pj != null ? (1 - PROJ_WEIGHT) * avg + PROJ_WEIGHT * pj : avg;
-      out[id].str.push(r1(mean[id]));
+      far[id] = pj != null ? (1 - PROJ_WEIGHT) * avg + PROJ_WEIGHT * pj : avg;
+      next[id] = setFor(id, N + 1) ?? far[id];
+      out[id].str.push(r1(next[id]));
+      out[id].far.push(r1(far[id]));
     }
+    // A game's scores: next week's from the set lineups, later weeks' from the wider blend
+    const score = (id, mp, len = 1) => mp === N + 1 ? next[id] * len + gauss() * sd * Math.sqrt(len) : far[id] * len + gauss() * sd * FAR_SPREAD * Math.sqrt(len);
     // Remaining regular-season games (anything after week N, finished or not)
-    const rest = [...reg.filter((m) => m.wk > N).map((m) => [m.h, m.a]), ...(s.future || []).filter((m) => m.wk > N).map((m) => [m.h, m.a])];
+    const rest = [...reg.filter((m) => m.wk > N).map((m) => [m.h, m.a, m.wk]), ...(s.future || []).filter((m) => m.wk > N).map((m) => [m.h, m.a, m.wk])];
     const regOver = N >= s.regWeeks;
     const gauss = rng(s.year * 1000 + N);
     const cnt = Object.fromEntries(ids.map((id) => [id, { c: 0, p: 0, l: 0 }]));
@@ -78,7 +93,7 @@ function seasonOdds(s) {
       // A round that already happened keeps its real winner
       if (s.done && mp <= N) { const m = s.matchups.find((x) => x.wk === mp && [x.h, x.a].includes(a) && [x.h, x.a].includes(b)); if (m && m.win) return m.win; }
       const len = spans(mp).length;
-      const sa = mean[a] * len + gauss() * sd * Math.sqrt(len), sb = mean[b] * len + gauss() * sd * Math.sqrt(len);
+      const sa = score(a, mp, len), sb = score(b, mp, len);
       return sa >= sb ? a : b;
     };
     for (let i = 0; i < SIMS; i++) {
@@ -86,8 +101,8 @@ function seasonOdds(s) {
       if (regOver && s.done) seeds = [...ids].sort((a, b) => (seedActual[a] || 99) - (seedActual[b] || 99));
       else {
         const rec = Object.fromEntries(ids.map((id) => [id, { w: base[id].w, pf: base[id].pf }]));
-        for (const [h, a] of rest) {
-          const sh = mean[h] + gauss() * sd, sa = mean[a] + gauss() * sd;
+        for (const [h, a, wk] of rest) {
+          const sh = score(h, wk), sa = score(a, wk);
           rec[h].pf += sh; rec[a].pf += sa;
           if (sh >= sa) rec[h].w++; else rec[a].w++;
         }
@@ -116,7 +131,7 @@ function seasonOdds(s) {
     }
     for (const id of ids) { out[id].c.push(r1((cnt[id].c / SIMS) * 100)); out[id].p.push(r1((cnt[id].p / SIMS) * 100)); out[id].l.push(r1((cnt[id].l / SIMS) * 100)); }
   }
-  return { weeks, t: out, sims: SIMS, sd: r1(sd) };
+  return { weeks, t: out, sims: SIMS, sd: r1(sd), farSd: r1(sd * FAR_SPREAD) };
 }
 
 module.exports = { seasonOdds };

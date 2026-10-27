@@ -822,8 +822,10 @@ function winProb(s, m) {
   let i = -1;
   s.odds.weeks.forEach((N, j) => { if (N <= m.wk - 1) i = j; });
   if (i < 0) return null;
-  const len = s.spans(m.wk).length, mh = s.odds.t[m.h].str[i], ma = s.odds.t[m.a].str[i];
-  return Phi(((mh - ma) * len) / (sd * Math.sqrt(2 * len)));
+  // Next week's game uses the lineups as set; games further out use the wider long-run strengths
+  const near = m.wk === s.odds.weeks[i] + 1 || !s.odds.t[m.h].far, k = near ? "str" : "far", spread = near ? sd : s.odds.farSd || sd;
+  const len = s.spans(m.wk).length, mh = s.odds.t[m.h][k][i], ma = s.odds.t[m.a][k][i];
+  return Phi(((mh - ma) * len) / (spread * Math.sqrt(2 * len)));
 }
 const winPct = (p) => (p >= 0.995 ? ">99%" : p <= 0.005 ? "<1%" : `${Math.round(p * 100)}%`);
 // "· 2 to go": starters whose NFL game hasn't finished, on live games

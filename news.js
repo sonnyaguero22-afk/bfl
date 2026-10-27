@@ -52,7 +52,8 @@ function pregameWin(s, m) {
   let i = -1; s.odds.weeks.forEach((N, j) => { if (N <= m.wk - 1) i = j; });
   if (i < 0) return null;
   const len = spans(s, m.wk).length;
-  return Phi(((s.odds.t[m.h].str[i] - s.odds.t[m.a].str[i]) * len) / ((s.odds.sd || 20) * Math.sqrt(2 * len)));
+  const near = m.wk === s.odds.weeks[i] + 1 || !s.odds.t[m.h].far, k = near ? "str" : "far", spread = near ? s.odds.sd || 20 : s.odds.farSd || s.odds.sd || 20;
+  return Phi(((s.odds.t[m.h][k][i] - s.odds.t[m.a][k][i]) * len) / (spread * Math.sqrt(2 * len)));
 }
 function recapFacts(s, W) {
   const rec = recordsThrough(s, W), recBefore = recordsThrough(s, W - 1);
