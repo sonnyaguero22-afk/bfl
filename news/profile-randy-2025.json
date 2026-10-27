@@ -1,0 +1,24 @@
+{
+ "id": "profile-randy-2025",
+ "type": "profile",
+ "year": 2025,
+ "wk": null,
+ "created": "2026-10-27T06:09:35.732Z",
+ "title": "Randy: The Vault of The fumblers, Always Close, Never Crowned",
+ "dek": "",
+ "body": [
+  "Every league needs a guy who shows up every year, stacks up wins, and refuses to give you anything you want in a trade. For the Buckaroo Football League, that guy is Randy, the lone constant behind The fumblers since day one. He opened in 2023 with a dead-even 7-7 record and 1462.9 points, good for the 3 seed and a third-place finish. The low point came in week 6, when Kaushal held him to 73.1 points, still the worst week of his career. Through that whole season Randy made zero trades and just five pickups, apparently convinced his roster was a family heirloom.",
+  "The 2024 season brought more of the same, only better: 8-6, 1595.1 points, and the 2 seed. It also brought his finest hour, a 162.5-point explosion against Ramon in week 3 that still stands as his best week ever. The playoffs were less kind, and The fumblers slid to fourth. Trades that year? Zero again. Randy doubled his pickups to 10, which for him was basically a shopping spree, but the trade button stayed in the vault next to his Bears players.",
+  "Then came 2025, the year Randy got as close as anyone gets. He went 9-7, piled up a career-high 1792.1 points, grabbed the 2 seed again, and marched all the way to Buckaroo Bowl III, only to finish second while Sonny completed his worst-to-first redemption tour with Ben Dover. Losing a title game to the commissioner is the kind of thing a man can complain about for years, and Randy has the stamina for it. He even made his first-ever trade that season and ran up 16 pickups, proof that he can evolve, slowly, like a glacier. His career playoff record now sits at 1-3, which tells you the regular season is his home turf and January keeps closing the door on him.",
+  "The head-to-head ledger reads like a man who beats most of the room. He is 7-4 against Ramon, giving Brucie plenty to rage about, 6-5 against two-time champ Kaushal, and 6-6 with Kai in a dead-even waiver-wire cold war. He is 1-0 against both JMoney and Zoe, the latter a result he surely files under Bears over Packers. But two names haunt him: Sonny holds a 3-4 edge, and Alan, the league villain himself, owns him at 8-5, making Philly the clear nemesis of The fumblers.",
+  "Which brings us to 2026, the first year of the eight-team league. The fumblers sit at 3-3 with 643.8 points, and the models give them a modest 2% shot at the title. Randy has already made one trade and 14 pickups, matching his 2025 trade total and nearly his pickup total with plenty of season left, so maybe the vault is finally cracking open. Three straight winning-or-even seasons, a Bowl appearance, and zero last-place finishes make him one of the most reliable contenders in the league. All that is missing is the trophy, and knowing Randy, he will not trade for one either."
+ ],
+ "social": [],
+ "teams": [],
+ "mgr": "randy",
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 1624
+ }
+}
