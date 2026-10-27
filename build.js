@@ -309,9 +309,11 @@ for (const s of seasons) {
   delete s.played; delete s.sp2mp;
 }
 
+// House style for the AI writer's text: Zoe's nickname is written Z², however it comes out
+const polish = (text) => text.replace(/\bZ[ -]?squared\b|\bZ\^2/gi, "Z²");
 // AI-written news saved by news.js (news/*.json), newest first, plus each team's latest bio
 const NEWSDIR = path.join(__dirname, "news");
-const articles = fs.existsSync(NEWSDIR) ? fs.readdirSync(NEWSDIR).filter((f) => f.endsWith(".json")).map((f) => JSON.parse(fs.readFileSync(path.join(NEWSDIR, f), "utf8"))) : [];
+const articles = fs.existsSync(NEWSDIR) ? fs.readdirSync(NEWSDIR).filter((f) => f.endsWith(".json")).map((f) => JSON.parse(polish(fs.readFileSync(path.join(NEWSDIR, f), "utf8")))) : [];
 articles.sort((a, b) => b.year - a.year || (b.wk ?? 99) - (a.wk ?? 99) || b.created.localeCompare(a.created));
 const bios = {};
 for (const a of [...articles].reverse()) if (a.bios) for (const id in a.bios) (bios[a.year] = bios[a.year] || {})[id] = { wk: a.wk, bio: a.bios[id] };
