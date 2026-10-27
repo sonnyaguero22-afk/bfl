@@ -1,0 +1,25 @@
+{
+ "id": "review-2024",
+ "type": "review",
+ "year": 2024,
+ "wk": null,
+ "created": "2026-10-27T20:34:28.208Z",
+ "title": "Habib Goes Back-to-Back: Habibsters Romp Through Buckaroo Bowl II",
+ "dek": "Kaushal turned an 11-3 season into a second straight title, Ramon crashed the final from the 3 seed, and Randy learned that leading the league in points guarantees exactly nothing.",
+ "body": [
+  "Year two of the Buckaroo Football League opened with the same six teams, the same ESPN lobby, and one very obvious question: could anyone knock Kaushal off the throne? The answer, delivered slowly over 14 weeks and then very quickly over four playoff weeks, was no. The Habibsters went 11-3, took the No. 1 seed again, and won Buckaroo Bowl II, making Habib the only champion this league has ever known.",
+  "Ramon got the first word, though. Brucie's Araleasers dropped 166.58 points in week 1, a number nobody touched the rest of the season, and for about seven days it looked like the Araleasers were about to run the table. They did not. Ramon settled into a perfectly balanced 7-7 with 1,430.9 points, good for the No. 3 seed, which in hindsight was the most efficient path to the Buckaroo Bowl anyone could have drawn up.",
+  "The real statistical marvel belonged to Randy. The fumblers scored 1,595.1 points, the most in the league by a comfortable margin, finished 8-6, and grabbed the No. 2 seed. Then the semifinals arrived and the offense apparently stayed home: Randy's crew managed just 176.14 over the two-week series and fell to the Araleasers, who posted 202.44. The fumblers then dropped the third-place game too, finishing fourth, which is a strange place to land for the team that outscored everybody.",
+  "On the other side of the bracket, Alan's Team Pillbert snuck in as the No. 4 seed at 6-8, edging out a 5-9 Dawgs team on record. Philly actually had the third-most points in the league at 1,473.9, and his 245.08 in the semifinal would have beaten some teams in some leagues. Unfortunately for him, it came against Kaushal, who unloaded 296.96 over two weeks and advanced with ease. Team Pillbert regrouped to take third place, a respectable finish for a sub-.500 team that spent the playoffs as everyone's least favorite underdog.",
+  "Buckaroo Bowl II was a mismatch from the jump. The Habibsters put up 261.44 points over the two-week final while the Araleasers sputtered to 145.28, a 116-point gap that makes last year's blowout look competitive. Ramon's run from the 3 seed was a genuinely fun story right up until it ran into the best team in the league playing its best football. Kaushal now has two rings in two tries and a regular-season résumé (11-3, 1,524.8 points) that says it was no fluke.",
+  "Down at the bottom, Mekhi's Dawgs and Sonny's Ben Dover both finished 5-9, and the consolation ladder had to sort out who wore the crown nobody wants. Kai climbed to fifth with 1,413.5 points, while Sonny finished sixth with a league-low 1,304.3, including the single grimmest Sunday of the year: 44.1 points in week 12. That is the kind of score that makes a man question every start/sit decision he has ever made, and it handed Ben Dover a second straight last-place finish.",
+  "And for the second year running, the trade log stayed empty: zero deals, all season long. Six managers spent 14 weeks staring at their rosters and decided, every single time, that standing pat was the move. For Kaushal, it clearly was. For everyone else, the offseason starts now, and the to-do list has one item on it: figure out how to beat Habib before he makes it three."
+ ],
+ "social": [],
+ "teams": [],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 1934
+ }
+}

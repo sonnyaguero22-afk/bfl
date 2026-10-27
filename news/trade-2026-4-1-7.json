@@ -1,0 +1,62 @@
+{
+ "id": "trade-2026-4-1-7",
+ "type": "trade",
+ "year": 2026,
+ "wk": 4,
+ "created": "2026-10-27T20:40:35.930Z",
+ "title": "Nobody Wins: The Unbeatens Swap Hubbard for Rice and the Model Docks Them Both",
+ "dek": "Sonny's The Horse is Hea and Ramon's No Banner only HULK, two 3-0 teams, traded Chuba Hubbard for Rashee Rice before week 4, and the title odds fell on both sides of the table.",
+ "body": [
+  "Usually when the two best teams in a league talk trade, everybody else gets nervous. Before week 4, Sonny's The Horse is Hea and Ramon's No Banner only HULK, both 3-0, made a one-for-one deal: running back Chuba Hubbard went to Sonny, and wide receiver Rashee Rice went to Brucie. Both players had spent all three weeks of the season on a roster, so this was no flyer on a waiver darling. It was two contenders moving proven pieces, the fantasy version of two superpowers meeting at a summit and both walking out with worse approval ratings.",
+  "On the scoreboard, Sonny got the hotter hand. Hubbard arrives with 48.6 points through three weeks, about 16.2 a game, while Rice comes over with 31.5, roughly 10.5 a game. That is a 17.1-point gap, more than double the margin in the Williams-for-Diggs deal earlier the same week. If you just added up the receipts, the Horse walked out of the store with the bigger bag.",
+  "The model didn't add up the receipts. It cut The Horse is Hea from 21% to 11% title odds, wiping out nearly half of Sonny's championship chances in a single transaction. For a team that only climbed to 21% after a one-point escape against the Dawgs, that is a cold welcome for a running back averaging 16 a game. The most generous read is that the computer values what Rice brings to a lineup more than what Hubbard has already banked, or that the Horse's roster just fits a receiver better than a back. Either way, the machine thinks Sonny paid for the past and sold the future.",
+  "Ramon took a hit too, falling from 52% to 41%, an 11-point drop that is technically the bigger number. But context matters: Brucie still sits at 41%, nearly four times Sonny's new figure, and he gave up 17 points of production to take a shot on Rice's upside. Losing a fifth of your odds hurts less when you started as the overwhelming favorite. If somebody has to be crowned the winner of a trade where both sides lost ground, it's Ramon, who kept the gap between himself and the field enormous while Sonny's slice of the pie got cut in half.",
+  "The verdict arrives fast. Sonny debuts Hubbard against Zoe, who needs that game badly at 1-2, while Ramon breaks in Rice against Philly and a Team Pillbert roster freshly reinforced with Javonte Williams. If Hubbard keeps rolling and the Horse stays unbeaten, Sonny gets to argue that the model is overthinking it. If Rice pops in his HULK debut, the league's runaway favorite just got a new toy, and the other six managers get to watch the two unbeatens drift further apart."
+ ],
+ "social": [
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "Title odds after the Hubbard-Rice swap: The Horse is Hea 21% to 11%. No Banner only HULK 52% to 41%. Both sides dropped. The HULK still holds the biggest share in the league by a mile.",
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "No Banner only HULK",
+   "handle": "@NoBannerHULK",
+   "text": "Welcome to the club, Rashee Rice! 🟢 First assignment: Team Pillbert in week 4. Let's keep the unbeaten run going. 💚",
+   "kind": "team",
+   "team": "No Banner only HULK"
+  },
+  {
+   "author": "Marcus Pell",
+   "handle": "@MarcusPellWrites",
+   "text": "Sonny got 48.6 points of Hubbard for 31.5 points of Rice and the model cut his title odds in half anyway. Ramon lost more raw percentage and still won this trade. Sometimes the bigger number is the worse deal.",
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Gridiron Gary",
+   "handle": "@GridironGaryFF",
+   "text": "Two 3-0 teams make a trade and BOTH lose title odds. Somewhere the other six managers are quietly applauding.",
+   "kind": "pundit",
+   "team": ""
+  },
+  {
+   "author": "Stable Hand Steve",
+   "handle": "@StableHandSteveFF",
+   "text": "16.2 a game from Chuba and the computer wants to dock us? Fine. Hubbard vs the Spiders this week. The Horse doesn't read the model. 🐎",
+   "kind": "fan",
+   "team": ""
+  }
+ ],
+ "teams": [
+  1,
+  7
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 2353
+ }
+}

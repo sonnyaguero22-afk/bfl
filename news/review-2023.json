@@ -1,0 +1,25 @@
+{
+ "id": "review-2023",
+ "type": "review",
+ "year": 2023,
+ "wk": null,
+ "created": "2026-10-27T20:34:05.681Z",
+ "title": "Year One Belongs to Habib: Habibsters Win Buckaroo Bowl I",
+ "dek": "Six friends founded a league, nobody made a single trade, and Kaushal's Habibsters rolled from the top seed to the first Buckaroo Bowl crown while Ben Dover slid all the way down the consolation ladder.",
+ "body": [
+  "Every league needs a first chapter, and the Buckaroo Football League's opened in 2023 with six teams, one ESPN lobby, and nobody quite sure who would become the team to beat. By the end of it, the answer was obvious. Kaushal's Habibsters went 10-4, grabbed the No. 1 seed, and turned the playoffs into a two-round victory lap, becoming the first name ever etched on the Buckaroo Bowl trophy.",
+  "The regular season belonged to Habib almost wire to wire. The Habibsters put up 1,528.8 points, second-most in the league, and paired them with the best record. Right behind was Alan's Team Pillbert at 9-5 with 1,499.3 points, and Philly owned the single loudest Sunday of the year: a 156.18-point eruption in week 3 that nobody topped the rest of the way. Randy's The fumblers landed dead even at 7-7, the most perfectly balanced season a team can have.",
+  "Then there's Mekhi, whose season is the kind of thing that makes people quit fantasy football. Kai's Dawgs scored 1,542.8 points, the most in the league, and somehow went 6-8. Whatever the schedule gods had against him, the Dawgs still squeaked into the four-team bracket as the No. 4 seed, which meant a date with the Habibsters.",
+  "The semifinals ran on two-week totals, and the top two seeds both held serve. Habibsters handled the Dawgs 237.54 to 196.12, a comfortable margin that ended Kai's points-leading, record-cursed season. On the other side, Team Pillbert outlasted The fumblers 234.86 to 216.44 in the closest playoff series of the year. Randy's crew went on to finish third, a respectable bow for a team that spent the whole season at exactly .500.",
+  "Buckaroo Bowl I was not close. The Habibsters dropped 251.36 points over the two-week final, and Team Pillbert managed 192.08, a 59-point gap that turned the championship into a coronation. Alan had the season's biggest single week and the No. 2 seed, but against Habib in full college-football-Saturday mode, it wasn't enough. The first title in league history went to the guy who looked like the champ from September on.",
+  "Down at the bottom, the consolation ladder delivered a twist. Ramon's Araleasers went 4-10 and owned the season's low point, a 65.9-point week 9, but it was Sonny's Ben Dover, at 6-8 and the No. 5 seed, that ended up in sixth place after the ladder shook out. Brucie climbed to fifth, and Sonny took the first last-place finish in league history, the opening scene of a redemption arc that would take a while to get going.",
+  "One more number for the archives: zero trades. Six managers, a full season, and not one deal, which is either a league full of people in love with their own rosters or a league full of Randys. Either way, year one is in the books, Kaushal has the first ring, and everybody else has an entire offseason to figure out how to stop him."
+ ],
+ "social": [],
+ "teams": [],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 1910
+ }
+}

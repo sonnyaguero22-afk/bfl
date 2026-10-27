@@ -1,0 +1,24 @@
+{
+ "id": "profile-alan-2025",
+ "type": "profile",
+ "year": 2025,
+ "wk": null,
+ "created": "2026-10-27T20:36:03.016Z",
+ "title": "Philly's Long Road: Bowl I Runner-Up, Habib's Favorite Victim, and Now the League's Busiest Dealer",
+ "dek": "",
+ "body": [
+  "Alan has run Team Pillbert since the league's opening kickoff in 2023, and the debut season nearly ended with a trophy. Philly went 9-5, scored 1,499.3 points, grabbed the 2 seed and played all the way into Buckaroo Bowl I, where he finished as runner-up to Kaushal's Habibsters. His best game ever came that September, a 156.2-point demolition of Sonny in week 3. The man did it with zero trades and just 11 pickups, the fantasy equivalent of winning a Valorant round without buying anything.",
+  "The next two years were a slow slide in the standings, though never quite off the map. In 2024 Team Pillbert dipped to 6-8 and the 4 seed but still salvaged a 3rd-place finish, a season that also produced his career low: 64.1 points against Habib in week 10. 2025 got stranger. Philliberto scored a career-high 1,762.9 points yet stumbled to 5-11 and the 6 seed, and he even dropped a 94.76-92.02 heartbreaker in week 9 to Ramon's Remains, a team whose manager had already been removed from the league. Somehow he still clawed to 4th of 6, which says a lot about his knack for avoiding the basement: zero last-place finishes in three tries.",
+  "The head-to-head ledger tells you who Philly worries about. Kaushal owns him outright at 7-2, the one matchup where Team Pillbert looks like it is chasing a car on a Georgia highway. On the flip side, Alan has feasted on Randy (8-5) and holds winning marks over Mekhi (6-4) and Ramon (6-5), while his series with Sonny sits at a tense 5-6. The newcomers are even: he beat Jordan in their only meeting and lost his lone game to Zoe.",
+  "The biggest change is in how Alan manages. After two seasons without a single trade and one deal in 2025, he has made four trades in 2026 alone, and his 16 pickups are already closing in on his 2024 total of 21 with half a season to go. Whether that is a rebuilt philosophy or just restless thumbs, the results are hard to argue with so far.",
+  "Team Pillbert sits at 5-2 with 817.8 points and a 17% shot at the title, firmly back in the conversation for the first time since that Bowl I run. His career playoff record is 1-2, and the trophy case is still empty. Three years after coming within one game of a ring, Philly is dealing like a man who knows exactly how close he has already been."
+ ],
+ "social": [],
+ "teams": [],
+ "mgr": "alan",
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 1523
+ }
+}

@@ -1,0 +1,25 @@
+{
+ "id": "review-2025",
+ "type": "review",
+ "year": 2025,
+ "wk": null,
+ "created": "2026-10-27T20:34:53.191Z",
+ "title": "Worst to First: Ben Dover Wins Buckaroo Bowl III",
+ "dek": "Two years after back-to-back last-place finishes, Sonny's Ben Dover went 13-3, ended the Habibsters' reign, and turned the 2025 season into the greatest redemption story this league has ever seen.",
+ "body": [
+  "For two straight seasons, Ben Dover was the answer to the question nobody wanted to be the answer to. Sonny finished last in 2023, finished last again in 2024, and entered 2025 with a franchise résumé that read like a warning label. Then he went 13-3, grabbed the No. 1 seed, and won Buckaroo Bowl III. In a league that had only ever crowned Kaushal, the guy who had owned the basement wrote the first new name on the trophy.",
+  "The season got weird early, starting on draft day, when Mekhi made his picks from basic training, which is a strong contender for the least ideal draft-prep setup in fantasy history. The Dawgs still came out with a roster that could score: 1,858.2 points, second-most in the league, plus the season's best single week, a 153.62-point eruption in week 9. And yet Kai went 8-8, slid to the No. 4 seed, missed the bracket, and came out of the consolation ladder in sixth place. Last place with the second-most points in the league is a sentence that should come with a grief counselor.",
+  "Then there was Ramon. Brucie's Araleasers posted the season's lowest score, 61.4 points in week 3, and after week 8 he was removed from the league for inactivity. The team was renamed Ramon's Remains and played on without him, and in its very first game unmanaged it beat Alan 94.76 to 92.02. Losing to a roster with nobody steering it is a special kind of week, and Philly will hear about it. The Remains finished 5-11 with 1,523.7 points, those post-week-8 games still counting on Ramon's record with an asterisk, and the consolation ladder slotted them fifth.",
+  "Habib's year was the cruelest kind of good. The Habibsters scored 1,973.6 points, the most in the league by more than 100, and finished exactly 8-8, good for the No. 3 seed and a semifinal with The fumblers. That is where the offense picked the worst possible week to go cold: Randy's crew rolled 137.1 to 79.96, ending the two-time champ's title defense in one ugly afternoon. Kaushal settled for third place, the first time in league history someone other than him walked away with the hardware.",
+  "Randy, meanwhile, quietly put together the most efficient season in the league. The fumblers went 9-7 with 1,792.1 points, only fourth in scoring, but held the No. 2 seed and then flattened the highest-scoring team in the league to reach the Buckaroo Bowl. After the playoff collapse of 2024, it was a proper bounce-back. It just ran into the wrong opponent at the wrong time.",
+  "Buckaroo Bowl III went to Ben Dover, 105.1 to 86.48, a steady, unspectacular win that fit Sonny's whole season. He didn't lead the league in points (his 1,850.8 ranked third), but he won games all year, 13 of them, and then won the two that mattered most. On the other end of the standings, Team Pillbert was the No. 6 seed at 5-11 and still climbed to fourth, a nice consolation run that nobody will remember by spring.",
+  "One more first for the archives: four trades. After two full seasons with an empty trade log, managers finally started picking up the phone, and the league felt more alive for it. Now the league expands to eight teams in 2026, Sonny has a ring, Habib has a grudge, Kai has a schedule to curse at, and the worst-to-first story is officially the best thing that's ever happened in the Buckaroo Football League."
+ ],
+ "social": [],
+ "teams": [],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 2275
+ }
+}

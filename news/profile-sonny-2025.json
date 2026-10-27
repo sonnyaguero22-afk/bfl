@@ -1,0 +1,24 @@
+{
+ "id": "profile-sonny-2025",
+ "type": "profile",
+ "year": 2025,
+ "wk": null,
+ "created": "2026-10-27T20:35:09.885Z",
+ "title": "Sonny: From the Basement to the Buckaroo Bowl, and Not Done Yet",
+ "dek": "",
+ "body": [
+  "Every league needs a founding father, and the Buckaroo Football League got one who spent his first two years living in the cellar of the house he built. Sonny's 2023 debut with Ben Dover went 6-8 with 1,413.3 points, enough to sneak in as the 5 seed. Then the consolation ladder did its thing and he finished 6th of 6. He made just 10 pickups and zero trades that year, the roster equivalent of a Civ player who forgets to build anything but scouts.",
+  "If 2023 was a stumble, 2024 was a faceplant. Ben Dover went 5-9, scored 1,304.3 points, slid to the 6 seed, and finished last again. The tell was in the transaction log: one pickup, all season. One. The low point came in Week 12, when he posted 44.1 points against Kai, still the worst week of his career. Two straight last-place finishes from the guy who runs the league website is the kind of thing that ends up on the league website.",
+  "Then came 2025, the greatest turnaround this league has seen. Sonny woke up and worked the wire like a man possessed, with 22 pickups and his first-ever trade, and Ben Dover rolled to a 13-3 record and a monstrous 1,850.8 points. Week 10 brought his career-best 153.4, laid right on Randy. He took the 1 seed, went 1-0 in the playoffs, and lifted the trophy at Buckaroo Bowl III, ending Habib's two-year reign at the top. Worst to first, done properly.",
+  "The head-to-head ledger tells the story of a guy who has quietly held his own against the league's heavyweights. He's 7-5 against Brucie, 7-5 against Kai, 6-5 against Philly, and 5-3 against Randy. The one regular who has his number is Kaushal, at 6-5 in Habib's favor, the last unfinished business from the Habibsters dynasty years. Against the newer faces it's 1-0 against JMoney and 0-1 against Zilgit, so Z² already has a win over the defending champ to hold over him.",
+  "Now running The Horse is Hea, the reigning champ has not gone soft, Boston address or not. He's 5-2 with 853.6 points, has already made 2 trades and 17 pickups, and the model gives him a 28% shot at going back to back. The manager who once made one move in a full season has become one of the busiest in the league. Two banners in the rafters belong to Kaushal; Sonny would like to start evening that out."
+ ],
+ "social": [],
+ "teams": [],
+ "mgr": "sonny",
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 1454
+ }
+}

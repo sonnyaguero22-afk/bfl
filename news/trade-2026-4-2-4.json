@@ -1,0 +1,62 @@
+{
+ "id": "trade-2026-4-2-4",
+ "type": "trade",
+ "year": 2026,
+ "wk": 4,
+ "created": "2026-10-27T20:40:08.634Z",
+ "title": "Twelve Points of Title Odds: Philly Lands Javonte Williams, Randy Takes Diggs",
+ "dek": "The model barely flinched at Randy's end of the deal and practically sprinted to Alan's, more than doubling Team Pillbert's title odds overnight.",
+ "body": [
+  "Before week 4 kicked off, The fumblers and Team Pillbert made the first deal of the 2026 season. Randy sent running back Javonte Williams to Alan and got wide receiver Stefon Diggs back. Both players had spent all three weeks on a roster, so neither side was buying a waiver-wire lottery ticket. These were established contributors swapped straight up, one for one, between a 3-0 team and a 2-1 team.",
+  "On raw production, Philly got the bigger number. Williams arrives with 45.5 points through three weeks, about 15.2 a game, while Diggs comes over with 38, roughly 12.7 a game. That 7.5-point gap is not a canyon, but it is real, and it lands on a roster that just watched De'Von Achane post 1.7 on a 17.27 projection. Pairing Williams with Jahmyr Gibbs, last week's top scorer, gives Alan a backfield that doesn't have to hold its breath every Sunday.",
+  "Randy's logic is easier to see if you squint at positional value. Running backs are where weeks go to die, but a reliable receiver is a lineup anchor, and Diggs gives The fumblers another target next to Amon-Ra St. Brown. The trouble is the model does not squint. It dropped Randy's title odds from 16% to 14%, the third straight week the computer has nudged The fumblers downward, and this time Randy didn't even have to win ugly to earn it.",
+  "Then there's the other side of the ledger. Team Pillbert went from 9% to 21% title odds on the deal, a 12-point leap that would have been the biggest weekly move in the league if it had come from a game. Philly turned a modest points gap into the same title odds the model gave Sonny's unbeaten Horse last week. On paper, this is a clear Alan win, the kind where one manager walks away with a better player and the other walks away with a better feeling about his wide receiver room.",
+  "The immediate test is brutal. Alan's first game with Williams is against Ramon's undefeated No Banner only HULK, the 444-point juggernaut. If Javonte helps Philly knock off Brucie, this trade becomes the move of the season. If not, Randy gets to wait and see whether Diggs outscores the guy he gave away. Nobody in this league has ever been patient about that sort of thing."
+ ],
+ "social": [
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "Title odds after the Williams-Diggs swap: Team Pillbert 9% to 21%. The fumblers 16% to 14%. The model has picked a side.",
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Team Pillbert",
+   "handle": "@TeamPillbert",
+   "text": "Welcome to the club, Javonte Williams! 45.5 points in three weeks and now teaming up with Jahmyr Gibbs. First assignment: the HULK. Let's ride. 🏈",
+   "kind": "team",
+   "team": "Team Pillbert"
+  },
+  {
+   "author": "Marcus Pell",
+   "handle": "@MarcusPellWrites",
+   "text": "Randy gave up the more productive player and the model docked him for it. Philly gets RB insurance after Achane's 1.7 dud. This one isn't close on paper. Alan won the trade.",
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Gridiron Gary",
+   "handle": "@GridironGaryFF",
+   "text": "Gibbs plus Javonte in the same backfield is a problem. Pillbert vs HULK just got a lot more interesting.",
+   "kind": "pundit",
+   "team": ""
+  },
+  {
+   "author": "Fumblers Faithful",
+   "handle": "@FumblersFaithful",
+   "text": "Still 3-0. Diggs and Amon-Ra together? The computer can keep its 14%. We'll keep the wins.",
+   "kind": "fan",
+   "team": ""
+  }
+ ],
+ "teams": [
+  2,
+  4
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 1888
+ }
+}
