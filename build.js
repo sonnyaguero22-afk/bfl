@@ -30,6 +30,7 @@ function managerKey(guid, member) {
 }
 
 const seasons = [];
+const pendingHistory = []; // in-game win chances to save once the player sim has run
 const managers = {};
 const years = fs.readdirSync(DATA).map((f) => (f.match(/^league_(\d{4})\.json$/) || [])[1]).filter(Boolean).sort();
 
@@ -210,6 +211,14 @@ for (const year of years) {
       m.ap = r2(s.away.totalPointsLive || 0);
       // Live projected finals: points so far plus what each starter is still expected to score.
       // (ESPN's totalProjectedPoints is only the pre-game total, so it can't be used here.)
+      // Starters for the player-level sim (players.js), run once every season is loaded.
+      // left: share of his NFL game still to play. Without a scoreboard, only a game that hasn't started can be simulated.
+      if (nflClock || (m.hp === 0 && m.ap === 0)) m._sides = [s.home, s.away].map((side) => (side.rosterForCurrentScoringPeriod || { entries: [] }).entries
+        .filter((e) => e.lineupSlotId !== 20 && e.lineupSlotId !== 21).map((e) => {
+          const p = e.playerPoolEntry.player, pj = (p.stats || []).find((x) => x.statSourceId === 1 && x.scoringPeriodId === m.wk);
+          const left = nflClock ? nflClock(p.proTeamId) : nflBye[p.proTeamId] === m.wk ? 0 : 1;
+          return { n: p.fullName, pos: POS[p.defaultPositionId] || "", pro: PRO[p.proTeamId] || `FA-${p.id}`, proj: pj ? pj.appliedTotal : 0, pts: e.playerPoolEntry.appliedStatTotal || 0, left };
+        }));
       if (nflClock) {
         for (const [side, key] of [[s.home, "h"], [s.away, "a"]]) {
           // Each player's remaining points can miss by about 60% either way (booms and busts)
@@ -231,27 +240,9 @@ for (const year of years) {
     }
   }
 
-  // In-game win chance history: GitHub saves one point per update while a game is on
-  // (history/live_<year>.json, kept in the repo). Local builds only read it.
   const histFile = path.join(HISTORY, `live_${year}.json`);
   const wp = fs.existsSync(histFile) ? JSON.parse(fs.readFileSync(histFile, "utf8")) : {};
-  if (process.env.GITHUB_ACTIONS === "true") {
-    let changed = false;
-    const now = Date.now();
-    for (const m of matchups) {
-      const key = `${m.wk}-${m.h}-${m.a}`, pts = wp[key];
-      if (m.live && m.hproj != null) {
-        const spread = Math.sqrt((m.hvar || 0) + (m.avar || 0)), diff = m.hproj - m.aproj;
-        const p = spread < 0.01 ? (diff > 0 ? 1 : diff < 0 ? 0 : 0.5) : Phi(diff / spread);
-        (wp[key] = wp[key] || []).push([now, Math.round(p * 1000) / 1000, m.hp, m.ap]);
-        changed = true;
-      } else if (pts && m.win !== null && !m.live) {
-        const fin = m.win === m.h ? 1 : m.win === m.a ? 0 : 0.5;
-        if (pts[pts.length - 1][1] !== fin || pts[pts.length - 1][2] !== m.hp) { pts.push([now, fin, m.hp, m.ap]); changed = true; }
-      }
-    }
-    if (changed) { fs.mkdirSync(HISTORY, { recursive: true }); fs.writeFileSync(histFile, JSON.stringify(wp)); }
-  }
+  pendingHistory.push({ matchups, wp, histFile });
 
   // Current rosters
   const rosters = {};
@@ -322,6 +313,42 @@ for (const s of seasons) {
   for (const mp in s.periods || {}) for (const sp of s.periods[mp]) s.sp2mp[sp] = +mp;
   s.odds = seasonOdds(s);
   delete s.played; delete s.sp2mp;
+}
+
+// This week's games, simulated player by player (see players.js): win chance and the Ones to Watch
+const { fit, simGame } = require("./players");
+const playerModel = fit(seasons.map((s) => ({ ...s, lineups: Object.fromEntries(Object.entries(s.lineups).filter(([w]) => s.done || +w < s.curWeek)) })));
+for (const s of seasons) for (const m of s.matchups) {
+  if (!m._sides) continue;
+  const g = simGame(playerModel, m._sides[0], m._sides[1], s.year * 1000 + m.wk * 10 + m.h);
+  m.psim = Math.round(g.home * 1000) / 1000;
+  // The biggest swing on each side, then the next biggest overall
+  const top = [0, 1].map((k) => g.watch.find((x) => x.side === k)).filter(Boolean);
+  const pick = [...top, ...g.watch.filter((x) => !top.includes(x))].slice(0, 3).sort((a, b) => (b.boom - b.bust) - (a.boom - a.bust));
+  m.watch = pick.map(({ side, n, pos, pro, proj, boom, bust }) => ({ id: side ? m.a : m.h, n, pos, pro: pro.startsWith("FA-") ? "FA" : pro, proj, boom, bust }));
+  // QB + own receiver both still to play on one side: they boom and bust together
+  m.stacks = [0, 1].flatMap((k) => { const L = m._sides[k].filter((p) => p.left > 0); return L.filter((p) => p.pos === "QB").flatMap((q) => L.filter((r) => (r.pos === "WR" || r.pos === "TE") && r.pro === q.pro).map((r) => ({ id: k ? m.a : m.h, qb: q.n, rec: r.n }))); });
+  delete m._sides;
+  const nm = (id) => s.teams.find((t) => t.id === id).name;
+  console.log(`::notice::Week ${m.wk}: ${nm(m.h)} ${Math.round(m.psim * 100)}% vs ${nm(m.a)} | watch ${m.watch.map((x) => `${x.n} for ${nm(x.id)} (boom ${x.boom}%, bust ${x.bust}%)`).join("; ")}${m.stacks.length ? ` | stacks ${m.stacks.map((k) => `${k.qb}+${k.rec}`).join(", ")}` : ""}`);
+}
+// In-game win chance history: GitHub saves one point per update while a week is under way
+// (history/live_<year>.json, kept in the repo). Local builds only read it.
+if (process.env.GITHUB_ACTIONS === "true") for (const { matchups, wp, histFile } of pendingHistory) {
+  let changed = false;
+  const now = Date.now();
+  for (const m of matchups) {
+    const key = `${m.wk}-${m.h}-${m.a}`, pts = wp[key];
+    if (m.live && m.psim != null && (m.on || m.hp || m.ap)) {
+      const p = m.psim;
+      (wp[key] = wp[key] || []).push([now, Math.round(p * 1000) / 1000, m.hp, m.ap]);
+      changed = true;
+    } else if (pts && m.win !== null && !m.live) {
+      const fin = m.win === m.h ? 1 : m.win === m.a ? 0 : 0.5;
+      if (pts[pts.length - 1][1] !== fin || pts[pts.length - 1][2] !== m.hp) { pts.push([now, fin, m.hp, m.ap]); changed = true; }
+    }
+  }
+  if (changed) { fs.mkdirSync(HISTORY, { recursive: true }); fs.writeFileSync(histFile, JSON.stringify(wp)); }
 }
 
 // House style for the AI writer's text: Zoe's nickname is written Z², however it comes out

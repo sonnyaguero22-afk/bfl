@@ -80,13 +80,17 @@ function recapFacts(s, W) {
   const moves = s.moves.filter((m) => m.wk === W).map((m) => ({ team: who(s.byId[m.tm], W), added: m.add.map((x) => x.split("|")[0]), dropped: m.drop.map((x) => x.split("|")[0]) }));
   const trades = s.trades.filter((t) => t.wk === W || t.wk === W + 1).map((t) => ({ teams: t.teams.map((id) => who(s.byId[id], W)), received: Object.fromEntries(Object.entries(t.got).map(([id, g]) => [who(s.byId[id], W), g.map((x) => x.split("|")[0])])) }));
   const next = [...s.matchups, ...(s.future || [])].filter((m) => m.wk === W + 1 && m.a).map((m) => `${who(s.byId[m.h], W + 1)} vs ${who(s.byId[m.a], W + 1)}`);
+  // From the player sim: who swings next week's games most (a boom/bust is a top/bottom-20% game for him)
+  const watch = s.matchups.filter((m) => m.wk === W + 1 && m.watch).map((m) => ({ game: `${who(s.byId[m.h], W + 1)} vs ${who(s.byId[m.a], W + 1)}`,
+    ones_to_watch: m.watch.map((x) => ({ player: `${x.n} (${x.pos}, ${x.pro})`, for: who(s.byId[x.id], W + 1), team_win_chance_if_he_booms: `${x.boom}%`, if_he_busts: `${x.bust}%` })),
+    stacks: (m.stacks || []).map((k) => `${k.qb} and ${k.rec} for ${who(s.byId[k.id], W + 1)}`) }));
   return {
     season: s.year, buckaroo_bowl_number: s.year - D.firstYear + 1, week: W, regular_season_weeks: s.regWeeks, playoff_teams: s.playoffTeams,
     games, top_performances: starts.sort((a, b) => b.points - a.points).slice(0, 6),
     biggest_busts: starts.filter((x) => x.projected != null).sort((a, b) => (a.points - a.projected) - (b.points - b.projected)).slice(0, 3),
     bench_blunders: bench.sort((a, b) => b.points - a.points).slice(0, 3),
     starters_who_did_not_play: starts.filter((x) => x.status),
-    standings_after_week: standings, roster_moves_this_week: moves, trades, next_week_matchups: next, trade_watch: tradeWatchFacts(s, W),
+    standings_after_week: standings, roster_moves_this_week: moves, trades, next_week_matchups: next, next_week_ones_to_watch: watch, trade_watch: tradeWatchFacts(s, W),
     records_before_this_week: Object.fromEntries(s.teams.map((t) => [who(t, W), `${recBefore[t.id].w}-${recBefore[t.id].l}`])),
   };
 }
@@ -241,7 +245,7 @@ const schemas = {
   profile: { type: "object", additionalProperties: false, required: ["headline", "body"], properties: { headline: str, body: { type: "array", items: str } } },
 };
 const asks = {
-  recap: "Write the weekly recap for this week of the Buckaroo Football League: a headline, a one-sentence dek, and 5 to 8 body paragraphs covering the results (lead with the best storyline), standout and disappointing performances, the standings and title-odds picture, notable moves, and a look ahead to next week. Then write 6 to 10 social posts reacting to the week, and a fresh 2 to 3 sentence bio for every team in the standings that sums up where its season stands right now (use the exact team name in the team field). Finally, the trade watch: quick 1 to 2 sentence takes on how earlier trades in trade_watch are aging, for the 2 to 5 deals with the most to say this week (a deal that looked lopsided flipping, a player who carried his new team or sat on its bench, a winner pulling further ahead). These are quick hot takes, not articles; say how it looks now compared with before. Use the trade's id from the facts. If there are no trades yet, leave it empty.",
+  recap: "Write the weekly recap for this week of the Buckaroo Football League: a headline, a one-sentence dek, and 5 to 8 body paragraphs covering the results (lead with the best storyline), standout and disappointing performances, the standings and title-odds picture, notable moves, and a look ahead to next week (if next_week_ones_to_watch is given, mention a player or two whose game swings a matchup most, or a QB-receiver stack). Then write 6 to 10 social posts reacting to the week, and a fresh 2 to 3 sentence bio for every team in the standings that sums up where its season stands right now (use the exact team name in the team field). Finally, the trade watch: quick 1 to 2 sentence takes on how earlier trades in trade_watch are aging, for the 2 to 5 deals with the most to say this week (a deal that looked lopsided flipping, a player who carried his new team or sat on its bench, a winner pulling further ahead). These are quick hot takes, not articles; say how it looks now compared with before. Use the trade's id from the facts. If there are no trades yet, leave it empty.",
   trade: "Write a trade reaction story: a headline, a one-sentence dek, and 3 to 5 body paragraphs explaining the deal, what each side got, and who won it on paper (use the title odds change). Then write 3 to 5 social posts reacting to it.",
   profile: "Write a career profile of this manager for their page on the league website, like a club history page in Football Manager: a short headline that captures who they are in this league, and 3 to 5 body paragraphs telling the story of their whole run: each season, the highs and lows, rivalries from the head-to-head records, their habits as a manager (trades, waiver moves), and where they stand right now. Use their nicknames and the lore, as seasoning on top of what actually happened.",
   review: "Write a season-in-review story for this finished season: a headline, a one-sentence dek, and 5 to 7 body paragraphs telling the story of the season from draft to Buckaroo Bowl, including the champion, the last-place finisher, the playoff games, and any notable notes.",

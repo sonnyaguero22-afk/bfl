@@ -366,6 +366,9 @@ table.compact .team { min-width: 0; }
 .feed { display: grid; gap: 14px; }
 .post { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 10px; }
 .post.take { grid-template-columns: minmax(0, 1fr); }
+.watch { padding: 10px 14px 12px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
+.watch .k { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.wrow { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; font-size: 13.5px; line-height: 1.35; }
 .tick { color: var(--brass); font-weight: 800; font-size: 12px; }
 .phead .pill { padding: 1px 6px; font-size: 10px; margin-left: 2px; }
 .avatar { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; color: var(--surface); background: hsl(var(--h) var(--mgr-s) var(--mgr-l)); }
@@ -728,6 +731,7 @@ function weekly(s) {
     const margin = Math.abs(m.hp - m.ap);
     return `<div class="box game${open ? " open" : ""}"><button data-open="${key}" aria-expanded="${open}">${side(m.h, m.hp)}${side(m.a, m.ap)}
       <div class="gmeta"><span>${m.on ? `<span class="pill live">● Live</span>` : m.live ? `<span class="pill">In Progress</span>` : tierName[m.tier] ? `<span class="pill gold">${tierName[m.tier]}</span>` : m.win !== null ? `Margin ${f2(margin)}` : ""}</span><span>${open ? "Hide Lineups ▲" : "Show Lineups ▼"}</span></div></button>
+      ${watchHtml(s, m)}
       ${open ? `<div class="wpwrap">${wpChart(s, m)}</div><div class="lineups"><div>${lineupCol(s, wk, m.h)}</div><div>${lineupCol(s, wk, m.a)}</div></div>` : ""}</div>`;
   }).join("");
   const byes = s.byes.filter((b) => b.wk === wk).map((b) => `<span class="pill">${esc(s.byId[b.h].name)} has a bye</span>`).join(" ");
@@ -808,10 +812,20 @@ const pct1 = (v) => (v >= 99.95 ? "100%" : v > 0 && v < 0.5 ? "<1%" : `${Math.ro
 // ---------- Game win chances ----------
 const erf = (x) => { const t = 1 / (1 + 0.3275911 * Math.abs(x)); const y = 1 - ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x); return x >= 0 ? y : -y; };
 const Phi = (z) => 0.5 * (1 + erf(z / Math.SQRT2));
+// Ones to Watch: the players still to play whose game swings this matchup most, from the player sim
+function watchHtml(s, m) {
+  if (!m.live || !m.watch || !m.watch.length) return "";
+  const who = (id) => mgrName(mgrAt(s.byId[id], m.wk));
+  const stack = (x) => (m.stacks || []).find((k) => k.id === x.id && (k.qb === x.n || k.rec === x.n));
+  return `<div class="watch"><div class="k">Ones to Watch</div>${m.watch.map((x) => { const st = stack(x);
+    return `<div class="wrow">${badge(s.byId[x.id], 1)}<span><b>${pn(x.n)}</b> <small class="muted">${esc(x.pos)} · ${esc(x.pro)} · proj ${f1(x.proj)}</small><br><small>If he booms, ${esc(who(x.id))} wins <b>${x.boom}%</b> · if he busts, <b>${x.bust}%</b>${st ? ` · <span class="pill">Stack: ${esc(st.qb === x.n ? st.rec : st.qb)}</span>` : ""}</small></span></div>`; }).join("")}</div>`;
+}
 // Chance the home team wins (0-1). Live games use ESPN's live projected finals, with less
 // uncertainty the less there is left to play; otherwise team strength going into the week.
 function winProb(s, m) {
   if (!s.odds || !m.a) return null;
+  // This week's games: the player-by-player sim (players.js), before and during the games
+  if (m.live && m.psim != null) return m.psim;
   const sd = s.odds.sd || 20;
   if (m.live && m.hproj != null) {
     const full = m.hproj + m.aproj, left = Math.max(0, m.hproj - m.hp) + Math.max(0, m.aproj - m.ap);
