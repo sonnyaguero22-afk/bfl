@@ -1,0 +1,62 @@
+{
+ "id": "trade-2026-6-1-4",
+ "type": "trade",
+ "year": 2026,
+ "wk": 6,
+ "created": "2026-10-27T20:45:23.099Z",
+ "title": "The Model Finally Says Yes to Philly: Hubbard and Smith Saddle Up for Team Pillbert",
+ "dek": "Sonny sends Chuba Hubbard and DeVonta Smith to Alan for George Pickens and Ollie Gordon II, and the title odds swing 17 points in Team Pillbert's favor on the eve of a first-place showdown.",
+ "body": [
+  "Before week 6, Sonny's The Horse is Hea and Alan's Team Pillbert swapped two-for-two between teams that share a piece of first place at 4-1. Running back Chuba Hubbard and wide receiver DeVonta Smith went to Philly. Coming back to Sonny: wide receiver George Pickens and running back Ollie Gordon II. On the surface it's a clean RB-and-WR for RB-and-WR exchange. Under the hood, it's anything but even.",
+  "Start with the receipts. Hubbard brings 74 points through five weeks, about 14.8 a game, and Smith adds 39, roughly 7.8 a game, for a total of 113 headed to Team Pillbert. Sonny takes in 86.8: Pickens with 55, a steady 11 a week, and Gordon with 31.8. That's a 26.2-point gap in Alan's favor, and it comes almost entirely from the running back side, where Hubbard has outscored Gordon by more than double on the season.",
+  "The model noticed. Team Pillbert's title odds jumped from 16% to 26%, a ten-point leap that boosts Philly's chances by more than 60% in one transaction. The Horse is Hea went the other way, from 18% to 11%, giving back roughly 39% of its title hopes. After a week in which the projections met each of Alan's roster moves with a skeptical squint, this is the first deal it outright applauded, and on paper it isn't close: Team Pillbert wins this trade, and it isn't the kind of win that needs a footnote.",
+  "Sonny's case is about rate rather than totals. Gordon's 31.8 came in just two weeks on a roster, which works out to about 15.9 per week rostered, the best clip of anyone in the deal, so he looks a lot like a back whose season is just getting started. Pickens gives the Horse a receiver who has been reliably double-digit, and a Civ player knows that sometimes you trade gold now for production later. The catch is that Gordon was a waiver pickup for Alan only a week ago, so Philly essentially turned a free-agent flyer and a receiver into a proven lead back.",
+  "The timing makes it louder. Sonny hosts Ramon's No Banner only HULK in week 6 with first place on the line, and he walks in with 11% title odds and two new starters still learning where the barn is. Alan, meanwhile, gets Randy and now carries 26% title odds, more than double the Horse's. Three teams are tied at the top, but only one of them just got a vote of confidence from the math."
+ ],
+ "social": [
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "Trade: The Horse is Hea sends Chuba Hubbard (74 pts) and DeVonta Smith (39) to Team Pillbert for George Pickens (55) and Ollie Gordon II (31.8). Title odds: Team Pillbert 16% to 26%. The Horse is Hea 18% to 11%.",
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "The Horse is Hea",
+   "handle": "@HorseIsHeaBFL",
+   "text": "Welcome to the stable, George Pickens and Ollie Gordon II! 🐎 First ride is a big one: the HULK comes to town in week 6 with first place on the line.",
+   "kind": "team",
+   "team": "The Horse is Hea"
+  },
+  {
+   "author": "Marcus Pell",
+   "handle": "@MarcusPellWrites",
+   "text": "Alan got 26.2 more points back than he sent out, and the model handed him ten points of title odds for it. Sonny is betting on Gordon's per-week pace. Bold bet the week you play the HULK. Philly wins this one on paper.",
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Stable Hand Steve",
+   "handle": "@StableHandSteveFF",
+   "text": "We just traded a 74-point running back to the team tied with us for first. Pickens better be ready to carry the barn on his back. 🐎",
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Sunday Spreadsheet Sam",
+   "handle": "@SpreadsheetSamFF",
+   "text": "After a week of docking every Pillbert trade, the model finally liked one. +10 for Philly, -7 for Sonny. Same league, same week, very different vibes.",
+   "kind": "pundit",
+   "team": ""
+  }
+ ],
+ "teams": [
+  1,
+  4
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 3081
+ }
+}

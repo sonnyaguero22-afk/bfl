@@ -1,0 +1,62 @@
+{
+ "id": "trade-2026-5-3-4",
+ "type": "trade",
+ "year": 2026,
+ "wk": 5,
+ "created": "2026-10-27T20:42:59.652Z",
+ "title": "Three for One, Four Tenths Apart: JMoney Sells Jeanty, and the Model Docks Philly",
+ "dek": "Jordan turned Ashton Jeanty into Isaiah Likely, Emeka Egbuka and Denzel Boston, the receipts came out almost dead even, and the only team that lost title odds was the one that got the star.",
+ "body": [
+  "Before week 5, Jordan's Counting or not Counting GV and Alan's Team Pillbert made the kind of deal that looks lopsided from across the room and weirdly balanced up close. Running back Ashton Jeanty went to Philly. Coming back to JMoney: tight end Isaiah Likely, wide receiver Emeka Egbuka and wide receiver Denzel Boston. One established workhorse for a three-player bundle, from a winless team to a 3-1 contender riding a three-game win streak.",
+  "Here's the part nobody saw coming. Jeanty arrives with 64.4 points through four weeks, about 16.1 a game. Jordan's haul adds up to 64.8: Egbuka with 28.6, Likely with 18.2 and Boston with 18. On the season-to-date scoreboard, Counting or not Counting GV took in four tenths of a point more than it sent out. That's not a trade so much as an expensive way of making change.",
+  "Of course, raw totals flatter a three-for-one. You can only start so many guys, and Jeanty's 16.1 a game comes from one lineup spot, while Egbuka's 28.6 works out to about 7.2 a week. Boston had been on a roster for just two weeks and Likely for three, so Jordan is betting on volume and upside more than track record. For a manager sitting at 0-4 with 0% playoff odds, swapping one star for three bodies is a perfectly reasonable way to fill holes and see what sticks.",
+  "Now the verdict. Team Pillbert's title odds went from 21% to 16% on the deal, a five-point haircut for landing the best player in the trade. Jordan's stayed exactly where they were, at 0%, because there is no floor below the floor. Strictly on paper, then, JMoney won by not losing, and Philly lost by winning the headline. The likeliest read is that the model sees Alan's depth getting thinner, three roster contributors out for one, on a team whose whole case is built on surviving bad weeks.",
+  "The plot twist, as readers already know, is that Jeanty didn't stay long: Alan flipped him to Mekhi in the Justin Jefferson deal, so this trade is really the first domino in Philly's roster overhaul. That makes Jordan's end of it the more permanent one. Likely, Egbuka and Boston are his now, and the first test is a week 5 date with Zoe's Ghostu-Spider SZN. If the bundle produces more than 16 points a week combined, JMoney will have quietly sold high to the busiest shopper in the league."
+ ],
+ "social": [
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "Trade details: Counting or not Counting GV sends Ashton Jeanty (64.4 pts) to Team Pillbert for Isaiah Likely, Emeka Egbuka and Denzel Boston (64.8 combined). Title odds: Team Pillbert 21% to 16%. Counting or not Counting GV unchanged at 0%.",
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Counting or not Counting GV",
+   "handle": "@CountingGV",
+   "text": "Welcome to the squad, Isaiah Likely, Emeka Egbuka and Denzel Boston! Three new weapons, one goal: that first W. Ghostu-Spider SZN, see you in week 5. 🎺",
+   "kind": "team",
+   "team": "Counting or not Counting GV"
+  },
+  {
+   "author": "Marcus Pell",
+   "handle": "@MarcusPellWrites",
+   "text": "Jordan got 0.4 more points back than he gave up and his title odds didn't move. Alan got the best player in the deal and lost five points of title odds. On paper, this one goes to JMoney, even if 0% stays 0%.",
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Gridiron Gary",
+   "handle": "@GridironGaryFF",
+   "text": "64.4 for 64.8. Three players for one. This trade is a math problem where the answer is 'basically nothing happened' and the model still found a way to dock Philly.",
+   "kind": "pundit",
+   "team": ""
+  },
+  {
+   "author": "Waiver Wire Wendy",
+   "handle": "@WaiverWireWendyFF",
+   "text": "Philly traded three guys for Jeanty and then traded Jeanty. Jordan is just sitting there holding Likely, Egbuka and Boston like a guy who left a party with all the snacks.",
+   "kind": "fan",
+   "team": ""
+  }
+ ],
+ "teams": [
+  3,
+  4
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 2413
+ }
+}
