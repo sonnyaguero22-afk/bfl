@@ -6,8 +6,8 @@ The league's history site: every season since 2023, Buckaroo Bowls, managers, pl
 
 GitHub runs `.github/workflows/update.yml` every hour. `check-games.js` decides whether to update:
 
-- every 15 minutes while NFL games are live or just finished
-- once a day around 9am Eastern otherwise
+- every 15 minutes from 4 hours before an NFL kickoff until a few hours after games finish
+- twice a day otherwise, around 9am and 6pm Eastern
 - immediately when the workflow is started by hand (Actions → Update league site → Run workflow)
 
 Each update downloads the current season from ESPN (`fetch.js current`), rebuilds the site (`build.js`) and publishes `public/` to GitHub Pages. When a season finishes, it's saved to `archive/` so it never needs ESPN again.
