@@ -1,0 +1,52 @@
+{
+ "id": "trade-2026-4-1-7",
+ "type": "trade",
+ "year": 2026,
+ "wk": 4,
+ "created": "2026-10-27T16:41:11.690Z",
+ "title": "Chuba for Rice: The Commish and Brucie Shake Hands, and the Model Fines Them Both",
+ "dek": "Sonny's The Horse is Hea and Ramon's No Banner only HULK swapped Chuba Hubbard for Rashee Rice before Week 4, and the title odds say the real winners weren't even part of the deal.",
+ "body": [
+  "The second trade of the 2026 season came from the top of the standings. Sonny's The Horse is Hea sent wide receiver Rashee Rice to Ramon's No Banner only HULK for running back Chuba Hubbard, a straight one-for-one between two 3-0 teams. Both players spent all three weeks on a roster, so the sample is full. Hubbard had 48.6 points before the deal, about 16.2 a week, while Rice had 31.5, roughly 10.5 a week.",
+  "On the surface, Sonny got the better box score. He added a running back who has outscored Rice by 17.1 points through three weeks, which is the kind of steady production a contender wants alongside Jaxon Smith-Njigba's fireworks. If you only looked at the season totals, you'd assume the commissioner fleeced the league's best team. The commish did build the website, after all, and nobody would have been shocked if the scoreboard tilted his way.",
+  "Ramon's logic is the more forward-looking one. HULK already has the league's most dangerous offense, so Brucie can afford to buy a receiver on what he might do rather than what he's done. Taking the lower scorer suggests he believes Rice's best weeks are ahead of him, and when you're sitting on 444.2 points through three games, you have the luxury of playing the long game. It's the kind of move only a team with a cushion gets to make.",
+  "Then the model weighed in, and it handed out penalties to both sides. The Horse is Hea fell from 21% to 11%, a 10-point drop that cuts Sonny's title chances nearly in half. No Banner only HULK slid from 52% to 41%, an 11-point drop, but that's only about a fifth of Ramon's odds, and he remains the overwhelming favorite. On paper, Brucie lost less, so he takes this one on a technicality. The bigger story is the math: 21 points of title odds just walked out of these two front offices and got spread across the other six teams.",
+  "Week 4 will deliver the first evidence. Rice debuts for HULK against Alan's Team Pillbert, while Hubbard gets his first start in commissioner colors against Zoe's Ghostu-Spider SZN. If Hubbard keeps up his 16-a-week pace and The Horse is Hea moves to 4-0, Sonny can argue the model is reading the wrong stat sheet. If Rice goes off against Philly, the deal will look like the rich getting richer, which is the last thing the rest of the league wanted to watch."
+ ],
+ "social": [
+  {
+   "author": "Horse Hea Hive",
+   "handle": "@HorseHeaHive",
+   "text": "We got the guy with 48.6 points. They got the guy with 31.5. The model docked US 10 points. Somebody check the commissioner's math settings. Oh wait."
+  },
+  {
+   "author": "HULK Nation",
+   "handle": "@HULKSmashFF",
+   "text": "Still 41%. Still the best team in the league. Still adding weapons. Rice, welcome to the 444 club."
+  },
+  {
+   "author": "Buckaroo Odds Desk",
+   "handle": "@BuckarooNumbers",
+   "text": "Trade tally: Horse -10, HULK -11, other six teams +21 combined. Best trade of the year for the people who didn't make it."
+  },
+  {
+   "author": "Pillbert Watch",
+   "handle": "@PillbertWatch",
+   "text": "Rashee Rice's first game in HULK colors is against us. Love the timing. Truly. No notes."
+  },
+  {
+   "author": "Wire Room Insider",
+   "handle": "@WireRoomInsider",
+   "text": "Sources say someone told Brucie his title odds dropped 11 points right after the trade. Sources also say the controller is fine. Mostly."
+  }
+ ],
+ "teams": [
+  1,
+  7
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 2116
+ }
+}

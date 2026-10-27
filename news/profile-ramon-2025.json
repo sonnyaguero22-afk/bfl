@@ -1,0 +1,24 @@
+{
+ "id": "profile-ramon-2025",
+ "type": "profile",
+ "year": 2025,
+ "wk": null,
+ "created": "2026-10-27T16:36:37.890Z",
+ "title": "Brucie's Revenge: The Reluctant Recruit Who Got Kicked Out and Came Back Running the League",
+ "dek": "",
+ "body": [
+  "Ramon, aka Brucie, almost didn't join the Buckaroo Football League. Four seasons later he owns the best record in it, and nobody is more annoyed about that than the seven people chasing him. His debut in 2023 with Araleasers was a quiet one: a 4-10 record, 1,375.3 points, the 6 seed, and a 5th-of-6 finish. He made zero trades and two pickups that year, the transaction log of a man still deciding whether he was really in.",
+  "Then 2024 happened. Araleasers went 7-7, took the 3 seed, and rode it all the way to Buckaroo Bowl II, where Kaushal's Habibsters were waiting to collect their second straight ring. Runner-up is still the best finish of Brucie's career, which accounts for half of his 1-1 lifetime playoff record. He did it with zero trades and exactly one pickup, maybe the most hands-off deep playoff run in league history. That season also produced the low point of his career: 56.4 points in week 12 against, naturally, Kaushal.",
+  "The 2025 season is the one the league will never let go. Araleasers started 2025 under Ramon, who was kicked for inactivity after week 8. The renamed Ramon's Remains then went on a winning streak without him, opening with a 94.76-92.02 win over Alan in week 9. The record says 5-11, 1,523.7 points, the 5 seed, and 5th of 6, with an asterisk on every game he didn't manage. The ledger shows four trades and eight pickups that year, by far his busiest, though the box score won't say how much of that was Brucie and how much was the team running itself.",
+  "Now comes the redemption, or the villain origin story, depending on who you ask. Back as No Banner only HULK, Ramon is 6-1 with 927.4 points and a 37 percent shot at the title. He opened by dropping a career-best 177.9 on Mekhi in week 1, a fitting start, since Kai is the manager he's had the most success against at 6-3. He's been more active than in his early years, too, with one trade and four pickups already, like a guy who finally decided he's staying.",
+  "The rivalry chart is a mixed bag. Kaushal is his nemesis at 4-8, and he's also underwater against Sonny (5-7), Randy (4-7), and Alan (5-6), while he's a perfect 1-0 against newcomers Zoe and Jordan. For a Chicago kid turned Bills fan, his career has had plenty of Buffalo energy: years of almost, followed by a team that suddenly looks like the real thing. Brucie has never won a Buckaroo Bowl. Right now, he's the favorite to change that, and the whole league is already rooting against him."
+ ],
+ "social": [],
+ "teams": [],
+ "mgr": "ramon",
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 1758
+ }
+}
