@@ -366,6 +366,8 @@ table.compact .team { min-width: 0; }
 .feed { display: grid; gap: 14px; }
 .post { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 10px; }
 .post.take { grid-template-columns: minmax(0, 1fr); }
+.tick { color: var(--brass); font-weight: 800; font-size: 12px; }
+.phead .pill { padding: 1px 6px; font-size: 10px; margin-left: 2px; }
 .avatar { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; color: var(--surface); background: hsl(var(--h) var(--mgr-s) var(--mgr-l)); }
 .phead { font-size: 13.5px; }
 .pbody p { margin: 2px 0 4px; font-size: 14.5px; line-height: 1.45; }
@@ -1377,7 +1379,10 @@ const NEWS_TYPE = { recap: "Weekly Recap", trade: "Trade", review: "Season in Re
 const newsWhen = (a) => (a.type === "review" ? `${a.year} Season` : a.type === "trade" ? `${a.year} · Before Week ${a.wk}` : `${a.year} · Week ${a.wk}`);
 const newsCard = (a, big) => `<button class="box newscard${big ? " big" : ""}" data-go="news-${a.id}"><span class="pill${a.type === "trade" ? " gold" : ""}">${NEWS_TYPE[a.type]}</span><b>${esc(a.title)}</b><span class="dek">${esc(a.dek)}</span><small class="muted">${newsWhen(a)}</small></button>`;
 const avatarHue = (handle) => [...handle].reduce((x, c) => (x * 31 + c.charCodeAt(0)) % 360, 7);
-const postHtml = (p, a) => `<div class="post"><span class="avatar" style="--h:${avatarHue(p.handle)}" aria-hidden="true">${esc((p.author.match(/[A-Za-z0-9]/) || ["?"])[0].toUpperCase())}</span><div class="pbody"><div class="phead"><b>${esc(p.author)}</b> <span class="muted">${esc(p.handle.startsWith("@") ? p.handle : "@" + p.handle)}</span></div><p>${esc(p.text)}</p>${a ? `<button class="mlink postsrc" data-go="news-${a.id}">${newsWhen(a)} · ${esc(a.title)}</button>` : ""}</div></div>`;
+// Verified accounts (league, team, reporter) get a tick and a label; team accounts use the team's badge
+const OFFICIAL = { league: "League", team: "Official", reporter: "Reporter" };
+const postTeam = (p, a) => p.kind === "team" && a && S[a.year] ? S[a.year].teams.find((t) => [t, ...(t.eras || [])].some((e) => e.name === p.team)) : null;
+const postHtml = (p, a, src = a) => { const tm = postTeam(p, src); return `<div class="post">${tm ? badge(tm) : `<span class="avatar" style="--h:${avatarHue(p.handle)}" aria-hidden="true">${esc((p.author.match(/[A-Za-z0-9]/) || ["?"])[0].toUpperCase())}</span>`}<div class="pbody"><div class="phead"><b>${esc(p.author)}</b>${OFFICIAL[p.kind] ? ` <span class="tick" title="Verified">✓</span>` : ""} <span class="muted">${esc(p.handle.startsWith("@") ? p.handle : "@" + p.handle)}</span>${OFFICIAL[p.kind] ? ` <span class="pill gold">${OFFICIAL[p.kind]}</span>` : ""}</div><p>${esc(p.text)}</p>${a ? `<button class="mlink postsrc" data-go="news-${a.id}">${newsWhen(a)} · ${esc(a.title)}</button>` : ""}</div></div>`; };
 const allPosts = () => NEWS.flatMap((a) => (a.social || []).map((p) => ({ p, a })));
 const newsEmpty = `<div class="box lockcard"><h3>No Stories Yet</h3><p>League news is written automatically after every finished week, every trade and every season. Stories start appearing with the first update after the news writer is switched on.</p></div>`;
 const aiNote = `<p class="note">Written by Claude, an AI, from the league's data. It can get things wrong; the scores and stats elsewhere on the site are the source of truth.</p>`;
@@ -1406,7 +1411,7 @@ function articleView() {
     <div class="eyebrow" style="margin-top:18px">${NEWS_TYPE[a.type]} · ${newsWhen(a)}</div><h2 class="headline">${esc(a.title)}</h2><p class="dek big">${esc(a.dek)}</p>
     <div class="artbody">${a.body.map((p) => `<p>${esc(p)}</p>`).join("")}</div>
     ${tradeWatchHtml(a)}
-    ${a.social && a.social.length ? `<section><h3>The Reaction</h3><div class="box rec"><div class="feed">${a.social.map((p) => postHtml(p)).join("")}</div></div></section>` : ""}
+    ${a.social && a.social.length ? `<section><h3>The Reaction</h3><div class="box rec"><div class="feed">${a.social.map((p) => postHtml(p, null, a)).join("")}</div></div></section>` : ""}
     ${aiNote}
     ${newer || older ? `<section><h3>More Stories</h3><div class="newslist">${[newer, older].filter(Boolean).map((x) => newsCard(x)).join("")}</div></section>` : ""}</article>`;
 }

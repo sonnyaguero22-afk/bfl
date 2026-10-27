@@ -211,6 +211,11 @@ Rules:
 - Call teams by their exact names as given. For managers, mix their first names and everyday nicknames from the lore interchangeably, the way friends talk, without explaining or making a bit of the nickname. Titles and joke labels (a league role, "the villain") are different: those count as running jokes. A "(name)" after a team is its manager.
 - Never mention where anyone lives, works, studies, or serves beyond what the lore says.
 - Social posts come from fictional accounts only: made-up fans, team fan clubs, pundits, and "insiders". Never write as, or tag, real NFL players, journalists, or celebrities.
+- Most social posts come from fans and pundits. Add 1 to 3 posts from the league's verified accounts, written the way real clubs and reporters post, like the news feed in Football Manager:
+  - kind "league": Buckaroo Football League (@BuckarooFL), neutral and official: results, milestones, standings.
+  - kind "team": a team's official account, named after the team, with its exact team name in the team field. On-brand and upbeat, like a club: matchday results, player of the week, "welcome to the club" after a trade. Never written as the manager.
+  - kind "reporter": the league's two beat reporters, Dana Whitfield (@DanaWhitfieldBFL), the insider who breaks news, and Marcus Pell (@MarcusPellWrites), the columnist with opinions.
+  - Keep the same name and handle for the same account every time. Set team to "" for every post that isn't kind "team".
 - A player marked "on bye" or "did not play" scored nothing because he didn't play. Say so plainly; never treat it as a bad game or a bust. Starting one is the manager's lineup mistake, not the player's.
 - Running jokes and nicknames are seasoning, not the meal. Use any one bit at most once in a story, leave most of them out of most stories, and never make the same joke the punchline two stories in a row. A manager is more than their running joke: describe what they actually did this week first. Labels count as running jokes too: don't cast anyone as the league's villain, punching bag, or hothead by default. Use a label like that at most once in a story, and leave it out of most stories.
 - Plain text only, no markdown. Body paragraphs should be 2 to 5 sentences each.
@@ -223,7 +228,8 @@ ${LORE}`;
 
 // ---------- Output shapes ----------
 const str = { type: "string" };
-const SOCIAL = { type: "array", items: { type: "object", additionalProperties: false, required: ["author", "handle", "text"], properties: { author: str, handle: str, text: str } } };
+const SOCIAL = { type: "array", items: { type: "object", additionalProperties: false, required: ["author", "handle", "text", "kind", "team"], properties: { author: str, handle: str, text: str,
+  kind: { type: "string", enum: ["fan", "pundit", "reporter", "team", "league"] }, team: str } } };
 const ARTICLE = { title: str, dek: str, body: { type: "array", items: str } };
 const schemas = {
   recap: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "social", "bios", "trade_watch"], properties: { ...ARTICLE, social: SOCIAL,
@@ -270,7 +276,7 @@ function recentStories(n = 4) {
   if (!fs.existsSync(NEWS)) return [];
   return fs.readdirSync(NEWS).map((f) => JSON.parse(fs.readFileSync(path.join(NEWS, f), "utf8"))).filter((a) => a.type !== "profile")
     .sort((a, b) => (a.created < b.created ? 1 : -1)).slice(0, n)
-    .map((a) => ({ title: a.title, body: a.body, social: (a.social || []).map((p) => p.text), trade_watch: (a.trade_watch || []).map((t) => t.take) }));
+    .map((a) => ({ title: a.title, body: a.body, social: (a.social || []).map((p) => `${p.author} (${p.handle}): ${p.text}`), trade_watch: (a.trade_watch || []).map((t) => t.take) }));
 }
 
 async function write(client, job) {
