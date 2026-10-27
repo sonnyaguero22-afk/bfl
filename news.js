@@ -298,6 +298,8 @@ async function write(client, job) {
   const text = res.content.filter((b) => b.type === "text").map((b) => b.text).join("");
   let out;
   try { out = JSON.parse(text); } catch { console.log(`::warning::${job.id}: response wasn't valid JSON, will retry next run`); return null; }
+  // Stories are permanent, so don't keep one that came back hollow
+  if (!out.body || out.body.length < 2 || (schemas[job.type].required.includes("social") && !(out.social || []).length)) { console.log(`::warning::${job.id}: came back with an empty story, will retry next run`); return null; }
   // Bios name teams as written in the facts ("Name (Manager)"); match on the team-name part
   const teamFor = (label) => job.s.teams.find((t) => label === nameAt(t, job.wk) || label.startsWith(nameAt(t, job.wk) + " ("));
   return {
