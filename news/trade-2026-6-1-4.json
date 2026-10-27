@@ -1,0 +1,47 @@
+{
+ "id": "trade-2026-6-1-4",
+ "type": "trade",
+ "year": 2026,
+ "wk": 6,
+ "created": "2026-10-27T17:12:23.872Z",
+ "title": "The Commish Blinks: Alan's Hubbard-and-Smith Haul Sends Team Pillbert to 26% and The Horse is Hea Back to 11%",
+ "dek": "Sonny took George Pickens and Ollie Gordon II, Alan took Chuba Hubbard and DeVonta Smith, and the title model handed Team Pillbert a 17-point swing over the team it just passed.",
+ "body": [
+  "The deal, struck before Week 6: Sonny's The Horse is Hea sent running back Chuba Hubbard and wide receiver DeVonta Smith to Alan's Team Pillbert, and got back wide receiver George Pickens and running back Ollie Gordon II. Three of the four players have spent all five weeks on a roster. Gordon has only two, which makes him the wild card in the math. Raw totals favor Alan's side, 113 points to 86.8, a gap of 26.2.",
+  "Start with what Alan got. Hubbard arrives with 74 points, about 14.8 a week, the biggest number in the deal. Smith brings 39, roughly 7.8 a week, which is modest but gives Team Pillbert another receiver to rotate through a lineup that already changes faster than a highlight reel. Hubbard has now passed through the HULK, The Horse is Hea, and Team Pillbert this season, and the model seems to think his best stop is this one.",
+  "Sonny's side is built on upside. Pickens comes in with 55 points, about 11 a week, and Gordon has 31.8 in his two weeks on a roster, close to 15.9 a week, the best per-week mark of anyone in the trade. Gordon only landed on Team Pillbert after Alan grabbed him off the wire in Week 4, so the commish just paid a starting running back and a starting receiver for a waiver find and a WR who has been a step behind Hubbard all year. If Gordon's two-week pace is real, Sonny bought low. If it isn't, he bought a mirage with a running back's name on it.",
+  "The title odds were not on the fence. Team Pillbert jumped from 16% to 26%, The Horse is Hea fell from 18% to 11%, and that is a 17-point swing between two 4-1 teams that were separated by two points a week ago. Before this trade, Sonny was ahead of Alan in the race. After it, Alan's championship chances are well over double Sonny's. A commissioner is supposed to be the one who holds the power in a league, but on this one, the guy everyone roots against walked away with the leverage.",
+  "The verdict on paper: Alan wins, clearly, and Philly is now the clear second favorite behind the HULK. Sonny's best argument is that Gordon's per-week number holds and Pickens finds another gear, and he will find out fast, because The Horse is Hea opens its new era against Ramon's No Banner only HULK in the 4-1 showdown of Week 6. Team Pillbert gets The fumblers, so Hubbard and Smith debut against Randy. Two new backfields, one big Sunday, and one manager who already has the model on his side."
+ ],
+ "social": [
+  {
+   "author": "Pillbert Nation",
+   "handle": "@PillbertNation",
+   "text": "16% to 26%. Hubbard 74 points, Smith 39, and we passed the commish in the title race with one phone call. Fumblers, the new guys say hi."
+  },
+  {
+   "author": "Horse is Hea Faithful",
+   "handle": "@HorseIsHeaFaithful",
+   "text": "Ollie Gordon II: 15.9 a week. Best per-week number in the whole trade. Model says 11%. Model has clearly never watched a man find a gear. HULK, see you Sunday."
+  },
+  {
+   "author": "Dee the Spreadsheet Guy",
+   "handle": "@BFLDeeSpreads",
+   "text": "Totals: Alan 113, Sonny 86.8. Odds: Alan +10, Sonny -7. That is a 17-point title swing between two 4-1 teams. The commish got out-negotiated in his own league."
+  },
+  {
+   "author": "BFL Insider",
+   "handle": "@BFLInsiderDesk",
+   "text": "Sources say Chuba Hubbard has now been on three BFL rosters and the title odds liked each move less for the team letting him go. Sources also say the HULK is watching all of this with a 55% grin."
+  }
+ ],
+ "teams": [
+  1,
+  4
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 2454
+ }
+}
