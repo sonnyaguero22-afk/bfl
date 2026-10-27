@@ -346,8 +346,9 @@ fs.writeFileSync(path.join(__dirname, "site", "data.js"), dataJs);
 // public/ is the standalone website: site/index.html is a page body, so give it a full document shell
 const PUB = path.join(__dirname, "public");
 fs.mkdirSync(PUB, { recursive: true });
-const page = fs.readFileSync(path.join(__dirname, "site", "index.html"), "utf8");
-fs.writeFileSync(path.join(PUB, "index.html"), `<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<meta name="robots" content="noindex">\n<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>\n</head>\n<body>\n${page}\n</body>\n</html>\n`);
+// data.js gets a version stamp so a fresh page never pairs with a cached copy of old data
+const page = fs.readFileSync(path.join(__dirname, "site", "index.html"), "utf8").replace('<script src="data.js">', `<script src="data.js?v=${Date.now()}">`);
+fs.writeFileSync(path.join(PUB, "index.html"), `<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<meta name="robots" content="noindex">\n<meta http-equiv="Cache-Control" content="no-cache">\n<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>\n</head>\n<body>\n${page}\n</body>\n</html>\n`);
 fs.writeFileSync(path.join(PUB, "data.js"), dataJs);
 fs.writeFileSync(path.join(PUB, ".nojekyll"), "");
 console.log("wrote public/ and site/data.js", (Buffer.byteLength(dataJs) / 1024).toFixed(0) + " KB");
