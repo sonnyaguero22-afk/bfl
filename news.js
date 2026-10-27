@@ -30,6 +30,7 @@ const r1 = (n) => Math.round(n * 10) / 10;
 const erf = (x) => { const t = 1 / (1 + 0.3275911 * Math.abs(x)); const y = 1 - ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x); return x >= 0 ? y : -y; };
 const Phi = (z) => 0.5 * (1 + erf(z / Math.SQRT2));
 const done = (m) => m.win !== null && !m.live;
+const STATUS = { bye: "on bye", out: "did not play (injured, inactive or out)" };
 const spans = (s, wk) => ((s.periods || {})[wk] || [wk]).map(Number);
 
 // ---------- Facts for each kind of story ----------
@@ -66,7 +67,7 @@ function recapFacts(s, W) {
   });
   const starts = [], bench = [];
   for (const sp of spans(s, W)) for (const id in s.lineups[sp] || {}) for (const p of s.lineups[sp][id]) {
-    const row = { player: `${p.n} (${p.pos}, ${p.pro})`, team: who(s.byId[id], W), points: p.pts, projected: p.proj };
+    const row = { player: `${p.n} (${p.pos}, ${p.pro})`, team: who(s.byId[id], W), points: p.pts, projected: p.proj, status: STATUS[p.st] };
     if (p.slot === "BN") bench.push(row); else if (p.slot !== "IR") starts.push(row);
   }
   const standings = [...s.teams].sort((a, b) => rec[b.id].w - rec[a.id].w || rec[b.id].pf - rec[a.id].pf).map((t, i) => ({
@@ -83,6 +84,7 @@ function recapFacts(s, W) {
     games, top_performances: starts.sort((a, b) => b.points - a.points).slice(0, 6),
     biggest_busts: starts.filter((x) => x.projected != null).sort((a, b) => (a.points - a.projected) - (b.points - b.projected)).slice(0, 3),
     bench_blunders: bench.sort((a, b) => b.points - a.points).slice(0, 3),
+    starters_who_did_not_play: starts.filter((x) => x.status),
     standings_after_week: standings, roster_moves_this_week: moves, trades, next_week_matchups: next, trade_watch: tradeWatchFacts(s, W),
     records_before_this_week: Object.fromEntries(s.teams.map((t) => [who(t, W), `${recBefore[t.id].w}-${recBefore[t.id].l}`])),
   };
@@ -102,7 +104,7 @@ function tradeWatchFacts(s, W) {
           const started = p.slot !== "BN" && p.slot !== "IR";
           o.points_since_trade += p.pts;
           if (started && +tid === id) o.points_in_this_teams_lineup_since_trade += p.pts;
-          if (now.includes(+wk)) { o.points_this_week += p.pts; o.started_this_week = started; o.rostered_by = who(s.byId[tid], W); }
+          if (now.includes(+wk)) { o.points_this_week += p.pts; o.started_this_week = started; o.rostered_by = who(s.byId[tid], W); if (p.st) o.status_this_week = STATUS[p.st]; }
         }
         for (const k of ["points_this_week", "points_since_trade", "points_in_this_teams_lineup_since_trade"]) o[k] = r1(o[k]);
         if (!o.rostered_by) o.rostered_by = "not on a roster this week";
@@ -209,6 +211,7 @@ Rules:
 - Call teams by their exact names as given. For managers, mix their first names and everyday nicknames from the lore interchangeably, the way friends talk, without explaining or making a bit of the nickname. Titles and joke labels (a league role, "the villain") are different: those count as running jokes. A "(name)" after a team is its manager.
 - Never mention where anyone lives, works, studies, or serves beyond what the lore says.
 - Social posts come from fictional accounts only: made-up fans, team fan clubs, pundits, and "insiders". Never write as, or tag, real NFL players, journalists, or celebrities.
+- A player marked "on bye" or "did not play" scored nothing because he didn't play. Say so plainly; never treat it as a bad game or a bust. Starting one is the manager's lineup mistake, not the player's.
 - Running jokes and nicknames are seasoning, not the meal. Use any one bit at most once in a story, leave most of them out of most stories, and never make the same joke the punchline two stories in a row. A manager is more than their running joke: describe what they actually did this week first. Labels count as running jokes too: don't cast anyone as the league's villain, punching bag, or hothead by default. Use a label like that at most once in a story, and leave it out of most stories.
 - Plain text only, no markdown. Body paragraphs should be 2 to 5 sentences each.
 

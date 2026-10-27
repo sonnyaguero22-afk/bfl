@@ -50,6 +50,8 @@ async function get(url, file, headers = {}) {
     const L = JSON.parse(fs.readFileSync(path.join(DATA, `league_${y}.json`), "utf8"));
     const last = L.status.latestScoringPeriod || L.status.finalScoringPeriod;
     await get(`${BASE}/seasons/${y}/players?scoringPeriodId=0&view=players_wl`, `players_${y}.json`, { "x-fantasy-filter": '{"filterActive":null}' });
+    // NFL bye weeks, to tell a player on bye from one who didn't play
+    await get(`${BASE}/seasons/${y}?view=proTeamSchedules_wl`, `proteams_${y}.json`);
     for (let w = 1; w <= last; w++) {
       await get(`${lg}?view=mMatchupScore&view=mBoxscore&scoringPeriodId=${w}`, `wk_${y}_${w}.json`);
       await get(`${lg}?view=mTransactions2&scoringPeriodId=${w}`, `tx_${y}_${w}.json`);

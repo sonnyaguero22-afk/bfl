@@ -590,7 +590,7 @@ function chrome() {
   $("#topnav").innerHTML = nav.map(([k, l]) => `<button data-go="${k}" aria-current="${curNav === k}">${l}</button>`).join("");
   $("#rail").innerHTML = `<span class="lbl">Seasons</span>` + [...years].reverse().map((y) => {
     const s = S[y]; const cur = state.view === "season" && state.year === y;
-    const tag = !s ? "locked" : !s.done ? "live" : "";
+    const tag = !s ? "locked" : s.on ? "live" : "";
     return `<button class="yr${!s ? " locked" : ""}" data-go="${y}${cur || !s ? "" : "-" + state.tab}" aria-current="${cur}">${y}${tag ? `<em>${tag === "live" ? "● LIVE" : "🔒"}</em>` : ""}</button>`;
   }).join("");
   const built = new Date(D.built);
@@ -700,7 +700,7 @@ function lineupWeek(s, wk, id) {
   if (!L) return `<div class="muted">No lineup data for this week.</div>`;
   const sorted = [...L].sort((a, b) => SLOTS.indexOf(a.slot) - SLOTS.indexOf(b.slot) || b.pts - a.pts);
   const start = sorted.filter((p) => p.slot !== "BN" && p.slot !== "IR"), bench = sorted.filter((p) => p.slot === "BN" || p.slot === "IR");
-  const row = (p) => `<div class="pl${p.slot === "BN" || p.slot === "IR" ? " bn" : ""}"><span class="slot">${esc(p.slot)}</span><span class="nm">${pn(p.n)} <small>${esc(p.pos)} · ${esc(p.pro)}</small></span><span class="p">${f1(p.pts)}</span></div>`;
+  const row = (p) => `<div class="pl${p.slot === "BN" || p.slot === "IR" ? " bn" : ""}"><span class="slot">${esc(p.slot)}</span><span class="nm">${pn(p.n)} <small>${esc(p.pos)} · ${esc(p.pro)}${p.st ? ` · <b>${p.st === "bye" ? "BYE" : "OUT"}</b>` : ""}</small></span><span class="p">${f1(p.pts)}</span></div>`;
   const bpts = bench.filter((p) => p.slot === "BN").reduce((a, p) => a + p.pts, 0);
   return `${start.map(row).join("")}<div class="bnhead"><span>Bench</span><span class="num">${f1(bpts)} pts left on bench</span></div>${bench.map(row).join("")}`;
 }
@@ -717,17 +717,17 @@ function weekly(s) {
   const cards = ms.map((m, i) => {
     const key = `${wk}-${m.h}`, open = state.open === key;
     const winLabel = (id) => { const p = teamWin(s, m, id); if (p == null) return "";
-      if (m.win === null) return `<br><span class="odds">${m.live ? "Live win chance" : "Win chance"} <b>${winPct(p)}</b>${toGo(m, id)}</span>`;
+      if (m.win === null) return `<br><span class="odds">${m.on ? "Live win chance" : "Win chance"} <b>${winPct(p)}</b>${toGo(m, id)}</span>`;
       const upset = m.win === id && p < 0.35;
       return `<br><span class="odds">${upset ? `<span class="pill gold">Upset</span> ` : ""}Was ${winPct(p)} to win</span>`; };
     const side = (id, p) => { const t = s.byId[id]; const lost = m.win !== null && m.win !== id && m.win !== 0; return `<div class="side${lost ? " lost" : ""}"><span class="team">${badge(t)}<span><b>${esc(nameAt(t, m.wk))}</b><small>${mgrName(mgrAt(t, m.wk))}${kickedAt(t, m.wk) ? "*" : ""} · ${recLabel(id)}${winLabel(id)}</small></span></span><span class="pts">${f2(p)}</span></div>`; };
     const margin = Math.abs(m.hp - m.ap);
     return `<div class="box game${open ? " open" : ""}"><button data-open="${key}" aria-expanded="${open}">${side(m.h, m.hp)}${side(m.a, m.ap)}
-      <div class="gmeta"><span>${m.live ? `<span class="pill live">● Live</span>` : tierName[m.tier] ? `<span class="pill gold">${tierName[m.tier]}</span>` : m.win !== null ? `Margin ${f2(margin)}` : ""}</span><span>${open ? "Hide Lineups ▲" : "Show Lineups ▼"}</span></div></button>
+      <div class="gmeta"><span>${m.on ? `<span class="pill live">● Live</span>` : m.live ? `<span class="pill">In Progress</span>` : tierName[m.tier] ? `<span class="pill gold">${tierName[m.tier]}</span>` : m.win !== null ? `Margin ${f2(margin)}` : ""}</span><span>${open ? "Hide Lineups ▲" : "Show Lineups ▼"}</span></div></button>
       ${open ? `<div class="wpwrap">${wpChart(s, m)}</div><div class="lineups"><div>${lineupCol(s, wk, m.h)}</div><div>${lineupCol(s, wk, m.a)}</div></div>` : ""}</div>`;
   }).join("");
   const byes = s.byes.filter((b) => b.wk === wk).map((b) => `<span class="pill">${esc(s.byId[b.h].name)} has a bye</span>`).join(" ");
-  return bar + `<div class="games">${cards}</div>${byes ? `<p class="note">${byes}</p>` : ""}<p class="note">Click a game to see both starting lineups and the bench.${ms.some((m) => kickedAt(s.byId[m.h], wk) || kickedAt(s.byId[m.a], wk)) ? " * Kicked for inactivity: the team played on without its manager, and the game still counts on his record." : ""}${!s.done ? " Live scores are a snapshot from when the data was last pulled." : ""}</p>`;
+  return bar + `<div class="games">${cards}</div>${byes ? `<p class="note">${byes}</p>` : ""}<p class="note">Click a game to see both starting lineups and the bench.${ms.some((m) => kickedAt(s.byId[m.h], wk) || kickedAt(s.byId[m.a], wk)) ? " * Kicked for inactivity: the team played on without its manager, and the game still counts on his record." : ""}${!s.done ? " Scores for the week in progress are a snapshot from when the data was last pulled." : ""}</p>`;
 }
 
 function draft(s) {
@@ -1302,7 +1302,7 @@ function home() {
   // The week to feature: the one in progress, or the last one played
   const wk = s.done ? Math.max(...s.matchups.map((m) => m.wk)) : s.curWeek;
   const games = s.matchups.filter((m) => m.wk === wk);
-  const anyLive = games.some((m) => m.live);
+  const anyLive = games.some((m) => m.on);
   const o = s.odds, oi = o ? o.weeks.length - 1 : -1;
   const odd = (id) => (o ? o.t[id].c[oi] : null);
   const rec = Object.fromEntries(asOf(s, Math.min(wk, s.regWeeks)).rows.map((x) => [x.t.id, x]));
@@ -1313,7 +1313,7 @@ function home() {
   // Scoreboard
   const sbSide = (m, id, p) => { const t = s.byId[id], lost = m.win !== null && m.win !== id && m.win !== 0, lead = m.live && p > (id === m.h ? m.ap : m.hp);
     return `<div class="sbrow${lost ? " lost" : ""}">${badge(t, 1)}<span class="sbname">${esc(t.name)}<small>${rec[id] ? recStr(rec[id]) : ""}${m.win === null && teamWin(s, m, id) != null ? ` · ${winPct(teamWin(s, m, id))} to win` : ""}${toGo(m, id)}</small></span><span class="sbpts${lead ? " lead" : ""}">${f1(p)}</span></div>`; };
-  const scoreCards = games.map((m) => `<button class="box sbgame" data-goweek="${s.year}|${wk}"><div class="sbtop"><span>${m.live ? `<span class="pill live">● Live</span>` : m.win !== null ? `<span class="pill">Final</span>` : `<span class="pill">Upcoming</span>`}</span><span class="muted">${m.tier && m.tier !== "NONE" ? (m.tier === "WINNERS_BRACKET" ? "Playoffs" : "Consolation") : ""}</span></div>${sbSide(m, m.h, m.hp)}${sbSide(m, m.a, m.ap)}${wpChart(s, m, true)}</button>`).join("");
+  const scoreCards = games.map((m) => `<button class="box sbgame" data-goweek="${s.year}|${wk}"><div class="sbtop"><span>${m.on ? `<span class="pill live">● Live</span>` : m.live ? `<span class="pill">In Progress</span>` : m.win !== null ? `<span class="pill">Final</span>` : `<span class="pill">Upcoming</span>`}</span><span class="muted">${m.tier && m.tier !== "NONE" ? (m.tier === "WINNERS_BRACKET" ? "Playoffs" : "Consolation") : ""}</span></div>${sbSide(m, m.h, m.hp)}${sbSide(m, m.a, m.ap)}${wpChart(s, m, true)}</button>`).join("");
 
   // Standings snapshot with odds
   const rows = asOf(s, null).rows;
