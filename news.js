@@ -301,6 +301,8 @@ async function write(client, job) {
 }
 
 (async () => {
+  // Says whether each lore secret arrived (lengths only, never the contents)
+  console.log(`::notice::Lore: LEAGUE_LORE ${(process.env.LEAGUE_LORE || "").trim().length} characters, LEAGUE_LORE_EXTRA ${LORE_EXTRA.length} characters`);
   const todo = pending();
   if (!todo.length) { console.log("News is up to date."); return; }
   console.log(`${todo.length} stories to write: ${todo.map((j) => j.id).join(", ")}`);
