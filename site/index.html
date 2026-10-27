@@ -582,8 +582,8 @@ document.addEventListener("click", (e) => { const b = e.target.closest("[data-go
 
 // ---------- Chrome ----------
 function chrome() {
-  const nav = [["home", "Home"], ["news", "News"], ["social", "Social"], ["trophies", "Buckaroo Bowls"], ["managers", "Managers"], ["players", "Players"], ["transactions", "Transactions"], ["odds", "Odds"], ["h2h", "Head-to-Head"], ["overrated", "Overrated"], ["records", "Record Book"], ["map", "Map"]];
-  const curNav = state.view === "mgr" ? "managers" : state.view === "player" ? "players" : state.view === "article" ? "news" : state.view;
+  const nav = [["home", "Home"], ["news", "News"], ["trophies", "Buckaroo Bowls"], ["managers", "Managers"], ["players", "Players"], ["transactions", "Transactions"], ["odds", "Odds"], ["h2h", "Head-to-Head"], ["overrated", "Overrated"], ["records", "Record Book"], ["map", "Map"]];
+  const curNav = state.view === "mgr" ? "managers" : state.view === "player" ? "players" : state.view === "article" || state.view === "social" ? "news" : state.view;
   $("#topnav").innerHTML = nav.map(([k, l]) => `<button data-go="${k}" aria-current="${curNav === k}">${l}</button>`).join("");
   $("#rail").innerHTML = `<span class="lbl">Seasons</span>` + [...years].reverse().map((y) => {
     const s = S[y]; const cur = state.view === "season" && state.year === y;
@@ -1373,8 +1373,11 @@ const postHtml = (p, a) => `<div class="post"><span class="avatar" style="--h:${
 const allPosts = () => NEWS.flatMap((a) => (a.social || []).map((p) => ({ p, a })));
 const newsEmpty = `<div class="box lockcard"><h3>No Stories Yet</h3><p>League news is written automatically after every finished week, every trade and every season. Stories start appearing with the first update after the news writer is switched on.</p></div>`;
 const aiNote = `<p class="note">Written by Claude, an AI, from the league's data. It can get things wrong; the scores and stats elsewhere on the site are the source of truth.</p>`;
+// News and Social share one header with a News | Social switch
+const newsHead = (which) => `<div class="vhead"><div><div class="eyebrow">Around the League</div><h2>News</h2><p>${which === "news" ? "Stories from the league's AI beat writer after every week, trade and season." : "What the (made-up) fans, pundits and insiders are saying. Tap a post's source to read the story behind it."}</p></div>
+  <div class="tabs" role="tablist" style="margin:0"><button data-go="news" aria-current="${which === "news"}">News</button><button data-go="social" aria-current="${which === "social"}">Social</button></div></div>`;
 function newsView() {
-  const head = `<div class="vhead"><div><div class="eyebrow">Around the League</div><h2>News</h2><p>Stories from the league's AI beat writer after every week, trade and season.</p></div><button class="morebtn" data-go="social">Social Feed →</button></div>`;
+  const head = newsHead("news");
   if (!NEWS.length) return head + newsEmpty;
   const [lead, ...rest] = NEWS;
   return head + `<div class="newsgrid"><div class="newsmain">${newsCard(lead, true)}<div class="newslist">${rest.map((a) => newsCard(a)).join("")}</div></div>
@@ -1393,7 +1396,7 @@ function articleView() {
 }
 function socialView() {
   const posts = allPosts();
-  return `<div class="vhead"><div><div class="eyebrow">Around the League</div><h2>Social</h2><p>What the (made-up) fans, pundits and insiders are saying. Tap a post's source to read the story behind it.</p></div><button class="morebtn" data-go="news">News →</button></div>
+  return `${newsHead("social")}
     ${posts.length ? `<div class="box rec socialfeed"><div class="feed">${posts.map((x) => postHtml(x.p, x.a)).join("")}</div></div>${aiNote}` : newsEmpty}`;
 }
 
