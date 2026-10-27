@@ -116,6 +116,44 @@ function reviewFacts(s) {
   };
 }
 
+// A manager's whole league history, for their career profile
+function careerFacts(k) {
+  const runs = (t) => (t.eras || [{ mgr: t.mgr, from: 1 }]).some((e) => e.mgr === k);
+  const seasons = [], games = [];
+  for (const s of D.seasons) {
+    const t = s.teams.find(runs);
+    if (!t) continue;
+    const rec = recordsThrough(s, s.regWeeks)[t.id];
+    const kicked = (t.eras || []).find((e) => e.kicked && e.mgr === k);
+    seasons.push({
+      season: s.year, team: (t.eras || [t]).map((e) => e.name).filter((x, i, a) => a.indexOf(x) === i).join(" / "),
+      regular_season_record: `${rec.w}-${rec.l}${rec.t ? "-" + rec.t : ""}`, points_for: r1(rec.pf), playoff_seed: s.done ? t.seed : null,
+      final_finish: s.done ? `${t.final} of ${s.teams.length}` : "season in progress",
+      title_odds_now: !s.done && oddsAt(s, s.odds ? s.odds.weeks[s.odds.weeks.length - 1] : -1, t.id) != null ? `${Math.round(oddsAt(s, s.odds.weeks[s.odds.weeks.length - 1], t.id))}%` : undefined,
+      note: kicked ? `Kicked for inactivity after week ${kicked.from - 1}; the team played on without him and the games still count on his record` : undefined,
+      trades: s.trades.filter((tr) => tr.teams.includes(t.id)).length,
+      pickups: s.moves.filter((m) => m.tm === t.id).reduce((a, m) => a + m.add.length, 0),
+    });
+    for (const m of s.matchups.filter(done)) for (const [id, p, oid, op] of [[m.h, m.hp, m.a, m.ap], [m.a, m.ap, m.h, m.hp]]) {
+      if (mgrAt(s.byId[id], m.wk) !== k) continue;
+      games.push({ year: s.year, wk: m.wk, p, op, won: m.win === id, tie: m.win === 0, opp: mgrAt(s.byId[oid], m.wk), playoff: m.tier === "WINNERS_BRACKET", single: spans(s, m.wk).length === 1 });
+    }
+  }
+  const h2h = {};
+  for (const g of games) { const x = (h2h[mgr(g.opp)] = h2h[mgr(g.opp)] || { w: 0, l: 0 }); if (g.won) x.w++; else if (!g.tie) x.l++; }
+  const po = games.filter((g) => g.playoff), single = games.filter((g) => g.single);
+  const best = [...single].sort((a, b) => b.p - a.p)[0], worst = [...single].sort((a, b) => a.p - b.p)[0];
+  return {
+    manager: mgr(k), seasons,
+    buckaroo_bowl_titles: D.seasons.filter((s) => s.done && s.teams.some((t) => t.final === 1 && runs(t))).map((s) => s.year),
+    last_place_finishes: D.seasons.filter((s) => s.done && s.teams.some((t) => t.final === s.teams.length && runs(t))).map((s) => s.year),
+    playoff_record: `${po.filter((g) => g.won).length}-${po.filter((g) => !g.won && !g.tie).length}`,
+    best_week: best && `${r1(best.p)} in ${best.year} week ${best.wk} vs ${mgr(best.opp)}`,
+    worst_week: worst && `${r1(worst.p)} in ${worst.year} week ${worst.wk} vs ${mgr(worst.opp)}`,
+    head_to_head: Object.fromEntries(Object.entries(h2h).map(([o, x]) => [o, `${x.w}-${x.l}`])),
+  };
+}
+
 // ---------- League background (same for every request, so it caches) ----------
 function leagueBackground() {
   const champs = D.seasons.filter((s) => s.done).map((s) => { const t = s.teams.find((x) => x.final === 1), l = s.teams.find((x) => x.final === s.teams.length); return `Buckaroo Bowl ${["I", "II", "III", "IV", "V", "VI", "VII", "VIII"][s.year - D.firstYear] || s.year - D.firstYear + 1} (${s.year}): champion ${who(t, 99)}; last place ${who(l, 99)}.`; });
@@ -159,10 +197,12 @@ const schemas = {
     bios: { type: "array", items: { type: "object", additionalProperties: false, required: ["team", "bio"], properties: { team: str, bio: str } } } } },
   trade: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "social"], properties: { ...ARTICLE, social: SOCIAL } },
   review: { type: "object", additionalProperties: false, required: ["title", "dek", "body"], properties: ARTICLE },
+  profile: { type: "object", additionalProperties: false, required: ["headline", "body"], properties: { headline: str, body: { type: "array", items: str } } },
 };
 const asks = {
   recap: "Write the weekly recap for this week of the Buckaroo Football League: a headline, a one-sentence dek, and 5 to 8 body paragraphs covering the results (lead with the best storyline), standout and disappointing performances, the standings and title-odds picture, notable moves, and a look ahead to next week. Then write 6 to 10 social posts reacting to the week, and a fresh 2 to 3 sentence bio for every team in the standings that sums up where its season stands right now (use the exact team name in the team field).",
   trade: "Write a trade reaction story: a headline, a one-sentence dek, and 3 to 5 body paragraphs explaining the deal, what each side got, and who won it on paper (use the title odds change). Then write 3 to 5 social posts reacting to it.",
+  profile: "Write a career profile of this manager for their page on the league website, like a club history page in Football Manager: a short headline that captures who they are in this league, and 3 to 5 body paragraphs telling the story of their whole run: each season, the highs and lows, rivalries from the head-to-head records, their habits as a manager (trades, waiver moves), and where they stand right now. Use their nicknames and the lore, as seasoning on top of what actually happened.",
   review: "Write a season-in-review story for this finished season: a headline, a one-sentence dek, and 5 to 7 body paragraphs telling the story of the season from draft to Buckaroo Bowl, including the champion, the last-place finisher, the playoff games, and any notable notes.",
 };
 
@@ -180,6 +220,12 @@ function pending() {
       if (!have.has(`recap-${cur.year}-${W}`)) todo.push({ id: `recap-${cur.year}-${W}`, type: "recap", s: cur, wk: W, facts: () => recapFacts(cur, W) });
     }
     for (const tr of cur.trades) { const id = `trade-${cur.year}-${tr.wk}-${[...tr.teams].sort((a, b) => a - b).join("-")}`; if (!have.has(id)) todo.push({ id, type: "trade", s: cur, wk: tr.wk - 0.5, tr, facts: () => tradeFacts(cur, tr) }); }
+  }
+  // Career profiles, rewritten once each season finishes
+  const lastDone = Math.max(...D.seasons.filter((x) => x.done).map((x) => x.year));
+  for (const k of Object.keys(D.managers).filter((k) => k !== "nomanager")) {
+    const id = `profile-${k}-${lastDone}`;
+    if (!have.has(id)) todo.push({ id, type: "profile", s: S[lastDone], wk: 100, mgr: k, facts: () => careerFacts(k) });
   }
   // Oldest news first, so the archive reads in order
   return todo.sort((a, b) => a.s.year - b.s.year || a.wk - b.wk);
@@ -205,8 +251,8 @@ async function write(client, job) {
   // Bios name teams as written in the facts ("Name (Manager)"); match on the team-name part
   const teamFor = (label) => job.s.teams.find((t) => label === nameAt(t, job.wk) || label.startsWith(nameAt(t, job.wk) + " ("));
   return {
-    id: job.id, type: job.type, year: job.s.year, wk: job.type === "review" ? null : Math.ceil(job.wk), created: new Date().toISOString(),
-    title: out.title, dek: out.dek, body: out.body, social: out.social || [], teams: job.tr ? job.tr.teams : [],
+    id: job.id, type: job.type, year: job.s.year, wk: job.type === "review" || job.type === "profile" ? null : Math.ceil(job.wk), created: new Date().toISOString(),
+    title: out.title || out.headline, dek: out.dek || "", body: out.body, social: out.social || [], teams: job.tr ? job.tr.teams : [], mgr: job.mgr,
     bios: out.bios ? Object.fromEntries(out.bios.map((b) => [(teamFor(b.team) || {}).id, b.bio]).filter(([id]) => id != null)) : undefined,
     model: res.model, usage: { input: res.usage.input_tokens, output: res.usage.output_tokens },
   };

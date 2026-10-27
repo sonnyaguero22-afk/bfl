@@ -358,6 +358,8 @@ table.compact .team { min-width: 0; }
 .newscard.big b { font-size: clamp(20px, 2.6vw, 26px); letter-spacing: -0.02em; text-wrap: balance; }
 .newscard .dek { color: var(--muted); font-size: 14px; }
 .article { max-width: 720px; }
+.profile { max-width: 760px; }
+.profile .artbody p { font-size: 16px; }
 .article .headline { font-size: clamp(28px, 4.4vw, 42px); line-height: 1.1; letter-spacing: -0.03em; margin: 6px 0 10px; text-wrap: balance; }
 .dek.big { font-size: 18px; color: var(--muted); margin: 0 0 22px; }
 .artbody p { font-size: 17px; line-height: 1.65; margin: 0 0 16px; }
@@ -948,6 +950,7 @@ function mgrView() {
     <div class="box stat"><div class="k">Points per Game</div><div class="v num">${f1(r.ppg)}</div><div class="s">${f2(r.pf)} total</div></div>
   </div>
   ${hasKick(k) ? `<p class="note" style="margin:-16px 0 24px">* Includes games after ${esc(D.managers[k].first)} was kicked for inactivity, when the team played on without him.</p>` : ""}
+  ${PROFILE[k] ? `<section class="profile" style="margin:0 0 32px"><div class="eyebrow">Career Profile</div><h3 class="headline" style="font-size:clamp(22px,3vw,28px);margin:4px 0 12px">${esc(PROFILE[k].title)}</h3><div class="artbody">${PROFILE[k].body.map((p) => `<p>${esc(p)}</p>`).join("")}</div>${aiNote}</section>` : ""}
   <section><h3>Season by Season</h3><div class="box scroll"><table><thead><tr><th>Year</th><th>Team Name</th><th class="n">Record</th><th class="n">PF</th><th class="n">PA</th><th>Finish</th></tr></thead><tbody>${seasonRows}</tbody></table></div></section>
   ${(() => { const mp = mgrPlayers(k); if (!mp.length) return "";
     const top = (f) => [...mp].sort((a, b) => f(b) - f(a)).slice(0, 5);
@@ -1364,7 +1367,11 @@ function home() {
 }
 
 // ---------- News & Social (written by Claude after each week, trade and season; see news.js) ----------
-const NEWS = (D.news && D.news.articles) || [];
+const ALL_NEWS = (D.news && D.news.articles) || [];
+// Career profiles live on manager pages, not in the news feed (newest per manager)
+const NEWS = ALL_NEWS.filter((a) => a.type !== "profile");
+const PROFILE = {};
+for (const a of ALL_NEWS) if (a.type === "profile" && a.mgr && !PROFILE[a.mgr]) PROFILE[a.mgr] = a;
 const NEWS_TYPE = { recap: "Weekly Recap", trade: "Trade", review: "Season in Review" };
 const newsWhen = (a) => (a.type === "review" ? `${a.year} Season` : a.type === "trade" ? `${a.year} · Before Week ${a.wk}` : `${a.year} · Week ${a.wk}`);
 const newsCard = (a, big) => `<button class="box newscard${big ? " big" : ""}" data-go="news-${a.id}"><span class="pill${a.type === "trade" ? " gold" : ""}">${NEWS_TYPE[a.type]}</span><b>${esc(a.title)}</b><span class="dek">${esc(a.dek)}</span><small class="muted">${newsWhen(a)}</small></button>`;
