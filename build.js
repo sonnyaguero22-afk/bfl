@@ -325,12 +325,12 @@ for (const s of seasons) for (const m of s.matchups) {
   // The biggest swing on each side, then the next biggest overall
   const top = [0, 1].map((k) => g.watch.find((x) => x.side === k)).filter(Boolean);
   const pick = [...top, ...g.watch.filter((x) => !top.includes(x))].slice(0, 3).sort((a, b) => (b.boom - b.bust) - (a.boom - a.bust));
-  m.watch = pick.map(({ side, n, pos, pro, proj, boom, bust }) => ({ id: side ? m.a : m.h, n, pos, pro: pro.startsWith("FA-") ? "FA" : pro, proj, boom, bust }));
+  m.watch = pick.map(({ side, n, pos, pro, proj, boom, bust, boomAt, bustAt }) => ({ id: side ? m.a : m.h, n, pos, pro: pro.startsWith("FA-") ? "FA" : pro, proj, boom, bust, boomAt, bustAt }));
   // QB + own receiver both still to play on one side: they boom and bust together
   m.stacks = [0, 1].flatMap((k) => { const L = m._sides[k].filter((p) => p.left > 0); return L.filter((p) => p.pos === "QB").flatMap((q) => L.filter((r) => (r.pos === "WR" || r.pos === "TE") && r.pro === q.pro).map((r) => ({ id: k ? m.a : m.h, qb: q.n, rec: r.n }))); });
   delete m._sides;
   const nm = (id) => s.teams.find((t) => t.id === id).name;
-  console.log(`::notice::Week ${m.wk}: ${nm(m.h)} ${Math.round(m.psim * 100)}% vs ${nm(m.a)} | watch ${m.watch.map((x) => `${x.n} for ${nm(x.id)} (boom ${x.boom}%, bust ${x.bust}%)`).join("; ")}${m.stacks.length ? ` | stacks ${m.stacks.map((k) => `${k.qb}+${k.rec}`).join(", ")}` : ""}`);
+  console.log(`::notice::Week ${m.wk}: ${nm(m.h)} ${Math.round(m.psim * 100)}% vs ${nm(m.a)} | watch ${m.watch.map((x) => `${x.n} for ${nm(x.id)} (${x.boomAt}+: ${x.boom}%, under ${x.bustAt}: ${x.bust}%)`).join("; ")}${m.stacks.length ? ` | stacks ${m.stacks.map((k) => `${k.qb}+${k.rec}`).join(", ")}` : ""}`);
 }
 // In-game win chance history: GitHub saves one point per update while a week is under way
 // (history/live_<year>.json, kept in the repo). Local builds only read it.

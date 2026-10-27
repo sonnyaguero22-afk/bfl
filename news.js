@@ -82,7 +82,7 @@ function recapFacts(s, W) {
   const next = [...s.matchups, ...(s.future || [])].filter((m) => m.wk === W + 1 && m.a).map((m) => `${who(s.byId[m.h], W + 1)} vs ${who(s.byId[m.a], W + 1)}`);
   // From the player sim: who swings next week's games most (a boom/bust is a top/bottom-20% game for him)
   const watch = s.matchups.filter((m) => m.wk === W + 1 && m.watch).map((m) => ({ game: `${who(s.byId[m.h], W + 1)} vs ${who(s.byId[m.a], W + 1)}`,
-    ones_to_watch: m.watch.map((x) => ({ player: `${x.n} (${x.pos}, ${x.pro})`, for: who(s.byId[x.id], W + 1), team_win_chance_if_he_booms: `${x.boom}%`, if_he_busts: `${x.bust}%` })),
+    ones_to_watch: m.watch.map((x) => ({ player: `${x.n} (${x.pos}, ${x.pro})`, for: who(s.byId[x.id], W + 1), [`team_win_chance_if_he_scores_${x.boomAt}_or_more`]: `${x.boom}%`, [`if_he_scores_under_${x.bustAt}`]: `${x.bust}%` })),
     stacks: (m.stacks || []).map((k) => `${k.qb} and ${k.rec} for ${who(s.byId[k.id], W + 1)}`) }));
   return {
     season: s.year, buckaroo_bowl_number: s.year - D.firstYear + 1, week: W, regular_season_weeks: s.regWeeks, playoff_teams: s.playoffTeams,

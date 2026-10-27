@@ -83,6 +83,9 @@ function simGame(model, home, away, seed = 1) {
   const watch = sides.flatMap((L, k) => L.filter((p) => p.boomN && p.bustN).map((p) => ({
     side: k, n: p.n, pos: p.pos, pro: p.pro, proj: Math.round(p.proj * p.left * 10) / 10,
     boom: Math.round((p.boomW / p.boomN) * 100), bust: Math.round((p.bustW / p.bustN) * 100),
+    // The point lines that make a boom or a bust for him, counting what he's already scored
+    boomAt: Math.round((p.pts || 0) + p.proj * p.left * ratioAt(model, p.pos, BOOM, p.scale)),
+    bustAt: Math.max(0, Math.round((p.pts || 0) + p.proj * p.left * ratioAt(model, p.pos, BUST, p.scale))),
   }))).map((x) => ({ ...x, swing: x.boom - x.bust })).sort((a, b) => b.swing - a.swing);
   return { home: hw / SIMS, watch };
 }
