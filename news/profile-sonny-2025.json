@@ -1,0 +1,24 @@
+{
+ "id": "profile-sonny-2025",
+ "type": "profile",
+ "year": 2025,
+ "wk": null,
+ "created": "2026-10-27T17:31:45.113Z",
+ "title": "Worst to First, and Not Done Yet: The Sonny Story",
+ "dek": "",
+ "body": [
+  "Every league has a founding father, and the Buckaroo Football League's built the website too. Sonny's run, though, didn't start with a coronation. In 2023 his Ben Dover went 6-8, scored 1,413.3 points, and snuck into the field as the 5 seed, then tumbled all the way down the consolation ladder to finish 6th of 6. Ten pickups and zero trades that year: a man content to let the season happen to him.",
+  "2024 was rock bottom, and he barely touched the wire on the way down. Ben Dover went 5-9 as the 6 seed, scored a league-low-for-him 1,304.3 points, and finished last for the second straight year. The pickup column read exactly 1, which is less a waiver strategy than a vow of silence. The low point came in week 12, when Mekhi held him to a career-worst 44.1 points, a number that still haunts the archives of the site he personally maintains.",
+  "Then came 2025, and the most improbable glow-up in league history. Same team name, completely different manager: 22 pickups, his first-ever trade, a 13-3 record, the 1 seed, and a staggering 1,850.8 points. He dropped a career-best 153.4 on Randy in week 10, went 1-0 in playoff games, and lifted the trophy at Buckaroo Bowl III, ending Kaushal's two-year reign. Two straight last-place finishes into a title is the stuff of Civ players plotting a 300-turn comeback, and it actually worked.",
+  "The head-to-head ledger tells you who he's had in his sights. He's 7-5 against both Ramon and Mekhi, 6-5 against Alan, and 5-3 against Randy. The lone blemish among the longtime rivals is Kaushal, who leads the series 5-6, a fitting edge for the only other man in the league with a ring. Among the newcomers, he's 1-0 against Jordan and 0-1 against Zoe, meaning the rookie has a perfect record against the reigning champ and will surely be reminding him of it.",
+  "Now rebranded as The Horse is Hea, Sonny has kept the 2025 habits: 17 pickups and 2 trades already in 2026, more deals than his first three seasons combined. The team sits at 5-2 with 853.6 points and a 28% shot at the title, which makes him a genuine threat to go back-to-back. Whether the Boston air has softened him remains to be seen, but the commissioner who once made one pickup in a season is now the league's busiest front office, and the rest of the BFL has noticed."
+ ],
+ "social": [],
+ "teams": [],
+ "mgr": "sonny",
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 1423
+ }
+}

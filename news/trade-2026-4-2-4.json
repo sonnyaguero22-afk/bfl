@@ -1,0 +1,51 @@
+{
+ "id": "trade-2026-4-2-4",
+ "type": "trade",
+ "year": 2026,
+ "wk": 4,
+ "created": "2026-10-27T17:35:08.148Z",
+ "title": "Randy Opens the Vault, and Alan Walks Out With the Running Back",
+ "dek": "The fumblers send Javonte Williams to Team Pillbert for Stefon Diggs before Week 4, and the title model hands Alan a 12-point raise while Randy pays the toll.",
+ "body": [
+  "Somewhere in the Buckaroo Football League, a roster actually moved. Before Week 4, Randy's The fumblers sent running back Javonte Williams to Alan's Team Pillbert in exchange for wide receiver Stefon Diggs, a straight one-for-one swap of players who had each spent all three weeks of the season on a roster. For a manager whose trade negotiations usually end with him explaining why your offer is an insult, simply hitting accept is the headline. The fine print is where it gets interesting.",
+  "Start with what Alan got. Williams arrives with 45.5 points through three weeks, about 15.2 per game, the best production of anyone in the deal. Team Pillbert came into this trade with 9% title odds, a team that has looked better than its record more than once, and walked out of it at 21%. That is a 12-point jump from one transaction, and it vaults Alan from fringe contender to someone the rest of the league has to plan around.",
+  "Now Randy's side. Diggs has 38 points in three weeks, roughly 12.7 a game, which is solid but trails Williams by 7.5 points over the same stretch. The fumblers' title odds slipped from 16% to 14%, a modest dip but a dip nonetheless. The charitable read is that Randy saw a need at receiver and paid a fair-looking price to fill it; the less charitable read is that the one time he finally opened the vault, he handed over the bigger bar of gold.",
+  "So who won it on paper? Alan, and it is not especially close. A 12-point gain against a 2-point loss is the kind of gap the model does not usually produce from a one-for-one deal between players this similar in output, which suggests Williams fills a much bigger hole in Philly's lineup than Diggs fills in Randy's. Paper is not the scoreboard, of course, and a receiver can make three weeks of numbers look silly in one Sunday. But for now, the math says Team Pillbert just got a lot more dangerous, and The fumblers will need Diggs to prove the math wrong."
+ ],
+ "social": [
+  {
+   "author": "Pillbert Nation",
+   "handle": "@PillbertNation",
+   "text": "9% to 21% in one transaction. Javonte's 45.5 points just moved into a nicer neighborhood. Thank you for your business, The fumblers."
+  },
+  {
+   "author": "Fumblers Faithful",
+   "handle": "@FumblersFaithful",
+   "text": "Diggs has 38 points in 3 weeks and we needed a WR. The model can have its opinion. We'll be watching the box scores, not the percentages."
+  },
+  {
+   "author": "Buckaroo Trade Desk",
+   "handle": "@BuckarooTradeDesk",
+   "text": "Final tally on the Williams-for-Diggs deal: Team Pillbert +12 title odds, The fumblers -2. On paper this one isn't a debate, it's a receipt."
+  },
+  {
+   "author": "Waiver Wire Wendy",
+   "handle": "@WaiverWireWendy",
+   "text": "Randy made a trade. I repeat, Randy made a trade. Please remain calm and check that your league app is not glitching."
+  },
+  {
+   "author": "The Insider (allegedly)",
+   "handle": "@BuckarooSources",
+   "text": "Sources say the rest of the league just noticed Team Pillbert's title odds more than doubled. Expect a lot of anxious roster refreshing before Week 4."
+  }
+ ],
+ "teams": [
+  2,
+  4
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 1704
+ }
+}

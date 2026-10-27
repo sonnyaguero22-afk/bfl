@@ -1,0 +1,24 @@
+{
+ "id": "profile-alan-2025",
+ "type": "profile",
+ "year": 2025,
+ "wk": null,
+ "created": "2026-10-27T17:32:46.614Z",
+ "title": "Alan and Team Pillbert: Four Seasons, Four Playoff Trips, Still Hunting the Bowl",
+ "dek": "",
+ "body": [
+  "Alan has run Team Pillbert since the league's first snap in 2023, and the franchise has never once wandered off the playoff map. Through four seasons he owns zero Buckaroo Bowl titles, zero last-place finishes and a 1-2 playoff record. That makes him the league's most reliable houseguest at the postseason party, and the one still waiting for the trophy to be handed his way.",
+  "The debut in 2023 remains the high-water mark. Team Pillbert went 9-5, scored 1,499.3 points, grabbed the 2 seed and finished second of six, runner-up in the season Habibsters won Buckaroo Bowl I. That year also produced his career-best week, a 156.2-point demolition of Sonny in Week 3. It was a rookie season that announced a contender, though nobody could have guessed it would be the closest he'd get for a while.",
+  "From there, the records got stranger. In 2024 he went 6-8, slipped in as the 4 seed and still climbed to third, a season also scarred by his career-worst 64.1 against Kaushal in Week 10. In 2025 the record cratered to 5-11 despite a career-high 1,762.9 points, and he squeezed in as the 6 seed before finishing fourth. That year also included a 94.76-92.02 Week 9 loss to Ramon's Remains, the abandoned roster that kept winning after Ramon was gone. The asterisk is on Ramon's record, but Alan still had to live with the box score.",
+  "The head-to-head ledger tells you who Philly can handle and who handles him. He has Randy's number at 8-5 and leads Mekhi 6-4 and Ramon 6-5, while the Sonny series sits at a coin-flip 5-6. Then there's Kaushal, at 2-7, a matchup that has been a nine-game horror film for Team Pillbert and includes that 64.1-point low. Against the newcomers it's a split so far: 1-0 over Jordan and 0-1 against Zoe.",
+  "The biggest change is in how he runs the team. Alan made zero trades in each of his first two seasons and one in 2025, then has already made four in 2026, alongside 16 pickups after posting 11, 21 and 25 in his first three years. The busier approach is working so far: Team Pillbert sits at 5-2 with 817.8 points and 17% title odds. Four straight playoff trips have built the résumé, and this version of Alan looks like a manager who has decided that showing up isn't the same as winning."
+ ],
+ "social": [],
+ "teams": [],
+ "mgr": "alan",
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 1507
+ }
+}
