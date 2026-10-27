@@ -57,6 +57,7 @@ jobs:
         run: node news.js
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LEAGUE_LORE: ${{ secrets.LEAGUE_LORE }}
       - name: Rebuild with the latest news
         run: node build.js
       - name: Save finished seasons, live win chances and news

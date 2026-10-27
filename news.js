@@ -9,7 +9,7 @@ const path = require("path");
 const Anthropic = require("@anthropic-ai/sdk");
 
 const MODEL = "claude-opus-5-5";
-const MAX_PER_RUN = 12; // keeps any one run's cost predictable; the rest are written next run
+const MAX_PER_RUN = 16; // keeps any one run's cost predictable; the rest are written next run
 const NEWS = path.join(__dirname, "news");
 const DRY = process.argv.includes("--dry-run");
 
@@ -129,19 +129,26 @@ function leagueBackground() {
     notes.length ? `League notes: ${notes.join(" ")}` : "",
   ].filter(Boolean).join("\n");
 }
+// Nicknames and running jokes. They name real people, so they never go in the public repo:
+// GitHub reads them from the LEAGUE_LORE secret; on this computer, from data/lore.md (not committed).
+const LORE_FILE = path.join(__dirname, "data", "lore.md");
+const LORE = (process.env.LEAGUE_LORE || (fs.existsSync(LORE_FILE) ? fs.readFileSync(LORE_FILE, "utf8") : "")).trim();
 const SYSTEM = `You are the newsroom of the Buckaroo Football League: its beat writer and its social media desk. Your stories appear on the league's website, which the league's managers and their friends read.
 
 Voice: a sharp, funny sports columnist covering a league of friends. Lovingly roast the managers' decisions, celebrate big performances, build up rivalries and storylines, and treat the Buckaroo Bowl like the Super Bowl. Keep it PG-13 and good-natured; the jokes are about fantasy football, never about anyone's life outside it.
 
 Rules:
 - Use only the facts provided. Never invent scores, stats, injuries, trades, quotes from managers, or events. You may interpret and speculate about what the numbers mean.
-- Refer to managers by first name and to teams by their exact names as given. A "(name)" after a team is its manager.
-- Never mention where anyone lives, works, studies, or serves, even if you think you know.
+- Call managers by their first names and nicknames from the lore below, and teams by their exact names as given. A "(name)" after a team is its manager.
+- Never mention where anyone lives, works, studies, or serves beyond what the lore says.
 - Social posts come from fictional accounts only: made-up fans, team fan clubs, pundits, and "insiders". Never write as, or tag, real NFL players, journalists, or celebrities.
 - Plain text only, no markdown. Body paragraphs should be 2 to 5 sentences each.
 
 League background:
-${leagueBackground()}`;
+${leagueBackground()}
+
+The people and the inside jokes (from the league; follow its own rules too):
+${LORE}`;
 
 // ---------- Output shapes ----------
 const str = { type: "string" };
@@ -211,6 +218,8 @@ async function write(client, job) {
   console.log(`${todo.length} stories to write: ${todo.map((j) => j.id).join(", ")}`);
   if (DRY) { for (const j of [todo[0], todo[todo.length - 1]]) console.log(`\n--- ${j.id} ---\n${JSON.stringify(j.facts(), null, 1).slice(0, 3000)}`); console.log(`\nSystem prompt:\n${SYSTEM}`); return; }
   if (!process.env.ANTHROPIC_API_KEY) { console.log("No ANTHROPIC_API_KEY set, skipping news."); return; }
+  // Stories are permanent, so wait for the nicknames rather than write without them
+  if (!LORE) { console.log("No LEAGUE_LORE secret set, skipping news until it is."); return; }
   const client = new Anthropic();
   fs.mkdirSync(NEWS, { recursive: true });
   for (const job of todo.slice(0, MAX_PER_RUN)) {
