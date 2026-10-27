@@ -266,7 +266,7 @@ for (const year of years) {
     year: +year, name: L.settings.name, done, curWeek: L.status.currentMatchupPeriod, regWeeks,
     on: matchups.some((m) => m.on), playoffTeams: ss.playoffTeamCount, periods: ss.matchupPeriods, teams, future, matchups, byes, lineups, draft, moves, trades: finalTrades, rosters, wp,
   });
-  if (lineups[L.status.latestScoringPeriod]) { const all = Object.values(lineups[L.status.latestScoringPeriod]).flat(); console.log(`::notice::${year} week ${L.status.latestScoringPeriod}: ${all.filter((p) => p.st === "bye").length} players on bye, ${all.filter((p) => p.st === "out").length} out; byes known for ${Object.keys(nflBye).length} NFL teams; games on now: ${gamesOn}`); }
+  for (const w of [L.status.latestScoringPeriod - 1, L.status.latestScoringPeriod]) if (lineups[w]) { const all = Object.values(lineups[w]).flat(); console.log(`::notice::${year} week ${w}: on bye ${all.filter((p) => p.st === "bye").map((p) => p.n).join(", ") || "none"}; out ${all.filter((p) => p.st === "out").map((p) => p.n).join(", ") || "none"}; games on now: ${gamesOn}`); }
   console.log(`${year}: ${teams.length} teams, ${matchups.length} matchups, ${Object.keys(lineups).length} weeks of lineups, ${draft.length} picks, ${moves.length} moves, ${trades.length} trades`);
 }
 
