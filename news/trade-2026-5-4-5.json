@@ -1,0 +1,52 @@
+{
+ "id": "trade-2026-5-4-5",
+ "type": "trade",
+ "year": 2026,
+ "wk": 5,
+ "created": "2026-10-27T05:57:23.500Z",
+ "title": "Philly Buys Low, Kai Buys Volume, and the Odds Machine Hates Everyone",
+ "dek": "Alan ships Davante Adams and Ashton Jeanty to Mekhi for Justin Jefferson before Week 5, and somehow both teams walk away with worse title odds than they started with.",
+ "body": [
+  "The trade market in the Buckaroo Football League finally woke up before Week 5, and of course the league villain was at the center of it. Team Pillbert (Alan) sent wide receiver Davante Adams and running back Ashton Jeanty to the Dawgs (Mekhi) for one player: wide receiver Justin Jefferson. On the surface, it's a classic two-for-one. Look a little closer and it gets a lot stranger.",
+  "Start with the receipts. Through four weeks, Adams had put up 62 points and Jeanty had 64.4, a combined 126.4 points that Philliberto just packed up and mailed to Kai. In return, Alan got Jefferson, who has 38.4 points on the season. That is roughly a third of the production going out the door, which means Alan is betting that Jefferson's first four weeks were a slow start and not a preview. It's a buy-low swing, and it's a big one: Phillibert gave up his top two scorers in this deal for a guy who has been outscored by each of them individually.",
+  "For Mekhi, the logic writes itself. Kai is a football mind stuck with a 4% title chance, and he just turned one underperforming receiver into two players who have actually been producing. He now has a fresh receiver and a fresh running back to plug in. He'll also have to free up a roster spot to make room, but if anybody in this league can live with a tight roster, it's the waiver-wire king, who has never met a free agent he couldn't find.",
+  "Then the odds machine weighed in, and it apparently hated the whole thing. Team Pillbert dropped from 20% to 15% to win the Buckaroo Bowl, a five-point slide for the guy who initiated a trade that was supposed to make him better. The Dawgs slipped from 4% to 3%, which is about the most Mekhi thing imaginable: he got 126.4 points of production for 38.4 and still lost ground. Both teams lost a quarter of their title chances, but in raw terms, Alan gave up far more.",
+  "So who won on paper? Mekhi, narrowly, mostly because he had less to lose and lost less of it. Alan just took the biggest hit to his title hopes in the deal, and now everything rides on Jefferson becoming Jefferson again. If he does, the bad guy will look like a genius and nobody will ever hear the end of it. If he doesn't, Philly just handed Kai his two best players and a reason to gloat."
+ ],
+ "social": [
+  {
+   "author": "Dawgs Den Fan Club",
+   "handle": "@DawgsDenBFL",
+   "text": "126.4 points coming in, 38.4 going out. Kai said thank you very much, Philly. Now watch the odds bot dock us a point anyway. Classic."
+  },
+  {
+   "author": "BFL Insider",
+   "handle": "@BuckarooInsider",
+   "text": "Sources say the odds model looked at the Pillbert-Dawgs trade and lowered BOTH teams. Pillbert 20% to 15%, Dawgs 4% to 3%. The rare trade where the only winner is the calculator."
+  },
+  {
+   "author": "Pillbert Truthers",
+   "handle": "@PillbertForever",
+   "text": "You fools see 38.4 points. Alan sees a buy-low window closing. When Jefferson goes off, remember who called it first. The villain always has a plan."
+  },
+  {
+   "author": "Waiver Wire Wendy",
+   "handle": "@WaiverWendyBFL",
+   "text": "Mekhi now has to drop somebody to fit Adams AND Jeanty. Somewhere a bench guy is packing his locker. Don't worry, Kai will have a replacement off the wire in nine minutes."
+  },
+  {
+   "author": "The Stat Sheet Sheriff",
+   "handle": "@StatSheriffBFL",
+   "text": "Alan traded away his two highest scorers in this deal for one guy with fewer points than either. Bold. Possibly insane. Definitely the most Philliberto move of the season so far."
+  }
+ ],
+ "teams": [
+  4,
+  5
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 1880
+ }
+}

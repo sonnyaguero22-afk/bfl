@@ -1,0 +1,24 @@
+{
+ "id": "review-2023",
+ "type": "review",
+ "year": 2023,
+ "wk": null,
+ "created": "2026-10-27T05:51:48.318Z",
+ "title": "Habib Wins Buckaroo Bowl I as the Habibsters Outrun Everyone, Including the Villain",
+ "dek": "Kaushal's Habibsters took the top seed and the first title in league history, Team Pillbert came up short, Mekhi's points never turned into wins, and Sonny's Ben Dover christened the basement in year one.",
+ "body": [
+  "Every dynasty needs an opening chapter, and the Buckaroo Football League's first season belongs to Kaushal. The Habibsters went 10-4, grabbed the No. 1 seed, scored 1,528.8 points, and then put the pedal down in the playoffs like Habib had a Georgia state trooper in the rearview mirror. Six teams entered the league's inaugural season, and the man who lives for Saturday football ended up owning Sunday too.",
+  "The regular season was a lesson in how fantasy football does not care about your feelings. Mekhi's Dawgs scored a league-best 1,542.8 points, more than the champion, and still limped to 6-8. Kai built the best scoring machine in the league and got the No. 4 seed for his trouble, the kind of schedule luck that makes a man stare at his matchup history for a very long time.",
+  "Alan, meanwhile, was the bad guy in every scene. Team Pillbert went 9-5 for the No. 2 seed and posted the single biggest week of the season, a 156.18-point haymaker in week 3 that announced Philliberto as the league's resident menace from the jump. Randy's The fumblers held steady at 7-7 for the No. 3 seed, and Randy managed all of it without making a single trade. To be fair, nobody else did either: the league finished with exactly zero trades, which means Randy's legendary stinginess may have been contagious from day one.",
+  "The two-week semifinals went to the top seeds. The Habibsters handled the Dawgs 237.54 to 196.12, ending Kai's run of points-without-payoff in fitting fashion. Team Pillbert outlasted The fumblers 234.86 to 216.44, sending the villain to the big stage and leaving Randy to complain about it, presumably at length.",
+  "Buckaroo Bowl I was not close. Kaushal's Habibsters dropped 251.36 points over the two-week final, their best playoff total, while Team Pillbert managed 192.08 and watched the trophy drive off at well above the posted limit. Good triumphed over evil, the 1 seed did what 1 seeds are supposed to do, and Habibi became the first name on the Buckaroo Bowl trophy.",
+  "Down at the bottom, the consolation ladder delivered the season's twist. Ramon's Araleasers went just 4-10 and owned the lowest single-week score of the year, a grim 65.9 in week 9, yet Brucie escaped the cellar with a fifth-place finish. That left Sonny's Ben Dover, a 6-8 team and the No. 5 seed, as the league's first last-place finisher. The commissioner built the league and then promptly moved into its basement, which is either a cautionary tale or the opening scene of a redemption story. Year one is in the books, and the bar has been set: chase Habib, or get comfortable in the basement with the commish."
+ ],
+ "social": [],
+ "teams": [],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 1537
+ }
+}
