@@ -1,0 +1,24 @@
+{
+ "id": "profile-sonny-2025",
+ "type": "profile",
+ "year": 2025,
+ "wk": null,
+ "created": "2026-10-27T16:27:12.727Z",
+ "title": "Sonny: From the Cellar to the Crown, and the Commissioner Isn't Done Yet",
+ "dek": "",
+ "body": [
+  "Every league needs a founding father, and the Buckaroo Football League got one who built the website and then spent two years finishing at the bottom of it. Sonny's Ben Dover debuted in 2023 at 6-8 with 1,413.3 points, good enough for the 5 seed, only to tumble all the way down the consolation ladder to 6th of 6. It was a respectable season with a brutal ending, and Sonny made 10 pickups and zero trades along the way, which suggested a commissioner still feeling out the room.",
+  "Then came 2024, the year of the great hibernation. Ben Dover slid to 5-9 with 1,304.3 points, earned the 6 seed, and finished last again. The most telling stat is the transaction log: one pickup, zero trades, for an entire season. Rock bottom arrived in week 12, when a 44.1-point dud against Mekhi became the worst week of Sonny's career. Back-to-back last places for the guy who runs the league invited the obvious question of whether the commissioner should be allowed to rule on his own fitness for office.",
+  "Whatever happened that offseason, it should be studied. Sonny woke up in 2025 and went from one pickup to 22, made his first trade, and turned Ben Dover into a 13-3 juggernaut with 1,850.8 points and the 1 seed. The signature moment was a career-best 153.4 against Randy in week 10, and the coronation came with a perfect 1-0 playoff record and the Buckaroo Bowl III trophy. Worst to first, last to champion, the redemption arc writes itself, and naturally the guy with website admin rights made sure it's on the homepage.",
+  "The head-to-head ledger shows a manager who has quietly beaten nearly everyone. Sonny is 7-5 against both Ramon and Mekhi, though some of those Ramon wins came against Ramon's Remains after Brucie was shown the door, so put an asterisk wherever you like. He is 6-5 against Alan, 5-3 against Randy, and 1-0 against Jordan. The two blemishes are telling: a 5-6 mark against Kaushal, whose Habibsters won the first two Bowls while Ben Dover sat in the basement, and an 0-1 against rookie Zoe, who has already got one over on the commish.",
+  "Now rebranded as The Horse is Hea, Sonny is 5-2 through seven weeks of 2026 with 853.6 points, two trades, and 17 pickups, already on pace to be the busiest season of his career. At 28% title odds, he is very much in the hunt to go back-to-back in the new eight-team era. Living in Boston may have him dangerously close to becoming one of those guys who expects a parade every year, but after 2025, nobody in this league is laughing at the idea anymore."
+ ],
+ "social": [],
+ "teams": [],
+ "mgr": "sonny",
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 1533
+ }
+}

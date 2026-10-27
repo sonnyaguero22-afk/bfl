@@ -1,0 +1,23 @@
+{
+ "id": "profile-jordan-2025",
+ "type": "profile",
+ "year": 2025,
+ "wk": null,
+ "created": "2026-10-27T16:28:50.671Z",
+ "title": "JMoney: The Numbers Guy Whose Numbers Haven't Cooperated Yet",
+ "dek": "",
+ "body": [
+  "Every club history starts somewhere, and Jordan's starts in 2026, when the Buckaroo Football League expanded to eight teams and handed a roster to a man who openly admits he's here for the math more than the football. He named his squad Counting or not Counting GV, which is either a deep statistical statement or a cry for help, and the jury is still out. JMoney arrived treating fantasy football like a spreadsheet with helmets, and a spreadsheet is about to tell you a rough story.",
+  "Through seven weeks, Counting or not Counting GV sits at 1-6 with 622.5 points for, roughly 89 a week, and the title odds have flatlined at a cold, clean 0%. For a guy who respects a good number, that one has to sting. The low point came in week 7, when Ramon and No Banner only HULK held Jordan to 60.9 points, the kind of score that makes a numbers guy double-check whether he entered his formula right.",
+  "The high point, though, is a beauty. In week 5 Jordan dropped a season-best 119.7 points on Zoe and Ghostu-Spider SZN, good for the only win on his ledger. That makes his head-to-head chart a sea of 0-1 records against Randy, Sonny, Alan, Mekhi, Kaushal and Ramon, with exactly one 1-0 sitting there like a trophy on the mantel. Of all the people in this league to beat, the one he'll see every day at home is either the best pick or the most dangerous one, and JMoney will be hearing about it either way.",
+  "As a manager, Jordan has shown some willingness to tinker: one trade and seven waiver pickups so far, which puts him well ahead of certain Bears-hoarding managers in the deal-making department. The results haven't followed yet, but the process looks like someone actually reading the data rather than marching to the beat of the preseason rankings. With the season still in progress, Jordan's remaining job is clear: play spoiler, rack up some respectable box scores, and give the regression-to-the-mean gods a reason to smile on him come 2027."
+ ],
+ "social": [],
+ "teams": [],
+ "mgr": "jordan",
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 1028
+ }
+}
