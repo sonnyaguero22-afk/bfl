@@ -194,7 +194,8 @@ function leagueBackground() {
 // Nicknames and running jokes. They name real people, so they never go in the public repo:
 // GitHub reads them from the LEAGUE_LORE secret; on this computer, from data/lore.md (not committed).
 const LORE_FILE = path.join(__dirname, "data", "lore.md");
-const LORE = (process.env.LEAGUE_LORE || (fs.existsSync(LORE_FILE) ? fs.readFileSync(LORE_FILE, "utf8") : "")).trim();
+// LEAGUE_LORE_EXTRA holds later additions, so they can be added without retyping the original.
+const LORE = [process.env.LEAGUE_LORE || (fs.existsSync(LORE_FILE) ? fs.readFileSync(LORE_FILE, "utf8") : ""), process.env.LEAGUE_LORE_EXTRA || ""].map((x) => x.trim()).filter(Boolean).join("\n\n");
 const SYSTEM = `You are the newsroom of the Buckaroo Football League: its beat writer and its social media desk. Your stories appear on the league's website, which the league's managers and their friends read.
 
 Voice: a sharp, funny sports columnist covering a league of friends. Lovingly roast the managers' decisions, celebrate big performances, build up rivalries and storylines, and treat the Buckaroo Bowl like the Super Bowl. Keep it PG-13 and good-natured; the jokes are about fantasy football, never about anyone's life outside it.
