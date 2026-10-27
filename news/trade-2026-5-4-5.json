@@ -1,0 +1,52 @@
+{
+ "id": "trade-2026-5-4-5",
+ "type": "trade",
+ "year": 2026,
+ "wk": 5,
+ "created": "2026-10-27T17:38:54.967Z",
+ "title": "Jefferson for Jeanty and Adams: Alan Bets 88 Points on One Receiver, and the Model Charges Both Sides",
+ "dek": "Alan sent 126.4 points of production to Mekhi for Justin Jefferson's 38.4, and somehow the title odds went down on both ends of the deal.",
+ "body": [
+  "The fourth trade of the 2026 season is a two-for-one with a very lopsided receipt. Before Week 5, Alan's Team Pillbert sent wide receiver Davante Adams and running back Ashton Jeanty to Mekhi's Dawgs for wide receiver Justin Jefferson. All three players had spent all four weeks on a roster, so nobody was buying on rumor. By the raw numbers, Mekhi took in 126.4 points of production and gave up 38.4, a gap of exactly 88 points. In a league where trades usually get argued down to the decimal, that is not a gap. That is a canyon.",
+  "Start with Alan, because he is the one who went looking for this. Jefferson has 38.4 points through four weeks, about 9.6 a game, which is the least productive line of anyone in the deal. Team Pillbert came in at 3-1 with 21% title odds and left at 16%. For that price, Alan is not paying for September. He is paying for the name, and for the belief that Jefferson's next 13 weeks look nothing like his first four. It is a buy-low move with a not-so-low price tag, and it will either look visionary by Thanksgiving or get brought up at every draft for the rest of the decade.",
+  "Mekhi's side reads like a heist on paper. Adams arrives with 62 points, about 15.5 a game, and Jeanty brings 64.4, about 16.1 a game, which makes them two of the steadiest weekly producers to change hands all season. For a Dawgs team sitting at 1-3, that is two lineup slots upgraded in one click, by a manager who probably knows more football than anyone in the league. And yet the model trimmed Mekhi's title odds from 4% to 3%. The likeliest read is that a 1-3 team with a thin margin for error loses something real when it gives up its top receiver, even one producing like a WR3 so far, and two good starters cannot fully cover a hole at the top of the depth chart.",
+  "So who won on paper? Here is the strange part: proportionally, almost nobody. Alan gave up about 24% of his title chances, and Mekhi gave up 25% of his, which is about as close to a dead heat as the model gets. In raw terms, though, Mekhi lost one point of odds while Alan lost five, and Mekhi collected the two most productive players in the deal. Paper says Mekhi, narrowly, with an asterisk for the fact that his odds still went the wrong way.",
+  "The Week 5 scoreboard adds a wrinkle: these two teams meet right away, with the Dawgs hosting Team Pillbert. That means Jefferson's first audition in his new colors comes directly against the two players Alan paid to get him. If Jefferson goes off, Alan gets to call this a masterstroke on day one. If Adams and Jeanty outscore him, Mekhi gets a win and a very easy argument about who got the better end."
+ ],
+ "social": [
+  {
+   "author": "Dawgs Fan Club",
+   "handle": "@DawgsDenBFL",
+   "text": "We gave up 38.4 points. We got back 126.4. Our title odds went DOWN. We would like to speak to the model's manager."
+  },
+  {
+   "author": "Team Pillbert Faithful",
+   "handle": "@PillbertNation",
+   "text": "You don't trade for Justin Jefferson's first four weeks. You trade for his last thirteen. Check back in December, spreadsheet people."
+  },
+  {
+   "author": "Waiver Wire Wendell",
+   "handle": "@WendellOnWaivers",
+   "text": "Proportional damage on the Jefferson deal: Team Pillbert lost ~24% of its title odds, Dawgs lost 25%. Two teams, one trade, same haircut."
+  },
+  {
+   "author": "BFL Insider",
+   "handle": "@BuckarooSources",
+   "text": "Sources say Alan watched 88 points walk out the door for one receiver averaging 9.6 a game. Sources also say he would do it again. Sources are concerned."
+  },
+  {
+   "author": "Stat Sheet Steve",
+   "handle": "@StatSheetSteveBFL",
+   "text": "Adams 15.5 a game. Jeanty 16.1. Jefferson 9.6. Week 5 puts all three on the same field. Fastest trade grade in league history incoming."
+  }
+ ],
+ "teams": [
+  4,
+  5
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 2219
+ }
+}
