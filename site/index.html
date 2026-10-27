@@ -365,6 +365,7 @@ table.compact .team { min-width: 0; }
 .artbody p { font-size: 17px; line-height: 1.65; margin: 0 0 16px; }
 .feed { display: grid; gap: 14px; }
 .post { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 10px; }
+.post.take { grid-template-columns: minmax(0, 1fr); }
 .avatar { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; color: var(--surface); background: hsl(var(--h) var(--mgr-s) var(--mgr-l)); }
 .phead { font-size: 13.5px; }
 .pbody p { margin: 2px 0 4px; font-size: 14.5px; line-height: 1.45; }
@@ -1390,6 +1391,13 @@ function newsView() {
   return head + `<div class="newsgrid"><div class="newsmain">${newsCard(lead, true)}<div class="newslist">${rest.map((a) => newsCard(a)).join("")}</div></div>
     <aside><div class="box rec"><div class="k">From the Feed</div><div class="feed">${allPosts().slice(0, 6).map((x) => postHtml(x.p, x.a)).join("")}</div><button class="morebtn" data-go="social">Open Social →</button></div></aside></div>${aiNote}`;
 }
+// Recaps carry quick takes on earlier trades; a trade's page collects every take on it since
+function tradeWatchHtml(a) {
+  if (a.type === "recap" && a.trade_watch && a.trade_watch.length) return `<section><h3>Trade Watch</h3><div class="box rec"><div class="feed">${a.trade_watch.map((t) => { const tr = NEWS.find((x) => x.id === t.id); return `<div class="post take"><div class="pbody"><p>${esc(t.take)}</p>${tr ? `<button class="mlink postsrc" data-go="news-${tr.id}">${newsWhen(tr)} · ${esc(tr.title)}</button>` : ""}</div></div>`; }).join("")}</div></div></section>`;
+  if (a.type !== "trade") return "";
+  const later = NEWS.filter((x) => x.type === "recap" && x.year === a.year && (x.trade_watch || []).some((t) => t.id === a.id)).sort((x, y) => x.wk - y.wk);
+  return later.length ? `<section><h3>Since Then</h3><div class="box rec"><div class="feed">${later.map((x) => `<div class="post take"><div class="pbody"><p>${esc(x.trade_watch.find((t) => t.id === a.id).take)}</p><button class="mlink postsrc" data-go="news-${x.id}">After Week ${x.wk} · ${esc(x.title)}</button></div></div>`).join("")}</div></div></section>` : "";
+}
 function articleView() {
   const a = NEWS.find((x) => x.id === state.newsId);
   if (!a) return newsView();
@@ -1397,6 +1405,7 @@ function articleView() {
   return `<article class="article"><button class="pill" data-go="news" style="border:0;cursor:pointer">← All News</button>
     <div class="eyebrow" style="margin-top:18px">${NEWS_TYPE[a.type]} · ${newsWhen(a)}</div><h2 class="headline">${esc(a.title)}</h2><p class="dek big">${esc(a.dek)}</p>
     <div class="artbody">${a.body.map((p) => `<p>${esc(p)}</p>`).join("")}</div>
+    ${tradeWatchHtml(a)}
     ${a.social && a.social.length ? `<section><h3>The Reaction</h3><div class="box rec"><div class="feed">${a.social.map((p) => postHtml(p)).join("")}</div></div></section>` : ""}
     ${aiNote}
     ${newer || older ? `<section><h3>More Stories</h3><div class="newslist">${[newer, older].filter(Boolean).map((x) => newsCard(x)).join("")}</div></section>` : ""}</article>`;

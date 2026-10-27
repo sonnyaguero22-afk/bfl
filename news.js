@@ -1,5 +1,5 @@
 // Writes league news with Claude: a recap after every finished week (with fan/pundit social
-// posts and fresh team bios), a reaction to every trade, and a look back at each finished season.
+// posts, fresh team bios and quick takes on how earlier trades are aging), a reaction to every trade, and a look back at each finished season.
 // Each article is saved once in news/ and never rewritten.
 // Runs in GitHub Actions after build.js; does nothing without ANTHROPIC_API_KEY.
 // Usage: node news.js            (write what's missing)
@@ -82,9 +82,33 @@ function recapFacts(s, W) {
     games, top_performances: starts.sort((a, b) => b.points - a.points).slice(0, 6),
     biggest_busts: starts.filter((x) => x.projected != null).sort((a, b) => (a.points - a.projected) - (b.points - b.projected)).slice(0, 3),
     bench_blunders: bench.sort((a, b) => b.points - a.points).slice(0, 3),
-    standings_after_week: standings, roster_moves_this_week: moves, trades, next_week_matchups: next,
+    standings_after_week: standings, roster_moves_this_week: moves, trades, next_week_matchups: next, trade_watch: tradeWatchFacts(s, W),
     records_before_this_week: Object.fromEntries(s.teams.map((t) => [who(t, W), `${recBefore[t.id].w}-${recBefore[t.id].l}`])),
   };
+}
+// How each earlier trade is aging: what the players did this week and since the deal
+const tradeId = (s, tr) => `trade-${s.year}-${tr.wk}-${[...tr.teams].sort((a, b) => a - b).join("-")}`;
+function tradeWatchFacts(s, W) {
+  const now = spans(s, W);
+  return s.trades.filter((tr) => tr.wk <= W).map((tr) => ({
+    id: tradeId(s, tr), happened_before_week: tr.wk, weeks_since: W - tr.wk + 1,
+    sides: tr.teams.map((id) => ({
+      team: who(s.byId[id], W),
+      received: (tr.got[id] || []).map((x) => {
+        const n = x.split("|")[0], o = { player: n, points_this_week: 0, started_this_week: false, points_since_trade: 0, points_in_this_teams_lineup_since_trade: 0 };
+        for (const wk in s.lineups) if (+wk >= tr.wk && +wk <= Math.max(...now)) for (const tid in s.lineups[wk]) for (const p of s.lineups[wk][tid]) {
+          if (p.n !== n) continue;
+          const started = p.slot !== "BN" && p.slot !== "IR";
+          o.points_since_trade += p.pts;
+          if (started && +tid === id) o.points_in_this_teams_lineup_since_trade += p.pts;
+          if (now.includes(+wk)) { o.points_this_week += p.pts; o.started_this_week = started; o.rostered_by = who(s.byId[tid], W); }
+        }
+        for (const k of ["points_this_week", "points_since_trade", "points_in_this_teams_lineup_since_trade"]) o[k] = r1(o[k]);
+        if (!o.rostered_by) o.rostered_by = "not on a roster this week";
+        return o;
+      }),
+    })),
+  }));
 }
 function tradeFacts(s, tr) {
   const pointsFor = (n) => { let pts = 0, gp = 0; for (const wk in s.lineups) for (const id in s.lineups[wk]) for (const p of s.lineups[wk][id]) if (p.n === n && +wk < tr.wk) { pts += p.pts; gp++; } return { season_points_before_trade: r1(pts), weeks_on_a_roster: gp }; };
@@ -180,6 +204,7 @@ Rules:
 - Call managers by their first names and nicknames from the lore below, and teams by their exact names as given. A "(name)" after a team is its manager.
 - Never mention where anyone lives, works, studies, or serves beyond what the lore says.
 - Social posts come from fictional accounts only: made-up fans, team fan clubs, pundits, and "insiders". Never write as, or tag, real NFL players, journalists, or celebrities.
+- Running jokes and nicknames are seasoning, not the meal. Use any one bit at most once in a story, leave most of them out of most stories, and never make the same joke the punchline two stories in a row. A manager is more than their running joke: describe what they actually did this week first. Don't cast anyone as the league's permanent villain or punching bag.
 - Plain text only, no markdown. Body paragraphs should be 2 to 5 sentences each.
 
 League background:
@@ -193,14 +218,15 @@ const str = { type: "string" };
 const SOCIAL = { type: "array", items: { type: "object", additionalProperties: false, required: ["author", "handle", "text"], properties: { author: str, handle: str, text: str } } };
 const ARTICLE = { title: str, dek: str, body: { type: "array", items: str } };
 const schemas = {
-  recap: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "social", "bios"], properties: { ...ARTICLE, social: SOCIAL,
+  recap: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "social", "bios", "trade_watch"], properties: { ...ARTICLE, social: SOCIAL,
+    trade_watch: { type: "array", items: { type: "object", additionalProperties: false, required: ["id", "take"], properties: { id: str, take: str } } },
     bios: { type: "array", items: { type: "object", additionalProperties: false, required: ["team", "bio"], properties: { team: str, bio: str } } } } },
   trade: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "social"], properties: { ...ARTICLE, social: SOCIAL } },
   review: { type: "object", additionalProperties: false, required: ["title", "dek", "body"], properties: ARTICLE },
   profile: { type: "object", additionalProperties: false, required: ["headline", "body"], properties: { headline: str, body: { type: "array", items: str } } },
 };
 const asks = {
-  recap: "Write the weekly recap for this week of the Buckaroo Football League: a headline, a one-sentence dek, and 5 to 8 body paragraphs covering the results (lead with the best storyline), standout and disappointing performances, the standings and title-odds picture, notable moves, and a look ahead to next week. Then write 6 to 10 social posts reacting to the week, and a fresh 2 to 3 sentence bio for every team in the standings that sums up where its season stands right now (use the exact team name in the team field).",
+  recap: "Write the weekly recap for this week of the Buckaroo Football League: a headline, a one-sentence dek, and 5 to 8 body paragraphs covering the results (lead with the best storyline), standout and disappointing performances, the standings and title-odds picture, notable moves, and a look ahead to next week. Then write 6 to 10 social posts reacting to the week, and a fresh 2 to 3 sentence bio for every team in the standings that sums up where its season stands right now (use the exact team name in the team field). Finally, the trade watch: quick 1 to 2 sentence takes on how earlier trades in trade_watch are aging, for the 2 to 5 deals with the most to say this week (a deal that looked lopsided flipping, a player who carried his new team or sat on its bench, a winner pulling further ahead). These are quick hot takes, not articles; say how it looks now compared with before. Use the trade's id from the facts. If there are no trades yet, leave it empty.",
   trade: "Write a trade reaction story: a headline, a one-sentence dek, and 3 to 5 body paragraphs explaining the deal, what each side got, and who won it on paper (use the title odds change). Then write 3 to 5 social posts reacting to it.",
   profile: "Write a career profile of this manager for their page on the league website, like a club history page in Football Manager: a short headline that captures who they are in this league, and 3 to 5 body paragraphs telling the story of their whole run: each season, the highs and lows, rivalries from the head-to-head records, their habits as a manager (trades, waiver moves), and where they stand right now. Use their nicknames and the lore, as seasoning on top of what actually happened.",
   review: "Write a season-in-review story for this finished season: a headline, a one-sentence dek, and 5 to 7 body paragraphs telling the story of the season from draft to Buckaroo Bowl, including the champion, the last-place finisher, the playoff games, and any notable notes.",
@@ -219,7 +245,7 @@ function pending() {
       if (!ms.length || !ms.every(done)) break;
       if (!have.has(`recap-${cur.year}-${W}`)) todo.push({ id: `recap-${cur.year}-${W}`, type: "recap", s: cur, wk: W, facts: () => recapFacts(cur, W) });
     }
-    for (const tr of cur.trades) { const id = `trade-${cur.year}-${tr.wk}-${[...tr.teams].sort((a, b) => a - b).join("-")}`; if (!have.has(id)) todo.push({ id, type: "trade", s: cur, wk: tr.wk - 0.5, tr, facts: () => tradeFacts(cur, tr) }); }
+    for (const tr of cur.trades) { const id = tradeId(cur, tr); if (!have.has(id)) todo.push({ id, type: "trade", s: cur, wk: tr.wk - 0.5, tr, facts: () => tradeFacts(cur, tr) }); }
   }
   // Career profiles, rewritten once each season finishes
   const lastDone = Math.max(...D.seasons.filter((x) => x.done).map((x) => x.year));
@@ -231,8 +257,18 @@ function pending() {
   return todo.sort((a, b) => a.s.year - b.s.year || a.wk - b.wk);
 }
 
+// The last few stories, so a new one doesn't repeat their jokes and angles
+function recentStories(n = 4) {
+  if (!fs.existsSync(NEWS)) return [];
+  return fs.readdirSync(NEWS).map((f) => JSON.parse(fs.readFileSync(path.join(NEWS, f), "utf8"))).filter((a) => a.type !== "profile")
+    .sort((a, b) => (a.created < b.created ? 1 : -1)).slice(0, n)
+    .map((a) => ({ title: a.title, body: a.body, social: (a.social || []).map((p) => p.text), trade_watch: (a.trade_watch || []).map((t) => t.take) }));
+}
+
 async function write(client, job) {
   const facts = job.facts();
+  const recent = job.type === "profile" ? [] : recentStories();
+  const avoid = recent.length ? `\n\nThe league's most recent stories, for reference only. Readers just read these, so don't reuse their jokes, nicknames-as-punchlines, or angles; find fresh ones:\n${JSON.stringify(recent)}` : "";
   const res = await client.beta.messages.create({
     model: MODEL,
     max_tokens: 16000,
@@ -241,7 +277,7 @@ async function write(client, job) {
     cache_control: { type: "ephemeral" },
     system: SYSTEM,
     output_config: { effort: "medium", format: { type: "json_schema", schema: schemas[job.type] } },
-    messages: [{ role: "user", content: `${asks[job.type]}\n\nFacts (JSON):\n${JSON.stringify(facts)}` }],
+    messages: [{ role: "user", content: `${asks[job.type]}\n\nFacts (JSON):\n${JSON.stringify(facts)}${avoid}` }],
   });
   if (res.stop_reason === "refusal") { console.log(`${job.id}: declined (${res.stop_details && res.stop_details.category}), skipping`); return null; }
   if (res.stop_reason === "max_tokens") { console.log(`${job.id}: ran out of room, will retry next run`); return null; }
@@ -253,6 +289,7 @@ async function write(client, job) {
   return {
     id: job.id, type: job.type, year: job.s.year, wk: job.type === "review" || job.type === "profile" ? null : Math.ceil(job.wk), created: new Date().toISOString(),
     title: out.title || out.headline, dek: out.dek || "", body: out.body, social: out.social || [], teams: job.tr ? job.tr.teams : [], mgr: job.mgr,
+    trade_watch: out.trade_watch ? out.trade_watch.filter((t) => (facts.trade_watch || []).some((x) => x.id === t.id)) : undefined,
     bios: out.bios ? Object.fromEntries(out.bios.map((b) => [(teamFor(b.team) || {}).id, b.bio]).filter(([id]) => id != null)) : undefined,
     model: res.model, usage: { input: res.usage.input_tokens, output: res.usage.output_tokens },
   };
