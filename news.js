@@ -1,6 +1,7 @@
 // Writes league news with Claude: a recap after every finished week (with fan/pundit social
 // posts, fresh team bios and quick takes on how earlier trades are aging), a reaction to every trade, and a look back at each finished season.
 // Each article is saved once in news/ and never rewritten.
+// Stories that fail are logged as ::warning:: lines so they show on the run's summary page.
 // Runs in GitHub Actions after build.js; does nothing without ANTHROPIC_API_KEY.
 // Usage: node news.js            (write what's missing)
 //        node news.js --dry-run  (print the facts that would be sent; no API calls)
@@ -283,11 +284,11 @@ async function write(client, job) {
     output_config: { effort: "medium", format: { type: "json_schema", schema: schemas[job.type] } },
     messages: [{ role: "user", content: `${asks[job.type]}\n\nFacts (JSON):\n${JSON.stringify(facts)}${avoid}` }],
   });
-  if (res.stop_reason === "refusal") { console.log(`${job.id}: declined (${res.stop_details && res.stop_details.category}), skipping`); return null; }
-  if (res.stop_reason === "max_tokens") { console.log(`${job.id}: ran out of room, will retry next run`); return null; }
+  if (res.stop_reason === "refusal") { console.log(`::warning::${job.id}: declined (${res.stop_details && res.stop_details.category}), skipping`); return null; }
+  if (res.stop_reason === "max_tokens") { console.log(`::warning::${job.id}: ran out of room, will retry next run`); return null; }
   const text = res.content.filter((b) => b.type === "text").map((b) => b.text).join("");
   let out;
-  try { out = JSON.parse(text); } catch { console.log(`${job.id}: response wasn't valid JSON, will retry next run`); return null; }
+  try { out = JSON.parse(text); } catch { console.log(`::warning::${job.id}: response wasn't valid JSON, will retry next run`); return null; }
   // Bios name teams as written in the facts ("Name (Manager)"); match on the team-name part
   const teamFor = (label) => job.s.teams.find((t) => label === nameAt(t, job.wk) || label.startsWith(nameAt(t, job.wk) + " ("));
   return {
@@ -318,7 +319,7 @@ async function write(client, job) {
     } catch (err) {
       if (err instanceof Anthropic.AuthenticationError) { console.log("The ANTHROPIC_API_KEY secret was rejected. Check it in GitHub settings."); process.exitCode = 1; return; }
       if (err instanceof Anthropic.RateLimitError) { console.log("Rate limited, will continue next run."); return; }
-      if (err instanceof Anthropic.APIError) { console.log(`${job.id}: API error ${err.status}: ${err.message}`); continue; }
+      if (err instanceof Anthropic.APIError) { console.log(`::warning::${job.id}: API error ${err.status}: ${err.message}`); continue; }
       throw err;
     }
   }
