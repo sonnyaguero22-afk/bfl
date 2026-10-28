@@ -62,6 +62,25 @@ async function get(url, file, headers = {}) {
     });
     console.log(`${y}: ${L.teams.length} teams, ${last} weeks downloaded`);
   }
+  // Past seasons' NFL schedules (opponents and byes), saved once to archive/ (public info, no account IDs)
+  const ARCHIVE = path.join(__dirname, "archive");
+  for (let y = 2023; y < current; y++) {
+    const f = path.join(ARCHIVE, `nfl_${y}.json`);
+    if (fs.existsSync(f)) continue;
+    try {
+      const res = await fetch(`${BASE}/seasons/${y}?view=proTeamSchedules_wl`);
+      if (!res.ok) { console.log(`${y} NFL schedule: ESPN said ${res.status}`); continue; }
+      const teams = (((await res.json()).settings || {}).proTeams || []);
+      const games = {};
+      for (const t of teams) for (const [wk, gs] of Object.entries(t.proGamesByScoringPeriod || {})) for (const g of gs) {
+        const k = `${g.homeProTeamId}-${g.awayProTeamId}`;
+        if (!(games[wk] = games[wk] || []).some((x) => `${x[0]}-${x[1]}` === k)) games[wk].push([g.homeProTeamId, g.awayProTeamId]);
+      }
+      fs.mkdirSync(ARCHIVE, { recursive: true });
+      fs.writeFileSync(f, JSON.stringify({ byes: Object.fromEntries(teams.map((t) => [t.id, t.byeWeek])), games }));
+      console.log(`${y} NFL schedule saved`);
+    } catch (err) { console.log(`${y} NFL schedule unavailable (${err.message})`); }
+  }
   // NFL game states and clocks, so live win chances know who still has to play
   if (process.argv.slice(2).includes("current")) {
     try {

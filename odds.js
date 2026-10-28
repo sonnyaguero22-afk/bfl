@@ -5,11 +5,14 @@
 //   - later weeks: a blend of points per game (pulled toward the league average) and next week's
 //     lineup projection with holes filled, played with a wider spread, since games 2+ weeks out
 //     tested as close to coin flips.
-// The rest of the regular season and the bracket are then played out SIMS times.
+//   - later weeks also lose what a team's starters on NFL byes are worth over their best bench fill-in
+// The rest of the regular season and the bracket are then played out SIMS times, with ties in
+// the standings broken by head-to-head record among the tied teams, then points for.
 const SIMS = 5000;
 const PRIOR_GAMES = 5;    // how many league-average games each team starts with
 const PROJ_WEIGHT = 0.6;  // share of the lineup projection in a team's later-weeks strength
 const FAR_SPREAD = 1.9;   // later weeks' spread, as a multiple of the weekly score spread
+const DECAY = 0.8;        // each week further back counts this much less in points per game (backtested on 2023-25)
 
 // Small seeded random generator so the odds don't wobble from one rebuild to the next
 function rng(seed) {
@@ -18,6 +21,18 @@ function rng(seed) {
   return () => { let x = 0, y = 0; while (x === 0) x = u(); y = u(); return Math.sqrt(-2 * Math.log(x)) * Math.cos(2 * Math.PI * y); };
 }
 const r1 = (n) => Math.round(n * 10) / 10;
+
+// Standings order: wins, then head-to-head win share among the teams tied on wins, then points for
+function rank(ids, rec, H) {
+  const byWins = {};
+  for (const id of ids) (byWins[rec[id].w] = byWins[rec[id].w] || []).push(id);
+  return Object.keys(byWins).map(Number).sort((a, b) => b - a).flatMap((w) => {
+    const g = byWins[w];
+    if (g.length === 1) return g;
+    const share = (id) => { let won = 0, n = 0; for (const o of g) if (o !== id) { const x = H[id][o] || 0, y = H[o][id] || 0; won += x; n += x + y; } return n ? won / n : 0.5; };
+    return g.map((id) => ({ id, sh: share(id) })).sort((a, b) => b.sh - a.sh || rec[b.id].pf - rec[a.id].pf).map((x) => x.id);
+  });
+}
 
 function seasonOdds(s) {
   const ids = s.teams.map((t) => t.id);
@@ -58,6 +73,21 @@ function seasonOdds(s) {
     return st.length ? st.reduce((a, p) => a + (p.proj || 0), 0) * calib : null;
   };
 
+  // Points a team loses in week wk to NFL byes: each starter on bye (in its lineup set for week from)
+  // minus the best bench player at his position who isn't also off that week. Needs s.nflByes (current season).
+  const byeLoss = (id, from, wk) => {
+    const byes = s.nflByes; if (!byes) return 0;
+    const L = (s.lineups[spans(from)[0]] || {})[id]; if (!L) return 0;
+    const off = (p) => byes[p.pro] === wk, used = new Set();
+    let loss = 0;
+    for (const p of L.filter((p) => isStart(p) && off(p) && p.proj > 0)) {
+      const sub = L.filter((b) => b.slot === "BN" && !used.has(b) && !off(b) && b.pos === p.pos && b.proj != null).sort((a, b) => b.proj - a.proj)[0];
+      if (sub) used.add(sub);
+      loss += Math.max(0, p.proj - (sub ? sub.proj : 0)) * calib;
+    }
+    return loss;
+  };
+
   const lastCheck = s.done ? Math.max(...s.matchups.map((m) => m.wk)) : Math.min(lastDone, s.regWeeks);
   const weeks = [];
   const out = Object.fromEntries(ids.map((id) => [id, { c: [], p: [], l: [], str: [], far: [] }]));
@@ -67,23 +97,28 @@ function seasonOdds(s) {
   for (let N = 0; N <= lastCheck; N++) {
     weeks.push(N);
     // Records and points through week N
-    const base = Object.fromEntries(ids.map((id) => [id, { w: 0, pf: 0, g: 0, pts: 0 }]));
+    const base = Object.fromEntries(ids.map((id) => [id, { w: 0, pf: 0, wsum: 0, wpts: 0 }]));
+    const h2h = Object.fromEntries(ids.map((id) => [id, {}])); // h2h[a][b] = a's wins over b (ties count half)
+    const beat = (H, a, b, x) => { H[a][b] = (H[a][b] || 0) + x; };
     for (const m of reg.filter((m) => done(m) && m.wk <= N)) {
-      base[m.h].pf += m.hp; base[m.a].pf += m.ap; base[m.h].g++; base[m.a].g++; base[m.h].pts += m.hp; base[m.a].pts += m.ap;
-      if (m.win === m.h) base[m.h].w++; else if (m.win === m.a) base[m.a].w++; else { base[m.h].w += 0.5; base[m.a].w += 0.5; }
+      base[m.h].pf += m.hp; base[m.a].pf += m.ap;
+      const wt = DECAY ** (N - m.wk); // recent weeks count more
+      base[m.h].wsum += wt; base[m.a].wsum += wt; base[m.h].wpts += wt * m.hp; base[m.a].wpts += wt * m.ap;
+      if (m.win === m.h) { base[m.h].w++; beat(h2h, m.h, m.a, 1); } else if (m.win === m.a) { base[m.a].w++; beat(h2h, m.a, m.h, 1); }
+      else { base[m.h].w += 0.5; base[m.a].w += 0.5; beat(h2h, m.h, m.a, 0.5); beat(h2h, m.a, m.h, 0.5); }
     }
     const far = {}, next = {};
     for (const id of ids) {
       const b = base[id];
-      const avg = (b.pts + PRIOR_GAMES * leagueAvg) / (b.g + PRIOR_GAMES);
+      const avg = (b.wpts + PRIOR_GAMES * leagueAvg) / (b.wsum + PRIOR_GAMES);
       const pj = projFor(id, N + 1);
       far[id] = pj != null ? (1 - PROJ_WEIGHT) * avg + PROJ_WEIGHT * pj : avg;
       next[id] = setFor(id, N + 1) ?? far[id];
       out[id].str.push(r1(next[id]));
       out[id].far.push(r1(far[id]));
     }
-    // A game's scores: next week's from the set lineups, later weeks' from the wider blend
-    const score = (id, mp, len = 1) => mp === N + 1 ? next[id] * len + gauss() * sd * Math.sqrt(len) : far[id] * len + gauss() * sd * FAR_SPREAD * Math.sqrt(len);
+    // A game's scores: next week's from the set lineups, later weeks' from the wider blend minus bye losses
+    const score = (id, mp, len = 1) => mp === N + 1 ? next[id] * len + gauss() * sd * Math.sqrt(len) : (far[id] - byeLoss(id, N + 1, mp)) * len + gauss() * sd * FAR_SPREAD * Math.sqrt(len);
     // Remaining regular-season games (anything after week N, finished or not)
     const rest = [...reg.filter((m) => m.wk > N).map((m) => [m.h, m.a, m.wk]), ...(s.future || []).filter((m) => m.wk > N).map((m) => [m.h, m.a, m.wk])];
     const regOver = N >= s.regWeeks;
@@ -101,12 +136,13 @@ function seasonOdds(s) {
       if (regOver && s.done) seeds = [...ids].sort((a, b) => (seedActual[a] || 99) - (seedActual[b] || 99));
       else {
         const rec = Object.fromEntries(ids.map((id) => [id, { w: base[id].w, pf: base[id].pf }]));
+        const H = Object.fromEntries(ids.map((id) => [id, { ...h2h[id] }]));
         for (const [h, a, wk] of rest) {
           const sh = score(h, wk), sa = score(a, wk);
           rec[h].pf += sh; rec[a].pf += sa;
-          if (sh >= sa) rec[h].w++; else rec[a].w++;
+          if (sh >= sa) { rec[h].w++; beat(H, h, a, 1); } else { rec[a].w++; beat(H, a, h, 1); }
         }
-        seeds = [...ids].sort((a, b) => rec[b].w - rec[a].w || rec[b].pf - rec[a].pf);
+        seeds = rank(ids, rec, H);
       }
       const field = seeds.slice(0, po);
       field.forEach((id) => cnt[id].p++);

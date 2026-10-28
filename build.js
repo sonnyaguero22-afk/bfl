@@ -84,8 +84,9 @@ for (const year of years) {
 
   // Weekly lineups
   // NFL bye weeks by pro team id (proTeamSchedules_wl)
-  const nflBye = {};
-  if (exists(`proteams_${year}.json`)) for (const t of ((load(`proteams_${year}.json`).settings || {}).proTeams || [])) nflBye[t.id] = t.byeWeek;
+  const nflBye = {}, nflByes = {}; // by pro team id, and by abbreviation for odds.js (and the same-game measurement)
+  const proTeams = exists(`proteams_${year}.json`) ? ((load(`proteams_${year}.json`).settings || {}).proTeams || []) : [];
+  for (const t of proTeams) { nflBye[t.id] = t.byeWeek; if (PRO[t.id]) nflByes[PRO[t.id]] = t.byeWeek; }
   const lineups = {};
   const owner = {}; // week -> playerId -> teamId (for trade detection)
   for (let w = 1; w <= lastWeek; w++) {
@@ -255,9 +256,13 @@ for (const year of years) {
 
   seasons.push({
     year: +year, name: L.settings.name, done, curWeek: L.status.currentMatchupPeriod, regWeeks,
-    on: matchups.some((m) => m.on), playoffTeams: ss.playoffTeamCount, periods: ss.matchupPeriods, teams, future, matchups, byes, lineups, draft, moves, trades: finalTrades, rosters, wp,
+    on: matchups.some((m) => m.on), nflByes: done ? undefined : nflByes, playoffTeams: ss.playoffTeamCount, periods: ss.matchupPeriods, teams, future, matchups, byes, lineups, draft, moves, trades: finalTrades, rosters, wp,
   });
   for (const w of [L.status.latestScoringPeriod - 1, L.status.latestScoringPeriod]) if (lineups[w]) { const all = Object.values(lineups[w]).flat(); console.log(`::notice::${year} week ${w}: on bye ${all.filter((p) => p.st === "bye").map((p) => p.n).join(", ") || "none"}; out ${all.filter((p) => p.st === "out").map((p) => p.n).join(", ") || "none"}; games on now: ${gamesOn}`); }
+  if (!done) {
+    const sch = L.settings.scheduleSettings || {};
+    console.log(`::notice::${year} ESPN tiebreak settings: ${JSON.stringify(Object.fromEntries(Object.entries({ ...sch, ...(L.settings.scoringSettings || {}) }).filter(([k]) => /tie|seed|rule/i.test(k))))}`);
+  }
   if (!done) console.log(`::notice::${year} trades found: ${finalTrades.map((t) => `before week ${t.wk}, teams ${t.teams.join(" & ")}`).join("; ") || "none"}`);
   console.log(`${year}: ${teams.length} teams, ${matchups.length} matchups, ${Object.keys(lineups).length} weeks of lineups, ${draft.length} picks, ${moves.length} moves, ${trades.length} trades`);
 }
@@ -325,6 +330,32 @@ for (const s of seasons) {
     if (changed && process.env.GITHUB_ACTIONS === "true") { fs.mkdirSync(HISTORY, { recursive: true }); fs.writeFileSync(f, JSON.stringify(snap)); }
     s.oddsAtWeekEnd = snap;
   }
+}
+
+// Do players in the same NFL game move together? Actual/projected for every rostered player, paired
+// with the players on the team they faced. Reported on each run to decide whether players.js should link them.
+{
+  const oppFor = (y) => {
+    const opp = {}, add = (wk, h, a) => { (opp[wk] = opp[wk] || {})[PRO[h]] = PRO[a]; opp[wk][PRO[a]] = PRO[h]; };
+    const arch = path.join(ARCHIVE, `nfl_${y}.json`);
+    if (fs.existsSync(arch)) { for (const [wk, gs] of Object.entries(JSON.parse(fs.readFileSync(arch, "utf8")).games)) for (const [h, a] of gs) add(wk, h, a); return opp; }
+    if (exists(`proteams_${y}.json`)) for (const t of ((load(`proteams_${y}.json`).settings || {}).proTeams || [])) for (const [wk, gs] of Object.entries(t.proGamesByScoringPeriod || {})) for (const g of gs) add(wk, g.homeProTeamId, g.awayProTeamId);
+    return opp;
+  };
+  const pairs = {}, years = [];
+  for (const s of seasons) {
+    const opp = oppFor(s.year);
+    if (!Object.keys(opp).length) continue;
+    years.push(s.year);
+    for (const w in s.lineups) {
+      if (!s.done && +w >= s.curWeek) continue;
+      const ps = Object.values(s.lineups[w]).flat().filter((p) => p.proj >= 3 && !p.st), byPro = {};
+      for (const p of ps) (byPro[p.pro] = byPro[p.pro] || []).push(p);
+      for (const a of ps) for (const b of byPro[(opp[w] || {})[a.pro]] || []) { const k = `${a.pos} vs opposing ${b.pos}`; (pairs[k] = pairs[k] || []).push([a.pts / a.proj, b.pts / b.proj]); }
+    }
+  }
+  const corr = (P) => { const n = P.length, mx = P.reduce((s, p) => s + p[0], 0) / n, my = P.reduce((s, p) => s + p[1], 0) / n; let c = 0, vx = 0, vy = 0; for (const [x, y] of P) { c += (x - mx) * (y - my); vx += (x - mx) ** 2; vy += (y - my) ** 2; } return c / Math.sqrt(vx * vy); };
+  console.log(`::notice::Same-game correlation (${years.join(", ") || "no schedules yet"}): ${Object.entries(pairs).filter(([, P]) => P.length >= 30).sort().map(([k, P]) => `${k} ${corr(P).toFixed(2)} (${P.length})`).join("; ") || "not enough pairs yet"}`);
 }
 
 // This week's games, simulated player by player (see players.js): win chance and the Ones to Watch
