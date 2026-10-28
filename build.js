@@ -332,16 +332,18 @@ for (const s of seasons) {
   }
 }
 
+// Each NFL team's opponent by week (by abbreviation), from saved schedules or this season's download
+const oppFor = (y) => {
+  const opp = {}, add = (wk, h, a) => { (opp[wk] = opp[wk] || {})[PRO[h]] = PRO[a]; opp[wk][PRO[a]] = PRO[h]; };
+  const arch = path.join(ARCHIVE, `nfl_${y}.json`);
+  if (fs.existsSync(arch)) { for (const [wk, gs] of Object.entries(JSON.parse(fs.readFileSync(arch, "utf8")).games)) for (const [h, a] of gs) add(wk, h, a); return opp; }
+  if (exists(`proteams_${y}.json`)) for (const t of ((load(`proteams_${y}.json`).settings || {}).proTeams || [])) for (const [wk, gs] of Object.entries(t.proGamesByScoringPeriod || {})) for (const g of gs) add(wk, g.homeProTeamId, g.awayProTeamId);
+  return opp;
+};
+
 // Do players in the same NFL game move together? Actual/projected for every rostered player, paired
 // with the players on the team they faced. Reported on each run to decide whether players.js should link them.
 {
-  const oppFor = (y) => {
-    const opp = {}, add = (wk, h, a) => { (opp[wk] = opp[wk] || {})[PRO[h]] = PRO[a]; opp[wk][PRO[a]] = PRO[h]; };
-    const arch = path.join(ARCHIVE, `nfl_${y}.json`);
-    if (fs.existsSync(arch)) { for (const [wk, gs] of Object.entries(JSON.parse(fs.readFileSync(arch, "utf8")).games)) for (const [h, a] of gs) add(wk, h, a); return opp; }
-    if (exists(`proteams_${y}.json`)) for (const t of ((load(`proteams_${y}.json`).settings || {}).proTeams || [])) for (const [wk, gs] of Object.entries(t.proGamesByScoringPeriod || {})) for (const g of gs) add(wk, g.homeProTeamId, g.awayProTeamId);
-    return opp;
-  };
   const pairs = {}, years = [];
   for (const s of seasons) {
     const opp = oppFor(s.year);
@@ -363,7 +365,7 @@ const { fit, simGame } = require("./players");
 const playerModel = fit(seasons.map((s) => ({ ...s, lineups: Object.fromEntries(Object.entries(s.lineups).filter(([w]) => s.done || +w < s.curWeek)) })));
 for (const s of seasons) for (const m of s.matchups) {
   if (!m._sides) continue;
-  const g = simGame(playerModel, m._sides[0], m._sides[1], s.year * 1000 + m.wk * 10 + m.h);
+  const g = simGame(playerModel, m._sides[0], m._sides[1], s.year * 1000 + m.wk * 10 + m.h, oppFor(s.year)[m.wk] || {});
   m.psim = Math.round(g.home * 1000) / 1000;
   // The biggest swing on each side
   const top = [0, 1].map((k) => g.watch.find((x) => x.side === k)).filter(Boolean);

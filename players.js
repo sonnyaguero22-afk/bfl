@@ -3,12 +3,19 @@
 // injuries). What this adds, fitted on every start in league history:
 //   - how far actual scores land from the projection, by position (QBs steady, D/ST wild),
 //     widened or narrowed for players with enough history of their own
-//   - receivers moving with their own QB (measured: WR 0.37, TE 0.23; other teammates ~0)
+//   - how each NFL game went, shared by the players in it (measured across 2023-26 starts):
+//     receivers move with their own QB's passing day (same team: WR 0.37, TE 0.23), RBs with their
+//     team's rushing day, a defense moves against the offense it faces (vs QB -0.61, WR -0.34,
+//     RB -0.31), and both offenses rise a little together in a shootout (opposing offenses ~+0.08)
 // Used for this week's games: win chance, and the "Ones to Watch" whose games swing it most.
 const SIMS = 10000;
 const MIN_PROJ = 3;     // starts projected below this are too noisy to learn ratios from
 const SHRINK = 10;      // weeks of position-average spread each player's own spread is blended with
-const RHO = { WR: 0.37, TE: 0.23 };
+// How much each position follows its team's passing day (P), rushing day (R) and the game's
+// shootout factor (G); a defense follows the opponent's P and R (negatively) and G (negatively).
+// Chosen so the correlations they imply match the measured ones above.
+const LOAD = { QB: { P: 0.968, G: 0.25 }, WR: { P: 0.32, G: 0.25 }, TE: { P: 0.17, G: 0.25 }, RB: { R: 0.5, G: 0.25 } };
+const DEF = { P: -0.55, R: -0.55, G: -0.2 };
 const BOOM = 0.8, BUST = 0.2; // a boom is a top-20% game for that player, a bust a bottom-20% one
 
 function rng(seed) {
@@ -54,20 +61,30 @@ function ratioAt(model, pos, u, scale) {
 // where left is the share of his NFL game still to play (1 before kickoff, 0 when done or on bye).
 // Returns the home side's win chance and, per player still to play, his team's win chance
 // when he booms and when he busts.
-function simGame(model, home, away, seed = 1) {
+// opp maps an NFL team to the team it plays this week (by abbreviation); without it, games aren't linked.
+function simGame(model, home, away, seed = 1, opp = {}) {
   const R = rng(seed);
   const sides = [home, away].map((L) => L.map((p) => ({ ...p, scale: playerScale(model, p.n, p.pos), boomW: 0, boomN: 0, bustW: 0, bustN: 0 })));
-  const pros = [...new Set(sides.flat().map((p) => p.pro))];
+  const pros = [...new Set(sides.flat().flatMap((p) => [p.pro, opp[p.pro]]).filter(Boolean))];
+  const gameOf = (t) => (opp[t] ? [t, opp[t]].sort().join("-") : t);
+  // A player's draw: his loadings on the shared factors, plus his own luck for the rest
+  const draw = (p, f) => {
+    if (p.pos === "D/ST") { const o = opp[p.pro]; if (!o) return R.z(); const v = DEF.P * f.P[o] + DEF.R * f.R[o] + DEF.G * f.G[gameOf(p.pro)]; return v + Math.sqrt(1 - DEF.P ** 2 - DEF.R ** 2 - DEF.G ** 2) * R.z(); }
+    const L = LOAD[p.pos]; if (!L) return R.z();
+    const v = (L.P || 0) * f.P[p.pro] + (L.R || 0) * f.R[p.pro] + (L.G || 0) * f.G[gameOf(p.pro)];
+    return v + Math.sqrt(Math.max(0, 1 - (L.P || 0) ** 2 - (L.R || 0) ** 2 - (L.G || 0) ** 2)) * R.z();
+  };
   let hw = 0;
   const us = sides.map((L) => new Float64Array(L.length));
   for (let i = 0; i < SIMS; i++) {
-    const qb = Object.fromEntries(pros.map((t) => [t, R.z()])); // each NFL team's passing game
+    // How each NFL team's passing and rushing went, and each game's shootout factor
+    const f = { P: {}, R: {}, G: {} };
+    for (const t of pros) { f.P[t] = R.z(); f.R[t] = R.z(); const g = gameOf(t); if (f.G[g] == null) f.G[g] = R.z(); }
     const tot = [0, 0];
     sides.forEach((L, k) => L.forEach((p, j) => {
       let pts = p.pts || 0;
       if (p.left > 0 && p.proj > 0) {
-        const rho = p.pos === "QB" ? 1 : RHO[p.pos] || 0;
-        const z = rho * qb[p.pro] + Math.sqrt(1 - rho * rho) * R.z(), u = Phi(z);
+        const u = Phi(draw(p, f));
         us[k][j] = u;
         pts += p.proj * p.left * ratioAt(model, p.pos, u, p.scale);
       } else us[k][j] = -1;
