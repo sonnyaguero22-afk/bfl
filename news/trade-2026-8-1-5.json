@@ -1,0 +1,62 @@
+{
+ "id": "trade-2026-8-1-5",
+ "type": "trade",
+ "year": 2026,
+ "wk": 8,
+ "created": "2026-10-28T17:56:19.096Z",
+ "title": "Sonny Sends Away His Own Draft Pick and Rides Off With 217.5 Points: Watson and Jeanty Join the Horse",
+ "dek": "Before week 8, The Horse is Hea and the Dawgs swapped two-for-two, and the point totals tilt hard toward Sonny's side of the barn.",
+ "body": [
+  "The trade deadline chatter just got louder. Before week 8, Sonny's The Horse is Hea sent running back James Cook III and wide receiver Jameson Williams to Mekhi's Dawgs for wide receiver Christian Watson and running back Ashton Jeanty. On the surface it's the same RB-and-WR for RB-and-WR shape as Sonny's deal with Philly two weeks ago. The difference is that this time the numbers are on the Horse's side.",
+  "Start with what Sonny got. Watson arrives with 112.5 points across seven weeks on a roster, about 16.1 per week, the best rate of anyone in the deal. Jeanty adds 105, a steady 15 per week, and he has been one of the Dawgs' reliable pieces, putting up 17.6 last week and 13.8 the week before. That's 217.5 points heading to the Horse, and it also means a Chicago guy now has a Green Bay receiver in his lineup.",
+  "Kai's side is 143 points. Cook brings 108.6 over seven weeks, about 15.5 per week, and he was Sonny's own pick at No. 9 in the draft, so the Horse is trading away the back who opened his title defense. He scored 22.8 in the loss to the HULK in week 6, and he's the kind of every-week starter Mekhi can count on. Williams is the swing piece: 34.4 points in four weeks on a roster, and 23.6 of those came in last week's blowout of The fumblers. Kai is betting that week was the start of something and not a one-off.",
+  "On paper, this is Sonny's trade, and it's not close. The Horse took in 74.5 more points than it sent out, and the model now gives The Horse is Hea 28% title odds and 93% playoff odds, which makes it a serious contender heading into a 5-2 against 5-2 showdown with Team Pillbert. The Dawgs now sit at 9% to win it all and 32% to make the playoffs, which is an uphill climb from 2-5 but not a lost cause. Kai doesn't need to win the box score here; he needs Cook to be the steady back he's been all year and Williams to repeat last week often enough to steal a few wins.",
+  "Both new rosters get tested right away. Sonny takes his new stable to Philly in the week's headline game, with second place on the line. Mekhi brings Cook and Williams to face Ramon's No Banner only HULK, the 6-1 leader, which is about as tough an introduction as this league has. If Kai's gamble pays off, it starts there."
+ ],
+ "social": [
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "Trade: The Horse is Hea gets Christian Watson (112.5 pts) and Ashton Jeanty (105) from Dawgs for James Cook III (108.6) and Jameson Williams (34.4). Odds now: The Horse is Hea 28% title, 93% playoffs. Dawgs 9% title, 32% playoffs.",
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "The Horse is Hea",
+   "handle": "@TheHorseisHea",
+   "text": "Welcome to the stable, Christian Watson and Ashton Jeanty! 🐎 First ride is a big one: Team Pillbert, week 8, second place on the line. Thank you, James Cook III and Jameson Williams, for the miles.",
+   "kind": "team",
+   "team": "The Horse is Hea"
+  },
+  {
+   "author": "Dawgs",
+   "handle": "@Dawgs",
+   "text": "Welcome to the kennel, James Cook III and Jameson Williams! 🐾 108.6 points of proven running back and a receiver coming off a 23.6-point week. Next up: the HULK.",
+   "kind": "team",
+   "team": "Dawgs"
+  },
+  {
+   "author": "Stable Hand Steve",
+   "handle": "@StableHandSteveFF",
+   "text": "We traded away our second-round pick and came back with 74.5 more points. 28% title odds, 93% playoffs. I'll even make room in the barn for a Packer. 🐎",
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Dawg Pound Dre",
+   "handle": "@DawgPoundDreFF",
+   "text": "Losing Jeanty hurts. But Cook is a weekly starter and Jameson Williams just dropped 23.6. Kai sees something. 2-5 isn't dead yet. 🐾",
+   "kind": "fan",
+   "team": ""
+  }
+ ],
+ "teams": [
+  1,
+  5
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 2763
+ }
+}
