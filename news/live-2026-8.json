@@ -1,0 +1,51 @@
+{
+ "id": "live-2026-8",
+ "type": "live",
+ "year": 2026,
+ "wk": 8,
+ "created": "2026-10-28T22:13:52.172Z",
+ "title": "Week 8 Live",
+ "dek": "",
+ "body": [],
+ "social": [
+  {
+   "author": "Hulk Smash Szn",
+   "handle": "@HulkSmashSzn",
+   "text": "5% to 43% and the game hasn't even scored a point?? Something just happened and I'm choosing to believe it's good. Let's GO No Banner only HULK",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "at": "2026-10-28T22:04:59.365Z"
+  },
+  {
+   "author": "Dawgs Kennel Club",
+   "handle": "@DawgsKennelClub",
+   "text": "Kai's win chance just got mugged in broad daylight at 0-0. Someone check the Dawgs' pulse.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "at": "2026-10-28T22:07:59.365Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "No Banner only HULK jumping from 5% to 43% before a single point is a big lineup-status swing. Still short of a coin flip, but the model just stopped laughing.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "at": "2026-10-28T22:09:59.365Z"
+  },
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "Worth watching the No Banner only HULK vs Dawgs game closely. A swing that size at 0-0 usually means something changed in who's active.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "at": "2026-10-28T22:12:59.365Z"
+  }
+ ],
+ "batches": [
+  "2026-10-28T22:13:59.365Z"
+ ]
+}
