@@ -58,6 +58,8 @@ header.mast { background: var(--bg); }
 .brand h1 { margin: 0; font-family: var(--f-display); font-weight: 700; font-size: clamp(30px, 5vw, 44px); line-height: 1.05; letter-spacing: -0.03em; text-wrap: balance; }
 .brand h1 span { color: inherit; }
 /* Segmented control */
+.themebtn { margin-left: 8px; background: var(--sunk); border: 0; color: var(--muted); border-radius: 999px; padding: 2px 9px; font: inherit; font-size: 11px; cursor: pointer; vertical-align: 1px; }
+.themebtn:hover { color: var(--ink); }
 nav.top { display: flex; flex-wrap: wrap; gap: 2px; background: var(--sunk); padding: 3px; border-radius: 10px; max-width: 100%; }
 nav.top button { background: transparent; border: 0; color: var(--ink); padding: 6px 13px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; white-space: nowrap; }
 nav.top button:hover { background: var(--edge); }
@@ -404,7 +406,7 @@ table.compact .team { min-width: 0; }
 <header class="mast">
   <div class="wrap">
     <div class="brand">
-      <small>Est. 2023 · 8 teams · ESPN</small>
+      <small>Est. 2023 · 8 teams · ESPN <button class="themebtn" id="themebtn" type="button"></button></small>
       <h1><button class="brandlink" data-go="home">Buckaroo Football League</button></h1>
     </div>
     <nav class="top" id="topnav" aria-label="Sections"></nav>
@@ -417,6 +419,15 @@ table.compact .team { min-width: 0; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="data.js"></script>
 <script>
+// Light or dark: dark unless this browser chose light (remembered on this device only)
+const setTheme = (t) => { if (t === "light") document.documentElement.dataset.theme = "light"; else delete document.documentElement.dataset.theme;
+  const b = document.getElementById("themebtn"); if (b) b.textContent = t === "light" ? "☾ Dark mode" : "☀ Light mode"; };
+try { setTheme(localStorage.getItem("bfl-theme")); } catch { setTheme(null); }
+document.getElementById("themebtn").addEventListener("click", () => {
+  const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+  setTheme(next); try { localStorage.setItem("bfl-theme", next); } catch {}
+  if (typeof render === "function") render(); // the map and charts pick colors when drawn
+});
 (() => {
 const D = window.LEAGUE;
 const $ = (s, el = document) => el.querySelector(s);
