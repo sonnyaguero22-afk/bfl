@@ -16,6 +16,10 @@ Each update downloads the current season from ESPN (`fetch.js current`), rebuild
 
 `news.js` asks Claude to write a recap after every finished week (with made-up social posts and fresh team bios), a reaction to every trade, and a look back at each finished season. Each story is saved once in `news/` and never rewritten; at most 12 are written per run. It needs two repository secrets: `ANTHROPIC_API_KEY`, and `LEAGUE_LORE` with the league's nicknames and inside jokes (kept as a secret because it names real people; a local copy can live in `data/lore.md`, which is never committed). Later additions can go in an optional third secret, `LEAGUE_LORE_EXTRA` (or `LEAGUE_LORE_II`), which is added after the original lore. Without both, news is skipped and the rest of the site updates normally. `node news.js --dry-run` prints the facts it would send without calling the API.
 
+## Live posts (AI)
+
+During games, `live.js` compares each update with the last one (`history/livestate_<year>.json`) and, when something happened (a big play, a lead change, a big win-chance swing, a Ones to Watch player clearing his line, a final), asks Claude Sonnet for a few short social posts, saved to `news/live-<year>-<week>.json`. Quiet updates make no API call, and at most 15 batches are written per day. `node live.js --dry-run` prints the events without calling the API.
+
 ## ESPN login
 
 The league is private, so ESPN needs two login values, stored as repository secrets (Settings → Secrets and variables → Actions):

@@ -1430,7 +1430,9 @@ function home() {
 // ---------- News & Social (written by Claude after each week, trade and season; see news.js) ----------
 const ALL_NEWS = (D.news && D.news.articles) || [];
 // Career profiles live on manager pages, not in the news feed (newest per manager)
-const NEWS = ALL_NEWS.filter((a) => !["profile", "history", "rankings"].includes(a.type));
+const NEWS = ALL_NEWS.filter((a) => !["profile", "history", "rankings", "live"].includes(a.type));
+// Posts made during games (live.js) live in the feed only
+const LIVE = ALL_NEWS.filter((a) => a.type === "live");
 // The league history (newest), shown in the trophy room
 const HISTORY = ALL_NEWS.find((a) => a.type === "history");
 const PROFILE = {};
@@ -1445,8 +1447,8 @@ const postTeam = (p, a) => p.kind === "team" && a && S[a.year] ? S[a.year].teams
 // Story and post times, in the viewer's own time zone; posts timed in the future haven't been posted yet
 const stamp = (iso) => new Date(iso).toLocaleString(undefined, { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 const posted = (p) => !p.at || new Date(p.at).getTime() <= Date.now();
-const postHtml = (p, a, src = a) => { const tm = postTeam(p, src); return `<div class="post">${tm ? badge(tm) : `<span class="avatar" style="--h:${avatarHue(p.handle)}" aria-hidden="true">${esc((p.author.match(/[A-Za-z0-9]/) || ["?"])[0].toUpperCase())}</span>`}<div class="pbody"><div class="phead"><b>${esc(p.author)}</b>${OFFICIAL[p.kind] ? ` <span class="tick" title="Verified">✓</span>` : ""} <span class="muted">${esc(p.handle.startsWith("@") ? p.handle : "@" + p.handle)}</span>${OFFICIAL[p.kind] ? ` <span class="pill gold">${OFFICIAL[p.kind]}</span>` : ""}${p.at ? ` <span class="muted">· ${stamp(p.at)}</span>` : ""}</div><p>${esc(p.text)}</p>${a ? `<button class="mlink postsrc" data-go="news-${a.id}">${newsWhen(a)} · ${esc(a.title)}</button>` : ""}</div></div>`; };
-const allPosts = () => NEWS.flatMap((a) => (a.social || []).filter(posted).map((p) => ({ p, a }))).sort((x, y) => (y.p.at || "").localeCompare(x.p.at || ""));
+const postHtml = (p, a, src = a) => { const tm = postTeam(p, src); return `<div class="post">${tm ? badge(tm) : `<span class="avatar" style="--h:${avatarHue(p.handle)}" aria-hidden="true">${esc((p.author.match(/[A-Za-z0-9]/) || ["?"])[0].toUpperCase())}</span>`}<div class="pbody"><div class="phead"><b>${esc(p.author)}</b>${OFFICIAL[p.kind] ? ` <span class="tick" title="Verified">✓</span>` : ""} <span class="muted">${esc(p.handle.startsWith("@") ? p.handle : "@" + p.handle)}</span>${OFFICIAL[p.kind] ? ` <span class="pill gold">${OFFICIAL[p.kind]}</span>` : ""}${p.at ? ` <span class="muted">· ${stamp(p.at)}</span>` : ""}</div><p>${esc(p.text)}</p>${a ? a.type === "live" ? `<button class="mlink postsrc" data-go="${a.year}-weekly"><span class="pill live" style="padding:0 6px;font-size:10px">LIVE</span> Week ${a.wk} scoreboard</button>` : `<button class="mlink postsrc" data-go="news-${a.id}">${newsWhen(a)} · ${esc(a.title)}</button>` : ""}</div></div>`; };
+const allPosts = () => [...NEWS, ...LIVE].flatMap((a) => (a.social || []).filter(posted).map((p) => ({ p, a }))).sort((x, y) => (y.p.at || "").localeCompare(x.p.at || ""));
 const newsEmpty = `<div class="box lockcard"><h3>No Stories Yet</h3><p>League news is written automatically after every finished week, every trade and every season. Stories start appearing with the first update after the news writer is switched on.</p></div>`;
 const aiNote = `<p class="note">Written by Claude, an AI, from the league's data. It can get things wrong; the scores and stats elsewhere on the site are the source of truth.</p>`;
 // News and Social share one header with a News | Social switch

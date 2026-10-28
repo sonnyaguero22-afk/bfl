@@ -59,6 +59,12 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           LEAGUE_LORE: ${{ secrets.LEAGUE_LORE }}
           LEAGUE_LORE_EXTRA: ${{ secrets.LEAGUE_LORE_EXTRA || secrets.LEAGUE_LORE_II }}
+      - name: Post live reactions during games
+        run: node live.js
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LEAGUE_LORE: ${{ secrets.LEAGUE_LORE }}
+          LEAGUE_LORE_EXTRA: ${{ secrets.LEAGUE_LORE_EXTRA || secrets.LEAGUE_LORE_II }}
       - name: Rebuild with the latest news
         run: node build.js
       - name: Save finished seasons, live win chances and news

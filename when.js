@@ -43,6 +43,7 @@ function published(a, periods) {
 // A post's time: the writer's minutes offset when given, otherwise a stable spread around the story
 // (recap reactions from Sunday evening through Tuesday morning, other stories' over the following hours)
 function postTime(a, pub, p, i) {
+  if (p.at) return new Date(p.at); // live posts carry their own time
   const off = Number.isFinite(p.when) ? p.when : a.type === "recap" ? -1800 + jitter(`${a.id}-${i}`, 2400) : 4 + jitter(`${a.id}-${i}`, 900);
   return new Date(pub.getTime() + off * 60e3);
 }

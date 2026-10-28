@@ -430,7 +430,7 @@ function pending() {
 // The last few stories, so a new one doesn't repeat their jokes and angles
 function recentStories(n = 4) {
   if (!fs.existsSync(NEWS)) return [];
-  return fs.readdirSync(NEWS).map((f) => JSON.parse(fs.readFileSync(path.join(NEWS, f), "utf8"))).filter((a) => a.type !== "profile" && a.type !== "history")
+  return fs.readdirSync(NEWS).map((f) => JSON.parse(fs.readFileSync(path.join(NEWS, f), "utf8"))).filter((a) => !["profile", "history", "live"].includes(a.type))
     .sort((a, b) => (a.created < b.created ? 1 : -1)).slice(0, n)
     .map((a) => ({ title: a.title, body: a.body, social: (a.social || []).map((p) => `${p.author} (${p.handle}): ${p.text}`), trade_watch: (a.trade_watch || []).map((t) => t.take) }));
 }
@@ -478,7 +478,8 @@ async function write(client, job) {
   };
 }
 
-(async () => {
+// Run when called directly; live.js loads this file for the shared newsroom setup
+if (require.main === module) (async () => {
   // Says whether each lore secret arrived (lengths only, never the contents)
   console.log(`::notice::Lore: LEAGUE_LORE ${(process.env.LEAGUE_LORE || "").trim().length} characters, LEAGUE_LORE_EXTRA ${LORE_EXTRA.length} characters`);
   const todo = pending();
@@ -504,3 +505,5 @@ async function write(client, job) {
     }
   }
 })();
+
+module.exports = { D, S, SYSTEM, SOCIAL, PANEL, LORE, NEWS, who, mgrAt, nameAt };
