@@ -108,6 +108,7 @@ function previewFacts(s, W) {
         stacks: (m.stacks || []).map((k) => `${k.qb} and ${k.rec} for ${who(s.byId[k.id], W)}`) };
     }),
     last_week_power_rankings: rk ? rk.map((x) => `${x.rank}. ${x.team}`) : undefined,
+    playoff_picture: pictureFacts(s, W - 1),
     recent_trades: s.trades.filter((t) => t.wk >= W - 1).map((t) => ({ teams: t.teams.map((id) => who(s.byId[id], W)), received: Object.fromEntries(Object.entries(t.got).map(([id, g]) => [who(s.byId[id], W), g.map((x) => x.split("|")[0])])) })),
     panel: PANEL.map((p) => ({ name: p.name, role: p.role, style: p.style, season_picks: panelRecords(s, W)[p.name] })),
   };
@@ -136,8 +137,50 @@ function rankingsFacts(s, W) {
         next: nx ? `vs ${who(s.byId[nx.h === t.id ? nx.a : nx.h], W + 1)}` : W >= s.regWeeks ? "playoffs" : "bye",
       };
     }),
+    playoff_picture: pictureFacts(s, W),
     trades_this_week: s.trades.filter((t) => t.wk === W || t.wk === W + 1).map((t) => ({ teams: t.teams.map((id) => who(s.byId[id], W)), received: Object.fromEntries(Object.entries(t.got).map(([id, g]) => [who(s.byId[id], W), g.map((x) => x.split("|")[0])])) })),
   };
+}
+// The week's awards, picked from the numbers (the writer only writes them up)
+function awardFacts(s, W) {
+  const ms = s.matchups.filter((m) => m.wk === W && m.a && m.win !== null && m.win !== 0);
+  const sides = ms.flatMap((m) => [{ id: m.h, p: m.hp, o: m.ap, m }, { id: m.a, p: m.ap, o: m.hp, m }]);
+  const rows = [];
+  for (const sp of spans(s, W)) for (const id in s.lineups[sp] || {}) for (const p of s.lineups[sp][id]) rows.push({ ...p, id: +id });
+  const st = rows.filter((p) => p.slot !== "BN" && p.slot !== "IR"), bn = rows.filter((p) => p.slot === "BN" && !p.st);
+  const fmt = (p) => `${p.n} (${p.pos}, ${p.pro}) for ${who(s.byId[p.id], W)}`;
+  const out = {};
+  const mow = [...sides].sort((a, b) => b.p - a.p)[0];
+  if (mow) out.manager_of_the_week = `${who(s.byId[mow.id], W)}, ${mow.p} points`;
+  const pow = [...st].sort((a, b) => b.pts - a.pts)[0];
+  if (pow) out.player_of_the_week = `${fmt(pow)}: ${pow.pts} points`;
+  const bust = st.filter((p) => !p.st && p.proj >= 8).sort((a, b) => (a.pts - a.proj) - (b.pts - b.proj))[0];
+  if (bust) out.bust_of_the_week = `${fmt(bust)}: ${bust.pts} points on a ${bust.proj} projection`;
+  // A bench player who outscored a starter at his position on the same team
+  const FLEX = ["RB", "WR", "TE"];
+  let shd = null;
+  for (const b of bn) for (const p of st.filter((p) => p.id === b.id && (p.pos === b.pos || (p.slot === "RB/WR/TE" || p.slot === "FLEX") && FLEX.includes(b.pos)))) {
+    const d = b.pts - p.pts; if (d > 0 && (!shd || d > shd.d)) shd = { b, p, d };
+  }
+  if (shd) out.shouldve_started_him = `${shd.b.n} scored ${shd.b.pts} on ${who(s.byId[shd.b.id], W)}'s bench while ${shd.p.n} started and scored ${shd.p.pts}`;
+  // Picked up in the last three weeks
+  const recent = new Set(s.moves.filter((m) => m.wk > W - 3 && m.wk <= W).flatMap((m) => m.add.map((x) => `${m.tm}|${x.split("|")[0]}`)));
+  const steal = st.filter((p) => recent.has(`${p.id}|${p.n}`)).sort((a, b) => b.pts - a.pts)[0];
+  if (steal) out.waiver_steal = `${fmt(steal)}: ${steal.pts} points, picked up within the last three weeks`;
+  const close = [...ms].sort((a, b) => Math.abs(a.hp - a.ap) - Math.abs(b.hp - b.ap))[0], blow = [...ms].sort((a, b) => Math.abs(b.hp - b.ap) - Math.abs(a.hp - a.ap))[0];
+  const game = (m) => `${who(s.byId[m.win], W)} beat ${who(s.byId[m.win === m.h ? m.a : m.h], W)} ${Math.max(m.hp, m.ap)} to ${Math.min(m.hp, m.ap)}`;
+  if (close && Math.abs(close.hp - close.ap) < 10) out.nail_biter = game(close); // only a genuinely close one
+  if (blow && blow !== close) out.blowout = game(blow);
+  return out;
+}
+// The playoff picture after week W (stakes for the next game, clinches and eliminations), when it's current
+function pictureFacts(s, W) {
+  const P = s.odds && s.odds.picture;
+  if (!P || P.week !== W) return undefined;
+  const nm = (id) => who(s.byId[id], W + 1);
+  return Object.fromEntries(s.teams.map((t) => { const x = P.teams[t.id] || {}, st = (P.status || {})[t.id];
+    return [nm(t.id), st ? st : { playoff_odds_with_a_win_next_week: x.ifWin && x.ifWin.p != null ? `${Math.round(x.ifWin.p)}%` : null, with_a_loss: x.ifLose && x.ifLose.p != null ? `${Math.round(x.ifLose.p)}%` : null,
+      scenarios: ((P.scenarios || {})[t.id] || []).map((sc) => `${sc.clinches ? "clinches" : "is eliminated"} with ${sc.with.map((w) => w.winner === t.id ? "a win" : w.loser === t.id ? "a loss" : `${nm(w.winner)} beating ${nm(w.loser)}`).join(" and ")}`) }]; }));
 }
 function recapFacts(s, W) {
   const rec = recordsThrough(s, W), recBefore = recordsThrough(s, W - 1);
@@ -171,6 +214,7 @@ function recapFacts(s, W) {
   return {
     season: s.year, buckaroo_bowl_number: s.year - D.firstYear + 1, week: W, regular_season_weeks: s.regWeeks, playoff_teams: s.playoffTeams,
     games, top_performances: starts.sort((a, b) => b.points - a.points).slice(0, 6),
+    awards: awardFacts(s, W), playoff_picture: pictureFacts(s, W),
     biggest_busts: starts.filter((x) => x.projected != null).sort((a, b) => (a.points - a.projected) - (b.points - b.projected)).slice(0, 3),
     bench_blunders: bench.sort((a, b) => b.points - a.points).slice(0, 3),
     starters_who_did_not_play: starts.filter((x) => x.status),
@@ -358,8 +402,9 @@ const SOCIAL = { type: "array", items: { type: "object", additionalProperties: f
   kind: { type: "string", enum: ["fan", "pundit", "reporter", "team", "league"] }, team: str } } };
 const ARTICLE = { title: str, dek: str, body: { type: "array", items: str } };
 const schemas = {
-  recap: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "social", "bios", "trade_watch"], properties: { ...ARTICLE, social: SOCIAL,
+  recap: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "social", "bios", "trade_watch", "awards"], properties: { ...ARTICLE, social: SOCIAL,
     trade_watch: { type: "array", items: { type: "object", additionalProperties: false, required: ["id", "take"], properties: { id: str, take: str } } },
+    awards: { type: "array", items: { type: "object", additionalProperties: false, required: ["award", "winner", "blurb"], properties: { award: str, winner: str, blurb: str } } },
     bios: { type: "array", items: { type: "object", additionalProperties: false, required: ["team", "bio"], properties: { team: str, bio: str } } } } },
   trade: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "social"], properties: { ...ARTICLE, social: SOCIAL } },
   review: { type: "object", additionalProperties: false, required: ["title", "dek", "body"], properties: ARTICLE },
@@ -375,12 +420,12 @@ const schemas = {
   profile: { type: "object", additionalProperties: false, required: ["headline", "body"], properties: { headline: str, body: { type: "array", items: str } } },
 };
 const asks = {
-  recap: "Write the weekly recap for this week of the Buckaroo Football League: a headline, a one-sentence dek, and 5 to 8 body paragraphs covering the results (lead with the best storyline), standout and disappointing performances, the standings and title-odds picture, notable moves, and a look ahead to next week (if next_week_ones_to_watch is given, mention a player or two whose game swings a matchup most, or a QB-receiver stack). Then write 6 to 10 social posts reacting to the week, and a fresh 2 to 3 sentence bio for every team in the standings that sums up where its season stands right now (use the exact team name in the team field). Finally, the trade watch: quick 1 to 2 sentence takes on how earlier trades in trade_watch are aging, for the 2 to 5 deals with the most to say this week (a deal that looked lopsided flipping, a player who carried his new team or sat on its bench, a winner pulling further ahead). These are quick hot takes, not articles; say how it looks now compared with before. Use the trade's id from the facts. If there are no trades yet, leave it empty.",
+  recap: "Write the weekly recap for this week of the Buckaroo Football League: a headline, a one-sentence dek, and 5 to 8 body paragraphs covering the results (lead with the best storyline), standout and disappointing performances, the standings and title-odds picture, notable moves, and a look ahead to next week (if next_week_ones_to_watch is given, mention a player or two whose game swings a matchup most, or a QB-receiver stack). Then write 6 to 10 social posts reacting to the week, and a fresh 2 to 3 sentence bio for every team in the standings that sums up where its season stands right now (use the exact team name in the team field). Finally, the trade watch: quick 1 to 2 sentence takes on how earlier trades in trade_watch are aging, for the 2 to 5 deals with the most to say this week (a deal that looked lopsided flipping, a player who carried his new team or sat on its bench, a winner pulling further ahead). These are quick hot takes, not articles; say how it looks now compared with before. Use the trade's id from the facts. If there are no trades yet, leave it empty. Then the week's awards: one entry for each award in the facts' awards (award is its name in title case, like 'Manager of the Week'; winner is who won it, short), with a one or two sentence blurb. The winners are already decided; don't change them. When playoff_picture is given, work any clinch, elimination or big stakes into the recap.",
   trade: "Write a trade reaction story: a headline, a one-sentence dek, and 3 to 5 body paragraphs explaining the deal, what each side got, and who won it on paper (use the title and playoff odds change; if the before odds are missing, use only the odds after and don't call them pre-trade). Then write 3 to 5 social posts reacting to it.",
   profile: "Write a career profile of this manager for their page on the league website, like a club history page in Football Manager: a short headline that captures who they are in this league, and 3 to 5 body paragraphs telling the story of their whole run: each season, the highs and lows, rivalries from the head-to-head records, their habits as a manager (trades, waiver moves), and where they stand right now. Use their nicknames and the lore, as seasoning on top of what actually happened.",
   draft: "Write the draft-day story for this season's Buckaroo Football League draft, as if written the night of the draft, before any games: a headline, a one-sentence dek, and 5 to 7 body paragraphs covering the first round and draft order, each manager's strategy and haul, position runs, keepers, and the picks that look like reaches or values. Judge picks only by where players went relative to each other, each team's roster build and the draft order; you know nothing about how the season has gone since, and don't cite stats or projections that aren't in the facts. Then write 4 to 8 social posts reacting to the draft, including official team accounts welcoming their first-round picks.",
   rankings: "Write this week's Buckaroo Football League power rankings, the way NFL.com publishes them every Tuesday: a headline, a one-sentence dek, a 1 to 2 paragraph intro on what moved the rankings this week, then every team ranked 1 to N (use the exact team name, without the manager). Each team gets a 2 to 4 sentence write-up in the NFL.com style: what happened this week, what's working or what's broken, and what's next, with a line on why it rose or fell from last_week_rank when there is one. They're the newsroom's opinion, not the standings: weigh record, points, form, the odds and how the team looks right now, and it's fine to rank a team above one with a better record if you can say why.",
-  preview: "Write the weekly preview for this week of the Buckaroo Football League, like a network's pregame show: a headline, a one-sentence dek, and 3 to 5 body paragraphs on the week's biggest storylines and matchups (win chances, Ones to Watch, head-to-head history, stakes in the standings). Then the panel's picks: for every game in games (use its game text exactly), each of the four panelists picks a winner (the exact team name, without the manager), a confidence (lean, confident or lock; Sal calls plenty of locks, Nina rarely does) and a 1 to 3 sentence take in their own voice. Picks should disagree sometimes, and panelists can needle each other or bring up their season_picks record. When a game has lineup_holes, home_win_chance is the lineup as set right now (starters on bye or ruled out score zero) and home_win_chance_if_lineups_fixed is what it would be if the managers swap them out: make clear which number is which, and let the panel run with it in character (the insider on whether the manager will fix it, the gambler exaggerating the as-set number, the analyst on what the fixed number says). Then 5 to 8 social posts: panelists hyping their lock, and fans reacting to a specific panelist's take on their team, annoyed or gloating, the way fanbases do online. Fans may only quote or paraphrase what a panelist actually said in this preview.",
+  preview: "Write the weekly preview for this week of the Buckaroo Football League, like a network's pregame show: a headline, a one-sentence dek, and 3 to 5 body paragraphs on the week's biggest storylines and matchups (win chances, Ones to Watch, head-to-head history, stakes in the standings, and playoff_picture when given: what a win or a loss does to each team's playoff odds, and any clinching scenarios). Then the panel's picks: for every game in games (use its game text exactly), each of the four panelists picks a winner (the exact team name, without the manager), a confidence (lean, confident or lock; Sal calls plenty of locks, Nina rarely does) and a 1 to 3 sentence take in their own voice. Picks should disagree sometimes, and panelists can needle each other or bring up their season_picks record. When a game has lineup_holes, home_win_chance is the lineup as set right now (starters on bye or ruled out score zero) and home_win_chance_if_lineups_fixed is what it would be if the managers swap them out: make clear which number is which, and let the panel run with it in character (the insider on whether the manager will fix it, the gambler exaggerating the as-set number, the analyst on what the fixed number says). Then 5 to 8 social posts: panelists hyping their lock, and fans reacting to a specific panelist's take on their team, annoyed or gloating, the way fanbases do online. Fans may only quote or paraphrase what a panelist actually said in this preview.",
   history: "Write the official history of the Buckaroo Football League for the front of its trophy room, like a club history in Football Manager or a long-form feature: a headline, a one-sentence dek, and 4 to 6 chapters, each with a short heading and 2 to 4 paragraphs. Tell it as one story across the seasons: how it started, each Buckaroo Bowl and what decided it, dynasties and droughts, rises and collapses, the rivalries the head-to-head records reveal, and the moments people still bring up. End with a short chapter that sets up the present (from since_then, without any of its results). Every number must come from the facts.",
   review: "Write a season-in-review story for this finished season: a headline, a one-sentence dek, and 5 to 7 body paragraphs telling the story of the season from draft to Buckaroo Bowl, including the champion, the last-place finisher, the playoff games, and any notable notes.",
 };

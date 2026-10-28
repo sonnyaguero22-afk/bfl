@@ -384,6 +384,11 @@ table.compact .team { min-width: 0; }
 .rankrow .rhead > span { display: grid; }
 .rankrow p { margin: 6px 0 0; font-size: 15px; line-height: 1.5; }
 .history .artbody h3 { margin: 18px 0 8px; }
+.awards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin-bottom: 18px; }
+.award { padding: 12px 14px; }
+.award .k { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
+.award p { margin: 4px 0 0; font-size: 14px; line-height: 1.45; color: var(--muted); }
+table.picture tr.cutline td { border-bottom: 2px solid var(--brass); }
 .watch { padding: 10px 14px 12px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
 .wname, .wname .plink, .pl.watchp .nm > .plink, .pl.watchp .nm > b { color: var(--gold); font-weight: 700; }
 .watch .k { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
@@ -494,7 +499,9 @@ for (const s of D.seasons) {
     t.expW = g ? ((t.apW + t.apT / 2) / g) * (t.w + t.l + t.t) : 0;
     t.luck = t.w - t.expW;
   }
-  s.standings = [...s.teams].sort((a, b) => (s.done && a.final && b.final ? a.final - b.final : (b.w - a.w) || (b.pf - a.pf)));
+  // Finished seasons by final place; otherwise by record, ties broken by head-to-head among the tied teams, then points for (the league's ESPN setting)
+  const share = (t, group) => { let w = 0, n = 0; for (const m of s.matchups) { if (m.win === null || m.live || m.wk > s.regWeeks) continue; const me = m.h === t.id ? m.h : m.a === t.id ? m.a : null, opp = me && (m.h === t.id ? m.a : m.h); if (!me || !group.includes(opp)) continue; n++; if (m.win === t.id) w++; else if (m.win === 0) w += 0.5; } return n ? w / n : 0.5; };
+  s.standings = [...s.teams].sort((a, b) => (s.done && a.final && b.final ? a.final - b.final : (b.w - a.w) || (() => { const g = s.teams.filter((t) => t.w === a.w).map((t) => t.id); return share(b, g) - share(a, g); })() || (b.pf - a.pf)));
 }
 
 // Every completed game, one row per side
@@ -1518,6 +1525,8 @@ function rankingsView() {
         <small class="muted">${t ? line(t.id) : ""}${was[x.id] ? ` · Last week: ${was[x.id]}` : ""}</small><p>${esc(x.blurb)}</p></div></div>`; }).join("")}</div>${aiNote}`;
 }
 // Recaps carry quick takes on earlier trades; a trade's page collects every take on it since
+// The week's awards, in recaps
+const awardsHtml = (a) => a.type === "recap" && a.awards && a.awards.length ? `<section><h3>Week ${a.wk} Awards</h3><div class="awards">${a.awards.map((x) => `<div class="box award"><div class="k">🏆 ${esc(x.award)}</div><b>${esc(x.winner)}</b><p>${esc(x.blurb)}</p></div>`).join("")}</div></section>` : "";
 function tradeWatchHtml(a) {
   if (a.type === "recap" && a.trade_watch && a.trade_watch.length) return `<section><h3>Trade Watch</h3><div class="box rec"><div class="feed">${a.trade_watch.map((t) => { const tr = NEWS.find((x) => x.id === t.id); return `<div class="post take"><div class="pbody"><p>${esc(t.take)}</p>${tr ? `<button class="mlink postsrc" data-go="news-${tr.id}">${newsWhen(tr)} · ${esc(tr.title)}</button>` : ""}</div></div>`; }).join("")}</div></div></section>`;
   if (a.type !== "trade") return "";
@@ -1532,6 +1541,7 @@ function articleView() {
     <div class="eyebrow" style="margin-top:18px">${NEWS_TYPE[a.type]} · ${newsWhen(a)}${a.published ? ` · <span style="text-transform:none;letter-spacing:0">${stamp(a.published)}</span>` : ""}</div><h2 class="headline">${esc(a.title)}</h2><p class="dek big">${esc(a.dek)}</p>
     <div class="artbody">${a.body.map((p) => `<p>${esc(p)}</p>`).join("")}</div>
     ${picksHtml(a)}
+    ${awardsHtml(a)}
     ${tradeWatchHtml(a)}
     ${a.social && a.social.some(posted) ? `<section><h3>The Reaction</h3><div class="box rec"><div class="feed">${[...a.social].filter(posted).sort((x, y) => (x.at || "").localeCompare(y.at || "")).map((p) => postHtml(p, null, a)).join("")}</div></div></section>` : ""}
     ${aiNote}
@@ -1547,12 +1557,28 @@ function socialView() {
 }
 
 // ---------- Odds page (top menu): one season at a time, newest first ----------
+// Playoff Picture: seeds, the bubble, what next week's game is worth, and clinching scenarios late in the season
+function pictureHtml(s) {
+  const P = s.odds && s.odds.picture;
+  if (!P || s.done) return "";
+  const po = s.playoffTeams, rows = s.standings, cut = rows[po - 1], nm = (id) => esc(s.byId[id].name);
+  const gb = (t) => { const d = ((cut.w - t.w) + (t.l - cut.l)) / 2; return t === cut ? "–" : d <= 0 ? "–" : (d % 1 ? d.toFixed(1) : d); };
+  const pct = (v) => (v == null ? "—" : pct1(v));
+  const line = (id) => { const st = P.status && P.status[id]; if (st === "clinched") return `<span class="pill w">Clinched</span>`; if (st === "eliminated") return `<span class="pill l">Eliminated</span>`;
+    return ((P.scenarios || {})[id] || []).map((x) => `${x.clinches ? "Clinches" : "Eliminated"} with ${x.with.map((w) => w.winner === +id ? "a win" : w.loser === +id ? "a loss" : `${nm(w.winner)} over ${nm(w.loser)}`).join(" and ")}`).join("; "); };
+  const tr = (t, i) => { const x = P.teams[t.id] || { ifWin: {}, ifLose: {} }, swing = x.ifWin.p != null && x.ifLose.p != null ? x.ifWin.p - x.ifLose.p : null;
+    return `<tr${i === po - 1 ? ' class="cutline"' : ""}><td class="num muted">${i < po ? i + 1 : ""}</td><td>${badge(t, 1)} <b>${esc(t.name)}</b> <span class="muted">${mgrName(t.mgr)}</span></td><td class="n">${t.w}-${t.l}${t.t ? "-" + t.t : ""}</td><td class="n">${gb(t)}</td><td class="n">${pct(s.odds.t[t.id].p[s.odds.t[t.id].p.length - 1])}</td><td class="n">${pct(x.ifWin.p)}</td><td class="n">${pct(x.ifLose.p)}</td><td class="n">${swing == null ? "—" : `<b>${Math.round(swing)}</b>`}</td><td class="muted" style="white-space:normal;min-width:160px">${line(t.id)}</td></tr>`; };
+  return `<section style="margin:0 0 28px"><h3>Playoff Picture <span class="muted" style="font-weight:500;font-size:14px">· after Week ${P.week}</span></h3>
+    <div class="box scroll"><table class="picture"><thead><tr><th>Seed</th><th>Team</th><th class="n">Record</th><th class="n">GB</th><th class="n">Playoffs</th><th class="n">If win</th><th class="n">If lose</th><th class="n">At stake</th><th>Scenarios</th></tr></thead>
+    <tbody>${rows.map(tr).join("")}</tbody></table></div>
+    <p class="note">The top ${po} make the playoffs; ties go to head-to-head, then points for. "If win" and "If lose" are playoff odds depending on next week's game, and "At stake" is the difference. Clinching scenarios appear with three weeks left and are worked out from every possible result; ones decided on points assume each team keeps its current pace.</p></section>`;
+}
 function oddsView() {
   const ys = years.filter((y) => S[y] && S[y].odds).reverse();
   const y = ys.includes(+state.oddsYear) ? +state.oddsYear : ys[0];
   state.oddsYear = y;
   return `<div class="vhead"><div><div class="eyebrow">Buckaroo Bowl ${roman(y - D.firstYear + 1)}</div><h2>Odds</h2><p>${S[y].done ? `How the ${y} race unfolded.` : `The ${y} race, updated after every finished week.`}</p></div>
-    <div class="weekbar" style="margin:0">${ys.map((yy) => `<button data-oddsyear="${yy}" aria-current="${yy === y}">${yy}</button>`).join("")}</div></div>${oddsTab(S[y])}`;
+    <div class="weekbar" style="margin:0">${ys.map((yy) => `<button data-oddsyear="${yy}" aria-current="${yy === y}">${yy}</button>`).join("")}</div></div>${pictureHtml(S[y])}${oddsTab(S[y])}`;
 }
 
 // ---------- Render ----------

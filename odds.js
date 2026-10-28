@@ -34,6 +34,45 @@ function rank(ids, rec, H) {
   });
 }
 
+// Clinching and elimination, worked out exactly from every way the remaining games can go (only
+// with 3 or fewer weeks left). Ties on wins go to head-to-head, then points for, with points
+// projected from each team's current pace, so a scenario decided on points is an estimate.
+function scenarios(ids, base, h2h, rest, N, po, pace) {
+  const weeksLeft = new Set(rest.map((g) => g[2]));
+  if (!rest.length || weeksLeft.size > 3 || rest.length > 14) return {};
+  const next = rest.map((g, i) => i).filter((i) => rest[i][2] === N + 1);
+  const pf = Object.fromEntries(ids.map((id) => [id, base[id].pf + pace(id) * rest.filter((g) => g[0] === id || g[1] === id).length]));
+  const total = 1 << rest.length, inField = [];
+  for (let o = 0; o < total; o++) {
+    const rec = Object.fromEntries(ids.map((id) => [id, { w: base[id].w, pf: pf[id] }]));
+    const H = Object.fromEntries(ids.map((id) => [id, { ...h2h[id] }]));
+    rest.forEach(([h, a], i) => { const hw = (o >> i) & 1, w = hw ? h : a, l = hw ? a : h; rec[w].w++; H[w][l] = (H[w][l] || 0) + 1; });
+    inField.push(new Set(rank(ids, rec, H).slice(0, po)));
+  }
+  const name = (i, won) => ({ i, won });
+  const status = {}, lines = {};
+  for (const id of ids) {
+    const all = inField.every((f) => f.has(id)), none = inField.every((f) => !f.has(id));
+    status[id] = all ? "clinched" : none ? "eliminated" : null;
+    if (all || none) continue;
+    // Next week's results that settle it: own game alone, then own game plus one other result
+    const own = next.find((i) => rest[i][0] === id || rest[i][1] === id), others = next.filter((i) => i !== own);
+    const ownWin = own == null ? null : rest[own][0] === id ? 1 : 0;
+    const holds = (conds, want) => inField.every((f, o) => conds.some(({ i, won }) => ((o >> i) & 1) !== won) || f.has(id) === want);
+    const found = [];
+    for (const want of [true, false]) {
+      const ownRes = ownWin == null ? [] : [name(own, want ? ownWin : 1 - ownWin)];
+      if (ownRes.length && holds(ownRes, want)) { found.push({ want, conds: ownRes }); continue; }
+      search: for (const i of others) for (const won of [1, 0]) {
+        const c = [...ownRes, name(i, won)];
+        if (holds(c, want)) { found.push({ want, conds: c }); break search; }
+      }
+    }
+    lines[id] = found.map(({ want, conds }) => ({ clinches: want, with: conds.map(({ i, won }) => { const [h, a] = rest[i]; return { winner: won ? h : a, loser: won ? a : h }; }) }));
+  }
+  return { status, scenarios: lines };
+}
+
 function seasonOdds(s) {
   const ids = s.teams.map((t) => t.id);
   const isStart = (p) => p.slot !== "BN" && p.slot !== "IR";
@@ -91,6 +130,7 @@ function seasonOdds(s) {
 
   const lastCheck = s.done ? Math.max(...s.matchups.map((m) => m.wk)) : Math.min(lastDone, s.regWeeks);
   const weeks = [];
+  let picture = null;
   const out = Object.fromEntries(ids.map((id) => [id, { c: [], p: [], l: [], str: [], far: [] }]));
   const po = s.playoffTeams;
   const seedActual = Object.fromEntries(s.teams.map((t) => [t.id, t.seed]));
@@ -125,6 +165,9 @@ function seasonOdds(s) {
     const regOver = N >= s.regWeeks;
     const gauss = rng(s.year * 1000 + N);
     const cnt = Object.fromEntries(ids.map((id) => [id, { c: 0, p: 0, l: 0 }]));
+    // What's at stake next week: each team's odds in the seasons where it wins or loses that game
+    const stake = Object.fromEntries(ids.map((id) => [id, { w: { n: 0, p: 0, c: 0 }, l: { n: 0, p: 0, c: 0 } }]));
+    let nextWon = {};
     const playRound = (mp, a, b) => {
       // A round that already happened keeps its real winner
       if (s.done && mp <= N) { const m = s.matchups.find((x) => x.wk === mp && [x.h, x.a].includes(a) && [x.h, x.a].includes(b)); if (m && m.win) return m.win; }
@@ -138,10 +181,12 @@ function seasonOdds(s) {
       else {
         const rec = Object.fromEntries(ids.map((id) => [id, { w: base[id].w, pf: base[id].pf }]));
         const H = Object.fromEntries(ids.map((id) => [id, { ...h2h[id] }]));
+        nextWon = {};
         for (const [h, a, wk] of rest) {
           const sh = score(h, wk), sa = score(a, wk);
           rec[h].pf += sh; rec[a].pf += sa;
           if (sh >= sa) { rec[h].w++; beat(H, h, a, 1); } else { rec[a].w++; beat(H, a, h, 1); }
+          if (wk === N + 1) { nextWon[h] = sh >= sa; nextWon[a] = sh < sa; }
         }
         seeds = rank(ids, rec, H);
       }
@@ -165,10 +210,17 @@ function seasonOdds(s) {
       else if (po === 2) champ = playRound(r1mp, field[0], field[1]);
       else champ = field[0];
       cnt[champ].c++;
+      for (const id in nextWon) { const x = stake[id][nextWon[id] ? "w" : "l"]; x.n++; if (field.includes(+id)) x.p++; if (champ === +id) x.c++; }
+    }
+    // The playoff picture, for the newest week of a season in progress
+    if (!s.done && N === lastCheck && N < s.regWeeks) {
+      const pc = (x, k) => (x.n ? r1((x[k] / x.n) * 100) : null);
+      picture = { week: N, teams: Object.fromEntries(ids.map((id) => [id, { ifWin: { p: pc(stake[id].w, "p"), c: pc(stake[id].w, "c") }, ifLose: { p: pc(stake[id].l, "p"), c: pc(stake[id].l, "c") } }])) };
+      Object.assign(picture, scenarios(ids, base, h2h, rest, N, po, (id) => far[id]));
     }
     for (const id of ids) { out[id].c.push(r1((cnt[id].c / SIMS) * 100)); out[id].p.push(r1((cnt[id].p / SIMS) * 100)); out[id].l.push(r1((cnt[id].l / SIMS) * 100)); }
   }
-  return { weeks, t: out, sims: SIMS, sd: r1(sd), farSd: r1(sd * FAR_SPREAD) };
+  return { weeks, t: out, sims: SIMS, sd: r1(sd), farSd: r1(sd * FAR_SPREAD), picture };
 }
 
 module.exports = { seasonOdds };

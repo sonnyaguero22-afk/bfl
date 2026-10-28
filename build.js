@@ -342,6 +342,8 @@ for (const s of seasons) {
   for (const mp in s.periods || {}) for (const sp of s.periods[mp]) s.sp2mp[sp] = +mp;
   s.odds = seasonOdds(s);
   delete s.played; delete s.sp2mp;
+  const P = s.odds && s.odds.picture;
+  if (P) console.log(`::notice::${s.year} playoff picture after week ${P.week}: ${s.teams.map((t) => `${t.name} ${Math.round(P.teams[t.id].ifWin.p)}% win / ${Math.round(P.teams[t.id].ifLose.p)}% loss${P.status && P.status[t.id] ? ` (${P.status[t.id]})` : ""}`).join("; ")}`);
   // Odds as they stood when each week ended, frozen (history/odds_<year>.json, saved by GitHub).
   // The newest week's odds keep changing with lineups and trades; this keeps a "before" to compare with.
   if (!s.done && s.odds) {
