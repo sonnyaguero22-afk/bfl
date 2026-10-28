@@ -377,9 +377,12 @@ table.compact .team { min-width: 0; }
 .ppick p { margin: 2px 0 0; font-size: 14.5px; line-height: 1.45; }
 .ppick .phead .pill { padding: 1px 6px; font-size: 10px; }
 .ppick.miss p { color: var(--muted); }
-.prank { display: grid; grid-template-columns: 26px 22px minmax(0, 1fr); gap: 8px; align-items: start; }
-.prank .rk { font-weight: 800; font-size: 18px; text-align: right; }
-.prank p { margin: 2px 0 0; font-size: 14.5px; line-height: 1.45; }
+.ranks { display: grid; gap: 10px; margin-bottom: 18px; }
+.rankrow { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 12px; padding: 14px 16px; align-items: start; }
+.rankrow .rk { font-weight: 800; font-size: 28px; line-height: 1; text-align: center; padding-top: 4px; }
+.rankrow .rhead { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+.rankrow .rhead > span { display: grid; }
+.rankrow p { margin: 6px 0 0; font-size: 15px; line-height: 1.5; }
 .history .artbody h3 { margin: 18px 0 8px; }
 .watch { padding: 10px 14px 12px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
 .wname, .wname .plink, .pl.watchp .nm > .plink, .pl.watchp .nm > b { color: var(--gold); font-weight: 700; }
@@ -604,7 +607,7 @@ function parseHash() {
   else if ((m = h.match(/^mgr-(\w+)$/)) && D.managers[m[1]]) { state.view = "mgr"; state.mgr = m[1]; }
   else if ((m = h.match(/^p-([a-z0-9-]+)$/)) && P[m[1]]) { state.view = "player"; state.pk = m[1]; }
   else if ((m = h.match(/^news-([a-z0-9-]+)$/)) && NEWS.some((a) => a.id === m[1])) { state.view = "article"; state.newsId = m[1]; }
-  else if (["home", "news", "social", "trophies", "managers", "map", "players", "overrated", "transactions", "odds", "h2h", "records"].includes(h)) state.view = h;
+  else if (["home", "news", "rankings", "social", "trophies", "managers", "map", "players", "overrated", "transactions", "odds", "h2h", "records"].includes(h)) state.view = h;
   else state.view = "home"; // no or unknown hash: the home page
 }
 // Each page gets its own history entry so the browser's back button returns to it,
@@ -617,7 +620,7 @@ document.addEventListener("click", (e) => { const b = e.target.closest("[data-go
 
 // ---------- Chrome ----------
 function chrome() {
-  const nav = [["home", "Home"], ["news", "News"], ["trophies", "Buckaroo Bowls"], ["managers", "Managers"], ["players", "Players"], ["transactions", "Transactions"], ["odds", "Odds"], ["h2h", "Head-to-Head"], ["overrated", "Overrated"], ["records", "Record Book"], ["map", "Map"]];
+  const nav = [["home", "Home"], ["news", "News"], ["rankings", "Power Rankings"], ["trophies", "Buckaroo Bowls"], ["managers", "Managers"], ["players", "Players"], ["transactions", "Transactions"], ["odds", "Odds"], ["h2h", "Head-to-Head"], ["overrated", "Overrated"], ["records", "Record Book"], ["map", "Map"]];
   const curNav = state.view === "mgr" ? "managers" : state.view === "player" ? "players" : state.view === "article" || state.view === "social" ? "news" : state.view;
   $("#topnav").innerHTML = nav.map(([k, l]) => `<button data-go="${k}" aria-current="${curNav === k}">${l}</button>`).join("");
   $("#rail").innerHTML = `<span class="lbl">Seasons</span>` + [...years].reverse().map((y) => {
@@ -1427,7 +1430,7 @@ function home() {
 // ---------- News & Social (written by Claude after each week, trade and season; see news.js) ----------
 const ALL_NEWS = (D.news && D.news.articles) || [];
 // Career profiles live on manager pages, not in the news feed (newest per manager)
-const NEWS = ALL_NEWS.filter((a) => a.type !== "profile" && a.type !== "history");
+const NEWS = ALL_NEWS.filter((a) => !["profile", "history", "rankings"].includes(a.type));
 // The league history (newest), shown in the trophy room
 const HISTORY = ALL_NEWS.find((a) => a.type === "history");
 const PROFILE = {};
@@ -1474,14 +1477,24 @@ function picksHtml(a) {
   const table = Object.keys(rec).length ? `<div class="box scroll"><table><thead><tr><th>Panelist</th><th class="n">Picks</th><th class="n">Locks</th></tr></thead><tbody>${names.map((n) => { const x = rec[n] || { w: 0, l: 0, lw: 0, ll: 0 }; return `<tr><td><b>${esc(n)}</b></td><td class="n">${x.w}-${x.l}</td><td class="n">${x.lw}-${x.ll}</td></tr>`; }).join("")}</tbody></table></div>` : "";
   return `<section><h3>The Panel's Picks</h3><div class="pgrid">${games}</div>${table ? `<h3>Panel Standings, ${a.year}</h3>${table}` : ""}</section>`;
 }
-// Recaps: the newsroom's power rankings, with movement from the week before
-function rankingsHtml(a) {
-  if (a.type !== "recap" || !a.power_rankings || !a.power_rankings.length) return "";
-  const prev = NEWS.find((x) => x.type === "recap" && x.year === a.year && x.wk === a.wk - 1), was = {};
+// Power Rankings tab: one release per finished week (Tuesday mornings), any week selectable
+function rankingsView() {
+  const R = ALL_NEWS.filter((a) => a.type === "rankings" && a.power_rankings).sort((a, b) => b.year - a.year || b.wk - a.wk);
+  const head = (sub) => `<div class="vhead"><div><div class="eyebrow">${sub}</div><h2>Power Rankings</h2><p>The newsroom's weekly rankings, published every Tuesday morning once the week's games are final.</p></div></div>`;
+  if (!R.length) return head("Around the League") + `<div class="box lockcard"><h3>No Rankings Yet</h3><p>The first rankings come out the Tuesday morning after a week's games are final.</p></div>`;
+  const year = R[0].year, list = R.filter((a) => a.year === year), sel = list.find((a) => a.wk === state.rankWk) || list[0];
+  const s = S[year], prev = list.find((a) => a.wk === sel.wk - 1), was = {};
   for (const x of (prev && prev.power_rankings) || []) was[x.id] = x.rank;
-  const s = S[a.year];
-  return `<section><h3>Power Rankings</h3><div class="box rec"><div class="feed">${a.power_rankings.map((x) => { const d = was[x.id] ? was[x.id] - x.rank : null, t = s && s.byId[x.id];
-    return `<div class="prank"><span class="rk num">${x.rank}</span>${t ? badge(t, 1) : ""}<div><b>${esc(x.team)}</b> ${d == null ? "" : d > 0 ? `<span class="w">▲${d}</span>` : d < 0 ? `<span class="l">▼${-d}</span>` : `<span class="muted">–</span>`}<p>${esc(x.blurb)}</p></div></div>`; }).join("")}</div></div></section>`;
+  const recThrough = (id) => { let w = 0, l = 0, t = 0; for (const m of s.matchups) if (m.wk <= sel.wk && m.wk <= s.regWeeks && m.win !== null && !m.live && (m.h === id || m.a === id)) m.win === id ? w++ : m.win === 0 ? t++ : l++; return `${w}-${l}${t ? "-" + t : ""}`; };
+  const line = (id) => { const m = s.matchups.find((x) => x.wk === sel.wk && (x.h === id || x.a === id)), nx = [...s.matchups, ...(s.future || [])].find((x) => x.wk === sel.wk + 1 && x.a && (x.h === id || x.a === id));
+    const last = m && m.a ? `${m.win === id ? "W" : m.win === 0 ? "T" : "L"} ${f2(m.h === id ? m.hp : m.ap)}–${f2(m.h === id ? m.ap : m.hp)} vs ${esc(s.byId[m.h === id ? m.a : m.h].name)}` : "Bye";
+    return `Week ${sel.wk}: ${last}${nx ? ` · Next: vs ${esc(s.byId[nx.h === id ? nx.a : nx.h].name)}` : ""}`; };
+  const pills = `<div class="weekbar" style="margin:0 0 18px">${[...list].reverse().map((a) => `<button data-rankwk="${a.wk}" aria-current="${a === sel}">Wk ${a.wk}</button>`).join("")}</div>`;
+  return head(`${year} · After Week ${sel.wk}`) + pills + `<article class="article" style="max-width:none"><h2 class="headline" style="margin-top:0">${esc(sel.title)}</h2><p class="dek big">${esc(sel.dek)}</p><div class="artbody">${sel.body.map((p) => `<p>${esc(p)}</p>`).join("")}</div></article>
+    <div class="ranks">${[...sel.power_rankings].sort((a, b) => a.rank - b.rank).map((x) => { const t = s.byId[x.id], d = was[x.id] ? was[x.id] - x.rank : null;
+      const mv = d == null ? `<span class="pill">New</span>` : d > 0 ? `<span class="pill w">▲ ${d}</span>` : d < 0 ? `<span class="pill l">▼ ${-d}</span>` : `<span class="pill">–</span>`;
+      return `<div class="box rankrow"><span class="rk num">${x.rank}</span><div><div class="rhead">${t ? badge(t) : ""}<span><b>${esc(t ? nameAt(t, sel.wk) : x.team)}</b><small class="muted">${t ? mgrName(mgrAt(t, sel.wk)) + " · " : ""}${t ? recThrough(t.id) : ""}</small></span>${prev ? mv : ""}</div>
+        <small class="muted">${t ? line(t.id) : ""}${was[x.id] ? ` · Last week: ${was[x.id]}` : ""}</small><p>${esc(x.blurb)}</p></div></div>`; }).join("")}</div>${aiNote}`;
 }
 // Recaps carry quick takes on earlier trades; a trade's page collects every take on it since
 function tradeWatchHtml(a) {
@@ -1498,7 +1511,6 @@ function articleView() {
     <div class="eyebrow" style="margin-top:18px">${NEWS_TYPE[a.type]} · ${newsWhen(a)}</div><h2 class="headline">${esc(a.title)}</h2><p class="dek big">${esc(a.dek)}</p>
     <div class="artbody">${a.body.map((p) => `<p>${esc(p)}</p>`).join("")}</div>
     ${picksHtml(a)}
-    ${rankingsHtml(a)}
     ${tradeWatchHtml(a)}
     ${a.social && a.social.length ? `<section><h3>The Reaction</h3><div class="box rec"><div class="feed">${a.social.map((p) => postHtml(p, null, a)).join("")}</div></div></section>` : ""}
     ${aiNote}
@@ -1524,7 +1536,7 @@ function render() {
   chrome();
   if (mapObj) { mapObj.remove(); mapObj = null; }
   const v = state.view;
-  $("#app").innerHTML = v === "season" ? seasonView() : v === "mgr" ? mgrView() : v === "managers" ? managers() : v === "players" ? playersView() : v === "player" ? playerView() : v === "home" ? home() : v === "news" ? newsView() : v === "article" ? articleView() : v === "social" ? socialView() : v === "odds" ? oddsView() : v === "map" ? mapView() : v === "overrated" ? overratedView() : v === "transactions" ? txView() : v === "h2h" ? h2h() : v === "records" ? records() : trophies();
+  $("#app").innerHTML = v === "season" ? seasonView() : v === "mgr" ? mgrView() : v === "managers" ? managers() : v === "players" ? playersView() : v === "player" ? playerView() : v === "home" ? home() : v === "news" ? newsView() : v === "rankings" ? rankingsView() : v === "article" ? articleView() : v === "social" ? socialView() : v === "odds" ? oddsView() : v === "map" ? mapView() : v === "overrated" ? overratedView() : v === "transactions" ? txView() : v === "h2h" ? h2h() : v === "records" ? records() : trophies();
   document.title = "Buckaroo League History";
   if (v === "map") initMap();
   const cur = $(".yr[aria-current=true]"); if (cur) cur.scrollIntoView({ block: "nearest", inline: "nearest" });
@@ -1537,6 +1549,7 @@ $("#app").addEventListener("click", (e) => {
   const oy = e.target.closest("[data-oddsyear]"); if (oy) { state.oddsYear = +oy.dataset.oddsyear; state.oddsFocus = null; render(); return; }
   const ok = e.target.closest("[data-oddskey]"); if (ok) { state.oddsKey = ok.dataset.oddskey; render(); return; }
   const ot = e.target.closest("[data-oddsteam]"); if (ot) { state.oddsFocus = state.oddsFocus === +ot.dataset.oddsteam ? null : +ot.dataset.oddsteam; render(); return; }
+  const rw = e.target.closest("[data-rankwk]"); if (rw) { state.rankWk = +rw.dataset.rankwk; render(); return; }
   if (e.target.closest("[data-hist]")) { state.histOpen = !state.histOpen; render(); return; }
   const ry = e.target.closest("[data-recyear]"); if (ry) { state.recYear = ry.dataset.recyear === "all" ? null : +ry.dataset.recyear; render(); return; }
   const my = e.target.closest("[data-mapyear]"); if (my) { state.mapYear = my.dataset.mapyear === "all" ? "all" : +my.dataset.mapyear; render(); return; }
