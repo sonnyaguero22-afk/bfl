@@ -383,6 +383,13 @@ const oppFor = (y) => {
   console.log(`::notice::Same-game correlation (${years.join(", ") || "no schedules yet"}): ${Object.entries(pairs).filter(([, P]) => P.length >= 30).sort().map(([k, P]) => `${k} ${corr(P).toFixed(2)} (${P.length})`).join("; ") || "not enough pairs yet"}`);
 }
 
+// The team-level pregame win chance (odds.js strengths), the same one the site shows for past games
+function winOdds(s, m) {
+  if (!s.odds) return null;
+  let i = -1; s.odds.weeks.forEach((N, j) => { if (N <= m.wk - 1) i = j; });
+  if (i < 0 || s.odds.weeks[i] !== m.wk - 1) return null;
+  return Math.round(Phi((s.odds.t[m.h].str[i] - s.odds.t[m.a].str[i]) / ((s.odds.sd || 20) * Math.SQRT2)) * 1000) / 1000;
+}
 // This week's games, simulated player by player (see players.js): win chance and the Ones to Watch
 const { fit, simGame } = require("./players");
 const playerModel = fit(seasons.map((s) => ({ ...s, lineups: Object.fromEntries(Object.entries(s.lineups).filter(([w]) => s.done || +w < s.curWeek)) })));
@@ -401,6 +408,19 @@ for (const s of seasons) for (const m of s.matchups) {
   const nm = (id) => s.teams.find((t) => t.id === id).name;
   console.log(`::notice::Week ${m.wk}: ${nm(m.h)} ${Math.round(m.psim * 100)}% vs ${nm(m.a)} | watch ${m.watch.map((x) => `${x.n} for ${nm(x.id)} (${x.boomAt}+: ${x.boom}%, under ${x.bustAt}: ${x.bust}%)`).join("; ")}${m.stacks.length ? ` | stacks ${m.stacks.map((k) => `${k.qb}+${k.rec}`).join(", ")}` : ""}${m.holes ? ` | holes ${m.holes.map((x) => `${x.n} (${nm(x.id)}, ${x.why})`).join(", ")} -> ${nm(m.h)} ${Math.round(m.psimFixed * 100)}% if fixed` : ""}`);
 }
+// Pregame win chances, frozen at kickoff for the Report Card (history/pregame_<year>.json, saved by GitHub):
+// each game's last win chance before any points were scored, as the lineups were set then
+if (process.env.GITHUB_ACTIONS === "true") for (const s of seasons) {
+  if (s.done) continue;
+  const f = path.join(HISTORY, `pregame_${s.year}.json`), pre = fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, "utf8")) : {};
+  let changed = false;
+  for (const m of s.matchups) if (m.live && m.psim != null && !m.hp && !m.ap) {
+    const k = `${m.wk}-${m.h}-${m.a}`;
+    if (!pre[k] || pre[k].p !== m.psim || pre[k].fixed !== m.psimFixed) { pre[k] = { p: m.psim, fixed: m.psimFixed, odds: winOdds(s, m), at: new Date().toISOString() }; changed = true; }
+  }
+  if (changed) { fs.mkdirSync(HISTORY, { recursive: true }); fs.writeFileSync(f, JSON.stringify(pre)); }
+}
+
 // In-game win chance history: GitHub saves one point per update while a week is under way
 // (history/live_<year>.json, kept in the repo). Local builds only read it.
 if (process.env.GITHUB_ACTIONS === "true") for (const { matchups, wp, histFile } of pendingHistory) {
