@@ -1,7 +1,8 @@
 // Live social posts during games. Each update compares this week's scores, win chances and
 // players' points with the last update (history/livestate_<year>.json), and when something
 // happened (a big play, a lead change, a big swing, a Ones to Watch player clearing his line, a
-// final) asks Claude for a few posts reacting to it, saved to news/live-<year>-<week>.json.
+// final), and when anyone picks up or drops a player (waivers or free agency, any day of the week),
+// asks Claude for a few posts reacting to it, saved to news/live-<year>-<week>.json.
 // At most 2 batches (calls) an hour and 20 a day.
 // Runs in GitHub Actions after build.js; quiet updates make no API call.
 // Usage: node live.js            (post if anything happened)
@@ -32,6 +33,7 @@ const now = {
   wk: W,
   games: Object.fromEntries(games.map((m) => [`${m.h}-${m.a}`, { hp: m.hp, ap: m.ap, p: m.psim, win: m.win }])),
   players: Object.fromEntries(games.flatMap((m) => [m.h, m.a]).flatMap((id) => starters(id).map((p) => [`${id}|${p.n}`, p.pts]))),
+  moves: cur.moves.map((m) => `${m.date}|${m.tm}`),
 };
 const before = fs.existsSync(STATE) ? JSON.parse(fs.readFileSync(STATE, "utf8")) : null;
 const save = () => { if (!DRY) { fs.mkdirSync(path.dirname(STATE), { recursive: true }); fs.writeFileSync(STATE, JSON.stringify(now)); } };
@@ -57,11 +59,24 @@ if (before && before.wk === W) {
     }
   }
 }
-// Most important first, and at most 10 per update: finals, lead changes, swings, Ones to Watch, then the biggest plays
-const ORDER = ["FINAL", "LEAD CHANGE", "SWING", "ONE TO WATCH", "BIG PLAY"];
+// Roster moves since the last update (the first run only takes note of them). Each one carries
+// what the players have done this season, so the posts know a big pickup from a depth add.
+const moveAt = {};
+if (before && before.moves) {
+  const seen = new Set(before.moves);
+  const season = (n) => { let pts = 0, wks = 0; for (const w in cur.lineups) for (const id in cur.lineups[w]) for (const p of cur.lineups[w][id]) if (p.n === n) { pts += p.pts; wks++; } return wks ? `${Math.round(pts * 10) / 10} points in ${wks} weeks` : "no points yet this season"; };
+  const fresh = cur.moves.filter((m) => !seen.has(`${m.date}|${m.tm}`)).sort((a, b) => (b.bid || 0) - (a.bid || 0));
+  for (const m of fresh) {
+    const list = (xs) => xs.map((x) => { const [n, pos] = x.split("|"); return `${n} (${pos}; ${season(n)})`; }).join(", ");
+    const e = `MOVE: ${team(m.tm)} ${m.add.length ? `added ${list(m.add)}` : ""}${m.add.length && m.drop.length ? " and " : ""}${m.drop.length ? `dropped ${list(m.drop)}` : ""} (${m.kind.toLowerCase()}${m.bid ? `, $${m.bid} bid` : ""})`;
+    events.push(e); moveAt[e] = m.date;
+  }
+}
+// Most important first, and at most 10 per update: finals, lead changes, swings, Ones to Watch, the biggest plays, then moves
+const ORDER = ["FINAL", "LEAD CHANGE", "SWING", "ONE TO WATCH", "BIG PLAY", "MOVE"];
 const gain = (e) => +((e.match(/\+([\d.]+)/) || [])[1] || 0);
 events.sort((a, b) => ORDER.findIndex((k) => a.startsWith(k)) - ORDER.findIndex((k) => b.startsWith(k)) || gain(b) - gain(a)).splice(10);
-if (!events.length) { console.log(before && before.wk === W ? "Nothing new since the last update." : "First snapshot of the week saved."); save(); process.exit(0); }
+if (!events.length) { console.log(before && before.wk === W ? "Nothing new since the last update." : "First snapshot saved."); save(); process.exit(0); }
 console.log(`${events.length} live events:\n${events.join("\n")}`);
 if (DRY) process.exit(0);
 
@@ -73,12 +88,13 @@ if (!process.env.ANTHROPIC_API_KEY || !LORE) { console.log("No API key or lore; 
 
 const POSTS = { type: "object", additionalProperties: false, required: ["posts"], properties: { posts: { type: "array", items: { ...SOCIAL.items,
   required: SOCIAL.items.required.filter((k) => k !== "when").concat("minutes_ago"),
-  properties: { ...Object.fromEntries(Object.entries(SOCIAL.items.properties).filter(([k]) => k !== "when")), minutes_ago: { type: "integer" } } } } } };
+  properties: { ...Object.fromEntries(Object.entries(SOCIAL.items.properties).filter(([k]) => k !== "when")), minutes_ago: { type: "integer" }, event: { type: "integer" } } } } } };
+POSTS.properties.posts.items.required.push("event");
 const scoreboard = games.map((m) => `${team(m.h)} ${m.hp} vs ${team(m.a)} ${m.ap}${m.win != null ? " (final)" : m.psim != null ? `, ${nameAt(cur.byId[m.h], W)} win chance ${pct(m.psim)}` : ""}`);
-const ask = `It's game day in week ${W}. Write 2 to 4 live social posts reacting to what just happened, the way the timeline reacts during games: fans of the teams involved (celebrating, panicking, raging), a pundit or panelist with a quick take, maybe a team's official account after a big play or a final. Keep each post short, one or two sentences, and react to these events only; use the scores as context. minutes_ago is how long ago it was posted, from 0 to 14.
+const ask = `It's week ${W}. Write 2 to 4 social posts reacting to what just happened around the league, the way the timeline does: fans of the teams involved (celebrating, panicking, raging), a pundit or panelist with a quick take, an insider on a roster move, maybe a team's official account after a big play, a final or a pickup ("welcome to the squad"). A depth add or a drop of a nobody gets a post only if there's a joke in it; a big bid, a big name dropped, or a pickup that fills a hole is worth talking about. Keep each post short, one or two sentences, and react to these events only; use the scores as context. event is the number of the event a post reacts to; minutes_ago is how long ago it was posted, from 0 to 14.
 
 Events since the last update:
-${events.join("\n")}
+${events.map((e, i) => `${i + 1}. ${e}`).join("\n")}
 
 Scoreboard now:
 ${scoreboard.join("\n")}
@@ -102,7 +118,9 @@ ${JSON.stringify(feed.social.slice(-10).map((p) => `${p.author}: ${p.text}`))}`;
     if (res.stop_reason !== "end_turn") { console.log(`::warning::Live posts: stopped (${res.stop_reason}), skipping`); save(); return; }
     const out = JSON.parse(res.content.filter((b) => b.type === "text").map((b) => b.text).join(""));
     const t = Date.now();
-    feed.social.push(...out.posts.map(({ minutes_ago, ...p }) => ({ ...p, at: new Date(t - Math.min(14, Math.max(0, minutes_ago)) * 60e3).toISOString() })));
+    // Posts about a roster move go up shortly after the move itself; the rest within the last 15 minutes
+    const when = (p) => { const m = moveAt[events[p.event - 1]], ago = Math.min(14, Math.max(0, p.minutes_ago)); return m ? Math.min(t, m + (3 + (14 - ago) * 4) * 60e3) : t - ago * 60e3; };
+    feed.social.push(...out.posts.map(({ minutes_ago, event, ...p }) => ({ ...p, at: new Date(when({ minutes_ago, event })).toISOString() })));
     feed.batches.push(new Date(t).toISOString());
     fs.mkdirSync(NEWS, { recursive: true });
     fs.writeFileSync(FEED, JSON.stringify(feed, null, 1));

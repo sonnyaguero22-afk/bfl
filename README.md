@@ -18,7 +18,7 @@ Each update downloads the current season from ESPN (`fetch.js current`), rebuild
 
 ## Live posts (AI)
 
-During games, `live.js` compares each update with the last one (`history/livestate_<year>.json`) and, when something happened (a big play, a lead change, a big win-chance swing, a Ones to Watch player clearing his line, a final), asks Claude Sonnet for a few short social posts, saved to `news/live-<year>-<week>.json`. Quiet updates make no API call, and at most 15 batches are written per day. `node live.js --dry-run` prints the events without calling the API.
+`live.js` compares each update with the last one (`history/livestate_<year>.json`) and, when something happened (a big play, a lead change, a big win-chance swing, a Ones to Watch player clearing his line, a final, or a waiver or free-agent move any day of the week), asks Claude Sonnet for a few short social posts, saved to `news/live-<year>-<week>.json`. Quiet updates make no API call, and at most 15 batches are written per day. `node live.js --dry-run` prints the events without calling the API.
 
 ## ESPN login
 
