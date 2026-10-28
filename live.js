@@ -2,6 +2,7 @@
 // players' points with the last update (history/livestate_<year>.json), and when something
 // happened (a big play, a lead change, a big swing, a Ones to Watch player clearing his line, a
 // final) asks Claude for a few posts reacting to it, saved to news/live-<year>-<week>.json.
+// At most 2 batches (calls) an hour and 20 a day.
 // Runs in GitHub Actions after build.js; quiet updates make no API call.
 // Usage: node live.js            (post if anything happened)
 //        node live.js --dry-run  (print the events; no API calls, nothing saved)
@@ -11,7 +12,8 @@ const Anthropic = require("@anthropic-ai/sdk");
 const { S, SYSTEM, SOCIAL, LORE, NEWS, who, nameAt } = require("./news");
 
 const MODEL = "claude-sonnet-5-5"; // short posts, many times a game day; the articles stay on Opus
-const MAX_BATCHES_PER_DAY = 15;    // keeps a wild Sunday's cost predictable
+const MAX_BATCHES_PER_DAY = 20;    // keeps a wild Sunday's cost predictable
+const MAX_BATCHES_PER_HOUR = 2;    // spreads them out, so night games get posts too
 const BIG_PLAY = 8;                // points a starter gains between updates to count as a big play
 const BIG_SWING = 0.2;             // change in win chance between updates worth reacting to
 const DRY = process.argv.includes("--dry-run");
@@ -66,6 +68,7 @@ if (DRY) process.exit(0);
 const feed = fs.existsSync(FEED) ? JSON.parse(fs.readFileSync(FEED, "utf8")) : { id: `live-${cur.year}-${W}`, type: "live", year: cur.year, wk: W, created: new Date().toISOString(), title: `Week ${W} Live`, dek: "", body: [], social: [], batches: [] };
 const today = new Date().toLocaleDateString("en-US", { timeZone: "America/New_York" });
 if (feed.batches.filter((b) => new Date(b).toLocaleDateString("en-US", { timeZone: "America/New_York" }) === today).length >= MAX_BATCHES_PER_DAY) { console.log("Daily cap on live posts reached; skipping."); save(); process.exit(0); }
+if (feed.batches.filter((b) => Date.now() - new Date(b).getTime() < 3600e3).length >= MAX_BATCHES_PER_HOUR) { console.log("Hourly cap on live posts reached; skipping."); save(); process.exit(0); }
 if (!process.env.ANTHROPIC_API_KEY || !LORE) { console.log("No API key or lore; skipping live posts."); save(); process.exit(0); }
 
 const POSTS = { type: "object", additionalProperties: false, required: ["posts"], properties: { posts: { type: "array", items: { ...SOCIAL.items,

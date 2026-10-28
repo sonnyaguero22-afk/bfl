@@ -340,6 +340,7 @@ Rules:
   - kind "team": a team's official account, named after the team, with its exact team name in the team field and the handle listed for it under Current teams. On-brand and upbeat, like a club: matchday results, player of the week, "welcome to the club" after a trade. Never written as the manager.
   - kind "reporter": the league's media panel, all fictional: ${PANEL.map((p) => `${p.name} (${p.handle}), ${p.role.toLowerCase()}: ${p.style}`).join("; ")}.
   - Keep the same name and handle for the same account every time. Set team to "" for every post that isn't kind "team".
+- Each social post has a "heat" from 1 to 10: how likely it is to blow up. Most posts are 1 to 4. Rage bait, unhinged hot takes, brutal one-liners and the dumbest possible jokes can be 8 to 10; give at most one post per story 8 or more, and not every story needs one.
 - Each social post has a "when": the minutes before (negative) or after the story goes up that it was posted, from -2880 to 2880. Spread them out like a real timeline: live reactions during the games come before a recap, takes and replies after, official accounts at sensible hours, and fans whenever they feel it, including the middle of the night (a 3 AM rant after a bad beat is on brand).
 - A player marked "on bye" or "did not play" scored nothing because he didn't play. Say so plainly; never treat it as a bad game or a bust. Starting one is the manager's lineup mistake, not the player's.
 - Running jokes and nicknames are seasoning, not the meal. Use any one bit at most once in a story, leave most of them out of most stories, and never make the same joke the punchline two stories in a row. A manager is more than their running joke: describe what they actually did this week first. Labels count as running jokes too: don't cast anyone as the league's villain, punching bag, or hothead by default. Use a label like that at most once in a story, and leave it out of most stories.
@@ -353,7 +354,7 @@ ${LORE}`;
 
 // ---------- Output shapes ----------
 const str = { type: "string" };
-const SOCIAL = { type: "array", items: { type: "object", additionalProperties: false, required: ["author", "handle", "text", "kind", "team", "when"], properties: { author: str, handle: str, text: str, when: { type: "integer" },
+const SOCIAL = { type: "array", items: { type: "object", additionalProperties: false, required: ["author", "handle", "text", "kind", "team", "when", "heat"], properties: { author: str, handle: str, text: str, when: { type: "integer" }, heat: { type: "integer" },
   kind: { type: "string", enum: ["fan", "pundit", "reporter", "team", "league"] }, team: str } } };
 const ARTICLE = { title: str, dek: str, body: { type: "array", items: str } };
 const schemas = {

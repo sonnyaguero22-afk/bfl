@@ -388,6 +388,8 @@ table.compact .team { min-width: 0; }
 .wname, .wname .plink, .pl.watchp .nm > .plink, .pl.watchp .nm > b { color: var(--gold); font-weight: 700; }
 .watch .k { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .wrow { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; font-size: 13.5px; line-height: 1.35; }
+.buzz { display: flex; gap: 14px; align-items: center; font-size: 12px; color: var(--muted); margin: 2px 0 4px; }
+.buzz .pill { padding: 0 6px; font-size: 10px; }
 .tick { color: var(--brass); font-weight: 800; font-size: 12px; }
 .phead .pill { padding: 1px 6px; font-size: 10px; margin-left: 2px; }
 .avatar { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; color: var(--surface); background: hsl(var(--h) var(--mgr-s) var(--mgr-l)); }
@@ -1447,7 +1449,21 @@ const postTeam = (p, a) => p.kind === "team" && a && S[a.year] ? S[a.year].teams
 // Story and post times, in the viewer's own time zone; posts timed in the future haven't been posted yet
 const stamp = (iso) => new Date(iso).toLocaleString(undefined, { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 const posted = (p) => !p.at || new Date(p.at).getTime() <= Date.now();
-const postHtml = (p, a, src = a) => { const tm = postTeam(p, src); return `<div class="post">${tm ? badge(tm) : `<span class="avatar" style="--h:${avatarHue(p.handle)}" aria-hidden="true">${esc((p.author.match(/[A-Za-z0-9]/) || ["?"])[0].toUpperCase())}</span>`}<div class="pbody"><div class="phead"><b>${esc(p.author)}</b>${OFFICIAL[p.kind] ? ` <span class="tick" title="Verified">✓</span>` : ""} <span class="muted">${esc(p.handle.startsWith("@") ? p.handle : "@" + p.handle)}</span>${OFFICIAL[p.kind] ? ` <span class="pill gold">${OFFICIAL[p.kind]}</span>` : ""}${p.at ? ` <span class="muted">· ${stamp(p.at)}</span>` : ""}</div><p>${esc(p.text)}</p>${a ? a.type === "live" ? `<button class="mlink postsrc" data-go="${a.year}-weekly"><span class="pill live" style="padding:0 6px;font-size:10px">LIVE</span> Week ${a.wk} scoreboard</button>` : `<button class="mlink postsrc" data-go="news-${a.id}">${newsWhen(a)} · ${esc(a.title)}</button>` : ""}</div></div>`; };
+// Likes, reposts and replies: from the post's heat (the writer's 1-10 for how likely it is to blow up; older
+// posts get a stable stand-in) and who posted it, growing over the hours after it went up
+const seed = (str) => { let x = 2166136261; for (const c of str) x = Math.imul(x ^ c.charCodeAt(0), 16777619) >>> 0; return x / 4294967296; };
+const REACH = { league: 400, team: 220, reporter: 300, pundit: 90, fan: 18 };
+function buzz(p) {
+  const r = seed(p.handle + p.text), r2 = seed(p.text + p.handle);
+  const heat = p.heat || (r2 < 0.06 ? 8 : 1 + Math.floor(r2 * 5));
+  let full = (REACH[p.kind] || 18) * (heat * heat) / 4 * (0.4 + 1.2 * r);
+  if (heat >= 8) full *= 3 + 7 * r2; // the occasional post that takes off
+  const age = p.at ? Math.max(0, (Date.now() - new Date(p.at).getTime()) / 3600e3) : 48;
+  const likes = Math.round(full * (1 - Math.exp(-age / (heat >= 8 ? 4 : 1.5))));
+  return { likes, reposts: Math.round(likes * (0.08 + 0.1 * r2)), replies: Math.round(likes * (heat >= 7 ? 0.25 : 0.06) * (0.5 + r)), viral: likes >= 3000 };
+}
+const kfmt = (n) => (n >= 1e6 ? (n / 1e6).toFixed(1).replace(/\.0$/, "") + "M" : n >= 1e4 ? Math.round(n / 1e3) + "K" : n >= 1e3 ? (n / 1e3).toFixed(1).replace(/\.0$/, "") + "K" : String(n));
+const postHtml = (p, a, src = a) => { const tm = postTeam(p, src); return `<div class="post">${tm ? badge(tm) : `<span class="avatar" style="--h:${avatarHue(p.handle)}" aria-hidden="true">${esc((p.author.match(/[A-Za-z0-9]/) || ["?"])[0].toUpperCase())}</span>`}<div class="pbody"><div class="phead"><b>${esc(p.author)}</b>${OFFICIAL[p.kind] ? ` <span class="tick" title="Verified">✓</span>` : ""} <span class="muted">${esc(p.handle.startsWith("@") ? p.handle : "@" + p.handle)}</span>${OFFICIAL[p.kind] ? ` <span class="pill gold">${OFFICIAL[p.kind]}</span>` : ""}${p.at ? ` <span class="muted">· ${stamp(p.at)}</span>` : ""}</div><p>${esc(p.text)}</p>${(() => { const b = buzz(p); return `<div class="buzz">${b.viral ? `<span class="pill gold">🔥 Viral</span>` : ""}<span>💬 ${kfmt(b.replies)}</span><span>🔁 ${kfmt(b.reposts)}</span><span>♥ ${kfmt(b.likes)}</span></div>`; })()}${a ? a.type === "live" ? `<button class="mlink postsrc" data-go="${a.year}-weekly"><span class="pill live" style="padding:0 6px;font-size:10px">LIVE</span> Week ${a.wk} scoreboard</button>` : `<button class="mlink postsrc" data-go="news-${a.id}">${newsWhen(a)} · ${esc(a.title)}</button>` : ""}</div></div>`; };
 const allPosts = () => [...NEWS, ...LIVE].flatMap((a) => (a.social || []).filter(posted).map((p) => ({ p, a }))).sort((x, y) => (y.p.at || "").localeCompare(x.p.at || ""));
 const newsEmpty = `<div class="box lockcard"><h3>No Stories Yet</h3><p>League news is written automatically after every finished week, every trade and every season. Stories start appearing with the first update after the news writer is switched on.</p></div>`;
 const aiNote = `<p class="note">Written by Claude, an AI, from the league's data. It can get things wrong; the scores and stats elsewhere on the site are the source of truth.</p>`;
@@ -1522,8 +1538,11 @@ function articleView() {
     ${newer || older ? `<section><h3>More Stories</h3><div class="newslist">${[newer, older].filter(Boolean).map((x) => newsCard(x)).join("")}</div></section>` : ""}</article>`;
 }
 function socialView() {
-  const posts = allPosts();
-  return `${newsHead("social")}
+  const hot = state.feedSort === "trending";
+  // Trending: the most-liked posts from the last two days
+  const posts = hot ? allPosts().filter((x) => !x.p.at || Date.now() - new Date(x.p.at).getTime() < 48 * 3600e3).sort((x, y) => buzz(y.p).likes - buzz(x.p).likes).slice(0, 40) : allPosts();
+  const sort = `<div class="weekbar" style="margin:0 0 14px"><button data-feedsort="latest" aria-current="${!hot}">Latest</button><button data-feedsort="trending" aria-current="${hot}">🔥 Trending</button></div>`;
+  return `${newsHead("social")}${sort}
     ${posts.length ? `<div class="box rec socialfeed"><div class="feed">${posts.map((x) => postHtml(x.p, x.a)).join("")}</div></div>${aiNote}` : newsEmpty}`;
 }
 
@@ -1554,6 +1573,7 @@ $("#app").addEventListener("click", (e) => {
   const oy = e.target.closest("[data-oddsyear]"); if (oy) { state.oddsYear = +oy.dataset.oddsyear; state.oddsFocus = null; render(); return; }
   const ok = e.target.closest("[data-oddskey]"); if (ok) { state.oddsKey = ok.dataset.oddskey; render(); return; }
   const ot = e.target.closest("[data-oddsteam]"); if (ot) { state.oddsFocus = state.oddsFocus === +ot.dataset.oddsteam ? null : +ot.dataset.oddsteam; render(); return; }
+  const fs2 = e.target.closest("[data-feedsort]"); if (fs2) { state.feedSort = fs2.dataset.feedsort; render(); return; }
   const rw = e.target.closest("[data-rankwk]"); if (rw) { state.rankWk = +rw.dataset.rankwk; render(); return; }
   if (e.target.closest("[data-hist]")) { state.histOpen = !state.histOpen; render(); return; }
   const ry = e.target.closest("[data-recyear]"); if (ry) { state.recYear = ry.dataset.recyear === "all" ? null : +ry.dataset.recyear; render(); return; }
