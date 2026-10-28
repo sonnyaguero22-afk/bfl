@@ -55,6 +55,60 @@ function pregameWin(s, m) {
   const near = m.wk === s.odds.weeks[i] + 1 || !s.odds.t[m.h].far, k = near ? "str" : "far", spread = near ? s.odds.sd || 20 : s.odds.farSd || s.odds.sd || 20;
   return Phi(((s.odds.t[m.h][k][i] - s.odds.t[m.a][k][i]) * len) / (spread * Math.sqrt(2 * len)));
 }
+// The preview panel: fictional pundits (archetypes, never real people). Keep names and handles fixed.
+const PANEL = [
+  { name: "Dana Whitfield", handle: "@DanaWhitfieldBFL", role: "Insider", style: "measured news-breaker; leans on lineup moves, injuries, byes and what she's hearing; rarely raises her voice" },
+  { name: "Marcus Pell", handle: "@MarcusPellWrites", role: "Columnist", style: "narratives, rivalries and history; loves a contrarian pick and a big sentence" },
+  { name: "Sal Benedetto", handle: "@SalBetsBig", role: "The Gambler", style: "loud, emotional, all-in; every pick is a LOCK, holds grudges against teams that burned him, never admits a bad call" },
+  { name: "Dr. Nina Kessler", handle: "@KesslerNumbers", role: "Analytics", style: "cites the win chances, Ones to Watch and point lines; usually sides with the model and explains exactly why when she doesn't" },
+];
+// Saved stories of a type for a season, oldest first
+const saved = (type, year) => (fs.existsSync(NEWS) ? fs.readdirSync(NEWS).filter((f) => f.startsWith(`${type}-${year}-`)).map((f) => JSON.parse(fs.readFileSync(path.join(NEWS, f), "utf8"))).sort((a, b) => a.wk - b.wk) : []);
+// Each panelist's season record on picks so far, and how last week's picks went
+function panelRecords(s, before) {
+  const rec = Object.fromEntries(PANEL.map((p) => [p.name, { w: 0, l: 0, locks_w: 0, locks_l: 0, last_week: [] }]));
+  for (const pv of saved("preview", s.year).filter((a) => a.wk < before)) for (const g of pv.picks || []) {
+    const m = s.matchups.find((x) => x.wk === pv.wk && [x.h, x.a].includes(g.h) && [x.h, x.a].includes(g.a));
+    if (!m || m.win === null || m.live) continue;
+    for (const p of g.panel) { const r = rec[p.panelist]; if (!r) continue; const ok = p.id === m.win;
+      r[ok ? "w" : "l"]++; if (p.confidence === "lock") r[ok ? "locks_w" : "locks_l"]++;
+      if (pv.wk === before - 1) r.last_week.push(`${ok ? "hit" : "missed"} on ${p.pick}${p.confidence === "lock" ? " (lock)" : ""}`); }
+  }
+  return Object.fromEntries(Object.entries(rec).map(([k, r]) => [k, { record: `${r.w}-${r.l}`, locks: `${r.locks_w}-${r.locks_l}`, last_week: r.last_week.length ? r.last_week : undefined }]));
+}
+// All-time head-to-head between two managers, before a given week of a season
+function h2hBefore(a, b, year, wk) {
+  let w = 0, l = 0, last = null;
+  for (const s of D.seasons) for (const m of s.matchups) {
+    if (m.win === null || m.live || s.year > year || (s.year === year && m.wk >= wk)) continue;
+    const x = mgrAt(s.byId[m.h], m.wk), y = mgrAt(s.byId[m.a], m.wk);
+    if (!((x === a && y === b) || (x === b && y === a))) continue;
+    const aWon = (m.win === m.h && x === a) || (m.win === m.a && y === a);
+    if (m.win !== 0) aWon ? w++ : l++;
+    last = `${s.year} week ${m.wk}: ${mgr(aWon ? a : b)} won ${Math.max(m.hp, m.ap)} to ${Math.min(m.hp, m.ap)}`;
+  }
+  return { record: `${mgr(a)} ${w}-${l} ${mgr(b)}`, last_meeting: last };
+}
+// What the panel needs before a week: matchups with records, win chances, Ones to Watch, history, odds
+function previewFacts(s, W) {
+  const rec = recordsThrough(s, W - 1), N = s.odds ? s.odds.weeks[s.odds.weeks.length - 1] : null;
+  const rk = (saved("recap", s.year).filter((a) => a.wk === W - 1)[0] || {}).power_rankings;
+  return {
+    season: s.year, week: W, regular_season_weeks: s.regWeeks,
+    games: s.matchups.filter((m) => m.wk === W && m.a).map((m) => {
+      const t = (id) => ({ team: who(s.byId[id], W), record: `${rec[id].w}-${rec[id].l}`, streak: rec[id].streak, points_for: r1(rec[id].pf),
+        title_odds: N == null ? null : `${Math.round(oddsAt(s, N, id))}%`, playoff_odds: N == null ? null : `${Math.round(oddsAt(s, N, id, "p"))}%` });
+      return { game: `${who(s.byId[m.h], W)} vs ${who(s.byId[m.a], W)}`, home: t(m.h), away: t(m.a),
+        home_win_chance: m.psim != null ? `${Math.round(m.psim * 100)}%` : null,
+        head_to_head: h2hBefore(mgrAt(s.byId[m.h], W), mgrAt(s.byId[m.a], W), s.year, W),
+        ones_to_watch: (m.watch || []).map((x) => ({ player: `${x.n} (${x.pos}, ${x.pro})`, for: who(s.byId[x.id], W), [`win_chance_if_he_scores_${x.boomAt}_or_more`]: `${x.boom}%`, [`if_under_${x.bustAt}`]: `${x.bust}%` })),
+        stacks: (m.stacks || []).map((k) => `${k.qb} and ${k.rec} for ${who(s.byId[k.id], W)}`) };
+    }),
+    last_week_power_rankings: rk ? rk.map((x) => `${x.rank}. ${x.team}`) : undefined,
+    recent_trades: s.trades.filter((t) => t.wk >= W - 1).map((t) => ({ teams: t.teams.map((id) => who(s.byId[id], W)), received: Object.fromEntries(Object.entries(t.got).map(([id, g]) => [who(s.byId[id], W), g.map((x) => x.split("|")[0])])) })),
+    panel: PANEL.map((p) => ({ name: p.name, role: p.role, style: p.style, season_picks: panelRecords(s, W)[p.name] })),
+  };
+}
 function recapFacts(s, W) {
   const rec = recordsThrough(s, W), recBefore = recordsThrough(s, W - 1);
   const games = s.matchups.filter((m) => m.wk === W).map((m) => {
@@ -92,6 +146,7 @@ function recapFacts(s, W) {
     starters_who_did_not_play: starts.filter((x) => x.status),
     standings_after_week: standings, roster_moves_this_week: moves, trades, next_week_matchups: next, next_week_ones_to_watch: watch, trade_watch: tradeWatchFacts(s, W),
     records_before_this_week: Object.fromEntries(s.teams.map((t) => [who(t, W), `${recBefore[t.id].w}-${recBefore[t.id].l}`])),
+    last_week_power_rankings: (() => { const r = (saved("recap", s.year).filter((a) => a.wk === W - 1)[0] || {}).power_rankings; return r ? r.map((x) => `${x.rank}. ${x.team}`) : undefined; })(),
   };
 }
 // How each earlier trade is aging: what the players did this week and since the deal
@@ -254,7 +309,7 @@ Rules:
 - Most social posts come from fans and pundits. Add 1 to 3 posts from the league's verified accounts, written the way real clubs and reporters post, like the news feed in Football Manager:
   - kind "league": Buckaroo Football League (@BuckarooFL), neutral and official: results, milestones, standings.
   - kind "team": a team's official account, named after the team, with its exact team name in the team field and the handle listed for it under Current teams. On-brand and upbeat, like a club: matchday results, player of the week, "welcome to the club" after a trade. Never written as the manager.
-  - kind "reporter": the league's two beat reporters, Dana Whitfield (@DanaWhitfieldBFL), the insider who breaks news, and Marcus Pell (@MarcusPellWrites), the columnist with opinions.
+  - kind "reporter": the league's media panel, all fictional: ${PANEL.map((p) => `${p.name} (${p.handle}), ${p.role.toLowerCase()}: ${p.style}`).join("; ")}.
   - Keep the same name and handle for the same account every time. Set team to "" for every post that isn't kind "team".
 - A player marked "on bye" or "did not play" scored nothing because he didn't play. Say so plainly; never treat it as a bad game or a bust. Starting one is the manager's lineup mistake, not the player's.
 - Running jokes and nicknames are seasoning, not the meal. Use any one bit at most once in a story, leave most of them out of most stories, and never make the same joke the punchline two stories in a row. A manager is more than their running joke: describe what they actually did this week first. Labels count as running jokes too: don't cast anyone as the league's villain, punching bag, or hothead by default. Use a label like that at most once in a story, and leave it out of most stories.
@@ -272,21 +327,27 @@ const SOCIAL = { type: "array", items: { type: "object", additionalProperties: f
   kind: { type: "string", enum: ["fan", "pundit", "reporter", "team", "league"] }, team: str } } };
 const ARTICLE = { title: str, dek: str, body: { type: "array", items: str } };
 const schemas = {
-  recap: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "social", "bios", "trade_watch"], properties: { ...ARTICLE, social: SOCIAL,
+  recap: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "social", "bios", "trade_watch", "power_rankings"], properties: { ...ARTICLE, social: SOCIAL,
     trade_watch: { type: "array", items: { type: "object", additionalProperties: false, required: ["id", "take"], properties: { id: str, take: str } } },
+    power_rankings: { type: "array", items: { type: "object", additionalProperties: false, required: ["rank", "team", "blurb"], properties: { rank: { type: "integer" }, team: str, blurb: str } } },
     bios: { type: "array", items: { type: "object", additionalProperties: false, required: ["team", "bio"], properties: { team: str, bio: str } } } } },
   trade: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "social"], properties: { ...ARTICLE, social: SOCIAL } },
   review: { type: "object", additionalProperties: false, required: ["title", "dek", "body"], properties: ARTICLE },
   draft: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "social"], properties: { ...ARTICLE, social: SOCIAL } },
+  preview: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "picks", "social"], properties: { ...ARTICLE, social: SOCIAL,
+    picks: { type: "array", items: { type: "object", additionalProperties: false, required: ["game", "panel"], properties: { game: str,
+      panel: { type: "array", items: { type: "object", additionalProperties: false, required: ["panelist", "pick", "confidence", "take"], properties: {
+        panelist: { type: "string", enum: PANEL.map((p) => p.name) }, pick: str, confidence: { type: "string", enum: ["lean", "confident", "lock"] }, take: str } } } } } } } },
   history: { type: "object", additionalProperties: false, required: ["title", "dek", "chapters"], properties: { title: str, dek: str,
     chapters: { type: "array", items: { type: "object", additionalProperties: false, required: ["heading", "body"], properties: { heading: str, body: { type: "array", items: str } } } } } },
   profile: { type: "object", additionalProperties: false, required: ["headline", "body"], properties: { headline: str, body: { type: "array", items: str } } },
 };
 const asks = {
-  recap: "Write the weekly recap for this week of the Buckaroo Football League: a headline, a one-sentence dek, and 5 to 8 body paragraphs covering the results (lead with the best storyline), standout and disappointing performances, the standings and title-odds picture, notable moves, and a look ahead to next week (if next_week_ones_to_watch is given, mention a player or two whose game swings a matchup most, or a QB-receiver stack). Then write 6 to 10 social posts reacting to the week, and a fresh 2 to 3 sentence bio for every team in the standings that sums up where its season stands right now (use the exact team name in the team field). Finally, the trade watch: quick 1 to 2 sentence takes on how earlier trades in trade_watch are aging, for the 2 to 5 deals with the most to say this week (a deal that looked lopsided flipping, a player who carried his new team or sat on its bench, a winner pulling further ahead). These are quick hot takes, not articles; say how it looks now compared with before. Use the trade's id from the facts. If there are no trades yet, leave it empty.",
+  recap: "Write the weekly recap for this week of the Buckaroo Football League: a headline, a one-sentence dek, and 5 to 8 body paragraphs covering the results (lead with the best storyline), standout and disappointing performances, the standings and title-odds picture, notable moves, and a look ahead to next week (if next_week_ones_to_watch is given, mention a player or two whose game swings a matchup most, or a QB-receiver stack). Then write 6 to 10 social posts reacting to the week, and a fresh 2 to 3 sentence bio for every team in the standings that sums up where its season stands right now (use the exact team name in the team field). Finally, the trade watch: quick 1 to 2 sentence takes on how earlier trades in trade_watch are aging, for the 2 to 5 deals with the most to say this week (a deal that looked lopsided flipping, a player who carried his new team or sat on its bench, a winner pulling further ahead). These are quick hot takes, not articles; say how it looks now compared with before. Use the trade's id from the facts. If there are no trades yet, leave it empty. Last, the newsroom's power rankings: every team ranked 1 to N (use the exact team name), each with a one or two sentence blurb. They're opinion, not just the standings: weigh record, points, the odds and how the team looks right now, and say why a team rose or fell from last_week_power_rankings when given.",
   trade: "Write a trade reaction story: a headline, a one-sentence dek, and 3 to 5 body paragraphs explaining the deal, what each side got, and who won it on paper (use the title and playoff odds change; if the before odds are missing, use only the odds after and don't call them pre-trade). Then write 3 to 5 social posts reacting to it.",
   profile: "Write a career profile of this manager for their page on the league website, like a club history page in Football Manager: a short headline that captures who they are in this league, and 3 to 5 body paragraphs telling the story of their whole run: each season, the highs and lows, rivalries from the head-to-head records, their habits as a manager (trades, waiver moves), and where they stand right now. Use their nicknames and the lore, as seasoning on top of what actually happened.",
   draft: "Write the draft-day story for this season's Buckaroo Football League draft, as if written the night of the draft, before any games: a headline, a one-sentence dek, and 5 to 7 body paragraphs covering the first round and draft order, each manager's strategy and haul, position runs, keepers, and the picks that look like reaches or values. Judge picks only by where players went relative to each other, each team's roster build and the draft order; you know nothing about how the season has gone since, and don't cite stats or projections that aren't in the facts. Then write 4 to 8 social posts reacting to the draft, including official team accounts welcoming their first-round picks.",
+  preview: "Write the weekly preview for this week of the Buckaroo Football League, like a network's pregame show: a headline, a one-sentence dek, and 3 to 5 body paragraphs on the week's biggest storylines and matchups (win chances, Ones to Watch, head-to-head history, stakes in the standings). Then the panel's picks: for every game in games (use its game text exactly), each of the four panelists picks a winner (the exact team name, without the manager), a confidence (lean, confident or lock; Sal calls plenty of locks, Nina rarely does) and a 1 to 3 sentence take in their own voice. Picks should disagree sometimes, and panelists can needle each other or bring up their season_picks record. Then 5 to 8 social posts: panelists hyping their lock, and fans reacting to a specific panelist's take on their team, annoyed or gloating, the way fanbases do online.",
   history: "Write the official history of the Buckaroo Football League for the front of its trophy room, like a club history in Football Manager or a long-form feature: a headline, a one-sentence dek, and 4 to 6 chapters, each with a short heading and 2 to 4 paragraphs. Tell it as one story across the seasons: how it started, each Buckaroo Bowl and what decided it, dynasties and droughts, rises and collapses, the rivalries the head-to-head records reveal, and the moments people still bring up. End with a short chapter that sets up the present (from since_then, without any of its results). Every number must come from the facts.",
   review: "Write a season-in-review story for this finished season: a headline, a one-sentence dek, and 5 to 7 body paragraphs telling the story of the season from draft to Buckaroo Bowl, including the champion, the last-place finisher, the playoff games, and any notable notes.",
 };
@@ -297,6 +358,14 @@ function pending() {
   const todo = [];
   for (const s of D.seasons.filter((x) => x.done)) if (!have.has(`review-${s.year}`)) todo.push({ id: `review-${s.year}`, type: "review", s, wk: 99, facts: () => reviewFacts(s) });
   const cur = D.seasons.filter((x) => !x.done).slice(-1)[0] || null;
+  // The week's preview: before its games, from Wednesday 6pm ET until Sunday 1pm ET (or on a manual run before games)
+  if (cur) {
+    const W = cur.curWeek, ms = cur.matchups.filter((m) => m.wk === W && m.a);
+    const et = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" })), day = et.getDay(), hr = et.getHours();
+    const inWindow = (day === 3 && hr >= 18) || day === 4 || day === 5 || day === 6 || (day === 0 && hr < 13) || process.env.GITHUB_EVENT_NAME === "workflow_dispatch";
+    const before = ms.length && ms.every((m) => m.live && m.psim != null && !m.hp && !m.ap);
+    if (inWindow && before && !have.has(`preview-${cur.year}-${W}`)) todo.push({ id: `preview-${cur.year}-${W}`, type: "preview", s: cur, wk: W - 0.5, facts: () => previewFacts(cur, W) });
+  }
   if (cur && cur.draft && cur.draft.length && !have.has(`draft-${cur.year}`)) todo.push({ id: `draft-${cur.year}`, type: "draft", s: cur, wk: 0, facts: () => draftFacts(cur) });
   if (cur) {
     const weeks = [...new Set(cur.matchups.map((m) => m.wk))].sort((a, b) => a - b);
@@ -355,6 +424,9 @@ async function write(client, job) {
     id: job.id, type: job.type, year: job.s.year, wk: ["review", "profile", "history"].includes(job.type) ? null : Math.ceil(job.wk), created: new Date().toISOString(),
     title: out.title || out.headline, dek: out.dek || "", body: out.body, chapters: out.chapters, social: out.social || [], teams: job.tr ? job.tr.teams : [], mgr: job.mgr,
     trade_watch: out.trade_watch ? out.trade_watch.filter((t) => (facts.trade_watch || []).some((x) => x.id === t.id)) : undefined,
+    picks: out.picks ? out.picks.map((g) => { const m = job.s.matchups.find((x) => x.wk === Math.ceil(job.wk) && g.game === `${who(job.s.byId[x.h], x.wk)} vs ${who(job.s.byId[x.a], x.wk)}`);
+      return m && { game: g.game, h: m.h, a: m.a, panel: g.panel.map((p) => ({ ...p, id: (teamFor(p.pick) || {}).id })) }; }).filter(Boolean) : undefined,
+    power_rankings: out.power_rankings ? out.power_rankings.map((x) => ({ ...x, id: (teamFor(x.team) || {}).id })).sort((a, b) => a.rank - b.rank) : undefined,
     bios: out.bios ? Object.fromEntries(out.bios.map((b) => [(teamFor(b.team) || {}).id, b.bio]).filter(([id]) => id != null)) : undefined,
     model: res.model, usage: { input: res.usage.input_tokens, output: res.usage.output_tokens },
   };

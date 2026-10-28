@@ -367,6 +367,17 @@ table.compact .team { min-width: 0; }
 .post { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 10px; }
 .post.take { grid-template-columns: minmax(0, 1fr); }
 .history { padding: 20px 22px; margin: 0 0 24px; }
+.pgrid { display: grid; gap: 12px; margin-bottom: 18px; }
+.pgame { padding: 12px 14px; display: grid; gap: 12px; }
+.pgame > .k { font-weight: 700; }
+.ppick { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 10px; align-items: start; }
+.ppick .phead { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.ppick p { margin: 2px 0 0; font-size: 14.5px; line-height: 1.45; }
+.ppick .phead .pill { padding: 1px 6px; font-size: 10px; }
+.ppick.miss p { color: var(--muted); }
+.prank { display: grid; grid-template-columns: 26px 22px minmax(0, 1fr); gap: 8px; align-items: start; }
+.prank .rk { font-weight: 800; font-size: 18px; text-align: right; }
+.prank p { margin: 2px 0 0; font-size: 14.5px; line-height: 1.45; }
 .history .artbody h3 { margin: 18px 0 8px; }
 .watch { padding: 10px 14px 12px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
 .wname, .wname .plink, .pl.watchp .nm > .plink, .pl.watchp .nm > b { color: var(--gold); font-weight: 700; }
@@ -1410,8 +1421,8 @@ const NEWS = ALL_NEWS.filter((a) => a.type !== "profile" && a.type !== "history"
 const HISTORY = ALL_NEWS.find((a) => a.type === "history");
 const PROFILE = {};
 for (const a of ALL_NEWS) if (a.type === "profile" && a.mgr && !PROFILE[a.mgr]) PROFILE[a.mgr] = a;
-const NEWS_TYPE = { recap: "Weekly Recap", trade: "Trade", review: "Season in Review", draft: "Draft" };
-const newsWhen = (a) => (a.type === "review" ? `${a.year} Season` : a.type === "draft" ? `${a.year} Draft` : a.type === "trade" ? `${a.year} · Before Week ${a.wk}` : `${a.year} · Week ${a.wk}`);
+const NEWS_TYPE = { recap: "Weekly Recap", trade: "Trade", review: "Season in Review", draft: "Draft", preview: "Week Preview" };
+const newsWhen = (a) => (a.type === "review" ? `${a.year} Season` : a.type === "draft" ? `${a.year} Draft` : a.type === "preview" ? `${a.year} · Week ${a.wk} Preview` : a.type === "trade" ? `${a.year} · Before Week ${a.wk}` : `${a.year} · Week ${a.wk}`);
 const newsCard = (a, big) => `<button class="box newscard${big ? " big" : ""}" data-go="news-${a.id}"><span class="pill${a.type === "trade" ? " gold" : ""}">${NEWS_TYPE[a.type]}</span><b>${esc(a.title)}</b><span class="dek">${esc(a.dek)}</span><small class="muted">${newsWhen(a)}</small></button>`;
 const avatarHue = (handle) => [...handle].reduce((x, c) => (x * 31 + c.charCodeAt(0)) % 360, 7);
 // Verified accounts (league, team, reporter) get a tick and a label; team accounts use the team's badge
@@ -1431,6 +1442,36 @@ function newsView() {
   return head + `<div class="newsgrid"><div class="newsmain">${newsCard(lead, true)}<div class="newslist">${rest.map((a) => newsCard(a)).join("")}</div></div>
     <aside><div class="box rec"><div class="k">From the Feed</div><div class="feed">${allPosts().slice(0, 6).map((x) => postHtml(x.p, x.a)).join("")}</div><button class="morebtn" data-go="social">Open Social →</button></div></aside></div>${aiNote}`;
 }
+// Previews: the panel's picks for each game, and how each panelist's picks have done this season
+const CONF = { lean: "Lean", confident: "Confident", lock: "🔒 Lock" };
+function panelRecord(year, upToWk) {
+  const r = {};
+  for (const pv of NEWS.filter((x) => x.type === "preview" && x.year === year && x.wk <= upToWk)) for (const g of pv.picks || []) {
+    const m = (S[year] || { matchups: [] }).matchups.find((x) => x.wk === pv.wk && x.h === g.h && x.a === g.a);
+    if (!m || m.win === null || m.live) continue;
+    for (const p of g.panel) { const x = (r[p.panelist] = r[p.panelist] || { w: 0, l: 0, lw: 0, ll: 0 }); const ok = p.id === m.win; x[ok ? "w" : "l"]++; if (p.confidence === "lock") x[ok ? "lw" : "ll"]++; }
+  }
+  return r;
+}
+function picksHtml(a) {
+  if (a.type !== "preview" || !a.picks || !a.picks.length) return "";
+  const s = S[a.year], res = (g) => s && s.matchups.find((x) => x.wk === a.wk && x.h === g.h && x.a === g.a);
+  const games = a.picks.map((g) => { const m = res(g), fin = m && m.win !== null && !m.live;
+    return `<div class="box pgame"><div class="k">${esc(g.game)}${fin ? ` <span class="muted">· Final: ${esc(s.byId[m.win].name)} won</span>` : ""}</div>${g.panel.map((p) => { const t = s && s.byId[p.id], hit = fin ? (p.id === m.win ? " hit" : " miss") : "";
+      return `<div class="ppick${hit}"><span class="avatar" style="--h:${avatarHue(p.panelist)}" aria-hidden="true">${esc(p.panelist.replace("Dr. ", "")[0])}</span><div><div class="phead"><b>${esc(p.panelist)}</b> <span class="pill gold">${CONF[p.confidence] || ""}</span> ${t ? badge(t, 1) : ""} <b>${esc(p.pick)}</b>${hit ? ` <span class="pill${hit === " hit" ? "" : " live"}">${hit === " hit" ? "✓" : "✗"}</span>` : ""}</div><p>${esc(p.take)}</p></div></div>`; }).join("")}</div>`; }).join("");
+  const rec = panelRecord(a.year, a.wk), names = [...new Set(a.picks.flatMap((g) => g.panel.map((p) => p.panelist)))];
+  const table = Object.keys(rec).length ? `<div class="box scroll"><table><thead><tr><th>Panelist</th><th class="n">Picks</th><th class="n">Locks</th></tr></thead><tbody>${names.map((n) => { const x = rec[n] || { w: 0, l: 0, lw: 0, ll: 0 }; return `<tr><td><b>${esc(n)}</b></td><td class="n">${x.w}-${x.l}</td><td class="n">${x.lw}-${x.ll}</td></tr>`; }).join("")}</tbody></table></div>` : "";
+  return `<section><h3>The Panel's Picks</h3><div class="pgrid">${games}</div>${table ? `<h3>Panel Standings, ${a.year}</h3>${table}` : ""}</section>`;
+}
+// Recaps: the newsroom's power rankings, with movement from the week before
+function rankingsHtml(a) {
+  if (a.type !== "recap" || !a.power_rankings || !a.power_rankings.length) return "";
+  const prev = NEWS.find((x) => x.type === "recap" && x.year === a.year && x.wk === a.wk - 1), was = {};
+  for (const x of (prev && prev.power_rankings) || []) was[x.id] = x.rank;
+  const s = S[a.year];
+  return `<section><h3>Power Rankings</h3><div class="box rec"><div class="feed">${a.power_rankings.map((x) => { const d = was[x.id] ? was[x.id] - x.rank : null, t = s && s.byId[x.id];
+    return `<div class="prank"><span class="rk num">${x.rank}</span>${t ? badge(t, 1) : ""}<div><b>${esc(x.team)}</b> ${d == null ? "" : d > 0 ? `<span class="w">▲${d}</span>` : d < 0 ? `<span class="l">▼${-d}</span>` : `<span class="muted">–</span>`}<p>${esc(x.blurb)}</p></div></div>`; }).join("")}</div></div></section>`;
+}
 // Recaps carry quick takes on earlier trades; a trade's page collects every take on it since
 function tradeWatchHtml(a) {
   if (a.type === "recap" && a.trade_watch && a.trade_watch.length) return `<section><h3>Trade Watch</h3><div class="box rec"><div class="feed">${a.trade_watch.map((t) => { const tr = NEWS.find((x) => x.id === t.id); return `<div class="post take"><div class="pbody"><p>${esc(t.take)}</p>${tr ? `<button class="mlink postsrc" data-go="news-${tr.id}">${newsWhen(tr)} · ${esc(tr.title)}</button>` : ""}</div></div>`; }).join("")}</div></div></section>`;
@@ -1445,6 +1486,8 @@ function articleView() {
   return `<article class="article"><button class="pill" data-go="news" style="border:0;cursor:pointer">← All News</button>
     <div class="eyebrow" style="margin-top:18px">${NEWS_TYPE[a.type]} · ${newsWhen(a)}</div><h2 class="headline">${esc(a.title)}</h2><p class="dek big">${esc(a.dek)}</p>
     <div class="artbody">${a.body.map((p) => `<p>${esc(p)}</p>`).join("")}</div>
+    ${picksHtml(a)}
+    ${rankingsHtml(a)}
     ${tradeWatchHtml(a)}
     ${a.social && a.social.length ? `<section><h3>The Reaction</h3><div class="box rec"><div class="feed">${a.social.map((p) => postHtml(p, null, a)).join("")}</div></div></section>` : ""}
     ${aiNote}

@@ -74,7 +74,8 @@ function seasonOdds(s) {
   };
 
   // Points a team loses in week wk to NFL byes: each starter on bye (in its lineup set for week from)
-  // minus the best bench player at his position who isn't also off that week. Needs s.nflByes (current season).
+  // minus the best bench player at his position who isn't also off that week. Needs s.nflByes.
+  // Backtested on 2023-25 games 2-5 weeks out: Brier 0.2497 to 0.2417 (0.2451 to 0.2322 where a bye applied).
   const byeLoss = (id, from, wk) => {
     const byes = s.nflByes; if (!byes) return 0;
     const L = (s.lineups[spans(from)[0]] || {})[id]; if (!L) return 0;

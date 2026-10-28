@@ -278,6 +278,9 @@ for (const f of fs.readdirSync(ARCHIVE).filter((f) => /^\d{4}\.json$/.test(f))) 
   const y = +f.slice(0, 4);
   if (seasons.some((s) => s.year === y)) continue;
   const A = JSON.parse(fs.readFileSync(path.join(ARCHIVE, f), "utf8"));
+  // NFL byes for the odds (saved schedule, by team abbreviation)
+  const nf = path.join(ARCHIVE, `nfl_${y}.json`);
+  if (fs.existsSync(nf)) A.season.nflByes = Object.fromEntries(Object.entries(JSON.parse(fs.readFileSync(nf, "utf8")).byes).filter(([id]) => PRO[id]).map(([id, w]) => [PRO[id], w]));
   seasons.push(A.season);
   for (const k in A.managers) if (!managers[k]) managers[k] = A.managers[k];
   console.log(`${y}: loaded from archive`);
