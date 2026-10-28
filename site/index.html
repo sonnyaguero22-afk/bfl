@@ -388,7 +388,27 @@ table.compact .team { min-width: 0; }
 .award { padding: 12px 14px; }
 .award .k { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
 .award p { margin: 4px 0 0; font-size: 14px; line-height: 1.45; color: var(--muted); }
-table.picture tr.cutline td { border-bottom: 2px solid var(--brass); }
+.picwrap { display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(220px, 1fr); gap: 16px; align-items: start; }
+.bracket { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 22px; align-items: center; }
+.bcol { display: grid; gap: 18px; position: relative; }
+.picwrap .k { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.bgame { display: grid; gap: 4px; position: relative; }
+.bcol:not(.bfinal) .bgame::after { content: ""; position: absolute; right: -12px; top: 25%; bottom: 25%; width: 12px; border: 2px solid var(--line); border-left: 0; border-radius: 0 6px 6px 0; }
+.bteam { display: grid; grid-template-columns: 18px 22px minmax(0, 1fr) auto; gap: 8px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; min-height: 48px; }
+.bteam.in { border-color: var(--win); }
+.bteam.tbd { border-style: dashed; background: transparent; grid-template-columns: 18px minmax(0, 1fr); }
+.bteam small { display: block; font-size: 11.5px; line-height: 1.35; }
+.bteam .sd { font-weight: 800; color: var(--muted); text-align: center; }
+.bteam .bp { font-weight: 700; font-size: 13px; }
+.bteam .pill, .hunt .pill { padding: 0 6px; font-size: 10px; }
+.bchamp { display: grid; gap: 8px; background: var(--surface); border: 1px solid var(--gold); border-radius: 12px; padding: 12px; }
+.bchamp .k { color: var(--gold); }
+.cfav { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 8px; align-items: center; font-size: 13.5px; }
+.huntcol { display: grid; gap: 8px; }
+.hunt { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.hunt small { display: block; font-size: 11.5px; line-height: 1.35; }
+.hunt.out { opacity: .55; }
+@media (max-width: 860px) { .picwrap { grid-template-columns: 1fr; } .bracket { grid-auto-flow: row; } .bcol:not(.bfinal) .bgame::after { display: none; } }
 .watch { padding: 10px 14px 12px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
 .wname, .wname .plink, .pl.watchp .nm > .plink, .pl.watchp .nm > b { color: var(--gold); font-weight: 700; }
 .watch .k { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
@@ -1557,21 +1577,37 @@ function socialView() {
 }
 
 // ---------- Odds page (top menu): one season at a time, newest first ----------
-// Playoff Picture: seeds, the bubble, what next week's game is worth, and clinching scenarios late in the season
+// Playoff Picture: the bracket if the season ended today (seeds, projected matchups, what next week is worth,
+// clinches), with the teams still chasing a spot beside it
 function pictureHtml(s) {
   const P = s.odds && s.odds.picture;
   if (!P || s.done) return "";
   const po = s.playoffTeams, rows = s.standings, cut = rows[po - 1], nm = (id) => esc(s.byId[id].name);
-  const gb = (t) => { const d = ((cut.w - t.w) + (t.l - cut.l)) / 2; return t === cut ? "–" : d <= 0 ? "–" : (d % 1 ? d.toFixed(1) : d); };
+  const last = (id, k) => { const a = s.odds.t[id][k]; return a[a.length - 1]; };
   const pct = (v) => (v == null ? "—" : pct1(v));
-  const line = (id) => { const st = P.status && P.status[id], sd = P.seed && P.seed[id] ? ` <span class="pill gold">No. 1 seed</span>` : ""; if (st === "clinched") return `<span class="pill w">Clinched</span>${sd}`; if (st === "eliminated") return `<span class="pill l">Eliminated</span>`;
-    return ((P.scenarios || {})[id] || []).map((x) => `${x.clinches ? "Clinches" : "Eliminated"} with ${x.with.map((w) => w.winner === +id ? "a win" : w.loser === +id ? "a loss" : `${nm(w.winner)} over ${nm(w.loser)}`).join(" and ")}`).join("; "); };
-  const tr = (t, i) => { const x = P.teams[t.id] || { ifWin: {}, ifLose: {} }, swing = x.ifWin.p != null && x.ifLose.p != null ? x.ifWin.p - x.ifLose.p : null;
-    return `<tr${i === po - 1 ? ' class="cutline"' : ""}><td class="num muted">${i < po ? i + 1 : ""}</td><td>${badge(t, 1)} <b>${esc(t.name)}</b> <span class="muted">${mgrName(t.mgr)}</span></td><td class="n">${t.w}-${t.l}${t.t ? "-" + t.t : ""}</td><td class="n">${gb(t)}</td><td class="n">${pct(s.odds.t[t.id].p[s.odds.t[t.id].p.length - 1])}</td><td class="n">${pct(x.ifWin.p)}</td><td class="n">${pct(x.ifLose.p)}</td><td class="n">${swing == null ? "—" : `<b>${Math.round(swing)}</b>`}</td><td class="muted" style="white-space:normal;min-width:160px">${line(t.id)}</td></tr>`; };
-  return `<section style="margin:0 0 28px"><h3>Playoff Picture <span class="muted" style="font-weight:500;font-size:14px">· after Week ${P.week}</span></h3>
-    <div class="box scroll"><table class="picture"><thead><tr><th>Seed</th><th>Team</th><th class="n">Record</th><th class="n">GB</th><th class="n">Playoffs</th><th class="n">If win</th><th class="n">If lose</th><th class="n">At stake</th><th>Scenarios</th></tr></thead>
-    <tbody>${rows.map(tr).join("")}</tbody></table></div>
-    <p class="note">The top ${po} make the playoffs; ties go to head-to-head, then points for. "If win" and "If lose" are playoff odds depending on next week's game, and "At stake" is the difference. Clinches, eliminations and scenarios are exact: they show as soon as one is mathematically possible. Until the last three weeks they never rely on a tiebreaker; in the last three weeks every possible result is checked, and ones decided on points assume each team keeps its current pace.</p></section>`;
+  const gb = (t) => { const d = ((cut.w - t.w) + (t.l - cut.l)) / 2; return d <= 0 ? "" : `${d % 1 ? d.toFixed(1) : d} GB`; };
+  const rec = (t) => `${t.w}-${t.l}${t.t ? "-" + t.t : ""}`;
+  const scen = (id) => ((P.scenarios || {})[id] || []).map((x) => `${x.clinches ? "Clinches" : "Eliminated"} with ${x.with.map((w) => w.winner === +id ? "a win" : w.loser === +id ? "a loss" : `${nm(w.winner)} over ${nm(w.loser)}`).join(" and ")}`).join(" · ");
+  const tags = (id) => { const st = (P.status || {})[id]; return `${st === "clinched" ? `<span class="pill w">Clinched</span>` : st === "eliminated" ? `<span class="pill l">Eliminated</span>` : ""}${(P.seed || {})[id] ? ` <span class="pill gold">No. 1 seed</span>` : ""}`; };
+  const stake = (id) => { const x = P.teams[id]; return x && x.ifWin.p != null && x.ifLose.p != null ? `${pct(x.ifWin.p)} with a win · ${pct(x.ifLose.p)} with a loss` : ""; };
+  // A projected playoff game: long-run strengths, played with the wider spread for games weeks away
+  const beats = (a, b) => Phi((last(a.id, "far") - last(b.id, "far")) / ((s.odds.farSd || 40) * Math.SQRT2));
+  const card = (t, seed, p) => `<div class="bteam${(P.status || {})[t.id] === "clinched" ? " in" : ""}"><span class="sd num">${seed}</span>${badge(t, 1)}<div><b>${esc(t.name)}</b> ${tags(t.id)}<small class="muted">${mgrName(t.mgr)} · ${rec(t)}</small><small class="muted">Playoffs ${pct(last(t.id, "p"))} · Title ${pct(last(t.id, "c"))}</small>${scen(t.id) ? `<small>${scen(t.id)}</small>` : ""}</div>${p != null ? `<span class="bp num">${Math.round(p * 100)}%</span>` : ""}</div>`;
+  const game = (a, b, sa, sb) => { const p = beats(a, b); return `<div class="bgame">${card(a, sa, p)}${card(b, sb, 1 - p)}</div>`; };
+  const tbd = (label) => `<div class="bteam tbd"><span class="sd"></span><div><small class="muted">${label}</small></div></div>`;
+  const sd = rows.slice(0, po);
+  let r1 = "", fin = "";
+  if (po >= 4) { r1 = game(sd[0], sd[3], 1, 4) + game(sd[1], sd[2], 2, 3); fin = `<div class="bgame">${tbd("Winner of 1 vs 4")}${tbd("Winner of 2 vs 3")}</div>`; }
+  else if (po === 3) { r1 = `<div class="bgame bye">${card(sd[0], 1)}<div class="bteam tbd"><span class="sd"></span><div><small class="muted">First-round bye</small></div></div></div>` + game(sd[1], sd[2], 2, 3); fin = `<div class="bgame">${card(sd[0], 1)}${tbd("Winner of 2 vs 3")}</div>`; }
+  else { fin = game(sd[0], sd[1], 1, 2); }
+  const fav = [...s.teams].sort((a, b) => last(b.id, "c") - last(a.id, "c")).slice(0, 3);
+  const champ = `<div class="bchamp"><div class="k">🏆 Buckaroo Bowl ${roman(s.year - D.firstYear + 1)}</div>${fav.map((t) => `<div class="cfav">${badge(t, 1)}<span>${esc(t.name)}</span><b class="num">${pct(last(t.id, "c"))}</b></div>`).join("")}<small class="muted">Title favorites</small></div>`;
+  const hunt = rows.slice(po).map((t) => { const st = (P.status || {})[t.id];
+    return `<div class="hunt${st === "eliminated" ? " out" : ""}">${badge(t, 1)}<div><b>${esc(t.name)}</b> ${tags(t.id)} <span class="muted">${rec(t)}${gb(t) ? ` · ${gb(t)}` : ""}</span><small class="muted">Playoffs ${pct(last(t.id, "p"))}${stake(t.id) ? ` · ${stake(t.id)}` : ""}</small>${scen(t.id) ? `<small>${scen(t.id)}</small>` : ""}</div></div>`; }).join("");
+  return `<section style="margin:0 0 28px"><h3>Playoff Picture <span class="muted" style="font-weight:500;font-size:14px">· if the season ended after Week ${P.week}</span></h3>
+    <div class="picwrap"><div class="bracket">${r1 ? `<div class="bcol"><div class="k">${po >= 4 ? "Semifinals" : "Round 1"}</div>${r1}</div>` : ""}<div class="bcol bfinal"><div class="k">Buckaroo Bowl</div>${fin}</div>${champ}</div>
+    <div class="huntcol"><div class="k">In the Hunt</div>${hunt || `<small class="muted">Everyone's in.</small>`}</div></div>
+    <p class="note">Seeds use the league's tiebreakers (head-to-head, then points for). The percentage beside a team in a game is its projected chance to win that game. "With a win" and "with a loss" are playoff odds depending on next week's result. Clinches, eliminations and scenarios are exact and show as soon as one is mathematically possible; until the last three weeks they never rely on a tiebreaker.</p></section>`;
 }
 function oddsView() {
   const ys = years.filter((y) => S[y] && S[y].odds).reverse();
