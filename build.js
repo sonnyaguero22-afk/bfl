@@ -314,6 +314,17 @@ for (const s of seasons) {
   for (const mp in s.periods || {}) for (const sp of s.periods[mp]) s.sp2mp[sp] = +mp;
   s.odds = seasonOdds(s);
   delete s.played; delete s.sp2mp;
+  // Odds as they stood when each week ended, frozen (history/odds_<year>.json, saved by GitHub).
+  // The newest week's odds keep changing with lineups and trades; this keeps a "before" to compare with.
+  if (!s.done && s.odds) {
+    const f = path.join(HISTORY, `odds_${s.year}.json`), snap = fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, "utf8")) : {};
+    let changed = false;
+    // Only the newest week, and only before any trade for the next week, so a "before" never includes the trade
+    const newest = s.odds.weeks[s.odds.weeks.length - 1];
+    s.odds.weeks.forEach((N, i) => { if (N > 0 && N === newest && !snap[N] && !s.trades.some((t) => t.wk === N + 1)) { snap[N] = Object.fromEntries(s.teams.map((t) => [t.id, { c: s.odds.t[t.id].c[i], p: s.odds.t[t.id].p[i] }])); changed = true; } });
+    if (changed && process.env.GITHUB_ACTIONS === "true") { fs.mkdirSync(HISTORY, { recursive: true }); fs.writeFileSync(f, JSON.stringify(snap)); }
+    s.oddsAtWeekEnd = snap;
+  }
 }
 
 // This week's games, simulated player by player (see players.js): win chance and the Ones to Watch

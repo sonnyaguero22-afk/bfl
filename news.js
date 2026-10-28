@@ -118,6 +118,15 @@ function tradeWatchFacts(s, W) {
     })),
   }));
 }
+// Title odds before a trade (frozen when the week before it ended) and after (with the new rosters)
+function tradeOdds(s, tr, id) {
+  const pct = (v) => (v == null ? null : `${Math.round(v)}%`);
+  const frozen = ((s.oddsAtWeekEnd || {})[tr.wk - 1] || {})[id];
+  const latest = s.odds ? s.odds.weeks[s.odds.weeks.length - 1] : null;
+  // Finished-week odds already include a trade made before the next week; mid-week, the newest odds are "after"
+  const after = oddsAt(s, tr.wk, id) ?? (latest === tr.wk - 1 ? oddsAt(s, latest, id) : null);
+  return { title_odds_before: frozen ? pct(frozen.c) : null, title_odds_after: pct(after), playoff_odds_before: frozen ? pct(frozen.p) : null, playoff_odds_after: pct(oddsAt(s, tr.wk, id, "p") ?? (latest === tr.wk - 1 ? oddsAt(s, latest, id, "p") : null)) };
+}
 function tradeFacts(s, tr) {
   const pointsFor = (n) => { let pts = 0, gp = 0; for (const wk in s.lineups) for (const id in s.lineups[wk]) for (const p of s.lineups[wk][id]) if (p.n === n && +wk < tr.wk) { pts += p.pts; gp++; } return { season_points_before_trade: r1(pts), weeks_on_a_roster: gp }; };
   return {
@@ -125,8 +134,7 @@ function tradeFacts(s, tr) {
     sides: tr.teams.map((id) => ({
       team: who(s.byId[id], tr.wk),
       received: (tr.got[id] || []).map((x) => { const [n, pos] = x.split("|"); return { player: n, position: pos, ...pointsFor(n) }; }),
-      title_odds_before: oddsAt(s, tr.wk - 1, id) == null ? null : `${Math.round(oddsAt(s, tr.wk - 1, id))}%`,
-      title_odds_after: oddsAt(s, tr.wk, id) == null ? null : `${Math.round(oddsAt(s, tr.wk, id))}%`,
+      ...tradeOdds(s, tr, id),
     })),
   };
 }
@@ -276,7 +284,7 @@ const schemas = {
 };
 const asks = {
   recap: "Write the weekly recap for this week of the Buckaroo Football League: a headline, a one-sentence dek, and 5 to 8 body paragraphs covering the results (lead with the best storyline), standout and disappointing performances, the standings and title-odds picture, notable moves, and a look ahead to next week (if next_week_ones_to_watch is given, mention a player or two whose game swings a matchup most, or a QB-receiver stack). Then write 6 to 10 social posts reacting to the week, and a fresh 2 to 3 sentence bio for every team in the standings that sums up where its season stands right now (use the exact team name in the team field). Finally, the trade watch: quick 1 to 2 sentence takes on how earlier trades in trade_watch are aging, for the 2 to 5 deals with the most to say this week (a deal that looked lopsided flipping, a player who carried his new team or sat on its bench, a winner pulling further ahead). These are quick hot takes, not articles; say how it looks now compared with before. Use the trade's id from the facts. If there are no trades yet, leave it empty.",
-  trade: "Write a trade reaction story: a headline, a one-sentence dek, and 3 to 5 body paragraphs explaining the deal, what each side got, and who won it on paper (use the title odds change). Then write 3 to 5 social posts reacting to it.",
+  trade: "Write a trade reaction story: a headline, a one-sentence dek, and 3 to 5 body paragraphs explaining the deal, what each side got, and who won it on paper (use the title and playoff odds change; if the before odds are missing, use only the odds after and don't call them pre-trade). Then write 3 to 5 social posts reacting to it.",
   profile: "Write a career profile of this manager for their page on the league website, like a club history page in Football Manager: a short headline that captures who they are in this league, and 3 to 5 body paragraphs telling the story of their whole run: each season, the highs and lows, rivalries from the head-to-head records, their habits as a manager (trades, waiver moves), and where they stand right now. Use their nicknames and the lore, as seasoning on top of what actually happened.",
   draft: "Write the draft-day story for this season's Buckaroo Football League draft, as if written the night of the draft, before any games: a headline, a one-sentence dek, and 5 to 7 body paragraphs covering the first round and draft order, each manager's strategy and haul, position runs, keepers, and the picks that look like reaches or values. Judge picks only by where players went relative to each other, each team's roster build and the draft order; you know nothing about how the season has gone since, and don't cite stats or projections that aren't in the facts. Then write 4 to 8 social posts reacting to the draft, including official team accounts welcoming their first-round picks.",
   history: "Write the official history of the Buckaroo Football League for the front of its trophy room, like a club history in Football Manager or a long-form feature: a headline, a one-sentence dek, and 4 to 6 chapters, each with a short heading and 2 to 4 paragraphs. Tell it as one story across the seasons: how it started, each Buckaroo Bowl and what decided it, dynasties and droughts, rises and collapses, the rivalries the head-to-head records reveal, and the moments people still bring up. End with a short chapter that sets up the present (from since_then, without any of its results). Every number must come from the facts.",
