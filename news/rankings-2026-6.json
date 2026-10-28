@@ -1,0 +1,70 @@
+{
+ "id": "rankings-2026-6",
+ "type": "rankings",
+ "year": 2026,
+ "wk": 6,
+ "created": "2026-10-28T20:48:47.790Z",
+ "title": "Week 6 Power Rankings: The Hulk keeps smashing, and Philly's trade cashes in on day one",
+ "dek": "No Banner only HULK hangs 134.4 on the No. 3 team, Team Pillbert wins the week's big trade and its fifth straight game, and the middle of the league gets a little more crowded.",
+ "body": [
+  "Week 6 was a sorting week at the top. No Banner only HULK hosted The Horse is Hea in the best matchup on the board and turned it into a 134.4 to 102.58 statement, pushing Ramon's season scoring to 829.4. That is nearly 100 points clear of anyone else. Meanwhile Team Pillbert quietly ran its win streak to five, and the playoff odds now have the top two teams at 97 and 98 percent with eight weeks still to play.",
+  "The other headline was the trade between Sonny and Alan. Sonny sent Chuba Hubbard and DeVonta Smith to Team Pillbert for George Pickens and Ollie Gordon II, and Hubbard promptly led Philly's lineup with 18.6 in a win while Sonny's title odds slid from 22 to 14 percent. One week doesn't settle a trade, but it sure sets the tone. Down the table, Dawgs and Habibsters both won and climbed in the model, The fumblers dropped a third straight, and the bottom four are bunched together trying to keep pace before it gets late."
+ ],
+ "social": [],
+ "teams": [],
+ "power_rankings": [
+  {
+   "rank": 1,
+   "team": "No Banner only HULK",
+   "blurb": "Kenneth Walker III put up 26.9 and the Hulk put up 134.4, the best score of the week by a mile, against the team that came in ranked third. At 5-1 with a league-best 829.4 points, Brucie's team isn't winning close games on luck. It's winning by running everybody over. Next up is Counting or not Counting GV, which looks like a trap game only in theory.",
+   "id": 7
+  },
+  {
+   "rank": 2,
+   "team": "Team Pillbert",
+   "blurb": "Five straight wins, a 107.06 to 85.5 handling of The fumblers, and a trade that paid off before the ink dried, with Chuba Hubbard leading the team at 18.6. Philly's title odds jumped from 16 to 27 percent, second only to the Hulk, and the 731.6 points rank second in the league. Holding steady at No. 2 because the gap to the top is about scoring, not record. Ghostu-Spider SZN is next.",
+   "id": 4
+  },
+  {
+   "rank": 3,
+   "team": "The Horse is Hea",
+   "blurb": "James Cook III did his part with 22.8, but 102.58 wasn't going to beat the Hulk on a 134-point day. The bigger worry is the week around it: Sonny traded away the guy who led the opponent's lineup in a win elsewhere, and the playoff odds fell from 90 to 72 percent. Still 4-2 with the third-most points, so he stays at No. 3, but the Pickens and Gordon side of that deal needs to show up. A home date with The fumblers is a good place to start.",
+   "id": 1
+  },
+  {
+   "rank": 4,
+   "team": "Dawgs",
+   "blurb": "Malik Nabers went for 22.5 and the Dawgs beat Ghostu-Spider SZN 105.6 to 83.44 to snap out of it. The record says 2-4, but the model likes Kai's team more than anyone in the middle of the pack: 42 percent playoff odds and 11 percent title odds, both up from last week and both better than the 3-3 team below them. Up one spot on form and upside. Next: a 2-4 showdown with Habibsters, where somebody climbs and somebody falls.",
+   "id": 5
+  },
+  {
+   "rank": 5,
+   "team": "The fumblers",
+   "blurb": "Jonathan Taylor gave Randy 20.1, and the rest of the lineup gave him enough to finish at 85.5, the third straight loss. The playoff odds crashed from 59 to 37 percent in one week, and 643.8 points ranks fifth, so the 3-3 record is honest about this team. Down one spot, below a Dawgs team with a worse record but a better outlook. The Horse is Hea is next, which is either a get-right game or the start of real trouble.",
+   "id": 2
+  },
+  {
+   "rank": 6,
+   "team": "Habibsters",
+   "blurb": "Drake Maye threw in 23.8 and Habib held off Counting or not Counting GV 100.5 to 92.72 for a much-needed win. Habibsters rank fourth in the league in points at 677.9 and still sit at 2-4, which is about as unlucky as fantasy football gets. Playoff odds nearly doubled from 16 to 30 percent. Holding at No. 6, with the Dawgs matchup next deciding whether this was a turn or a blip.",
+   "id": 6
+  },
+  {
+   "rank": 7,
+   "team": "Ghostu-Spider SZN",
+   "blurb": "Jordan Love was the bright spot with 20.24, but Z² finished at 83.44 against the Dawgs, the lowest score of the week, for a second straight loss. The 572.5 points rank seventh, and the scoring has to come up before the record can. Playoff odds barely moved at 22 percent, so the door is still open at 2-4. The catch: next up is the five-game win streak of Team Pillbert.",
+   "id": 8
+  },
+  {
+   "rank": 8,
+   "team": "Counting or not Counting GV",
+   "blurb": "Bhayshul Tuten went for 22.7 and JMoney lost by just 7.78 to Habibsters, which counts as progress for a team at 1-5 with the fewest points in the league. The playoff odds are down to 2 percent, so the goal now is spoiling somebody else's season. That chance comes right away against No Banner only HULK. Stays at No. 8 until the scoring catches up.",
+   "id": 3
+  }
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 2721
+ }
+}

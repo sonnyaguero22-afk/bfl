@@ -1,0 +1,70 @@
+{
+ "id": "rankings-2026-4",
+ "type": "rankings",
+ "year": 2026,
+ "wk": 4,
+ "created": "2026-10-28T20:47:30.671Z",
+ "title": "Power Rankings, Week 4: Philly's Trade Machine Topples the Giant",
+ "dek": "Team Pillbert works the phones, beats the league's highest-scoring roster, and climbs to the top of a four-way logjam at 3-1.",
+ "body": [
+  "Four teams sit at 3-1 after Week 4, and three of them lost on Sunday, so this week's rankings came down to who looks most dangerous right now. That team is Team Pillbert. Alan made three trades, picked up Javonte Williams from Randy, and watched Williams drop 28.8 points in a 125.42-116.72 win over No Banner only HULK, the No. 1 team. The model noticed too: Pillbert's title odds jumped from 12% to 19%.",
+  "Below the logjam, the 1-3 teams pushed back. Habibsters posted the week's top score with 140.1, Dawgs nearly quintupled their title odds, and Ghostu-Spider SZN knocked off The Horse is Hea by 25. Meanwhile, Randy made a trade, which is its own headline, and then got buried by 43. With ten weeks left, almost everybody still has a pulse except one team, and even it got some new parts."
+ ],
+ "social": [],
+ "teams": [],
+ "power_rankings": [
+  {
+   "rank": 1,
+   "team": "Team Pillbert",
+   "blurb": "Philly spent the week on the phones. He landed Javonte Williams from Randy, flipped three pieces' worth of Jordan's patience into Ashton Jeanty, then packaged Jeanty and Davante Adams to Mekhi for Justin Jefferson. Williams paid off right away with 28.8 in a win over the league's top scorer, making it three straight wins and the No. 2 point total in the league. Up from No. 4, and next comes Kai's Dawgs, who now roster two of the guys Alan just shipped out.",
+   "id": 4
+  },
+  {
+   "rank": 2,
+   "team": "No Banner only HULK",
+   "blurb": "Brucie's crew still leads the league in points by a mile, 561, which is 80 clear of anyone else, and Kenneth Walker III went for 30.4. Scoring 116.72 and losing is mostly bad luck, but a loss to the team right behind you costs you the top spot. Playoff odds slid from 94% to 73%, and Rashee Rice arrives from Sonny's team to help. Down from No. 1, and next up is a date with Randy's reeling fumblers.",
+   "id": 7
+  },
+  {
+   "rank": 3,
+   "team": "The fumblers",
+   "blurb": "Randy actually made a trade, sending Javonte Williams to Alan for Stefon Diggs, and then watched Williams post 28.8 in a Pillbert uniform while The fumblers lost 140.1-96.88. That's the kind of week that confirms every reason he never trades. Jonathan Taylor's 22.2 was the lone bright spot, and the model still gives this team the league's best title odds at 20%. They hold at No. 3, but HULK is next, and that offense won't lose two in a row quietly.",
+   "id": 2
+  },
+  {
+   "rank": 4,
+   "team": "The Horse is Hea",
+   "blurb": "Sonny's crew managed just 95.1 points and lost by 25 to a 1-2 team, with Patrick Mahomes leading the way at a modest 17. Playoff odds fell from 89% to 67%, the steepest drop of any team. He bought Chuba Hubbard from Ramon for Rashee Rice, a running back bet that needs to pay off soon. Down from No. 2, with a hungry Habibsters team up next.",
+   "id": 1
+  },
+  {
+   "rank": 5,
+   "team": "Ghostu-Spider SZN",
+   "blurb": "Tetairoa McMillan turned in the individual performance of the week, 38.2 points, and Z² knocked off the No. 2 team 120.88-95.1 to get to .500. The record is real, even if the season-long scoring (seventh in the league) says there's work to do. She holds at No. 5 because she beat a contender while the teams below her beat the fumblers and the winless team. Next is a household showdown with JMoney's 0-4 squad, which is a game she should win, though it may cost her at dinner.",
+   "id": 8
+  },
+  {
+   "rank": 6,
+   "team": "Habibsters",
+   "blurb": "Habib finally got a break: CeeDee Lamb dropped 32.8 and the two-time champs hung 140.1 on Randy, the top score of the week. The 1-3 record hides a team that ranks fourth in points, and the model now sees it, too, pushing playoff odds from 18% to 41%. Up from No. 7. Knock off Sonny next week and the early-season bad luck starts to look like a fluke.",
+   "id": 6
+  },
+  {
+   "rank": 7,
+   "team": "Dawgs",
+   "blurb": "Kyren Williams went for 31.7 and Kai's Dawgs got off the mat with a 107.54-90.22 win, then added Davante Adams and Ashton Jeanty in the Jefferson deal with Alan. The model loves the new look: title odds jumped from 2% to 10%, the biggest gain in the league. They slip a spot only because Habibsters' 140-point performance leapfrogged them. Next up is Pillbert, which means facing Jefferson the same week Jeanty and Adams debut against the guy who traded them.",
+   "id": 5
+  },
+  {
+   "rank": 8,
+   "team": "Counting or not Counting GV",
+   "blurb": "JMoney is 0-4 and last in points, and Joe Burrow's 23.72 in a 90.22-107.54 loss to Dawgs wasn't enough to change that. Jordan traded Ashton Jeanty to Alan for Isaiah Likely, Emeka Egbuka and Denzel Boston, betting on depth over one star, and Jeanty was traded again almost immediately. Playoff odds are down to 6%, so the new pieces need to deliver now. Next is Zoe, and nothing would turn a season around quite like spoiling her week.",
+   "id": 3
+  }
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 3541
+ }
+}

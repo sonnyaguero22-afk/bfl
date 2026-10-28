@@ -1,0 +1,70 @@
+{
+ "id": "rankings-2026-7",
+ "type": "rankings",
+ "year": 2026,
+ "wk": 7,
+ "created": "2026-10-28T20:49:18.771Z",
+ "title": "Power Rankings, Week 7: The Horse is Hea Gallops Into the Top Two While Philly Trips Over a Rookie",
+ "dek": "Sonny drops the week's biggest number and makes the week's biggest trade, Habib finally gets a pulse, and Zoe hands Team Pillbert a 1.74-point reality check.",
+ "body": [
+  "Week 7 shook up the middle of the board more than the top. The Horse is Hea put up 146.72, the best score of the week by a wide margin, then went shopping with Mekhi for Ashton Jeanty and Christian Watson. The model noticed: Sonny's title odds more than doubled, from 14% to 29%, which is now the best mark in the league. Meanwhile Team Pillbert, last week's No. 2, lost by less than two points to a 3-4 team and watched its playoff odds slide from 97% to 79%.",
+  "No Banner only HULK keeps the top spot on record and résumé, but this was a quieter 98-point win than usual, and Ramon's title odds actually dipped. Below that, Habibsters climb on a two-game streak, Dawgs fall after a loss and a roster shakeup, and The fumblers hold steady mostly because the teams around them couldn't make a move. Next week's headliner writes itself: The Horse is Hea vs. Team Pillbert, No. 2 vs. No. 3, with both sitting at 5-2."
+ ],
+ "social": [],
+ "teams": [],
+ "power_rankings": [
+  {
+   "rank": 1,
+   "team": "No Banner only HULK",
+   "blurb": "Brucie stays on top at 6-1 with a league-best 927.4 points, and a 98-60.88 win over JMoney pushes the streak to three. It wasn't a fireworks show, with Christian McCaffrey leading the way at 19, and the title odds slipped from 31% to 25% as Sonny's surged. Still, 98% playoff odds and the No. 1 offense make this an easy call. Next up is Dawgs, who just reshuffled their whole backfield.",
+   "id": 7
+  },
+  {
+   "rank": 2,
+   "team": "The Horse is Hea",
+   "blurb": "Up from No. 3 after the most complete week anyone has had in a while: 146.72 points, a 38-point win over Randy, and Jaxon Smith-Njigba leading the way with 26.8. Sonny then flipped James Cook III and Jameson Williams to Dawgs for Ashton Jeanty and Christian Watson, so the guy who scored Mekhi's most points this week now plays for Sonny. Title odds jumped from 14% to 29%, the best in the league, and playoff odds sit at 93%. Team Pillbert comes to town next with first place on the line.",
+   "id": 1
+  },
+  {
+   "rank": 3,
+   "team": "Team Pillbert",
+   "blurb": "Philly drops from No. 2 after an 87.96-86.22 loss to Ghostu-Spider SZN, the kind of game you replay in your head all week. Javonte Williams did his part with 21.5, but 86 points against a rookie leaves no room for error, and the model was not forgiving: title odds fell from 27% to 12%. At 5-2 with the No. 3 offense, the floor is still high. A showdown with The Horse is Hea is the perfect place to prove last week was a fluke, or to confirm it wasn't.",
+   "id": 4
+  },
+  {
+   "rank": 4,
+   "team": "Habibsters",
+   "blurb": "The two-time champ has a pulse. Kaushal beat Dawgs 119.84-93.58 behind Drake Maye's 27.44, won his second straight, and moved up from No. 6. The record says 3-4, but the No. 4 offense and title odds that doubled from 7% to 15% say this team is better than its luck has been. Ghostu-Spider SZN is next, and Habib needs to keep stacking wins to get above .500.",
+   "id": 6
+  },
+  {
+   "rank": 5,
+   "team": "The fumblers",
+   "blurb": "Randy holds at No. 5, but the losing streak is now four after a 146.72-108.52 drubbing from The Horse is Hea. Caleb Williams put up 22.12, so the Bears quarterback at least showed up for his most loyal fan. Playoff odds slipped from 37% to 33%. The good news is a date with the 1-6 Counting or not Counting GV, which is about as clear a get-right game as this league offers.",
+   "id": 2
+  },
+  {
+   "rank": 6,
+   "team": "Dawgs",
+   "blurb": "Kai falls two spots after a 119.84-93.58 loss to Habibsters dropped him to 2-5 and his playoff odds from 42% to 29%. Ashton Jeanty led the team with 17.6, and then Mekhi sent him and Christian Watson to Sonny for James Cook III and Jameson Williams. It's a bold swing for a team that needs wins right now, and we'll find out fast whether it pays off. The first test is the hardest one possible: No Banner only HULK.",
+   "id": 5
+  },
+  {
+   "rank": 7,
+   "team": "Ghostu-Spider SZN",
+   "blurb": "Z² took down the No. 2 team in the rankings, 87.96-86.22, and nobody in this league will let Philly forget it. Jordan Love led the way with 16.96, a Packers quarterback carrying the day in a league full of Bears fans. She stays at No. 7 because the offense ranks seventh in points and the playoff odds actually slipped from 22% to 19%, but at 3-4 she's right in the mix. Habibsters are next, and another upset would make the whole league pay attention.",
+   "id": 8
+  },
+  {
+   "rank": 8,
+   "team": "Counting or not Counting GV",
+   "blurb": "JMoney stays at No. 8 after a 98-60.88 loss to the league leader. Joe Burrow scored 28.88 of those points, so the rest of the lineup combined for exactly 32, which tells you where the problem is. At 1-6 with the fewest points in the league and 1% playoff odds, the goal now is to play spoiler. Randy's four-game skid makes him the perfect target next week.",
+   "id": 3
+  }
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 3031
+ }
+}

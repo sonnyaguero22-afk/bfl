@@ -1,0 +1,70 @@
+{
+ "id": "rankings-2026-1",
+ "type": "rankings",
+ "year": 2026,
+ "wk": 1,
+ "created": "2026-10-28T20:45:56.491Z",
+ "title": "Power Rankings, Week 1: Brucie Hits the Gas, Randy Rides His Bears, and the Two-Time Champ Wakes Up in Sixth",
+ "dek": "One week of football in the new eight-team Buckaroo Football League produced a 177-point opening statement, a rookie upset of a two-time champion, and a race to the bottom nobody wanted to win.",
+ "body": [
+  "Week 1 rankings are built on wet cement, but No Banner only HULK poured a 177.86 into it and dared everyone to look away. Ramon's 79.5-point demolition of Dawgs was the loudest result of the opener, and Randy's 146.16 against Counting or not Counting GV was a close second. Those two teams sit in a tier of their own after one Sunday, and the title odds agree: The fumblers jumped to 25% and HULK to 23%, with nobody else above 13%.",
+  "The other big mover was Ghostu-Spider SZN, as Zoe opened her first fantasy season by beating Kaushal, the only manager with two Buckaroo Bowl rings. That loss cut Habibsters' playoff odds from 66% to 38%, the steepest drop in the league. Down at the bottom, JMoney's 75.96 was the week's lowest score, and it lands Counting or not Counting GV in the cellar before the leaves have changed."
+ ],
+ "social": [],
+ "teams": [],
+ "power_rankings": [
+  {
+   "rank": 1,
+   "team": "No Banner only HULK",
+   "blurb": "Brucie posted 177.86 points, the best score in the league by more than 30, and Josh Allen led the way with 35.66. Yes, the Chicago kid who became a Bills fan just got carried by the Bills quarterback, and nobody in the group chat is going to let that slide. The fumblers have the slightly better title odds, but nobody put up a performance like this one. Next up is a 1-vs-3 showdown with Ghostu-Spider SZN, and the rest of the league will be quietly rooting for Z².",
+   "id": 7
+  },
+  {
+   "rank": 2,
+   "team": "The fumblers",
+   "blurb": "Randy put up 146.16 and beat JMoney by 70.2, with Caleb Williams leading the way at 37.26. A Bears quarterback winning a week for the league's most devoted Bears fan is the most Randy outcome imaginable, and he will now never part with Caleb, not that he was going to. The model loves it, too: title odds jumped from 16% to 25%, the best in the league. Dawgs are next, and Kai will be looking to bounce back against him.",
+   "id": 2
+  },
+  {
+   "rank": 3,
+   "team": "Ghostu-Spider SZN",
+   "blurb": "Zoe's first fantasy matchup came against a two-time Buckaroo Bowl champion, and she beat him 129.56 to 108.6. Bijan Robinson led the team with 27.3, and the 129.56 was the third-best score of the week. Title odds held steady at 13% while playoff odds rose to 58%, so the model isn't sold yet. That should change if Zilgit beats No Banner only HULK next week.",
+   "id": 8
+  },
+  {
+   "rank": 4,
+   "team": "The Horse is Hea",
+   "blurb": "Sonny's defending champion picked up a win in his first game with a new team name, beating Philly 106.42 to 102.1 behind 24.72 from Jalen Hurts. It wasn't flashy, with only the fifth-most points of the week, but playoff odds still jumped from 43% to 59%. A 4.32-point win over Team Pillbert counts the same as a blowout. Next week brings Counting or not Counting GV, the week's lowest scorer, which is exactly the matchup you'd want.",
+   "id": 1
+  },
+  {
+   "rank": 5,
+   "team": "Team Pillbert",
+   "blurb": "Jahmyr Gibbs went off for 31.1, and Alan still lost by 4.32 points, which is the kind of loss that stings. The 102.1 was the sixth-best score of the week, but at 11% the title odds are still close to Sonny's 12%, so the model doesn't think this team is far off. Philly ranks above the other 0-1 teams because he lost a close game, not a blowout. He'll face a frustrated Habibsters next week.",
+   "id": 4
+  },
+  {
+   "rank": 6,
+   "team": "Habibsters",
+   "blurb": "Kaushal scored 108.6, the fourth-best total in the league, and it still wasn't enough against the rookie. Breece Hall led the team with 18.8, and nobody else made up the difference. The result cut Habib's title odds from 19% to 8%, and opening weeks don't get much more painful than that. He has two Buckaroo Bowl rings and a matchup with Team Pillbert to start climbing back.",
+   "id": 6
+  },
+  {
+   "rank": 7,
+   "team": "Dawgs",
+   "blurb": "Justin Jefferson did his part with 27.2, but Kai's 98.36 was 79.5 points short of No Banner only HULK. Mekhi drafted from overseas again this year, and the first week was rough: title odds dropped from 13% to 6%. This ranking is mostly about who he played, since few teams would have survived a 177-point week. Next up is The fumblers, so there's no easy game coming either.",
+   "id": 5
+  },
+  {
+   "rank": 8,
+   "team": "Counting or not Counting GV",
+   "blurb": "JMoney scored 75.96, the lowest score of the week, and lost by 70.2 to The fumblers. Ladd McConkey led the team with 16.7, and nobody else stepped up. Playoff odds dropped from 24% to 15%, and title odds fell to 2%. The Horse is Hea is next, and Jordan needs to get the whole lineup scoring before the defending champ builds a 2-0 start.",
+   "id": 3
+  }
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 2396
+ }
+}

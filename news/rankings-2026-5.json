@@ -1,0 +1,70 @@
+{
+ "id": "rankings-2026-5",
+ "type": "rankings",
+ "year": 2026,
+ "wk": 5,
+ "created": "2026-10-28T20:48:19.594Z",
+ "title": "Power Rankings, Week 5: HULK smashes into No. 1 while Team Pillbert works the phones",
+ "dek": "No Banner only HULK takes the top spot with a league-best 695 points, three 4-1 teams separate from the pack, and one manager was involved in every trade on the board.",
+ "body": [
+  "No Banner only HULK is your new No. 1, and it wasn't especially close. Brucie's crew handled The fumblers 134 to 99.64, pushed its season total to 695 points (70.5 clear of anyone else), and watched its title odds nearly double from 18% to 35%. Team Pillbert won again, and won big, but when one team is running up the scoreboard like this, the throne goes to the bully with the biggest number.",
+  "The other story was the trade market, which went from quiet to chaos in a week. Three deals went through, and Team Pillbert was on the other end of every single one, reshuffling half a roster and routing Ashton Jeanty through town like a connecting flight. Up top, three 4-1 teams have pulled away. Down below, three 1-4 teams and a sinking 2-3 squad are fighting to stay relevant. Next week's main event is The Horse is Hea against No Banner only HULK, a meeting of the top two teams by the model."
+ ],
+ "social": [],
+ "teams": [],
+ "power_rankings": [
+  {
+   "rank": 1,
+   "team": "No Banner only HULK",
+   "blurb": "A 134-99.64 win over The fumblers, led by Josh Allen's 30.5, was the latest reminder that this offense doesn't take weeks off. The 695 points lead the league by a mile, and the playoff odds jumped from 73% to 97%. It's up from No. 2 because nobody is scoring like this. The test comes next: The Horse is Hea, the only team the model likes in the same zip code.",
+   "id": 7
+  },
+  {
+   "rank": 2,
+   "team": "Team Pillbert",
+   "blurb": "Philly's crew dropped the week's high score, 143.66 against the Dawgs, with Jahmyr Gibbs posting the week's best individual line at 35.2. That's four straight wins, and the slide from No. 1 is about HULK, not anything Team Pillbert did wrong. Still, three trades in one week sent out Isaiah Likely, Emeka Egbuka, Denzel Boston, Davante Adams, George Pickens and Ollie Gordon II, and brought in Justin Jefferson, Chuba Hubbard and DeVonta Smith. The playoff odds rose to 82%, but the title odds slipped from 19% to 16%, so the model isn't sold on the remodel yet. The fumblers are up next.",
+   "id": 4
+  },
+  {
+   "rank": 3,
+   "team": "The Horse is Hea",
+   "blurb": "Sonny's team beat the Habibsters 137.6 to 118.34 behind a 30.5-point day from Bucky Irving. The playoff odds jumped from 67% to 90%, and the 22% title odds actually top Team Pillbert's, which earns a climb from No. 4. Sonny also got in on the trade frenzy, landing George Pickens and Ollie Gordon II for Chuba Hubbard and DeVonta Smith. Now it gets real: No Banner only HULK, with first place on the line.",
+   "id": 1
+  },
+  {
+   "rank": 4,
+   "team": "The fumblers",
+   "blurb": "Two straight losses, and this one wasn't close: 99.64 against HULK's 134, with Jaylen Warren's 33.8 doing most of the work. The title odds got sliced from 20% to 11% and the playoff odds fell from 76% to 59%, which is why they drop a spot from No. 3. Three trades went down this week and Randy wasn't part of any of them, which surprised exactly nobody. Team Pillbert comes to town next, freshly reloaded.",
+   "id": 2
+  },
+  {
+   "rank": 5,
+   "team": "Dawgs",
+   "blurb": "A 143.66-108.44 loss to Team Pillbert drops Kai to 1-4, with Davante Adams leading the way at 19.6. So why the jump from No. 7? Mekhi swung big at the deadline-that-isn't, sending Justin Jefferson to Team Pillbert for Adams and Ashton Jeanty, and the model still gives this team the best odds of any 1-4 club at 29% for the playoffs and 8% for the title. Ghostu-Spider SZN is next, a game the Dawgs pretty much have to win.",
+   "id": 5
+  },
+  {
+   "rank": 6,
+   "team": "Habibsters",
+   "blurb": "Habib put up 118.34, which wins plenty of weeks, and lost by 19 to The Horse is Hea anyway. Puka Nacua had 29.2, the points total ranks fourth in the league, and the record is still 1-4. The playoff odds took the week's biggest dive, from 41% to 16%. They hold at No. 6, and next week against Counting or not Counting GV is about as close to must-win as Week 6 gets.",
+   "id": 6
+  },
+  {
+   "rank": 7,
+   "team": "Ghostu-Spider SZN",
+   "blurb": "Rough one for Z². The 69.14 was the lowest score of the week, and Jared Goff's 28.94 means the rest of the lineup combined for just 40.2. That 50-point loss to Counting or not Counting GV drops this team from No. 5, and the 489 points rank seventh. A 2-3 record and 23% playoff odds keep the door open, and next week's game against the Dawgs is a chance to shove someone else back down the ladder.",
+   "id": 8
+  },
+  {
+   "rank": 8,
+   "team": "Counting or not Counting GV",
+   "blurb": "Now that's how you announce a trade. JMoney turned Ashton Jeanty into Isaiah Likely, Emeka Egbuka and Denzel Boston, and Likely led the team with 26.9 in a 119.68-69.14 blowout of Ghostu-Spider SZN. It's still last in points at 468.9 with 5% playoff odds, so it stays at No. 8 for now. A win over the Habibsters next week, and the bottom of these rankings gets very crowded.",
+   "id": 3
+  }
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 4798
+ }
+}

@@ -1,0 +1,70 @@
+{
+ "id": "rankings-2026-3",
+ "type": "rankings",
+ "year": 2026,
+ "wk": 3,
+ "created": "2026-10-28T20:46:53.377Z",
+ "title": "Power Rankings, Week 3: Three Unbeatens, One Point of Mercy, and Randy Made a Trade",
+ "dek": "No Banner only HULK keeps the throne, The Horse is Hea sneaks past the Dawgs by a single point to climb, and three 0-3 teams are now staring at the long winter of the bottom half.",
+ "body": [
+  "Three weeks in, the Buckaroo Football League has split cleanly into a penthouse and a basement. No Banner only HULK, The Horse is Hea and The fumblers are all 3-0, and those three teams carry 74 percent of the title odds between them. Below them it gets bleak fast: Counting or not Counting GV, Dawgs and Habibsters are all 0-3, including a two-time Buckaroo Bowl champion and the guy who might know more football than anyone in the league.",
+  "The biggest mover in the top three was The Horse is Hea, which survived Dawgs 122.7 to 121.7 and saw its title odds jump from 15 percent to 23. Meanwhile The fumblers won but looked shakier doing it, and the trade wire lit up twice, once with a deal involving Randy, which is a sentence nobody in this league expected to read in September. Next week, HULK hosts Team Pillbert in the game of the week, and two 0-3 teams meet in a matchup where somebody finally has to win."
+ ],
+ "social": [],
+ "teams": [],
+ "power_rankings": [
+  {
+   "rank": 1,
+   "team": "No Banner only HULK",
+   "blurb": "Ramon's crew dropped 134.46 on Habibsters, the best score of the week, and now leads the league with 444.2 points, more than 70 clear of anyone else. Kenneth Walker III led the way with 20.3, which tells you how deep this lineup is: nobody had to go nuclear. Brucie also flipped Chuba Hubbard to The Horse is Hea for Rashee Rice, adding more firepower to a team that hardly needs it. Team Pillbert and a red-hot Jahmyr Gibbs come to town next.",
+   "id": 7
+  },
+  {
+   "rank": 2,
+   "team": "The Horse is Hea",
+   "blurb": "Up from No. 3. Sonny won by exactly one point over Dawgs, 122.7 to 121.7, and Jaxon Smith-Njigba's 30.36 was the difference between 3-0 and an awkward Tuesday. The title odds jumped eight points to 23 percent and the playoff odds climbed to 89 percent, the biggest gain of anyone near the top. He also added Chuba Hubbard in the Rashee Rice deal with HULK, a backfield bet worth watching against Ghostu-Spider SZN next week.",
+   "id": 1
+  },
+  {
+   "rank": 3,
+   "team": "The fumblers",
+   "blurb": "Down from No. 2, through no fault of the record. Randy is 3-0, but a 91.64 to 86.64 win over Ghostu-Spider SZN was the lowest winning score of the week, and Derrick Henry's 21.4 had to do the heavy lifting. The real headline is that The fumblers actually made a trade, sending Javonte Williams to Team Pillbert for Stefon Diggs. Habibsters are next, and an 0-3 former champ is exactly the kind of team that can turn a close win into a close loss.",
+   "id": 2
+  },
+  {
+   "rank": 4,
+   "team": "Team Pillbert",
+   "blurb": "Holding at No. 4. Philly beat Counting or not Counting GV 117.88 to 100.98 behind a monster 37.9 from Jahmyr Gibbs, the top individual score in the league this week. Oddly, the title odds slid from 18 percent to 12 despite the win, likely because next week's matchup with HULK is about as brutal as the schedule gets. Alan also took on Javonte Williams from Randy, and he'll need every bit of that depth against the league's best offense.",
+   "id": 4
+  },
+  {
+   "rank": 5,
+   "team": "Ghostu-Spider SZN",
+   "blurb": "Steady at No. 5, with an asterisk. Zoe lost 91.64 to 86.64 to The fumblers in a game she had every chance to steal, and Bijan Robinson's 34.3 was the kind of performance that deserves a win. The problem is everyone else: 299 points ranks seventh, and the playoff odds dropped from 40 percent to 30. Z² stays ahead of the 0-3 crowd on record, but The Horse is Hea is up next, so the supporting cast needs to show up.",
+   "id": 8
+  },
+  {
+   "rank": 6,
+   "team": "Dawgs",
+   "blurb": "Up from No. 7, which is a strange reward for losing by one point. Kai put up 121.7, the fourth-best score of the week, and Tyler Shough chipped in 23.8, but it wasn't enough against Sonny and the record is 0-3. The 320.8 points rank fifth in the league, which suggests the losses are about bad luck more than a bad roster. A date with fellow 0-3 Counting or not Counting GV is the best chance yet to get off the schneid.",
+   "id": 5
+  },
+  {
+   "rank": 7,
+   "team": "Habibsters",
+   "blurb": "Down from No. 6. Kaushal ran into the HULK buzzsaw and lost 134.46 to 100.74, with Drake London's 23.9 the lone bright spot. The two-time champ is 0-3 with 319 points, and the playoff odds have slipped to 18 percent. Habib gets The fumblers next, the lowest-scoring of the three unbeatens, and if there's an upset brewing anywhere this week, it might be here.",
+   "id": 6
+  },
+  {
+   "rank": 8,
+   "team": "Counting or not Counting GV",
+   "blurb": "Holding at No. 8. JMoney fell 117.88 to 100.98 to Team Pillbert, and while Joe Burrow's 22.58 was solid, the team is now last in points at 259 and 0-3. The tiny silver lining is that the playoff odds ticked up from 8 percent to 11 and this was Jordan's best score of the season. Next week brings Dawgs, another winless team, which means one of these two finally gets to feel something good.",
+   "id": 3
+  }
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 2729
+ }
+}

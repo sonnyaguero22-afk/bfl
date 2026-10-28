@@ -1,0 +1,70 @@
+{
+ "id": "rankings-2026-2",
+ "type": "rankings",
+ "year": 2026,
+ "wk": 2,
+ "created": "2026-10-28T20:46:23.146Z",
+ "title": "Power Rankings, Week 2: Brucie's HULK Smashes Again as the League Splits Into Haves and Have-Nots",
+ "dek": "Three teams sit at 2-0, three sit at 0-2, and No Banner only HULK is already scoring like it's playing a different sport.",
+ "body": [
+  "Two weeks in, the Buckaroo Football League has sorted itself into a clean top half and a nervous bottom half. No Banner only HULK, The fumblers and The Horse is Hea are all 2-0. Counting or not Counting GV, Dawgs and Habibsters are all 0-2, and only Team Pillbert and Ghostu-Spider SZN are sitting at .500. Ramon's team is the clear favorite after scoring 309.8 points in two weeks, and his title odds jumped from 23% to 34%.",
+  "The biggest movement came from Week 2's blowouts. Sonny beat JMoney by 60 points and climbs a spot. Philly's 135.48 against Habib pushes Team Pillbert into the top four. Zoe ran into the HULK buzzsaw and slides from third to fifth after one bad week. At the bottom, three 0-2 teams stay right where they were, and only one of them has a real excuse in the points column."
+ ],
+ "social": [],
+ "teams": [],
+ "power_rankings": [
+  {
+   "rank": 1,
+   "team": "No Banner only HULK",
+   "blurb": "Brucie's crew dropped 131.92 on Ghostu-Spider SZN and now leads the league with 309.8 points, more than 39 clear of anyone else. Josh Allen put up 40.82, and nobody needs to remind the Chicago-born Bills fan how much he enjoyed that. Playoff odds are at 92%, the best in the league by a mile. Next up is Habibsters, a team that badly needs to stop this freight train.",
+   "id": 7
+  },
+  {
+   "rank": 2,
+   "team": "The fumblers",
+   "blurb": "Randy is 2-0 after a 124.02 to 100.74 win over Dawgs, with Amon-Ra St. Brown leading the way at 30.7. The 270.2 points for ranks second, so this record is earned, even if the model oddly trimmed his title odds from 25% to 19%. He stays at No. 2. Next week he faces Zoe, which means a Bears guy against a Wisconsin rookie, and nobody in this league will let that one go quietly.",
+   "id": 2
+  },
+  {
+   "rank": 3,
+   "team": "The Horse is Hea",
+   "blurb": "The reigning champ's new outfit beat Counting or not Counting GV 142.46 to 82.08, the biggest score of the week. Jaxon Smith-Njigba went off for 38. Sonny moves up from fourth as his playoff odds jump from 59% to 73%. He still trails Randy by about 21 points in points for, which is why he sits third for now. Dawgs come next, and Kai is desperate.",
+   "id": 1
+  },
+  {
+   "rank": 4,
+   "team": "Team Pillbert",
+   "blurb": "Philly bounced back from a Week 1 loss with a 135.48 to 109.66 win over Habibsters, led by Davante Adams at 35.5. That's one of the biggest swings in the league: playoff odds went from 44% to 67%, and title odds from 11% to 18%. He moves up from fifth, and his 237.6 points rank fourth. Next week brings Counting or not Counting GV, about as friendly a matchup as this schedule offers.",
+   "id": 4
+  },
+  {
+   "rank": 5,
+   "team": "Ghostu-Spider SZN",
+   "blurb": "Z² opened with 129.6 points and a win, then ran into Ramon and managed just 82.8, with Dalton Kincaid's 19 as the top score. One bad week drops her from third to fifth, and her playoff odds fell from 58% to 40%. The Week 1 offense is the version to trust, but she'll need it right away against Randy's unbeaten fumblers. Rookie season, meet a measuring-stick week.",
+   "id": 8
+  },
+  {
+   "rank": 6,
+   "team": "Habibsters",
+   "blurb": "Habib has scored 218.3 points, fifth in the league, and is still 0-2 after CeeDee Lamb's 31.3 couldn't keep pace with Philly. The two-time champ isn't playing badly so much as running into hot opponents, but his playoff odds have dropped from 38% to 22%. He holds at sixth, best of the winless teams, because his points say this team is better than its record. The bad news is that No Banner only HULK is up next.",
+   "id": 6
+  },
+  {
+   "rank": 7,
+   "team": "Dawgs",
+   "blurb": "Mekhi put up 100.74 against Randy and lost by 23, with Ja'Marr Chase scoring 23 as the team's best. At 0-2 with 199.1 points, seventh in the league, there isn't much to argue with here, and his playoff odds slid from 30% to 18%. Kai knows the waiver wire better than anyone, so a fix may be one Tuesday night away. He'll need it against Sonny's 2-0 squad.",
+   "id": 5
+  },
+  {
+   "rank": 8,
+   "team": "Counting or not Counting GV",
+   "blurb": "JMoney managed 82.08 against Sonny, and Jake Ferguson's 18.3 was the only real highlight. Jordan has 158 total points, last in the league and 41 behind seventh place, and his playoff odds are down to 8%. He stays at the bottom. Next week's matchup with Philly is a chance to get on the board, but the whole band needs to show up.",
+   "id": 3
+  }
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 2481
+ }
+}
