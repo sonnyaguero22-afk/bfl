@@ -178,8 +178,8 @@ function pictureFacts(s, W) {
   const P = s.odds && s.odds.picture;
   if (!P || P.week !== W) return undefined;
   const nm = (id) => who(s.byId[id], W + 1);
-  return Object.fromEntries(s.teams.map((t) => { const x = P.teams[t.id] || {}, st = (P.status || {})[t.id];
-    return [nm(t.id), st ? st : { playoff_odds_with_a_win_next_week: x.ifWin && x.ifWin.p != null ? `${Math.round(x.ifWin.p)}%` : null, with_a_loss: x.ifLose && x.ifLose.p != null ? `${Math.round(x.ifLose.p)}%` : null,
+  return Object.fromEntries(s.teams.map((t) => { const x = P.teams[t.id] || {}, st = (P.status || {})[t.id], sd = (P.seed || {})[t.id];
+    return [nm(t.id), st ? (sd ? `${st}, and ${sd}` : st) : { playoff_odds_with_a_win_next_week: x.ifWin && x.ifWin.p != null ? `${Math.round(x.ifWin.p)}%` : null, with_a_loss: x.ifLose && x.ifLose.p != null ? `${Math.round(x.ifLose.p)}%` : null,
       scenarios: ((P.scenarios || {})[t.id] || []).map((sc) => `${sc.clinches ? "clinches" : "is eliminated"} with ${sc.with.map((w) => w.winner === t.id ? "a win" : w.loser === t.id ? "a loss" : `${nm(w.winner)} beating ${nm(w.loser)}`).join(" and ")}`) }]; }));
 }
 function recapFacts(s, W) {

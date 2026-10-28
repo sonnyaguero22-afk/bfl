@@ -1564,14 +1564,14 @@ function pictureHtml(s) {
   const po = s.playoffTeams, rows = s.standings, cut = rows[po - 1], nm = (id) => esc(s.byId[id].name);
   const gb = (t) => { const d = ((cut.w - t.w) + (t.l - cut.l)) / 2; return t === cut ? "–" : d <= 0 ? "–" : (d % 1 ? d.toFixed(1) : d); };
   const pct = (v) => (v == null ? "—" : pct1(v));
-  const line = (id) => { const st = P.status && P.status[id]; if (st === "clinched") return `<span class="pill w">Clinched</span>`; if (st === "eliminated") return `<span class="pill l">Eliminated</span>`;
+  const line = (id) => { const st = P.status && P.status[id], sd = P.seed && P.seed[id] ? ` <span class="pill gold">No. 1 seed</span>` : ""; if (st === "clinched") return `<span class="pill w">Clinched</span>${sd}`; if (st === "eliminated") return `<span class="pill l">Eliminated</span>`;
     return ((P.scenarios || {})[id] || []).map((x) => `${x.clinches ? "Clinches" : "Eliminated"} with ${x.with.map((w) => w.winner === +id ? "a win" : w.loser === +id ? "a loss" : `${nm(w.winner)} over ${nm(w.loser)}`).join(" and ")}`).join("; "); };
   const tr = (t, i) => { const x = P.teams[t.id] || { ifWin: {}, ifLose: {} }, swing = x.ifWin.p != null && x.ifLose.p != null ? x.ifWin.p - x.ifLose.p : null;
     return `<tr${i === po - 1 ? ' class="cutline"' : ""}><td class="num muted">${i < po ? i + 1 : ""}</td><td>${badge(t, 1)} <b>${esc(t.name)}</b> <span class="muted">${mgrName(t.mgr)}</span></td><td class="n">${t.w}-${t.l}${t.t ? "-" + t.t : ""}</td><td class="n">${gb(t)}</td><td class="n">${pct(s.odds.t[t.id].p[s.odds.t[t.id].p.length - 1])}</td><td class="n">${pct(x.ifWin.p)}</td><td class="n">${pct(x.ifLose.p)}</td><td class="n">${swing == null ? "—" : `<b>${Math.round(swing)}</b>`}</td><td class="muted" style="white-space:normal;min-width:160px">${line(t.id)}</td></tr>`; };
   return `<section style="margin:0 0 28px"><h3>Playoff Picture <span class="muted" style="font-weight:500;font-size:14px">· after Week ${P.week}</span></h3>
     <div class="box scroll"><table class="picture"><thead><tr><th>Seed</th><th>Team</th><th class="n">Record</th><th class="n">GB</th><th class="n">Playoffs</th><th class="n">If win</th><th class="n">If lose</th><th class="n">At stake</th><th>Scenarios</th></tr></thead>
     <tbody>${rows.map(tr).join("")}</tbody></table></div>
-    <p class="note">The top ${po} make the playoffs; ties go to head-to-head, then points for. "If win" and "If lose" are playoff odds depending on next week's game, and "At stake" is the difference. Clinching scenarios appear with three weeks left and are worked out from every possible result; ones decided on points assume each team keeps its current pace.</p></section>`;
+    <p class="note">The top ${po} make the playoffs; ties go to head-to-head, then points for. "If win" and "If lose" are playoff odds depending on next week's game, and "At stake" is the difference. Clinches, eliminations and scenarios are exact: they show as soon as one is mathematically possible. Until the last three weeks they never rely on a tiebreaker; in the last three weeks every possible result is checked, and ones decided on points assume each team keeps its current pace.</p></section>`;
 }
 function oddsView() {
   const ys = years.filter((y) => S[y] && S[y].odds).reverse();

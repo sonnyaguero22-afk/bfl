@@ -34,12 +34,71 @@ function rank(ids, rec, H) {
   });
 }
 
-// Clinching and elimination, worked out exactly from every way the remaining games can go (only
-// with 3 or fewer weeks left). Ties on wins go to head-to-head, then points for, with points
-// projected from each team's current pace, so a scenario decided on points is an estimate.
+// Clinching before the last three weeks, exactly, without listing every outcome. Whether a team can
+// be passed (or can still get in) comes down to whether the remaining games can be won in a way
+// that gets enough rivals far enough, and rivals play each other. That is an orientation problem:
+// games can be handed out so each team in a group gets at least need[t] wins (or at most cap[t])
+// exactly when every subgroup passes a counting check (Hall's condition). Ties count against the
+// team, so a clinch here never depends on a tiebreaker.
+const subsetsOk = (grp, games, ok) => {
+  for (let m = 1; m < 1 << grp.length; m++) {
+    const S = new Set(grp.filter((_, i) => (m >> i) & 1));
+    if (!ok(S, games.filter(([h, a]) => S.has(h) && S.has(a)).length, games.filter(([h, a]) => S.has(h) || S.has(a)).length)) return false;
+  }
+  return true;
+};
+const combos = (arr, k) => (k === 0 ? [[]] : arr.flatMap((x, i) => combos(arr.slice(i + 1), k - 1).map((c) => [x, ...c])));
+// Is team t sure to finish in the top k (by wins, ties counted against it)?
+function surelyTop(ids, wins, games, t, k) {
+  const tw = wins[t], others = ids.filter((x) => x !== t);
+  return !combos(others, k).some((A) => {
+    const inA = new Set(A), inner = games.filter(([h, a]) => inA.has(h) && inA.has(a));
+    // Rivals in A win every game against t and outside A; they need the rest from games among themselves
+    const need = Object.fromEntries(A.map((a) => [a, tw - wins[a] - games.filter(([h, x]) => (h === a || x === a) && !(inA.has(h) && inA.has(x))).length]));
+    return subsetsOk(A, inner, (S, _in, touch) => [...S].reduce((n, a) => n + Math.max(0, need[a]), 0) <= touch);
+  });
+}
+// Can team t still finish in the top k (by wins, ties in its favor)?
+function canTop(ids, wins, games, t, k) {
+  const others = ids.filter((x) => x !== t), tmax = wins[t] + games.filter(([h, a]) => h === t || a === t).length;
+  return combos(others, others.length - (k - 1)).some((L) => {
+    const inL = new Set(L), inner = games.filter(([h, a]) => inL.has(h) && inL.has(a));
+    // Teams in L lose every game against t and outside L; the games among them must fit under t's total
+    const cap = Object.fromEntries(L.map((l) => [l, tmax - wins[l]]));
+    if (L.some((l) => cap[l] < 0)) return false;
+    return subsetsOk(L, inner, (S, inside) => inside <= [...S].reduce((n, l) => n + cap[l], 0));
+  });
+}
+function boundScenarios(ids, base, rest, N, po) {
+  const wins0 = Object.fromEntries(ids.map((id) => [id, base[id].w]));
+  const after = (fixed) => { const w = { ...wins0 }; for (const { i, won } of fixed) w[won ? rest[i][0] : rest[i][1]]++; return { w, g: rest.filter((_, i) => !fixed.some((f) => f.i === i)) }; };
+  const status = {}, seed = {}, lines = {};
+  const next = rest.map((g, i) => i).filter((i) => rest[i][2] === N + 1);
+  for (const id of ids) {
+    const { w, g } = after([]);
+    if (surelyTop(ids, w, g, id, 1)) seed[id] = "clinched the No. 1 seed";
+    status[id] = surelyTop(ids, w, g, id, po) ? "clinched" : !canTop(ids, w, g, id, po) ? "eliminated" : null;
+    if (status[id]) continue;
+    const own = next.find((i) => rest[i][0] === id || rest[i][1] === id), others = next.filter((i) => i !== own);
+    const ownWin = own == null ? null : rest[own][0] === id ? 1 : 0, found = [];
+    for (const want of [true, false]) {
+      const test = (fixed) => { const x = after(fixed); return want ? surelyTop(ids, x.w, x.g, id, po) : !canTop(ids, x.w, x.g, id, po); };
+      const ownRes = ownWin == null ? [] : [{ i: own, won: want ? ownWin : 1 - ownWin }];
+      if (ownRes.length && test(ownRes)) { found.push({ want, conds: ownRes }); continue; }
+      search: for (const i of others) for (const won of [1, 0]) { const c = [...ownRes, { i, won }]; if (test(c)) { found.push({ want, conds: c }); break search; } }
+    }
+    lines[id] = found.map(({ want, conds }) => ({ clinches: want, with: conds.map(({ i, won }) => { const [h, a] = rest[i]; return { winner: won ? h : a, loser: won ? a : h }; }) }));
+  }
+  return { status, seed, scenarios: lines };
+}
+
+// Clinching and elimination with three or fewer weeks left, worked out from every way the remaining
+// games can go. Ties on wins go to head-to-head, then points for, with points projected from each
+// team's current pace, so a scenario decided on points is an estimate.
 function scenarios(ids, base, h2h, rest, N, po, pace) {
   const weeksLeft = new Set(rest.map((g) => g[2]));
-  if (!rest.length || weeksLeft.size > 3 || rest.length > 14) return {};
+  if (!rest.length) return {};
+  if (weeksLeft.size > 3 || rest.length > 14) return boundScenarios(ids, base, rest, N, po);
   const next = rest.map((g, i) => i).filter((i) => rest[i][2] === N + 1);
   const pf = Object.fromEntries(ids.map((id) => [id, base[id].pf + pace(id) * rest.filter((g) => g[0] === id || g[1] === id).length]));
   const total = 1 << rest.length, inField = [];
@@ -50,8 +109,9 @@ function scenarios(ids, base, h2h, rest, N, po, pace) {
     inField.push(new Set(rank(ids, rec, H).slice(0, po)));
   }
   const name = (i, won) => ({ i, won });
-  const status = {}, lines = {};
+  const status = {}, lines = {}, seed = {};
   for (const id of ids) {
+    if (inField.length && (() => { let ok = true; for (let o = 0; o < total && ok; o++) { const rec = Object.fromEntries(ids.map((x) => [x, { w: base[x].w, pf: pf[x] }])); const H = Object.fromEntries(ids.map((x) => [x, { ...h2h[x] }])); rest.forEach(([h, a], i) => { const hw = (o >> i) & 1, w = hw ? h : a, l = hw ? a : h; rec[w].w++; H[w][l] = (H[w][l] || 0) + 1; }); ok = rank(ids, rec, H)[0] === id; } return ok; })()) seed[id] = "clinched the No. 1 seed";
     const all = inField.every((f) => f.has(id)), none = inField.every((f) => !f.has(id));
     status[id] = all ? "clinched" : none ? "eliminated" : null;
     if (all || none) continue;
@@ -70,7 +130,7 @@ function scenarios(ids, base, h2h, rest, N, po, pace) {
     }
     lines[id] = found.map(({ want, conds }) => ({ clinches: want, with: conds.map(({ i, won }) => { const [h, a] = rest[i]; return { winner: won ? h : a, loser: won ? a : h }; }) }));
   }
-  return { status, scenarios: lines };
+  return { status, seed, scenarios: lines };
 }
 
 function seasonOdds(s) {
