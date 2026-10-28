@@ -120,7 +120,7 @@ ${JSON.stringify(feed.social.slice(-10).map((p) => `${p.author}: ${p.text}`))}`;
     const t = Date.now();
     // Posts about a roster move go up shortly after the move itself; the rest within the last 15 minutes
     const when = (p) => { const m = moveAt[events[p.event - 1]], ago = Math.min(14, Math.max(0, p.minutes_ago)); return m ? Math.min(t, m + (3 + (14 - ago) * 4) * 60e3) : t - ago * 60e3; };
-    feed.social.push(...out.posts.map(({ minutes_ago, event, ...p }) => ({ ...p, at: new Date(when({ minutes_ago, event })).toISOString() })));
+    feed.social.push(...out.posts.map(({ minutes_ago, event, ...p }) => ({ ...p, about: (events[event - 1] || "").startsWith("MOVE") ? "move" : "game", at: new Date(when({ minutes_ago, event })).toISOString() })));
     feed.batches.push(new Date(t).toISOString());
     fs.mkdirSync(NEWS, { recursive: true });
     fs.writeFileSync(FEED, JSON.stringify(feed, null, 1));
