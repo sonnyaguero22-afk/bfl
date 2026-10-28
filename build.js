@@ -428,7 +428,13 @@ const articles = fs.existsSync(NEWSDIR) ? fs.readdirSync(NEWSDIR).filter((f) => 
 articles.sort((a, b) => b.year - a.year || (b.wk ?? 99) - (a.wk ?? 99) || b.created.localeCompare(a.created));
 const bios = {};
 for (const a of [...articles].reverse()) if (a.bios) for (const id in a.bios) (bios[a.year] = bios[a.year] || {})[id] = { wk: a.wk, bio: a.bios[id] };
-const news = { articles: articles.map(({ usage, model, bios: _b, ...a }) => a), bios };
+// Each story's in-world publish time and each post's time (see when.js); the page hides posts whose time hasn't come
+const { published, postTime } = require("./when");
+const periodsOf = Object.fromEntries(seasons.map((s) => [s.year, s.periods]));
+const news = { articles: articles.map(({ usage, model, bios: _b, ...a }) => {
+  const pub = published(a, periodsOf[a.year]);
+  return pub ? { ...a, published: pub.toISOString(), social: (a.social || []).map((p, i) => ({ ...p, at: postTime(a, pub, p, i).toISOString() })) } : a;
+}), bios };
 
 // Where everyone was each season (hand-maintained, data/locations.json)
 const locations = exists("locations.json") ? load("locations.json") : null;

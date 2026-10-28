@@ -8,6 +8,7 @@
 const fs = require("fs");
 const path = require("path");
 const Anthropic = require("@anthropic-ai/sdk");
+const { published, etLabel } = require("./when");
 
 const MODEL = "claude-opus-5-5";
 const MAX_PER_RUN = 16; // keeps any one run's cost predictable; the rest are written next run
@@ -339,6 +340,7 @@ Rules:
   - kind "team": a team's official account, named after the team, with its exact team name in the team field and the handle listed for it under Current teams. On-brand and upbeat, like a club: matchday results, player of the week, "welcome to the club" after a trade. Never written as the manager.
   - kind "reporter": the league's media panel, all fictional: ${PANEL.map((p) => `${p.name} (${p.handle}), ${p.role.toLowerCase()}: ${p.style}`).join("; ")}.
   - Keep the same name and handle for the same account every time. Set team to "" for every post that isn't kind "team".
+- Each social post has a "when": the minutes before (negative) or after the story goes up that it was posted, from -2880 to 2880. Spread them out like a real timeline: live reactions during the games come before a recap, takes and replies after, official accounts at sensible hours, and fans whenever they feel it, including the middle of the night (a 3 AM rant after a bad beat is on brand).
 - A player marked "on bye" or "did not play" scored nothing because he didn't play. Say so plainly; never treat it as a bad game or a bust. Starting one is the manager's lineup mistake, not the player's.
 - Running jokes and nicknames are seasoning, not the meal. Use any one bit at most once in a story, leave most of them out of most stories, and never make the same joke the punchline two stories in a row. A manager is more than their running joke: describe what they actually did this week first. Labels count as running jokes too: don't cast anyone as the league's villain, punching bag, or hothead by default. Use a label like that at most once in a story, and leave it out of most stories.
 - Plain text only, no markdown. Body paragraphs should be 2 to 5 sentences each.
@@ -351,7 +353,7 @@ ${LORE}`;
 
 // ---------- Output shapes ----------
 const str = { type: "string" };
-const SOCIAL = { type: "array", items: { type: "object", additionalProperties: false, required: ["author", "handle", "text", "kind", "team"], properties: { author: str, handle: str, text: str,
+const SOCIAL = { type: "array", items: { type: "object", additionalProperties: false, required: ["author", "handle", "text", "kind", "team", "when"], properties: { author: str, handle: str, text: str, when: { type: "integer" },
   kind: { type: "string", enum: ["fan", "pundit", "reporter", "team", "league"] }, team: str } } };
 const ARTICLE = { title: str, dek: str, body: { type: "array", items: str } };
 const schemas = {
@@ -438,6 +440,9 @@ async function write(client, job) {
   // Profiles stand on their own, and draft-day coverage mustn't know how the season went
   // Rankings for past weeks mustn't see later stories, so they get none
   const recent = ["profile", "draft", "history", "rankings"].includes(job.type) ? [] : recentStories();
+  const wk = ["review", "profile", "history"].includes(job.type) ? null : job.type === "rankings" ? Math.floor(job.wk) : Math.ceil(job.wk);
+  const pub = published({ id: job.id, type: job.type, year: job.s.year, wk, created: new Date().toISOString() }, job.s.periods);
+  const dated = pub ? `\n\nThis story goes up ${etLabel(pub)}; time the social posts' "when" from that.` : "";
   const avoid = recent.length ? `\n\nThe league's most recent stories, for reference only. Readers just read these, so don't reuse their jokes, nicknames-as-punchlines, or angles; find fresh ones:\n${JSON.stringify(recent)}` : "";
   const res = await client.beta.messages.create({
     model: MODEL,
@@ -447,7 +452,7 @@ async function write(client, job) {
     cache_control: { type: "ephemeral" },
     system: SYSTEM,
     output_config: { effort: "medium", format: { type: "json_schema", schema: schemas[job.type] } },
-    messages: [{ role: "user", content: `${asks[job.type]}\n\nFacts (JSON):\n${JSON.stringify(facts)}${avoid}` }],
+    messages: [{ role: "user", content: `${asks[job.type]}\n\nFacts (JSON):\n${JSON.stringify(facts)}${dated}${avoid}` }],
   });
   if (res.stop_reason === "refusal") { console.log(`::warning::${job.id}: declined (${res.stop_details && res.stop_details.category}), skipping`); return null; }
   if (res.stop_reason === "max_tokens") { console.log(`::warning::${job.id}: ran out of room, will retry next run`); return null; }
@@ -462,7 +467,7 @@ async function write(client, job) {
   // Bios name teams as written in the facts ("Name (Manager)"); match on the team-name part
   const teamFor = (label) => job.s.teams.find((t) => label === nameAt(t, job.wk) || label.startsWith(nameAt(t, job.wk) + " ("));
   return {
-    id: job.id, type: job.type, year: job.s.year, wk: ["review", "profile", "history"].includes(job.type) ? null : job.type === "rankings" ? Math.floor(job.wk) : Math.ceil(job.wk), created: new Date().toISOString(),
+    id: job.id, type: job.type, year: job.s.year, wk, created: new Date().toISOString(),
     title: out.title || out.headline, dek: out.dek || "", body: out.body, chapters: out.chapters, social: out.social || [], teams: job.tr ? job.tr.teams : [], mgr: job.mgr,
     trade_watch: out.trade_watch ? out.trade_watch.filter((t) => (facts.trade_watch || []).some((x) => x.id === t.id)) : undefined,
     picks: out.picks ? out.picks.map((g) => { const m = job.s.matchups.find((x) => x.wk === Math.ceil(job.wk) && g.game === `${who(job.s.byId[x.h], x.wk)} vs ${who(job.s.byId[x.a], x.wk)}`);

@@ -1442,8 +1442,11 @@ const avatarHue = (handle) => [...handle].reduce((x, c) => (x * 31 + c.charCodeA
 // Verified accounts (league, team, reporter) get a tick and a label; team accounts use the team's badge
 const OFFICIAL = { league: "League", team: "Official", reporter: "Reporter" };
 const postTeam = (p, a) => p.kind === "team" && a && S[a.year] ? S[a.year].teams.find((t) => [t, ...(t.eras || [])].some((e) => e.name === p.team)) : null;
-const postHtml = (p, a, src = a) => { const tm = postTeam(p, src); return `<div class="post">${tm ? badge(tm) : `<span class="avatar" style="--h:${avatarHue(p.handle)}" aria-hidden="true">${esc((p.author.match(/[A-Za-z0-9]/) || ["?"])[0].toUpperCase())}</span>`}<div class="pbody"><div class="phead"><b>${esc(p.author)}</b>${OFFICIAL[p.kind] ? ` <span class="tick" title="Verified">✓</span>` : ""} <span class="muted">${esc(p.handle.startsWith("@") ? p.handle : "@" + p.handle)}</span>${OFFICIAL[p.kind] ? ` <span class="pill gold">${OFFICIAL[p.kind]}</span>` : ""}</div><p>${esc(p.text)}</p>${a ? `<button class="mlink postsrc" data-go="news-${a.id}">${newsWhen(a)} · ${esc(a.title)}</button>` : ""}</div></div>`; };
-const allPosts = () => NEWS.flatMap((a) => (a.social || []).map((p) => ({ p, a })));
+// Story and post times, in the viewer's own time zone; posts timed in the future haven't been posted yet
+const stamp = (iso) => new Date(iso).toLocaleString(undefined, { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+const posted = (p) => !p.at || new Date(p.at).getTime() <= Date.now();
+const postHtml = (p, a, src = a) => { const tm = postTeam(p, src); return `<div class="post">${tm ? badge(tm) : `<span class="avatar" style="--h:${avatarHue(p.handle)}" aria-hidden="true">${esc((p.author.match(/[A-Za-z0-9]/) || ["?"])[0].toUpperCase())}</span>`}<div class="pbody"><div class="phead"><b>${esc(p.author)}</b>${OFFICIAL[p.kind] ? ` <span class="tick" title="Verified">✓</span>` : ""} <span class="muted">${esc(p.handle.startsWith("@") ? p.handle : "@" + p.handle)}</span>${OFFICIAL[p.kind] ? ` <span class="pill gold">${OFFICIAL[p.kind]}</span>` : ""}${p.at ? ` <span class="muted">· ${stamp(p.at)}</span>` : ""}</div><p>${esc(p.text)}</p>${a ? `<button class="mlink postsrc" data-go="news-${a.id}">${newsWhen(a)} · ${esc(a.title)}</button>` : ""}</div></div>`; };
+const allPosts = () => NEWS.flatMap((a) => (a.social || []).filter(posted).map((p) => ({ p, a }))).sort((x, y) => (y.p.at || "").localeCompare(x.p.at || ""));
 const newsEmpty = `<div class="box lockcard"><h3>No Stories Yet</h3><p>League news is written automatically after every finished week, every trade and every season. Stories start appearing with the first update after the news writer is switched on.</p></div>`;
 const aiNote = `<p class="note">Written by Claude, an AI, from the league's data. It can get things wrong; the scores and stats elsewhere on the site are the source of truth.</p>`;
 // News and Social share one header with a News | Social switch
@@ -1508,11 +1511,11 @@ function articleView() {
   if (!a) return newsView();
   const i = NEWS.indexOf(a), newer = NEWS[i - 1], older = NEWS[i + 1];
   return `<article class="article"><button class="pill" data-go="news" style="border:0;cursor:pointer">← All News</button>
-    <div class="eyebrow" style="margin-top:18px">${NEWS_TYPE[a.type]} · ${newsWhen(a)}</div><h2 class="headline">${esc(a.title)}</h2><p class="dek big">${esc(a.dek)}</p>
+    <div class="eyebrow" style="margin-top:18px">${NEWS_TYPE[a.type]} · ${newsWhen(a)}${a.published ? ` · <span style="text-transform:none;letter-spacing:0">${stamp(a.published)}</span>` : ""}</div><h2 class="headline">${esc(a.title)}</h2><p class="dek big">${esc(a.dek)}</p>
     <div class="artbody">${a.body.map((p) => `<p>${esc(p)}</p>`).join("")}</div>
     ${picksHtml(a)}
     ${tradeWatchHtml(a)}
-    ${a.social && a.social.length ? `<section><h3>The Reaction</h3><div class="box rec"><div class="feed">${a.social.map((p) => postHtml(p, null, a)).join("")}</div></div></section>` : ""}
+    ${a.social && a.social.some(posted) ? `<section><h3>The Reaction</h3><div class="box rec"><div class="feed">${[...a.social].filter(posted).sort((x, y) => (x.at || "").localeCompare(y.at || "")).map((p) => postHtml(p, null, a)).join("")}</div></div></section>` : ""}
     ${aiNote}
     ${newer || older ? `<section><h3>More Stories</h3><div class="newslist">${[newer, older].filter(Boolean).map((x) => newsCard(x)).join("")}</div></section>` : ""}</article>`;
 }
