@@ -1396,8 +1396,8 @@ const ALL_NEWS = (D.news && D.news.articles) || [];
 const NEWS = ALL_NEWS.filter((a) => a.type !== "profile");
 const PROFILE = {};
 for (const a of ALL_NEWS) if (a.type === "profile" && a.mgr && !PROFILE[a.mgr]) PROFILE[a.mgr] = a;
-const NEWS_TYPE = { recap: "Weekly Recap", trade: "Trade", review: "Season in Review" };
-const newsWhen = (a) => (a.type === "review" ? `${a.year} Season` : a.type === "trade" ? `${a.year} · Before Week ${a.wk}` : `${a.year} · Week ${a.wk}`);
+const NEWS_TYPE = { recap: "Weekly Recap", trade: "Trade", review: "Season in Review", draft: "Draft" };
+const newsWhen = (a) => (a.type === "review" ? `${a.year} Season` : a.type === "draft" ? `${a.year} Draft` : a.type === "trade" ? `${a.year} · Before Week ${a.wk}` : `${a.year} · Week ${a.wk}`);
 const newsCard = (a, big) => `<button class="box newscard${big ? " big" : ""}" data-go="news-${a.id}"><span class="pill${a.type === "trade" ? " gold" : ""}">${NEWS_TYPE[a.type]}</span><b>${esc(a.title)}</b><span class="dek">${esc(a.dek)}</span><small class="muted">${newsWhen(a)}</small></button>`;
 const avatarHue = (handle) => [...handle].reduce((x, c) => (x * 31 + c.charCodeAt(0)) % 360, 7);
 // Verified accounts (league, team, reporter) get a tick and a label; team accounts use the team's badge

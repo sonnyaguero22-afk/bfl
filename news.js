@@ -1,4 +1,4 @@
-// Writes league news with Claude: a recap after every finished week (with fan/pundit social
+// Writes league news with Claude: draft-day coverage of each season's draft, a recap after every finished week (with fan/pundit social
 // posts, fresh team bios and quick takes on how earlier trades are aging), a reaction to every trade, and a look back at each finished season.
 // Each article is saved once in news/ and never rewritten.
 // Stories that fail are logged as ::warning:: lines so they show on the run's summary page.
@@ -148,6 +148,21 @@ function reviewFacts(s) {
   };
 }
 
+// The draft, as it looked on draft day: every pick, each team's haul, position runs, keepers
+function draftFacts(s) {
+  const prev = S[s.year - 1];
+  const lastYear = (t) => { if (!prev) return null; const p = prev.teams.find((x) => (x.eras || [x]).some((e) => e.mgr === t.mgr)); return p ? `${p.final} of ${prev.teams.length} in ${prev.year}` : "new to the league"; };
+  const picks = [...s.draft].sort((a, b) => a.pk - b.pk);
+  const firstAt = {};
+  for (const p of picks) if (!firstAt[p.pos]) firstAt[p.pos] = `${p.n} at pick ${p.pk} by ${who(s.byId[p.tm], 1)}`;
+  return {
+    season: s.year, buckaroo_bowl_number: s.year - D.firstYear + 1, teams: s.teams.length, rounds: Math.max(...picks.map((p) => p.rd)),
+    draft_order: picks.filter((p) => p.rd === 1).map((p) => ({ pick: p.rp, team: who(s.byId[p.tm], 1), last_season: lastYear(s.byId[p.tm]) })),
+    picks: picks.map((p) => ({ overall: p.pk, round: p.rd, team: who(s.byId[p.tm], 1), player: `${p.n} (${p.pos}, ${p.pro})`, keeper: p.keeper || undefined })),
+    first_player_taken_at_each_position: firstAt,
+    picks_by_position_per_round: Object.fromEntries([...new Set(picks.map((p) => p.rd))].map((rd) => [`round ${rd}`, picks.filter((p) => p.rd === rd).reduce((a, p) => ((a[p.pos] = (a[p.pos] || 0) + 1), a), {})])),
+  };
+}
 // A manager's whole league history, for their career profile
 function careerFacts(k) {
   const runs = (t) => (t.eras || [{ mgr: t.mgr, from: 1 }]).some((e) => e.mgr === k);
@@ -242,12 +257,14 @@ const schemas = {
     bios: { type: "array", items: { type: "object", additionalProperties: false, required: ["team", "bio"], properties: { team: str, bio: str } } } } },
   trade: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "social"], properties: { ...ARTICLE, social: SOCIAL } },
   review: { type: "object", additionalProperties: false, required: ["title", "dek", "body"], properties: ARTICLE },
+  draft: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "social"], properties: { ...ARTICLE, social: SOCIAL } },
   profile: { type: "object", additionalProperties: false, required: ["headline", "body"], properties: { headline: str, body: { type: "array", items: str } } },
 };
 const asks = {
   recap: "Write the weekly recap for this week of the Buckaroo Football League: a headline, a one-sentence dek, and 5 to 8 body paragraphs covering the results (lead with the best storyline), standout and disappointing performances, the standings and title-odds picture, notable moves, and a look ahead to next week (if next_week_ones_to_watch is given, mention a player or two whose game swings a matchup most, or a QB-receiver stack). Then write 6 to 10 social posts reacting to the week, and a fresh 2 to 3 sentence bio for every team in the standings that sums up where its season stands right now (use the exact team name in the team field). Finally, the trade watch: quick 1 to 2 sentence takes on how earlier trades in trade_watch are aging, for the 2 to 5 deals with the most to say this week (a deal that looked lopsided flipping, a player who carried his new team or sat on its bench, a winner pulling further ahead). These are quick hot takes, not articles; say how it looks now compared with before. Use the trade's id from the facts. If there are no trades yet, leave it empty.",
   trade: "Write a trade reaction story: a headline, a one-sentence dek, and 3 to 5 body paragraphs explaining the deal, what each side got, and who won it on paper (use the title odds change). Then write 3 to 5 social posts reacting to it.",
   profile: "Write a career profile of this manager for their page on the league website, like a club history page in Football Manager: a short headline that captures who they are in this league, and 3 to 5 body paragraphs telling the story of their whole run: each season, the highs and lows, rivalries from the head-to-head records, their habits as a manager (trades, waiver moves), and where they stand right now. Use their nicknames and the lore, as seasoning on top of what actually happened.",
+  draft: "Write the draft-day story for this season's Buckaroo Football League draft, as if written the night of the draft, before any games: a headline, a one-sentence dek, and 5 to 7 body paragraphs covering the first round and draft order, each manager's strategy and haul, position runs, keepers, and the picks that look like reaches or values. Judge picks only by where players went relative to each other, each team's roster build and the draft order; you know nothing about how the season has gone since, and don't cite stats or projections that aren't in the facts. Then write 4 to 8 social posts reacting to the draft, including official team accounts welcoming their first-round picks.",
   review: "Write a season-in-review story for this finished season: a headline, a one-sentence dek, and 5 to 7 body paragraphs telling the story of the season from draft to Buckaroo Bowl, including the champion, the last-place finisher, the playoff games, and any notable notes.",
 };
 
@@ -257,6 +274,7 @@ function pending() {
   const todo = [];
   for (const s of D.seasons.filter((x) => x.done)) if (!have.has(`review-${s.year}`)) todo.push({ id: `review-${s.year}`, type: "review", s, wk: 99, facts: () => reviewFacts(s) });
   const cur = D.seasons.filter((x) => !x.done).slice(-1)[0] || null;
+  if (cur && cur.draft && cur.draft.length && !have.has(`draft-${cur.year}`)) todo.push({ id: `draft-${cur.year}`, type: "draft", s: cur, wk: 0, facts: () => draftFacts(cur) });
   if (cur) {
     const weeks = [...new Set(cur.matchups.map((m) => m.wk))].sort((a, b) => a - b);
     for (const W of weeks) {
@@ -286,7 +304,8 @@ function recentStories(n = 4) {
 
 async function write(client, job) {
   const facts = job.facts();
-  const recent = job.type === "profile" ? [] : recentStories();
+  // Profiles stand on their own, and draft-day coverage mustn't know how the season went
+  const recent = job.type === "profile" || job.type === "draft" ? [] : recentStories();
   const avoid = recent.length ? `\n\nThe league's most recent stories, for reference only. Readers just read these, so don't reuse their jokes, nicknames-as-punchlines, or angles; find fresh ones:\n${JSON.stringify(recent)}` : "";
   const res = await client.beta.messages.create({
     model: MODEL,
