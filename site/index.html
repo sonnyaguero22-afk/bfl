@@ -366,6 +366,8 @@ table.compact .team { min-width: 0; }
 .feed { display: grid; gap: 14px; }
 .post { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 10px; }
 .post.take { grid-template-columns: minmax(0, 1fr); }
+.history { padding: 20px 22px; margin: 0 0 24px; }
+.history .artbody h3 { margin: 18px 0 8px; }
 .watch { padding: 10px 14px 12px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
 .wname, .wname .plink, .pl.watchp .nm > .plink, .pl.watchp .nm > b { color: var(--gold); font-weight: 700; }
 .watch .k { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
@@ -945,7 +947,11 @@ function trophies() {
       <dl><dt>Champion</dt><dd>${esc(c.name)} · ${mgrName(c.mgr)}</dd>${ru ? `<dt>Runner-up</dt><dd>${esc(ru.name)}</dd>` : ""}${last ? `<dt>Last place</dt><dd>${esc(last.name)}</dd>` : ""}</dl></button>`;
   }).join("");
   const champs = PEOPLE.map((k) => [k, mgrStats(k).titles.length]).filter((x) => x[1]).sort((a, b) => b[1] - a[1]);
-  return `<div class="vhead"><div><div class="eyebrow">Trophy Room</div><h2>The Buckaroo Bowls</h2><p>Every championship since the league started in ${D.firstYear}.</p></div></div>
+  const H = HISTORY && HISTORY.chapters, open = state.histOpen;
+  const history = H ? `<section class="box history"><div class="eyebrow">The Story So Far</div><h2 class="headline" style="margin:6px 0 4px">${esc(HISTORY.title)}</h2><p class="dek big" style="margin-bottom:14px">${esc(HISTORY.dek)}</p>
+    <div class="artbody">${(open ? H : H.slice(0, 1)).map((c) => `<h3>${esc(c.heading)}</h3>${c.body.map((p) => `<p>${esc(p)}</p>`).join("")}`).join("")}</div>
+    <button class="morebtn" data-hist="1">${open ? "Show less ▲" : `Read the full history · ${H.length} chapters ▼`}</button>${open ? aiNote : ""}</section>` : "";
+  return `<div class="vhead"><div><div class="eyebrow">Trophy Room</div><h2>The Buckaroo Bowls</h2><p>Every championship since the league started in ${D.firstYear}.</p></div></div>${history}
     <div class="bowls">${cards}</div>
     <section><h3>Rings by Manager</h3>${champs.length ? `<div class="box scroll"><table><tbody>${champs.map(([k, n]) => `<tr><td><button class="mlink team" data-go="mgr-${k}">${mbadge(k)}<b>${mgrName(k)}</b></button></td><td class="n rings">${"🏆".repeat(n)}</td></tr>`).join("")}</tbody></table></div>` : `<p class="muted">No completed seasons loaded yet. Champions show up here as past seasons are added.</p>`}</section>`;
 }
@@ -1000,44 +1006,49 @@ function h2h() {
 }
 
 // Win and losing streaks per manager, carried across seasons, playoffs included
-function streaks() {
+// Streaks of 3+, carried across seasons, or within one season when given a year
+function streaks(year) {
   const out = [];
+  const ongoing = !year || !S[year].done;
   for (const k of PEOPLE) {
-    const g = games.filter((x) => x.mgr === k).sort((a, b) => a.year - b.year || a.wk - b.wk);
+    const g = games.filter((x) => x.mgr === k && (!year || x.year === year)).sort((a, b) => a.year - b.year || a.wk - b.wk);
     let run = null;
     const close = (active) => { if (run && run.len >= 3) out.push({ ...run, active }); };
     g.forEach((x, i) => {
       const r = x.won ? "W" : x.tie ? "T" : "L";
       if (run && run.r === r) { run.len++; run.to = x; run.teams.add(x.nm); if (x.kick) run.kick = true; }
       else { close(false); run = r === "T" ? null : { mgr: k, r, len: 1, from: x, to: x, teams: new Set([x.nm]), kick: !!x.kick }; }
-      if (i === g.length - 1) close(true);
+      if (i === g.length - 1) close(ongoing);
     });
   }
   return out;
 }
 
 function records() {
-  const all = games.filter((x) => x.span === 1); // two-week playoff rounds would swamp single-week records
+  // Year filter: all-time by default, or one season
+  const Y = state.recYear && S[state.recYear] ? +state.recYear : null, inY = (y) => !Y || y === Y;
+  const SS = D.seasons.filter((s) => inY(s.year));
+  const all = games.filter((x) => x.span === 1 && inY(x.year)); // two-week playoff rounds would swamp single-week records
   const top = (arr, f, n = 25) => [...arr].sort(f).slice(0, n);
   const ctx = (x) => `${x.year} wk ${x.wk} vs ${esc(x.oppNm)}`;
   const tn = (x) => `${esc(x.nm)} <span class="muted">(${esc(D.managers[x.mgr].first)}${x.kick ? "*" : ""})</span>`;
   const tmn = (t) => `${esc(t.name)} <span class="muted">(${t.eras ? t.eras.map((e) => esc(D.managers[e.mgr].first)).join(" / ") : esc(D.managers[t.mgr].first)})</span>`;
   const wins = all.filter((x) => x.won);
-  const seasonsT = D.seasons.flatMap((s) => s.teams.map((t) => ({ s, t })));
+  const seasonsT = SS.flatMap((s) => s.teams.map((t) => ({ s, t })));
   const gp = (t) => t.w + t.l + t.t;
   const soFar = (x) => (x.s.done ? "" : " so far");
   // Bench and single-player weeks, only weeks that counted in a finished game
   const inGame = (s, wk, id) => { const mp = s.sp2mp[wk] ?? wk; return s.played.some((m) => m.wk === mp && (m.h === +id || m.a === +id)); };
   const bench = [], perf = [];
-  for (const s of D.seasons) for (const wk in s.lineups) for (const id in s.lineups[wk]) {
+  for (const s of SS) for (const wk in s.lineups) for (const id in s.lineups[wk]) {
     if (!inGame(s, +wk, id)) continue;
     bench.push({ s, wk: +wk, t: s.byId[id], p: sum(s.lineups[wk][id].filter((p) => p.slot === "BN"), (p) => p.pts) });
     for (const p of s.lineups[wk][id]) if (p.slot !== "BN" && p.slot !== "IR") perf.push({ s, wk: +wk, t: s.byId[id], p });
   }
-  const st = streaks();
+  const st = streaks(Y);
   // Every finished game the underdog won, with the winner's pre-game win chance
   const upsets = [];
-  for (const s of D.seasons) for (const m of s.played) {
+  for (const s of SS) for (const m of s.played) {
     if (!m.a || !m.win) continue;
     const p = teamWin(s, m, m.win);
     if (p == null || p >= 0.5) continue;
@@ -1048,10 +1059,11 @@ function records() {
   const stWho = (x) => `${mgrName(x.mgr)}${x.kick ? "*" : ""} <span class="muted">(${[...x.teams].map(esc).join(" / ")})</span>`;
   const byLen = (a, b) => b.len - a.len || b.to.year - a.to.year || b.to.wk - a.to.wk;
   const group = (title, cards) => `<section><h3>${title}</h3><div class="recs">${cards.join("")}</div></section>`;
-  return `<div class="vhead"><div><div class="eyebrow">All-Time</div><h2>Record Book</h2><p>Every completed game since ${D.firstYear}, playoffs included. Each list shows the top 25; the two-week playoff rounds from 2023 and 2024 are left out of the single-game records. An asterisk (*) marks games after a manager was kicked for inactivity.</p></div></div>
+  const pills = `<div class="weekbar" style="margin:0 0 18px"><button data-recyear="all" aria-current="${!Y}">All-Time</button>${[...years].filter((y) => S[y]).map((y) => `<button data-recyear="${y}" aria-current="${Y === y}">${y}${S[y].done ? "" : " (so far)"}</button>`).join("")}</div>`;
+  return `<div class="vhead"><div><div class="eyebrow">${Y ? `${Y} Season` : "All-Time"}</div><h2>Record Book</h2><p>${Y ? `Every completed game of the ${Y} season` : `Every completed game since ${D.firstYear}`}, playoffs included. Each list shows the top 25; the two-week playoff rounds from 2023 and 2024 are left out of the single-game records. An asterisk (*) marks games after a manager was kicked for inactivity.</p></div></div>${pills}
   ${group("Streaks", [
-    board("Longest Winning Streak", top(st.filter((x) => x.r === "W"), byLen), (x) => `${x.len} W`, stWho, when, "Streaks carry over between seasons. Only streaks of 3+ are listed."),
-    board("Longest Losing Streak", top(st.filter((x) => x.r === "L"), byLen), (x) => `${x.len} L`, stWho, when, "Streaks carry over between seasons. Only streaks of 3+ are listed."),
+    board("Longest Winning Streak", top(st.filter((x) => x.r === "W"), byLen), (x) => `${x.len} W`, stWho, when, Y ? "Within this season. Only streaks of 3+ are listed." : "Streaks carry over between seasons. Only streaks of 3+ are listed."),
+    board("Longest Losing Streak", top(st.filter((x) => x.r === "L"), byLen), (x) => `${x.len} L`, stWho, when, Y ? "Within this season. Only streaks of 3+ are listed." : "Streaks carry over between seasons. Only streaks of 3+ are listed."),
   ])}
   ${group("Single Games", [
     board("Biggest Upset", top(upsets, (a, b) => a.p - b.p), (x) => winPct(x.p), (x) => `${esc(nameAt(x.w, x.m.wk))} <span class="muted">(${esc(D.managers[mgrAt(x.w, x.m.wk)].first)}${kickedAt(x.w, x.m.wk) ? "*" : ""})</span> over ${esc(nameAt(x.l, x.m.wk))}`, (x) => `${f2(x.ws)}–${f2(x.ls)} · ${x.s.year} ${x.m.wk > x.s.regWeeks ? "playoffs" : "wk " + x.m.wk}`, "Ranked by the winner's chance to win going into the game."),
@@ -1065,8 +1077,8 @@ function records() {
   ])}
   ${group("Players", [
     board("Most Points by a Player in a Week", top(perf, (a, b) => b.p.pts - a.p.pts), (x) => f1(x.p.pts), (x) => `${posTag(x.p.pos)}${pn(x.p.n)}`, (x) => `Started by ${esc(x.t.name)} · ${x.s.year} wk ${x.wk}`),
-    board("Best Pickups", [...PICKUPS].sort((a, b) => b.pts - a.pts).slice(0, 25), (x) => f1(x.pts), pickupWho, pickupSub, `Undrafted players, counting only their starts for the team that picked them up (${PICKUP_MIN_STARTS}+ starts).`),
-    board("Best Pickups, Points per Start", [...PICKUPS].sort((a, b) => b.ppg - a.ppg).slice(0, 25), (x) => f1(x.ppg), pickupWho, pickupSub, `Same rules: undrafted, ${PICKUP_MIN_STARTS}+ starts after the pickup.`),
+    board("Best Pickups", PICKUPS.filter((x) => inY(x.y)).sort((a, b) => b.pts - a.pts).slice(0, 25), (x) => f1(x.pts), pickupWho, pickupSub, `Undrafted players, counting only their starts for the team that picked them up (${PICKUP_MIN_STARTS}+ starts).`),
+    board("Best Pickups, Points per Start", PICKUPS.filter((x) => inY(x.y)).sort((a, b) => b.ppg - a.ppg).slice(0, 25), (x) => f1(x.ppg), pickupWho, pickupSub, `Same rules: undrafted, ${PICKUP_MIN_STARTS}+ starts after the pickup.`),
     board("Most Points Left on the Bench", top(bench, (a, b) => b.p - a.p), (x) => f1(x.p), (x) => tmn(x.t), (x) => `${x.s.year} wk ${x.wk}`),
   ])}
   ${group("Seasons", [
@@ -1393,7 +1405,9 @@ function home() {
 // ---------- News & Social (written by Claude after each week, trade and season; see news.js) ----------
 const ALL_NEWS = (D.news && D.news.articles) || [];
 // Career profiles live on manager pages, not in the news feed (newest per manager)
-const NEWS = ALL_NEWS.filter((a) => a.type !== "profile");
+const NEWS = ALL_NEWS.filter((a) => a.type !== "profile" && a.type !== "history");
+// The league history (newest), shown in the trophy room
+const HISTORY = ALL_NEWS.find((a) => a.type === "history");
 const PROFILE = {};
 for (const a of ALL_NEWS) if (a.type === "profile" && a.mgr && !PROFILE[a.mgr]) PROFILE[a.mgr] = a;
 const NEWS_TYPE = { recap: "Weekly Recap", trade: "Trade", review: "Season in Review", draft: "Draft" };
@@ -1469,6 +1483,8 @@ $("#app").addEventListener("click", (e) => {
   const oy = e.target.closest("[data-oddsyear]"); if (oy) { state.oddsYear = +oy.dataset.oddsyear; state.oddsFocus = null; render(); return; }
   const ok = e.target.closest("[data-oddskey]"); if (ok) { state.oddsKey = ok.dataset.oddskey; render(); return; }
   const ot = e.target.closest("[data-oddsteam]"); if (ot) { state.oddsFocus = state.oddsFocus === +ot.dataset.oddsteam ? null : +ot.dataset.oddsteam; render(); return; }
+  if (e.target.closest("[data-hist]")) { state.histOpen = !state.histOpen; render(); return; }
+  const ry = e.target.closest("[data-recyear]"); if (ry) { state.recYear = ry.dataset.recyear === "all" ? null : +ry.dataset.recyear; render(); return; }
   const my = e.target.closest("[data-mapyear]"); if (my) { state.mapYear = my.dataset.mapyear === "all" ? "all" : +my.dataset.mapyear; render(); return; }
   const by = e.target.closest("[data-bumyear]"); if (by) { state.bumYear = +by.dataset.bumyear; render(); return; }
   const r = e.target.closest("[data-roster]"); if (r) { state.rosterTeam = +r.dataset.roster; render(); }

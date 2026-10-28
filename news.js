@@ -164,10 +164,10 @@ function draftFacts(s) {
   };
 }
 // A manager's whole league history, for their career profile
-function careerFacts(k) {
+function careerFacts(k, upto = Infinity) {
   const runs = (t) => (t.eras || [{ mgr: t.mgr, from: 1 }]).some((e) => e.mgr === k);
   const seasons = [], games = [];
-  for (const s of D.seasons) {
+  for (const s of D.seasons.filter((x) => x.year <= upto)) {
     const t = s.teams.find(runs);
     if (!t) continue;
     const rec = recordsThrough(s, s.regWeeks)[t.id];
@@ -198,6 +198,18 @@ function careerFacts(k) {
     best_week: best && `${r1(best.p)} in ${best.year} week ${best.wk} vs ${mgr(best.opp)}`,
     worst_week: worst && `${r1(worst.p)} in ${worst.year} week ${worst.wk} vs ${mgr(worst.opp)}`,
     head_to_head: Object.fromEntries(Object.entries(h2h).map(([o, x]) => [o, `${x.w}-${x.l}`])),
+  };
+}
+
+// The whole league's story through its last finished season, for the history on the Buckaroo Bowls page
+function historyFacts(upto) {
+  const done = D.seasons.filter((s) => s.done && s.year <= upto);
+  const played = (k) => done.some((s) => s.teams.some((t) => (t.eras || [t]).some((e) => e.mgr === k)));
+  const cur = D.seasons[D.seasons.length - 1];
+  return {
+    founded: D.firstYear, seasons: done.map(reviewFacts),
+    managers: Object.keys(D.managers).filter((k) => k !== "nomanager" && played(k)).map((k) => careerFacts(k, upto)),
+    since_then: cur.year > upto ? `In ${cur.year} the league grew to ${cur.teams.length} teams${(() => { const nw = cur.teams.map((t) => t.mgr).filter((k) => !played(k)).map(mgr); return nw.length ? `, adding ${nw.join(" and ")}` : ""; })()}. That season is still being played.` : undefined,
   };
 }
 
@@ -258,6 +270,8 @@ const schemas = {
   trade: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "social"], properties: { ...ARTICLE, social: SOCIAL } },
   review: { type: "object", additionalProperties: false, required: ["title", "dek", "body"], properties: ARTICLE },
   draft: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "social"], properties: { ...ARTICLE, social: SOCIAL } },
+  history: { type: "object", additionalProperties: false, required: ["title", "dek", "chapters"], properties: { title: str, dek: str,
+    chapters: { type: "array", items: { type: "object", additionalProperties: false, required: ["heading", "body"], properties: { heading: str, body: { type: "array", items: str } } } } } },
   profile: { type: "object", additionalProperties: false, required: ["headline", "body"], properties: { headline: str, body: { type: "array", items: str } } },
 };
 const asks = {
@@ -265,6 +279,7 @@ const asks = {
   trade: "Write a trade reaction story: a headline, a one-sentence dek, and 3 to 5 body paragraphs explaining the deal, what each side got, and who won it on paper (use the title odds change). Then write 3 to 5 social posts reacting to it.",
   profile: "Write a career profile of this manager for their page on the league website, like a club history page in Football Manager: a short headline that captures who they are in this league, and 3 to 5 body paragraphs telling the story of their whole run: each season, the highs and lows, rivalries from the head-to-head records, their habits as a manager (trades, waiver moves), and where they stand right now. Use their nicknames and the lore, as seasoning on top of what actually happened.",
   draft: "Write the draft-day story for this season's Buckaroo Football League draft, as if written the night of the draft, before any games: a headline, a one-sentence dek, and 5 to 7 body paragraphs covering the first round and draft order, each manager's strategy and haul, position runs, keepers, and the picks that look like reaches or values. Judge picks only by where players went relative to each other, each team's roster build and the draft order; you know nothing about how the season has gone since, and don't cite stats or projections that aren't in the facts. Then write 4 to 8 social posts reacting to the draft, including official team accounts welcoming their first-round picks.",
+  history: "Write the official history of the Buckaroo Football League for the front of its trophy room, like a club history in Football Manager or a long-form feature: a headline, a one-sentence dek, and 4 to 6 chapters, each with a short heading and 2 to 4 paragraphs. Tell it as one story across the seasons: how it started, each Buckaroo Bowl and what decided it, dynasties and droughts, rises and collapses, the rivalries the head-to-head records reveal, and the moments people still bring up. End with a short chapter that sets up the present (from since_then, without any of its results). Every number must come from the facts.",
   review: "Write a season-in-review story for this finished season: a headline, a one-sentence dek, and 5 to 7 body paragraphs telling the story of the season from draft to Buckaroo Bowl, including the champion, the last-place finisher, the playoff games, and any notable notes.",
 };
 
@@ -284,8 +299,9 @@ function pending() {
     }
     for (const tr of cur.trades) { const id = tradeId(cur, tr); if (!have.has(id)) todo.push({ id, type: "trade", s: cur, wk: tr.wk - 0.5, tr, facts: () => tradeFacts(cur, tr) }); }
   }
-  // Career profiles, rewritten once each season finishes
+  // Career profiles and the league history, rewritten once each season finishes
   const lastDone = Math.max(...D.seasons.filter((x) => x.done).map((x) => x.year));
+  if (!have.has(`history-${lastDone}`)) todo.push({ id: `history-${lastDone}`, type: "history", s: S[lastDone], wk: 101, facts: () => historyFacts(lastDone) });
   for (const k of Object.keys(D.managers).filter((k) => k !== "nomanager")) {
     const id = `profile-${k}-${lastDone}`;
     if (!have.has(id)) todo.push({ id, type: "profile", s: S[lastDone], wk: 100, mgr: k, facts: () => careerFacts(k) });
@@ -297,7 +313,7 @@ function pending() {
 // The last few stories, so a new one doesn't repeat their jokes and angles
 function recentStories(n = 4) {
   if (!fs.existsSync(NEWS)) return [];
-  return fs.readdirSync(NEWS).map((f) => JSON.parse(fs.readFileSync(path.join(NEWS, f), "utf8"))).filter((a) => a.type !== "profile")
+  return fs.readdirSync(NEWS).map((f) => JSON.parse(fs.readFileSync(path.join(NEWS, f), "utf8"))).filter((a) => a.type !== "profile" && a.type !== "history")
     .sort((a, b) => (a.created < b.created ? 1 : -1)).slice(0, n)
     .map((a) => ({ title: a.title, body: a.body, social: (a.social || []).map((p) => `${p.author} (${p.handle}): ${p.text}`), trade_watch: (a.trade_watch || []).map((t) => t.take) }));
 }
@@ -305,7 +321,7 @@ function recentStories(n = 4) {
 async function write(client, job) {
   const facts = job.facts();
   // Profiles stand on their own, and draft-day coverage mustn't know how the season went
-  const recent = job.type === "profile" || job.type === "draft" ? [] : recentStories();
+  const recent = ["profile", "draft", "history"].includes(job.type) ? [] : recentStories();
   const avoid = recent.length ? `\n\nThe league's most recent stories, for reference only. Readers just read these, so don't reuse their jokes, nicknames-as-punchlines, or angles; find fresh ones:\n${JSON.stringify(recent)}` : "";
   const res = await client.beta.messages.create({
     model: MODEL,
@@ -322,13 +338,14 @@ async function write(client, job) {
   const text = res.content.filter((b) => b.type === "text").map((b) => b.text).join("");
   let out;
   try { out = JSON.parse(text); } catch { console.log(`::warning::${job.id}: response wasn't valid JSON, will retry next run`); return null; }
+  if (out.chapters) out.body = out.chapters.flatMap((c) => c.body);
   // Stories are permanent, so don't keep one that came back hollow
   if (!out.body || out.body.length < 2 || (schemas[job.type].required.includes("social") && !(out.social || []).length)) { console.log(`::warning::${job.id}: came back with an empty story, will retry next run`); return null; }
   // Bios name teams as written in the facts ("Name (Manager)"); match on the team-name part
   const teamFor = (label) => job.s.teams.find((t) => label === nameAt(t, job.wk) || label.startsWith(nameAt(t, job.wk) + " ("));
   return {
-    id: job.id, type: job.type, year: job.s.year, wk: job.type === "review" || job.type === "profile" ? null : Math.ceil(job.wk), created: new Date().toISOString(),
-    title: out.title || out.headline, dek: out.dek || "", body: out.body, social: out.social || [], teams: job.tr ? job.tr.teams : [], mgr: job.mgr,
+    id: job.id, type: job.type, year: job.s.year, wk: ["review", "profile", "history"].includes(job.type) ? null : Math.ceil(job.wk), created: new Date().toISOString(),
+    title: out.title || out.headline, dek: out.dek || "", body: out.body, chapters: out.chapters, social: out.social || [], teams: job.tr ? job.tr.teams : [], mgr: job.mgr,
     trade_watch: out.trade_watch ? out.trade_watch.filter((t) => (facts.trade_watch || []).some((x) => x.id === t.id)) : undefined,
     bios: out.bios ? Object.fromEntries(out.bios.map((b) => [(teamFor(b.team) || {}).id, b.bio]).filter(([id]) => id != null)) : undefined,
     model: res.model, usage: { input: res.usage.input_tokens, output: res.usage.output_tokens },
