@@ -220,6 +220,26 @@ for (const year of years) {
           const left = nflClock ? nflClock(p.proTeamId) : nflBye[p.proTeamId] === m.wk ? 0 : 1;
           return { n: p.fullName, pos: POS[p.defaultPositionId] || "", pro: PRO[p.proTeamId] || `FA-${p.id}`, proj: pj ? pj.appliedTotal : 0, pts: e.playerPoolEntry.appliedStatTotal || 0, left };
         }));
+      // Before kickoff: starters on bye or ruled out, and the lineup with each swapped for the best bench player
+      // at his position, so previews can tell "as set" from "if he fixes it"
+      if (m._sides && m.hp === 0 && m.ap === 0) {
+        const OUT = ["OUT", "INJURY_RESERVE", "SUSPENSION"];
+        m.holes = []; m._fixed = [s.home, s.away].map((side, k) => {
+          const es = (side.rosterForCurrentScoringPeriod || { entries: [] }).entries, used = new Set();
+          const row = (e) => { const p = e.playerPoolEntry.player, pj = (p.stats || []).find((x) => x.statSourceId === 1 && x.scoringPeriodId === m.wk);
+            return { n: p.fullName, pos: POS[p.defaultPositionId] || "", pro: PRO[p.proTeamId] || `FA-${p.id}`, proj: pj ? pj.appliedTotal : 0, pts: 0, left: nflBye[p.proTeamId] === m.wk ? 0 : 1,
+              why: nflBye[p.proTeamId] === m.wk ? "on bye" : OUT.includes(p.injuryStatus) ? "ruled out" : null }; };
+          const bench = es.filter((e) => e.lineupSlotId === 20).map(row).filter((p) => !p.why);
+          return es.filter((e) => e.lineupSlotId !== 20 && e.lineupSlotId !== 21).map(row).map((p) => {
+            if (!p.why) return p;
+            m.holes.push({ id: k ? m.a : m.h, n: p.n, pos: p.pos, why: p.why });
+            const sub = bench.filter((b) => b.pos === p.pos && !used.has(b)).sort((a, b) => b.proj - a.proj)[0];
+            if (sub) used.add(sub);
+            return sub || { ...p, proj: 0 };
+          });
+        });
+        if (!m.holes.length) { delete m.holes; delete m._fixed; }
+      }
       if (nflClock) {
         for (const [side, key] of [[s.home, "h"], [s.away, "a"]]) {
           // Each player's remaining points can miss by about 60% either way (booms and busts)
@@ -370,6 +390,7 @@ for (const s of seasons) for (const m of s.matchups) {
   if (!m._sides) continue;
   const g = simGame(playerModel, m._sides[0], m._sides[1], s.year * 1000 + m.wk * 10 + m.h, oppFor(s.year)[m.wk] || {});
   m.psim = Math.round(g.home * 1000) / 1000;
+  if (m._fixed) { m.psimFixed = Math.round(simGame(playerModel, m._fixed[0], m._fixed[1], s.year * 1000 + m.wk * 10 + m.h, oppFor(s.year)[m.wk] || {}).home * 1000) / 1000; delete m._fixed; }
   // The biggest swing on each side
   const top = [0, 1].map((k) => g.watch.find((x) => x.side === k)).filter(Boolean);
   const pick = top.sort((a, b) => (b.boom - b.bust) - (a.boom - a.bust));
@@ -378,7 +399,7 @@ for (const s of seasons) for (const m of s.matchups) {
   m.stacks = [0, 1].flatMap((k) => { const L = m._sides[k].filter((p) => p.left > 0); return L.filter((p) => p.pos === "QB").flatMap((q) => L.filter((r) => (r.pos === "WR" || r.pos === "TE") && r.pro === q.pro).map((r) => ({ id: k ? m.a : m.h, qb: q.n, rec: r.n }))); });
   delete m._sides;
   const nm = (id) => s.teams.find((t) => t.id === id).name;
-  console.log(`::notice::Week ${m.wk}: ${nm(m.h)} ${Math.round(m.psim * 100)}% vs ${nm(m.a)} | watch ${m.watch.map((x) => `${x.n} for ${nm(x.id)} (${x.boomAt}+: ${x.boom}%, under ${x.bustAt}: ${x.bust}%)`).join("; ")}${m.stacks.length ? ` | stacks ${m.stacks.map((k) => `${k.qb}+${k.rec}`).join(", ")}` : ""}`);
+  console.log(`::notice::Week ${m.wk}: ${nm(m.h)} ${Math.round(m.psim * 100)}% vs ${nm(m.a)} | watch ${m.watch.map((x) => `${x.n} for ${nm(x.id)} (${x.boomAt}+: ${x.boom}%, under ${x.bustAt}: ${x.bust}%)`).join("; ")}${m.stacks.length ? ` | stacks ${m.stacks.map((k) => `${k.qb}+${k.rec}`).join(", ")}` : ""}${m.holes ? ` | holes ${m.holes.map((x) => `${x.n} (${nm(x.id)}, ${x.why})`).join(", ")} -> ${nm(m.h)} ${Math.round(m.psimFixed * 100)}% if fixed` : ""}`);
 }
 // In-game win chance history: GitHub saves one point per update while a week is under way
 // (history/live_<year>.json, kept in the repo). Local builds only read it.
