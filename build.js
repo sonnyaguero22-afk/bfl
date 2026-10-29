@@ -202,18 +202,13 @@ for (const year of years) {
   // Live scores for the week in progress
   if (exists(`wk_${year}_${L.status.currentMatchupPeriod}.json`)) {
     const W = load(`wk_${year}_${L.status.currentMatchupPeriod}.json`);
-    { // TEMP: which matchup fields ESPN sends (looking for its own win probability)
-      const sc = W.schedule.find((x) => x.matchupPeriodId === L.status.currentMatchupPeriod && x.away) || {}, keys = (o, p = "") => Object.entries(o || {}).flatMap(([k, v]) => (v && typeof v === "object" && !Array.isArray(v) && p.split(".").length < 3 ? keys(v, p + k + ".") : [p + k]));
-      console.log(`::notice::ESPN matchup fields: ${keys({ ...sc, home: { ...sc.home, rosterForCurrentScoringPeriod: undefined, rosterForMatchupPeriod: undefined }, away: undefined }).filter((k) => !/roster/i.test(k)).join(", ")}`);
-      const hits = JSON.stringify(sc).match(/"[^"]*(prob|odds|winPct|chance)[^"]*"\s*:\s*[^,}]+/gi);
-      console.log(`::notice::ESPN probability-like fields: ${hits ? hits.slice(0, 10).join(" | ") : "none"}`);
-    }
     for (const m of matchups) {
       if (m.win !== null || m.wk !== L.status.currentMatchupPeriod) continue;
       const s = W.schedule.find((x) => x.matchupPeriodId === m.wk && x.home.teamId === m.h);
       if (!s) continue;
       m.live = true;
       m.on = gamesOn; // an NFL game is being played right now
+      if (s.home.winProbability != null) m.espn = Math.round(s.home.winProbability * 1000) / 1000; // ESPN's own win chance for the home team
       m.hp = r2(s.home.totalPointsLive || 0);
       m.ap = r2(s.away.totalPointsLive || 0);
       // Live projected finals: points so far plus what each starter is still expected to score.
@@ -414,7 +409,7 @@ for (const s of seasons) for (const m of s.matchups) {
   m.stacks = [0, 1].flatMap((k) => { const L = m._sides[k].filter((p) => p.left > 0); return L.filter((p) => p.pos === "QB").flatMap((q) => L.filter((r) => (r.pos === "WR" || r.pos === "TE") && r.pro === q.pro).map((r) => ({ id: k ? m.a : m.h, qb: q.n, rec: r.n }))); });
   delete m._sides;
   const nm = (id) => s.teams.find((t) => t.id === id).name;
-  console.log(`::notice::Week ${m.wk}: ${nm(m.h)} ${Math.round(m.psim * 100)}% vs ${nm(m.a)} | watch ${m.watch.map((x) => `${x.n} for ${nm(x.id)} (${x.boomAt}+: ${x.boom}%, under ${x.bustAt}: ${x.bust}%)`).join("; ")}${m.stacks.length ? ` | stacks ${m.stacks.map((k) => `${k.qb}+${k.rec}`).join(", ")}` : ""}${m.holes ? ` | holes ${m.holes.map((x) => `${x.n} (${nm(x.id)}, ${x.why})`).join(", ")} -> ${nm(m.h)} ${Math.round(m.psimFixed * 100)}% if fixed` : ""}`);
+  console.log(`::notice::Week ${m.wk}: ${nm(m.h)} ${Math.round(m.psim * 100)}%${m.espn != null ? ` (ESPN ${Math.round(m.espn * 100)}%)` : ""} vs ${nm(m.a)} | watch ${m.watch.map((x) => `${x.n} for ${nm(x.id)} (${x.boomAt}+: ${x.boom}%, under ${x.bustAt}: ${x.bust}%)`).join("; ")}${m.stacks.length ? ` | stacks ${m.stacks.map((k) => `${k.qb}+${k.rec}`).join(", ")}` : ""}${m.holes ? ` | holes ${m.holes.map((x) => `${x.n} (${nm(x.id)}, ${x.why})`).join(", ")} -> ${nm(m.h)} ${Math.round(m.psimFixed * 100)}% if fixed` : ""}`);
 }
 // Pregame win chances, frozen at kickoff for the Report Card (history/pregame_<year>.json, saved by GitHub):
 // each game's last win chance before any points were scored, as the lineups were set then
@@ -424,7 +419,7 @@ if (process.env.GITHUB_ACTIONS === "true") for (const s of seasons) {
   let changed = false;
   for (const m of s.matchups) if (m.live && m.psim != null && !m.hp && !m.ap) {
     const k = `${m.wk}-${m.h}-${m.a}`;
-    if (!pre[k] || pre[k].p !== m.psim || pre[k].fixed !== m.psimFixed) { pre[k] = { p: m.psim, fixed: m.psimFixed, odds: winOdds(s, m), at: new Date().toISOString() }; changed = true; }
+    if (!pre[k] || pre[k].p !== m.psim || pre[k].fixed !== m.psimFixed || pre[k].espn !== m.espn) { pre[k] = { p: m.psim, fixed: m.psimFixed, odds: winOdds(s, m), espn: m.espn, at: new Date().toISOString() }; changed = true; }
   }
   if (changed) { fs.mkdirSync(HISTORY, { recursive: true }); fs.writeFileSync(f, JSON.stringify(pre)); }
 }
