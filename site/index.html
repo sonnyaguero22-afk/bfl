@@ -409,6 +409,15 @@ table.compact .team { min-width: 0; }
 .hunt small { display: block; font-size: 11.5px; line-height: 1.35; }
 .hunt.out { opacity: .55; }
 @media (max-width: 860px) { .picwrap { grid-template-columns: 1fr; } .bracket { grid-auto-flow: row; } .bcol:not(.bfinal) .bgame::after { display: none; } }
+.bowlwrap { margin-bottom: 22px; }
+.bowlgame { background: linear-gradient(135deg, var(--gold-soft), var(--surface) 70%); border: 1.5px solid var(--gold); box-shadow: 0 0 0 4px var(--gold-soft); }
+.bowlwrap .bowlgame { max-width: 720px; margin: 0 auto; }
+.bowlwrap .bowlgame .pts { font-size: 30px; }
+.bowlhead { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; padding: 12px 16px 0; color: var(--gold); font-weight: 800; letter-spacing: .02em; font-size: 15px; text-transform: uppercase; }
+.bowlhead small { font-weight: 600; text-transform: none; letter-spacing: 0; color: var(--muted); font-size: 12.5px; }
+.sbgame.bowlgame .bowlhead { padding: 0 0 6px; font-size: 12px; }
+h3.subhead { margin: 0 0 10px; font-size: 15px; color: var(--muted); }
+.confetti { position: absolute; width: 7px; height: 11px; border-radius: 2px; pointer-events: none; z-index: 60; }
 .watch { padding: 10px 14px 12px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
 .wname, .wname .plink, .pl.watchp .nm > .plink, .pl.watchp .nm > b { color: var(--gold); font-weight: 700; }
 .watch .k { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
@@ -771,30 +780,56 @@ function lineupWeek(s, wk, id) {
   const bpts = bench.filter((p) => p.slot === "BN").reduce((a, p) => a + p.pts, 0);
   return `${start.map(row).join("")}<div class="bnhead"><span>Bench</span><span class="num">${f1(bpts)} pts left on bench</span></div>${bench.map(row).join("")}`;
 }
+// Playoff rounds by name. The Buckaroo Bowl is the winners-bracket game in the last round
+// (two rounds with 3 or 4 playoff teams, one with 2).
+const bowlWeek = (s) => s.regWeeks + (s.playoffTeams >= 3 ? 2 : 1);
+const isBowl = (s, m) => m.tier === "WINNERS_BRACKET" && m.wk === bowlWeek(s);
+const roundName = (s, m) => (isBowl(s, m) ? `Buckaroo Bowl ${roman(s.year - D.firstYear + 1)}` : m.tier === "WINNERS_BRACKET" ? (m.wk === bowlWeek(s) - 1 ? "Semifinal" : "Playoffs") : m.tier === "WINNERS_CONSOLATION_LADDER" ? "3rd Place" : m.tier === "LOSERS_CONSOLATION_LADDER" ? "Consolation" : null);
+// Confetti from both ends of the champion's name, the first time a finished Bowl is opened (once per visit)
+const celebrated = new Set();
+function celebrate() {
+  const el = document.querySelector("[data-champ]");
+  if (!el || celebrated.has(el.dataset.champ)) return;
+  celebrated.add(el.dataset.champ);
+  if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const r = el.getBoundingClientRect(), colors = ["#ffd60a", "#b8860b", "#0a84ff", "#30d158", "#ff453a", "#ffffff"];
+  for (let i = 0; i < 80; i++) {
+    const d = document.createElement("i"), left = i % 2 === 0, dx = (left ? -1 : 1) * (30 + Math.random() * 170), dy = -(50 + Math.random() * 170);
+    d.className = "confetti"; d.style.background = colors[i % colors.length];
+    d.style.left = `${(left ? r.left : r.right) + window.scrollX}px`; d.style.top = `${r.top + r.height / 2 + window.scrollY}px`;
+    document.body.appendChild(d);
+    d.animate([{ transform: "translate(0, 0) rotate(0deg)", opacity: 1 }, { transform: `translate(${dx}px, ${dy}px) rotate(${Math.random() * 720}deg)`, opacity: 1, offset: 0.55 }, { transform: `translate(${dx * 1.25}px, ${dy + 260}px) rotate(${Math.random() * 1080}deg)`, opacity: 0 }],
+      { duration: 1500 + Math.random() * 1000, easing: "cubic-bezier(.2, .7, .3, 1)", delay: Math.random() * 150 }).onfinish = () => d.remove();
+  }
+}
 function weekly(s) {
   const wk = state.week && s.weeks.includes(state.week) ? state.week : (s.done ? s.weeks[0] : s.curWeek);
   state.week = wk;
-  const bar = `<div class="weekbar" aria-label="Week">${s.weeks.map((w) => `<button data-week="${w}" class="${w > s.regWeeks ? "po" : ""}" aria-current="${w === wk}">${w > s.regWeeks ? "Playoffs R" + (w - s.regWeeks) : "Wk " + w}</button>`).join("")}</div>`;
+  const bar = `<div class="weekbar" aria-label="Week">${s.weeks.map((w) => `<button data-week="${w}" class="${w > s.regWeeks ? "po" : ""}" aria-current="${w === wk}">${w === bowlWeek(s) ? "🏆 Bowl" : w > s.regWeeks ? (w === bowlWeek(s) - 1 ? "Semifinals" : "Playoffs R" + (w - s.regWeeks)) : "Wk " + w}</button>`).join("")}</div>`;
   const ms = s.matchups.filter((m) => m.wk === wk);
   // Record as it stood after this week's game (or going into it, if it's still live)
   const recNow = Object.fromEntries(asOf(s, wk).rows.map((x) => [x.t.id, x]));
   const recLabel = (id) => { const x = recNow[id]; const po = wk > s.regWeeks;
     return `${recStr(x)}${po ? " reg. season" : ms.some((m) => m.live) ? " going in" : ""}${!po && x.streak ? ` · <span class="${x.streak[0] === "W" ? "w" : x.streak[0] === "L" ? "l" : ""}">${x.streak}</span>` : ""}`; };
-  const tierName = { WINNERS_BRACKET: "Playoffs", LOSERS_CONSOLATION_LADDER: "Consolation", WINNERS_CONSOLATION_LADDER: "Consolation" };
   const cards = ms.map((m, i) => {
+    const bowl = isBowl(s, m), champ = bowl && m.win !== null && m.win !== 0 ? m.win : null;
     const key = `${wk}-${m.h}`, open = state.open === key;
     const winLabel = (id) => { const p = teamWin(s, m, id); if (p == null) return "";
       if (m.win === null) return `<br><span class="odds">${m.on ? "Live win chance" : "Win chance"} <b>${winPct(p)}</b>${toGo(m, id)}</span>`;
       const upset = m.win === id && p < 0.35;
       return `<br><span class="odds">${upset ? `<span class="pill gold">Upset</span> ` : ""}Was ${winPct(p)} to win</span>`; };
-    const side = (id, p) => { const t = s.byId[id]; const lost = m.win !== null && m.win !== id && m.win !== 0; return `<div class="side${lost ? " lost" : ""}"><span class="team">${badge(t)}<span><b>${esc(nameAt(t, m.wk))}</b><small>${mgrName(mgrAt(t, m.wk))}${kickedAt(t, m.wk) ? "*" : ""} · ${recLabel(id)}${winLabel(id)}</small></span></span><span class="pts">${f2(p)}</span></div>`; };
+    const side = (id, p) => { const t = s.byId[id]; const lost = m.win !== null && m.win !== id && m.win !== 0; return `<div class="side${lost ? " lost" : ""}"><span class="team">${badge(t)}<span><b${champ === id ? ` data-champ="${s.year}"` : ""}>${champ === id ? "🏆 " : ""}${esc(nameAt(t, m.wk))}</b><small>${mgrName(mgrAt(t, m.wk))}${kickedAt(t, m.wk) ? "*" : ""} · ${recLabel(id)}${winLabel(id)}</small></span></span><span class="pts">${f2(p)}</span></div>`; };
     const margin = Math.abs(m.hp - m.ap);
-    return `<div class="box game${open ? " open" : ""}"><button data-open="${key}" aria-expanded="${open}">${side(m.h, m.hp)}${side(m.a, m.ap)}
-      <div class="gmeta"><span>${m.on ? `<span class="pill live">● Live</span>` : m.live ? `<span class="pill">In Progress</span>` : tierName[m.tier] ? `<span class="pill gold">${tierName[m.tier]}</span>` : m.win !== null ? `Margin ${f2(margin)}` : ""}</span><span>${open ? "Hide Lineups ▲" : "Show Lineups ▼"}</span></div></button>
+    return `<div class="box game${open ? " open" : ""}${bowl ? " bowlgame" : ""}" data-tier="${bowl ? "bowl" : m.tier || ""}">${bowl ? `<div class="bowlhead"><span>🏆 ${roundName(s, m)}</span><small>${champ ? `${esc(s.byId[champ].name)} are champions` : "The championship"} · ${s.year}</small></div>` : ""}<button data-open="${key}" aria-expanded="${open}">${side(m.h, m.hp)}${side(m.a, m.ap)}
+      <div class="gmeta"><span>${m.on ? `<span class="pill live">● Live</span>` : m.live ? `<span class="pill">In Progress</span>` : roundName(s, m) && !bowl ? `<span class="pill${m.tier === "WINNERS_BRACKET" ? " gold" : ""}">${roundName(s, m)}</span>` : m.win !== null ? `Margin ${f2(margin)}` : ""}</span><span>${open ? "Hide Lineups ▲" : "Show Lineups ▼"}</span></div></button>
       ${open ? `${watchHtml(s, m)}<div class="wpwrap">${wpChart(s, m)}</div><div class="lineups"><div>${lineupCol(s, wk, m.h)}</div><div>${lineupCol(s, wk, m.a)}</div></div>` : ""}</div>`;
   }).join("");
   const byes = s.byes.filter((b) => b.wk === wk).map((b) => `<span class="pill">${esc(s.byId[b.h].name)} has a bye</span>`).join(" ");
-  return bar + `<div class="games">${cards}</div>${byes ? `<p class="note">${byes}</p>` : ""}<p class="note">Click a game to see both starting lineups and the bench.${ms.some((m) => kickedAt(s.byId[m.h], wk) || kickedAt(s.byId[m.a], wk)) ? " * Kicked for inactivity: the team played on without its manager, and the game still counts on his record." : ""}${!s.done ? " Scores for the week in progress are a snapshot from when the data was last pulled." : ""}</p>`;
+  // Championship week: the Bowl on its own at the top, everything else under its own heading
+  const html = cards.split(/(?=<div class="box game)/);
+  const bowlCard = html.filter((c) => c.includes('data-tier="bowl"')).join(""), rest = html.filter((c) => !c.includes('data-tier="bowl"')).join("");
+  const grid = bowlCard ? `<div class="bowlwrap">${bowlCard}</div>${rest ? `<h3 class="subhead">${ms.some((m) => m.tier === "WINNERS_CONSOLATION_LADDER") ? "3rd Place and Consolation" : "Consolation"}</h3><div class="games">${rest}</div>` : ""}` : `<div class="games">${cards}</div>`;
+  return bar + `${grid}${byes ? `<p class="note">${byes}</p>` : ""}<p class="note">Click a game to see both starting lineups and the bench.${ms.some((m) => kickedAt(s.byId[m.h], wk) || kickedAt(s.byId[m.a], wk)) ? " * Kicked for inactivity: the team played on without its manager, and the game still counts on his record." : ""}${!s.done ? " Scores for the week in progress are a snapshot from when the data was last pulled." : ""}</p>`;
 }
 
 function draft(s) {
@@ -1402,7 +1437,7 @@ function home() {
   // Scoreboard
   const sbSide = (m, id, p) => { const t = s.byId[id], lost = m.win !== null && m.win !== id && m.win !== 0, lead = m.live && p > (id === m.h ? m.ap : m.hp);
     return `<div class="sbrow${lost ? " lost" : ""}">${badge(t, 1)}<span class="sbname">${esc(t.name)}<small>${rec[id] ? recStr(rec[id]) : ""}${m.win === null && teamWin(s, m, id) != null ? ` · ${winPct(teamWin(s, m, id))} to win` : ""}${toGo(m, id)}</small></span><span class="sbpts${lead ? " lead" : ""}">${f1(p)}</span></div>`; };
-  const scoreCards = games.map((m) => `<button class="box sbgame" data-goweek="${s.year}|${wk}"><div class="sbtop"><span>${m.on ? `<span class="pill live">● Live</span>` : m.live ? `<span class="pill">In Progress</span>` : m.win !== null ? `<span class="pill">Final</span>` : `<span class="pill">Upcoming</span>`}</span><span class="muted">${m.tier && m.tier !== "NONE" ? (m.tier === "WINNERS_BRACKET" ? "Playoffs" : "Consolation") : ""}</span></div>${sbSide(m, m.h, m.hp)}${sbSide(m, m.a, m.ap)}${wpChart(s, m, true)}</button>`).join("");
+  const scoreCards = [...games].sort((a, b) => isBowl(s, b) - isBowl(s, a)).map((m) => `<button class="box sbgame${isBowl(s, m) ? " bowlgame" : ""}" data-goweek="${s.year}|${wk}">${isBowl(s, m) ? `<div class="bowlhead"><span>🏆 ${roundName(s, m)}</span></div>` : ""}<div class="sbtop"><span>${m.on ? `<span class="pill live">● Live</span>` : m.live ? `<span class="pill">In Progress</span>` : m.win !== null ? `<span class="pill">Final</span>` : `<span class="pill">Upcoming</span>`}</span><span class="muted">${m.tier && m.tier !== "NONE" ? (m.tier === "WINNERS_BRACKET" ? "Playoffs" : "Consolation") : ""}</span></div>${sbSide(m, m.h, m.hp)}${sbSide(m, m.a, m.ap)}${wpChart(s, m, true)}</button>`).join("");
 
   // Standings snapshot with odds
   const rows = asOf(s, null).rows;
@@ -1627,6 +1662,7 @@ function render() {
   $("#app").innerHTML = v === "season" ? seasonView() : v === "mgr" ? mgrView() : v === "managers" ? managers() : v === "players" ? playersView() : v === "player" ? playerView() : v === "home" ? home() : v === "news" ? newsView() : v === "rankings" ? rankingsView() : v === "article" ? articleView() : v === "social" ? socialView() : v === "odds" ? oddsView() : v === "map" ? mapView() : v === "overrated" ? overratedView() : v === "transactions" ? txView() : v === "h2h" ? h2h() : v === "records" ? records() : trophies();
   document.title = "Buckaroo League History";
   if (v === "map") initMap();
+  if (v === "season") setTimeout(celebrate, 200);
   const cur = $(".yr[aria-current=true]"); if (cur) cur.scrollIntoView({ block: "nearest", inline: "nearest" });
 }
 $("#app").addEventListener("click", (e) => {
