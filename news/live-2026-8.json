@@ -113,11 +113,52 @@
    "team": "",
    "about": "move",
    "at": "2026-10-29T08:50:34.205Z"
+  },
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "Ghostu-Spider SZN (Zoe) has cut Jaylen Waddle, 50.9 points over seven weeks, and picked up rookie WR KC Concepcion, who has no points yet. That's a bold swap on a week 8 morning.",
+   "heat": 4,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-10-29T18:13:27.958Z"
+  },
+  {
+   "author": "Web Slinger Wire",
+   "handle": "@SZNSpiderFan",
+   "text": "Z² dropping Waddle for a guy with zero points?? Either she sees something or we're all about to find out. Locked in or lost in the sauce, no in between.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-10-29T18:25:27.958Z"
+  },
+  {
+   "author": "Sal Benedetto",
+   "handle": "@SalBetsBig",
+   "text": "Kicker Butker getting dropped by JMoney is a LOCK to haunt him by Sunday night. Nobody cuts a kicker and walks away clean, I've been burned before.",
+   "heat": 6,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-10-29T18:47:23.076Z"
+  },
+  {
+   "author": "Dawgs",
+   "handle": "@Dawgs",
+   "text": "Welcome to the Kennel, Falcons D/ST! Ravens D/ST, thanks for the 28 points.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Dawgs",
+   "about": "move",
+   "at": "2026-10-29T20:41:17.618Z"
   }
  ],
  "batches": [
   "2026-10-28T22:13:59.365Z",
   "2026-10-29T06:15:44.122Z",
-  "2026-10-29T15:15:49.125Z"
+  "2026-10-29T15:15:49.125Z",
+  "2026-10-29T20:41:17.618Z"
  ]
 }
