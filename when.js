@@ -1,6 +1,6 @@
 // In-world timestamps for news stories and their social posts.
 // Each kind of story has a natural time in the NFL week (recaps after Monday night's game, power
-// rankings Tuesday morning, previews Wednesday evening...). A story written later than that, such
+// rankings Tuesday morning, previews two hours before Thursday night's game...). A story written later than that, such
 // as a backfill, is dated when it would have run; one written earlier keeps its real time.
 // Social posts are timed in minutes before (negative) or after their story.
 
@@ -26,7 +26,8 @@ function natural(a, periods = {}) {
   switch (a.type) {
     case "recap": return eastern(y, thursday(y, last(a.wk)) + 5, 0, 25 + j(40));     // Tuesday, just after Monday night
     case "rankings": return eastern(y, thursday(y, last(a.wk)) + 5, 9, j(25));       // Tuesday morning
-    case "preview": return eastern(y, thursday(y, first(a.wk)) - 1, 18, j(90));     // Wednesday evening
+    case "preview": return eastern(y, thursday(y, first(a.wk)), 18, 5 + j(20));      // two hours before Thursday night's game
+    case "final": return eastern(y, thursday(y, first(a.wk)) + 3, 11, 40 + j(15));   // Sunday, after inactives, before the 1pm games
     case "trade": return eastern(y, thursday(y, first(a.wk)) - 1, 13, j(180));      // midweek before the trade's first game
     case "draft": return eastern(y, openerDay(y) - 4, 20, j(60));                    // the Sunday before opening night
     case "review": return null;

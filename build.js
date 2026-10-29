@@ -178,7 +178,7 @@ for (const year of years) {
 
   // Share of each NFL team's game still to play this week: 1 before kickoff, 0 when final
   // or on bye, in between by the game clock. Null when the saved scoreboard is for another week.
-  let nflClock = null, gamesOn = false;
+  let nflClock = null, gamesOn = false, kicks;
   if (exists("nfl_scoreboard.json")) {
     const sb = load("nfl_scoreboard.json");
     if (sb.season && sb.season.year === +year && sb.week && sb.week.number === L.status.latestScoringPeriod) {
@@ -191,6 +191,7 @@ for (const year of years) {
       }
       nflClock = (proTeamId) => games[proTeamId] ?? 0;
       gamesOn = (sb.events || []).some((ev) => ev.status && ev.status.type && ev.status.type.state === "in");
+      kicks = [...new Set((sb.events || []).map((ev) => ev.date && new Date(ev.date).toISOString()).filter(Boolean))].sort(); // this NFL week's kickoff times, for when.js and news.js
     }
   }
   // A player with no stats only counts as out once his NFL game is over (earlier weeks always are)
@@ -221,16 +222,17 @@ for (const year of years) {
           const left = nflClock ? nflClock(p.proTeamId) : nflBye[p.proTeamId] === m.wk ? 0 : 1;
           return { n: p.fullName, pos: POS[p.defaultPositionId] || "", pro: PRO[p.proTeamId] || `FA-${p.id}`, proj: pj ? pj.appliedTotal : 0, pts: e.playerPoolEntry.appliedStatTotal || 0, left };
         }));
-      // Before kickoff: starters on bye or ruled out, and the lineup with each swapped for the best bench player
-      // at his position, so previews can tell "as set" from "if he fixes it"
-      if (m._sides && m.hp === 0 && m.ap === 0) {
+      // Starters on bye or ruled out whose spot can still be filled, and the lineup with each swapped for the best
+      // bench player at his position whose game hasn't started, so stories can tell "as set" from "if he fixes it"
+      if (m._sides && m.win === null) {
         const OUT = ["OUT", "INJURY_RESERVE", "SUSPENSION"];
         m.holes = []; m._fixed = [s.home, s.away].map((side, k) => {
           const es = (side.rosterForCurrentScoringPeriod || { entries: [] }).entries, used = new Set();
           const row = (e) => { const p = e.playerPoolEntry.player, pj = (p.stats || []).find((x) => x.statSourceId === 1 && x.scoringPeriodId === m.wk);
-            return { n: p.fullName, pos: POS[p.defaultPositionId] || "", pro: PRO[p.proTeamId] || `FA-${p.id}`, proj: pj ? pj.appliedTotal : 0, pts: 0, left: nflBye[p.proTeamId] === m.wk ? 0 : 1,
-              why: nflBye[p.proTeamId] === m.wk ? "on bye" : OUT.includes(p.injuryStatus) ? "ruled out" : null }; };
-          const bench = es.filter((e) => e.lineupSlotId === 20).map(row).filter((p) => !p.why);
+            const bye = nflBye[p.proTeamId] === m.wk, left = nflClock ? nflClock(p.proTeamId) : bye ? 0 : 1;
+            return { n: p.fullName, pos: POS[p.defaultPositionId] || "", pro: PRO[p.proTeamId] || `FA-${p.id}`, proj: pj ? pj.appliedTotal : 0, pts: e.playerPoolEntry.appliedStatTotal || 0, left,
+              why: bye ? "on bye" : left === 1 && OUT.includes(p.injuryStatus) ? "ruled out" : null }; };
+          const bench = es.filter((e) => e.lineupSlotId === 20).map(row).filter((p) => !p.why && p.left === 1);
           return es.filter((e) => e.lineupSlotId !== 20 && e.lineupSlotId !== 21).map(row).map((p) => {
             if (!p.why) return p;
             m.holes.push({ id: k ? m.a : m.h, n: p.n, pos: p.pos, why: p.why });
@@ -277,7 +279,7 @@ for (const year of years) {
 
   seasons.push({
     year: +year, name: L.settings.name, done, curWeek: L.status.currentMatchupPeriod, regWeeks,
-    on: matchups.some((m) => m.on), nflByes: done ? undefined : nflByes, playoffTeams: ss.playoffTeamCount, periods: ss.matchupPeriods, teams, future, matchups, byes, lineups, draft, moves, trades: finalTrades, rosters, wp,
+    on: matchups.some((m) => m.on), nflByes: done ? undefined : nflByes, kicks: done ? undefined : kicks, playoffTeams: ss.playoffTeamCount, periods: ss.matchupPeriods, teams, future, matchups, byes, lineups, draft, moves, trades: finalTrades, rosters, wp,
   });
   for (const w of [L.status.latestScoringPeriod - 1, L.status.latestScoringPeriod]) if (lineups[w]) { const all = Object.values(lineups[w]).flat(); console.log(`::notice::${year} week ${w}: on bye ${all.filter((p) => p.st === "bye").map((p) => p.n).join(", ") || "none"}; out ${all.filter((p) => p.st === "out").map((p) => p.n).join(", ") || "none"}; games on now: ${gamesOn}`); }
   if (!done) {

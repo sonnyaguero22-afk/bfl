@@ -17,7 +17,7 @@ Secrets: `ESPN_S2`, `ESPN_SWID`, `ANTHROPIC_API_KEY`, `LEAGUE_LORE` (original ni
 ## Working from a cloud session
 
 - The session can't reach ESPN or the live site, and can't read Actions logs or secrets. Check runs through annotations instead: `build.js`, `news.js` and `live.js` print `::notice::` and `::warning::` lines (lore lengths, trades found, byes and outs, the playoff picture, each week's win chances with ESPN's, Ones to Watch, same-game correlations). Read them with `gh api repos/sonnyaguero22-afk/bfl/check-runs/<job id>/annotations`.
-- Start a run by hand with `gh api -X POST repos/sonnyaguero22-afk/bfl/actions/workflows/update.yml/dispatches -f ref=main`; a manual run may also write the week's preview early.
+- Start a run by hand with `gh api -X POST repos/sonnyaguero22-afk/bfl/actions/workflows/update.yml/dispatches -f ref=main`; a manual run may write the week's power rankings early, but never the preview or final word (they wait for lineups).
 - Local builds only have the archived seasons (2023 to 2025), not the season in progress. Test site changes by building, copying `public/` to a scratch folder, faking data there (for example marking a 2025 week live), and rendering with Playwright at desktop and 360 to 400px widths; check for page errors and horizontal scroll.
 - Work on `main` and push; every push runs the workflow and deploys. Rewriting a story means deleting its JSON in `news/` and pushing; each one costs API credits, so ask before rewriting many.
 
@@ -29,7 +29,8 @@ Story types in `news.js`, each dated in-world by `when.js`:
 | --- | --- | --- |
 | recap | after Monday night's game | awards, Trade Watch, playoff stakes, team bios, social |
 | rankings | Tuesday 9am ET | NFL.com-style power rankings, own tab (News, Power Rankings) |
-| preview | Wednesday 6pm to Sunday 1pm ET | storylines plus a four-person pundit panel picking every game |
+| preview | 2 hours before the week's first NFL kickoff | storylines plus a four-person pundit panel picking every game (graded); win chances assume holes get filled, which are mentioned in passing at most |
+| final | Sunday, 75 minutes before the 1pm games | short Sonnet follow-up: lineup moves and win chance changes since the preview, Thursday's points, holes still unfilled |
 | trade | as soon as a trade is seen | before/after odds from frozen week-end snapshots |
 | draft | each season | draft-night coverage, no hindsight |
 | review, history, profile | when a season ends | season review, the league history (History tab), manager profiles |
