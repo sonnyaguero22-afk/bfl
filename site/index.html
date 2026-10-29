@@ -640,7 +640,7 @@ const board = (title, list, val, who, sub, note) => !list.length ? "" : `<div cl
   ${list.length > 10 ? `<button class="morebtn" data-more aria-expanded="false">Show Top ${list.length}</button>` : ""}${note ? `<div class="ctx">${note}</div>` : ""}</div>`;
 
 // ---------- Routing ----------
-const TABS = [["standings", "Standings"], ["odds", "Title Odds"], ["weekly", "Weekly Scores"], ["draft", "Draft Board"], ["trades", "Trades"], ["moves", "Adds & Drops"], ["rosters", "Rosters"]];
+const TABS = [["standings", "Standings"], ["playoffs", "Playoffs"], ["odds", "Title Odds"], ["weekly", "Weekly Scores"], ["draft", "Draft Board"], ["trades", "Trades"], ["moves", "Adds & Drops"], ["rosters", "Rosters"]];
 const state = { view: "home", year: lastYear, tab: "standings", week: null, open: null, moveTeam: "all", rosterTeam: null };
 
 function parseHash() {
@@ -684,11 +684,12 @@ function seasonView() {
   const leader = s.standings[0];
   const champ = s.done ? s.teams.find((t) => t.final === 1) : null;
   const status = s.done ? `Champion: ${esc(champ.name)} (${mgrName(champ.mgr)})` : `Week ${s.curWeek} of ${s.regWeeks} · regular season in progress`;
-  const tabBody = { standings, odds: oddsTab, weekly, draft, trades, moves, rosters }[state.tab](s);
+  if (state.tab === "playoffs" && !hasPlayoffs(s)) state.tab = "standings";
+  const tabBody = { standings, playoffs: bracketHtml, odds: oddsTab, weekly, draft, trades, moves, rosters }[state.tab](s);
   return `<div class="vhead"><div><div class="eyebrow">Buckaroo Bowl ${roman(n)}</div><h2>${y} Season</h2><p>${status}</p></div>
     ${!s.done ? `<span class="pill live">● In Progress</span>` : `<span class="pill gold">Final</span>`}</div>
     ${(s.notes || []).map((n) => `<p class="callout">${esc(n)}</p>`).join("")}
-    <div class="tabs" role="tablist">${TABS.map(([k, l]) => `<button data-go="${y}-${k}" aria-current="${state.tab === k}">${l}</button>`).join("")}</div>
+    <div class="tabs" role="tablist">${TABS.filter(([k]) => k !== "playoffs" || hasPlayoffs(s)).map(([k, l]) => `<button data-go="${y}-${k}" aria-current="${state.tab === k}">${l}</button>`).join("")}</div>
     ${tabBody}`;
 }
 
@@ -1631,7 +1632,7 @@ function socialView() {
 // Playoff Picture: the bracket if the season ended today (seeds, projected matchups, what next week is worth,
 // clinches), with the teams still chasing a spot beside it
 function pictureHtml(s) {
-  if (s.done || s.curWeek > s.regWeeks) return bracketHtml(s);
+  if (s.done || s.curWeek > s.regWeeks) return ""; // the played bracket lives on the season's Playoffs tab
   const P = s.odds && s.odds.picture;
   if (!P) return "";
   const po = s.playoffTeams, rows = s.standings, cut = rows[po - 1], nm = (id) => esc(s.byId[id].name);
@@ -1662,6 +1663,8 @@ function pictureHtml(s) {
     <div class="huntcol"><div class="k">In the Hunt</div>${hunt || `<small class="muted">Everyone's in.</small>`}</div></div>
     <p class="note">Seeds use the league's tiebreakers (head-to-head, then points for). The percentage beside a team in a game is its projected chance to win that game. "With a win" and "with a loss" are playoff odds depending on next week's result. Clinches, eliminations and scenarios are exact and show as soon as one is mathematically possible; until the last three weeks they never rely on a tiebreaker.</p></section>`;
 }
+// A season's Playoffs tab appears once its playoffs have started
+const hasPlayoffs = (s) => s.matchups.some((m) => m.tier === "WINNERS_BRACKET");
 // The playoff bracket as it was played (or is being played): seeds, each round's scores, the champion
 function bracketHtml(s) {
   const bw = bowlWeek(s), wb = s.matchups.filter((m) => m.tier === "WINNERS_BRACKET");
