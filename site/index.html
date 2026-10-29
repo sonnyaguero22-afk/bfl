@@ -822,7 +822,7 @@ function weekly(s) {
     const margin = Math.abs(m.hp - m.ap);
     return `<div class="box game${open ? " open" : ""}${bowl ? " bowlgame" : ""}" data-tier="${bowl ? "bowl" : m.tier || ""}">${bowl ? `<div class="bowlhead"><span>🏆 ${roundName(s, m)}</span><small>${champ ? `${esc(s.byId[champ].name)} are champions` : "The championship"} · ${s.year}</small></div>` : ""}<button data-open="${key}" aria-expanded="${open}">${side(m.h, m.hp)}${side(m.a, m.ap)}
       <div class="gmeta"><span>${m.on ? `<span class="pill live">● Live</span>` : m.live ? `<span class="pill">In Progress</span>` : roundName(s, m) && !bowl ? `<span class="pill${m.tier === "WINNERS_BRACKET" ? " gold" : ""}">${roundName(s, m)}</span>` : m.win !== null ? `Margin ${f2(margin)}` : ""}</span><span>${open ? "Hide Lineups ▲" : "Show Lineups ▼"}</span></div></button>
-      ${open ? `${watchHtml(s, m)}<div class="wpwrap">${wpChart(s, m)}</div><div class="lineups"><div>${lineupCol(s, wk, m.h)}</div><div>${lineupCol(s, wk, m.a)}</div></div>` : ""}</div>`;
+      ${open ? `${watchHtml(s, m)}${((c) => (c ? `<div class="wpwrap">${c}</div>` : ""))(wpChart(s, m))}<div class="lineups"><div>${lineupCol(s, wk, m.h)}</div><div>${lineupCol(s, wk, m.a)}</div></div>` : ""}</div>`;
   }).join("");
   const byes = s.byes.filter((b) => b.wk === wk).map((b) => `<span class="pill">${esc(s.byId[b.h].name)} has a bye</span>`).join(" ");
   // Championship week: the Bowl on its own at the top, everything else under its own heading
@@ -998,7 +998,10 @@ function oddsTab(s) {
 // ---------- In-game win chance chart (points saved by each update during games) ----------
 function wpChart(s, m, mini) {
   const pts = (s.wp || {})[`${m.wk}-${m.h}-${m.a}`];
-  if (!pts || pts.length < 2) return mini ? "" : `<p class="note" style="margin:10px 14px">The win chance graph fills in while the game is played. It updates every 15 minutes during games.</p>`;
+  // No graph yet: say it's coming only while the game is being played; before kickoff or for a game that
+  // finished without one (before live tracking began), leave the section out
+  const playing = m.live && (m.on || m.hp || m.ap);
+  if (!pts || pts.length < 2) return mini || !playing ? "" : `<p class="note" style="margin:10px 14px">The win chance graph fills in while the game is played. It updates every 15 minutes during games.</p>`;
   const W = 800, H = mini ? 60 : 210, L = mini ? 0 : 6, R = mini ? 0 : 56, T = 8, B = mini ? 8 : 28;
   const n = pts.length, x = (i) => L + (i * (W - L - R)) / (n - 1), y = (p) => T + (1 - p) * (H - T - B), mid = y(0.5);
   const th = s.byId[m.h], ta = s.byId[m.a], id = `wp${s.year}x${m.wk}x${m.h}x${m.a}${mini ? "m" : ""}`;
