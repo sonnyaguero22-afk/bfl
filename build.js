@@ -202,6 +202,12 @@ for (const year of years) {
   // Live scores for the week in progress
   if (exists(`wk_${year}_${L.status.currentMatchupPeriod}.json`)) {
     const W = load(`wk_${year}_${L.status.currentMatchupPeriod}.json`);
+    { // TEMP: which matchup fields ESPN sends (looking for its own win probability)
+      const sc = W.schedule.find((x) => x.matchupPeriodId === L.status.currentMatchupPeriod && x.away) || {}, keys = (o, p = "") => Object.entries(o || {}).flatMap(([k, v]) => (v && typeof v === "object" && !Array.isArray(v) && p.split(".").length < 3 ? keys(v, p + k + ".") : [p + k]));
+      console.log(`::notice::ESPN matchup fields: ${keys({ ...sc, home: { ...sc.home, rosterForCurrentScoringPeriod: undefined, rosterForMatchupPeriod: undefined }, away: undefined }).filter((k) => !/roster/i.test(k)).join(", ")}`);
+      const hits = JSON.stringify(sc).match(/"[^"]*(prob|odds|winPct|chance)[^"]*"\s*:\s*[^,}]+/gi);
+      console.log(`::notice::ESPN probability-like fields: ${hits ? hits.slice(0, 10).join(" | ") : "none"}`);
+    }
     for (const m of matchups) {
       if (m.win !== null || m.wk !== L.status.currentMatchupPeriod) continue;
       const s = W.schedule.find((x) => x.matchupPeriodId === m.wk && x.home.teamId === m.h);
