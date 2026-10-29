@@ -43,9 +43,40 @@
    "kind": "reporter",
    "team": "",
    "at": "2026-10-28T22:12:59.365Z"
+  },
+  {
+   "author": "Windy City Waiver Watch",
+   "handle": "@WindyCityWaivers",
+   "text": "Randy dropped Jaylin Noel after 0.7 points. Dropping a guy is easy, Randy. Trading one is the part he's never learned.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-10-29T06:15:44.122Z"
+  },
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "The fumblers have cut Jaylin Noel loose and he's a free agent. Managers needing WR depth will have a look. Not a surprise after a 0.7-point week.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-10-29T06:15:44.122Z"
+  },
+  {
+   "author": "Sal Benedetto",
+   "handle": "@SalBetsBig",
+   "text": "Randy cutting Noel is a LOCK to be the right call, and I won't hear otherwise. Anyone who grabs him is chasing ghosts.",
+   "heat": 4,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-10-29T06:15:44.122Z"
   }
  ],
  "batches": [
-  "2026-10-28T22:13:59.365Z"
+  "2026-10-28T22:13:59.365Z",
+  "2026-10-29T06:15:44.122Z"
  ]
 }
