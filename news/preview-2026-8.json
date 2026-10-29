@@ -1,0 +1,341 @@
+{
+ "id": "preview-2026-8",
+ "type": "preview",
+ "year": 2026,
+ "wk": 8,
+ "created": "2026-10-29T22:16:44.059Z",
+ "title": "Week 8 Preview: Rematch Week, and the Model Likes Kai to Topple the Hulk",
+ "dek": "Every matchup is a Week 1 rematch, the two 5-2 teams meet in a 51-49 coin flip, and the 6-1 juggernaut walks in as an underdog to a 2-5 team.",
+ "body": [
+  "Welcome to Rematch Week. Every game on the Week 8 slate is a replay of Week 1, and the headliner is the closest game of the season so far. Team Pillbert and The Horse is Hea are both 5-2, and the model has Philly at 49% at home, which is the analytics version of a shrug. Sonny took the Week 1 meeting 106.42 to 102.1 and leads the all-time series 6-5. The stakes are clean: the winner climbs to 96 or 97 percent playoff odds, and the loser slides into the mid-80s.",
+  "The swing players are obvious. If Jahmyr Gibbs hits 32 or more, Alan's win chance jumps to 73%, and if Gibbs is held under 10, it craters to 28%. On the other side, a 25-point day from Jaxon Smith-Njigba pushes Sonny to 69%, while a quiet one under 8 drops him to 35%. This is also Sonny's first big test with Ashton Jeanty and Christian Watson after last week's deal with Mekhi, and he brings the better scoring résumé (853.6 to 817.8) into a game that will likely come down to a handful of plays.",
+  "Now the strangest number on the board: No Banner only HULK is 6-1, has won three straight, leads the league with 927.4 points, and is an underdog. The model makes Dawgs a 54% favorite on the road, even though Brucie won the Week 1 meeting 177.86 to 98.36 and leads the series 6-3. Ja'Marr Chase is the reason to believe: 27 or more and Kai's chances rise to 75%, while Josh Allen at 32-plus gives Ramon a 65% shot and Allen under 15 sinks him to 27%. Ramon is playing with house money at 100% with a win and 97% with a loss, but for Mekhi at 2-5, the gap between 26% and 11% is the whole season.",
+  "The real swing game is Habibsters vs. Ghostu-Spider SZN, a pair of 3-4 teams trying to stay above the cut line. Habib is a 72% home favorite on a two-game streak and has outscored Zoe by 137 points this season, but Z² already won this matchup 129.56 to 108.6 in Week 1. A win pushes Kaushal to 58% playoff odds, and a loss drops him to 23%; Zoe's range is 40% to 12%. Puka Nacua is the heavy lever (27-plus makes it 87%), though even a Puka dud leaves Habibsters at 56%. Zoe counters with a Jordan Love and Tucker Kraft stack, the most Wisconsin lineup decision possible, and she'll need it, because a 20-point Tetairoa McMillan game only gets her to 45%.",
+  "Finally, The fumblers try to snap a four-game skid against Counting or not Counting GV, and the model is giving Randy a 68% chance to do it. Week 1 was a 146.16 to 75.96 rout, and Derrick Henry at 26-plus makes Randy an 88% favorite. He's also rolling out a Caleb Williams and Colston Loveland stack, and a win moves him to 38% playoff odds versus 19% with a loss. JMoney is 1-6 and hanging by a 2% thread, so he needs Joe Burrow to throw for 29-plus fantasy points just to make it a coin flip. Under 16, it's 18%."
+ ],
+ "social": [
+  {
+   "author": "Sal Benedetto",
+   "handle": "@SalBetsBig",
+   "text": "Week 8 picks are UP and I've got FOUR locks. Habibsters is the lock of the week. Horse, HULK, and yes, Counting or not Counting GV. I don't ride four-game losing streaks. Never have. Write it down.",
+   "when": 20,
+   "heat": 6,
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Fumbleheads Anonymous",
+   "handle": "@fumbleheads_anon",
+   "text": "Sal Benedetto said he doesn't ride four-game losing streaks and took a 1-6 team as a LOCK over us. Respectfully, sir, what.",
+   "when": 55,
+   "heat": 5,
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Gamma Ray Gary",
+   "handle": "@gammaraygary",
+   "text": "Nina Kessler: 'Records don't play this week's games; lineups do.' Cool. Our lineup is 6-1 with 927 points. Enjoy your lean on Dawgs, doc.",
+   "when": 95,
+   "heat": 4,
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Web Slinger Wendy",
+   "handle": "@spiderszn_stan",
+   "text": "Marcus Pell picking Ghostu-Spider SZN because 'rookies don't read the odds' is the only analysis I need this week. Love to Kraft, let's go.",
+   "when": 140,
+   "heat": 3,
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Habib Hive",
+   "handle": "@habibhive",
+   "text": "Marcus Pell saw a 72% favorite and two-time champ and said 'nah.' Contrarian for the clicks. Nina and Sal get it.",
+   "when": 210,
+   "heat": 4,
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Dawg Pound Dre",
+   "handle": "@dawgpounddre",
+   "text": "Dana AND Nina both on Dawgs. 2-5 and the smart money still knows. Can't sleep, too hyped. Chase 27+ or bust.",
+   "when": 525,
+   "heat": 3,
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Ghostu-Spider SZN",
+   "handle": "@GhostuSpiderSZN",
+   "text": "Matchday weekend. Jordan Love and Tucker Kraft, together in the lineup. We took this one 129.56 to 108.6 in Week 1. Let's run it back.",
+   "when": 2400,
+   "heat": 2,
+   "kind": "team",
+   "team": "Ghostu-Spider SZN"
+  }
+ ],
+ "teams": [],
+ "picks": [
+  {
+   "game": "Team Pillbert (Alan) vs The Horse is Hea (Sonny)",
+   "h": 4,
+   "a": 1,
+   "panel": [
+    {
+     "panelist": "Dana Whitfield",
+     "pick": "The Horse is Hea",
+     "confidence": "lean",
+     "take": "This is Sonny's first big test with Ashton Jeanty and Christian Watson after the deal with Mekhi, and that depth matters in a game the model calls 51-49. I'm leaning Horse, but quietly.",
+     "id": 1
+    },
+    {
+     "panelist": "Marcus Pell",
+     "pick": "Team Pillbert",
+     "confidence": "confident",
+     "take": "Sonny took Week 1 by four points and leads the all-time series by a single game; history is begging Philly to square it at six apiece. Give me the home team in the tightest game on the board, and give me Jahmyr Gibbs clearing 32.",
+     "id": 4
+    },
+    {
+     "panelist": "Sal Benedetto",
+     "pick": "The Horse is Hea",
+     "confidence": "lock",
+     "take": "LOCK. 853.6 points, coming off a win, JSN ready to eat. Marcus can keep his history lesson, I'll take the cash.",
+     "id": 1
+    },
+    {
+     "panelist": "Dr. Nina Kessler",
+     "pick": "The Horse is Hea",
+     "confidence": "lean",
+     "take": "51% is a coin with a slight thumb on it. The swing is Gibbs: 32 or more and Team Pillbert jumps to 73%, so this is a lean and nothing more.",
+     "id": 1
+    }
+   ]
+  },
+  {
+   "game": "Habibsters (Kaushal) vs Ghostu-Spider SZN (Zoe)",
+   "h": 6,
+   "a": 8,
+   "panel": [
+    {
+     "panelist": "Dana Whitfield",
+     "pick": "Habibsters",
+     "confidence": "confident",
+     "take": "Habibsters are on a two-game streak and have outscored Ghostu-Spider SZN by 137 points this season. Puka Nacua gives them the steadiest lever on the slate.",
+     "id": 6
+    },
+    {
+     "panelist": "Marcus Pell",
+     "pick": "Ghostu-Spider SZN",
+     "confidence": "lean",
+     "take": "Zoe already beat this team by 21 in Week 1, and she's bringing a Jordan Love and Tucker Kraft stack. Rookies don't read the odds, and I'm not about to make her start now.",
+     "id": 8
+    },
+    {
+     "panelist": "Sal Benedetto",
+     "pick": "Habibsters",
+     "confidence": "lock",
+     "take": "Two-time champ, home game, 72%? I'm backing up the truck. LOCK OF THE WEEK, and Marcus is gonna learn.",
+     "id": 6
+    },
+    {
+     "panelist": "Dr. Nina Kessler",
+     "pick": "Habibsters",
+     "confidence": "confident",
+     "take": "72% is the biggest edge of the week, and here's the tell: even if Puka scores under 8, Habibsters are still 56%. A 20-point Tetairoa McMillan game only gets Ghostu-Spider SZN to 45%.",
+     "id": 6
+    }
+   ]
+  },
+  {
+   "game": "Counting or not Counting GV (Jordan) vs The fumblers (Randy)",
+   "h": 3,
+   "a": 2,
+   "panel": [
+    {
+     "panelist": "Dana Whitfield",
+     "pick": "The fumblers",
+     "confidence": "lean",
+     "take": "Four straight losses is a real trend, and I'd like to see Randy's final lineup before going further. But Derrick Henry at 26-plus makes this 88% for The fumblers.",
+     "id": 2
+    },
+    {
+     "panelist": "Marcus Pell",
+     "pick": "The fumblers",
+     "confidence": "confident",
+     "take": "Randy is rolling out a Caleb Williams to Colston Loveland stack, which is about as on-brand as a fantasy lineup gets. Week 1 was a 70-point beatdown, and losing streaks go to die against 1-6 teams.",
+     "id": 2
+    },
+    {
+     "panelist": "Sal Benedetto",
+     "pick": "Counting or not Counting GV",
+     "confidence": "lock",
+     "take": "I don't ride four-game losing streaks. Never have, never will. Counting or not Counting GV, LOCK, and I'll be the only one cashing it.",
+     "id": 3
+    },
+    {
+     "panelist": "Dr. Nina Kessler",
+     "pick": "The fumblers",
+     "confidence": "confident",
+     "take": "68% for The fumblers, and Joe Burrow needs 29-plus just to make it a coin flip for Counting or not Counting GV. Sal is fading the model on vibes; I'm not.",
+     "id": 2
+    }
+   ]
+  },
+  {
+   "game": "No Banner only HULK (Ramon) vs Dawgs (Mekhi)",
+   "h": 7,
+   "a": 5,
+   "panel": [
+    {
+     "panelist": "Dana Whitfield",
+     "pick": "Dawgs",
+     "confidence": "lean",
+     "take": "The model has Dawgs at 54% despite the records, and Mekhi now has James Cook III and Jameson Williams from the Sonny trade. Nothing I'm hearing changes the number, so I'll lean with it.",
+     "id": 5
+    },
+    {
+     "panelist": "Marcus Pell",
+     "pick": "No Banner only HULK",
+     "confidence": "confident",
+     "take": "Ramon is 6-3 all-time against Mekhi and won the Week 1 meeting by nearly 80 points. The best team in this league does not lose to a 2-5 team because a spreadsheet said so.",
+     "id": 7
+    },
+    {
+     "panelist": "Sal Benedetto",
+     "pick": "No Banner only HULK",
+     "confidence": "lock",
+     "take": "6-1, 927 points, three straight wins. I'm not fading that for a computer. LOCK, and Nina can explain her math to me Monday.",
+     "id": 7
+    },
+    {
+     "panelist": "Dr. Nina Kessler",
+     "pick": "Dawgs",
+     "confidence": "lean",
+     "take": "Yes, Dawgs are 2-5. They're also a 54% favorite, and Ja'Marr Chase at 27-plus pushes that to 75%. Records don't play this week's games; lineups do.",
+     "id": 5
+    }
+   ]
+  }
+ ],
+ "chances": [
+  {
+   "h": 4,
+   "a": 1,
+   "p": 0.486
+  },
+  {
+   "h": 6,
+   "a": 8,
+   "p": 0.717
+  },
+  {
+   "h": 3,
+   "a": 2,
+   "p": 0.32
+  },
+  {
+   "h": 7,
+   "a": 5,
+   "p": 0.455
+  }
+ ],
+ "starters": {
+  "1": [
+   "Jaxon Smith-Njigba",
+   "Bucky Irving",
+   "Parker Washington",
+   "Lamar Jackson",
+   "Will Reichard",
+   "Ashton Jeanty",
+   "Christian Watson",
+   "Hunter Henry",
+   "Bengals D/ST"
+  ],
+  "2": [
+   "Jonathan Taylor",
+   "Amon-Ra St. Brown",
+   "Derrick Henry",
+   "Colston Loveland",
+   "Caleb Williams",
+   "Jaylen Warren",
+   "Matt Gay",
+   "Browns D/ST",
+   "Tre Tucker"
+  ],
+  "3": [
+   "Joe Burrow",
+   "Garrett Wilson",
+   "Bhayshul Tuten",
+   "Jake Ferguson",
+   "Rachaad White",
+   "Patriots D/ST",
+   "Michael Wilson",
+   "Emeka Egbuka",
+   "Evan McPherson"
+  ],
+  "4": [
+   "Jahmyr Gibbs",
+   "Harold Fannin Jr.",
+   "Luther Burden III",
+   "Seahawks D/ST",
+   "Spencer Shrader",
+   "Javonte Williams",
+   "Justin Jefferson",
+   "Chuba Hubbard",
+   "Geno Smith"
+  ],
+  "5": [
+   "Ja'Marr Chase",
+   "Trey McBride",
+   "Brock Bowers",
+   "Kyren Williams",
+   "Jayden Daniels",
+   "James Cook III",
+   "Omar Cooper Jr.",
+   "Tyler Bass",
+   "Falcons D/ST"
+  ],
+  "6": [
+   "Puka Nacua",
+   "CeeDee Lamb",
+   "Chase Brown",
+   "Drake London",
+   "Breece Hall",
+   "Tyler Warren",
+   "Drake Maye",
+   "Chris Boswell",
+   "Jaguars D/ST"
+  ],
+  "7": [
+   "Kenneth Walker III",
+   "Zay Flowers",
+   "Josh Allen",
+   "D'Andre Swift",
+   "Rhamondre Stevenson",
+   "Matthew Golden",
+   "T.J. Hockenson",
+   "Brandon Aubrey",
+   "Rams D/ST"
+  ],
+  "8": [
+   "Bijan Robinson",
+   "A.J. Brown",
+   "Saquon Barkley",
+   "Tetairoa McMillan",
+   "Tucker Kraft",
+   "Steelers D/ST",
+   "Trey Smack",
+   "Jordan Love",
+   "Blake Corum"
+  ]
+ },
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 9474
+ }
+}
