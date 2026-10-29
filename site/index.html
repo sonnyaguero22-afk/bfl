@@ -1527,7 +1527,10 @@ function home() {
   <div class="scoreboard">${scoreCards}</div>
   ${NEWS.length ? `<section style="margin:0 0 28px"><div class="vhead" style="margin-bottom:12px"><h3 style="margin:0">Top Stories</h3><button class="morebtn" data-go="news">All News →</button></div><div class="topstories">${newsCard(NEWS[0], true)}<div class="newslist">${NEWS.slice(1, 3).map((a) => newsCard(a)).join("")}</div></div></section>` : ""}
   <div class="homegrid">
+    <div class="homemain">
     <section><h3>Standings</h3>${table}<p class="note">${s.done ? "Final standings." : `Dashed line marks the playoff cut. Title odds update after each finished week.`}</p></section>
+    <section><div class="vhead" style="margin-bottom:12px"><h3 style="margin:0">Latest Moves</h3><button class="morebtn" data-go="transactions">All Transactions →</button></div><div class="box rec"><ol class="swing">${latest}</ol></div></section>
+    </div>
     <div class="homeside">
       ${champ || fav ? `<div class="strip" style="margin:0">
         ${champ ? `<button class="box stat" data-go="trophies" style="text-align:left;cursor:pointer"><div class="k">Defending Champ</div><div class="v" style="font-size:19px">${esc(champ.name)}</div><div class="s">${mgrName(champ.mgr)} · Bowl ${roman(prev.year - D.firstYear + 1)}</div></button>` : ""}
@@ -1537,8 +1540,7 @@ function home() {
       ${movers}
       ${allPosts().length ? `<div class="box rec"><div class="k">From the Feed</div><div class="feed">${allPosts().slice(0, 3).map((x) => postHtml(x.p, x.a)).join("")}</div><button class="morebtn" data-go="social">Open Social →</button></div>` : ""}
     </div>
-  </div>
-  <section><div class="vhead" style="margin-bottom:12px"><h3 style="margin:0">Latest Moves</h3><button class="morebtn" data-go="transactions">All Transactions →</button></div><div class="box rec"><ol class="swing">${latest}</ol></div></section>`;
+  </div>`;
 }
 
 // ---------- News & Social (written by Claude after each week, trade and season; see news.js) ----------
