@@ -397,10 +397,24 @@ table.compact .team { min-width: 0; }
 .bteam { display: grid; grid-template-columns: 18px 22px minmax(0, 1fr) auto; gap: 8px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; min-height: 48px; }
 .bteam.in { border-color: var(--win); }
 .bteam.lostb { opacity: .6; }
+.bteam.won, .bowlbox .bteam.won { border-color: var(--ink); }
+.bgame.bumbox { padding: 0 8px 8px; border-radius: 14px; border: 1.5px solid var(--line); background: var(--sunk); }
+.bgame.bumbox .bowlhead { padding: 10px 6px 4px; font-size: 13px; color: var(--ink); }
+.bumbox .bteam { background: transparent; }
+.playoffs { display: grid; grid-template-columns: minmax(0, 2.4fr) minmax(200px, 1fr); gap: 20px; align-items: start; }
+.trees { display: grid; gap: 8px; }
+.treegap { height: 10px; border-bottom: 1px dashed var(--line); margin-bottom: 10px; }
+.bracket { grid-auto-columns: minmax(0, 1fr); }
+.finals { display: grid; gap: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+.finals .k { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.fin { display: grid; grid-template-columns: 34px 22px minmax(0, 1fr); gap: 8px; align-items: center; font-size: 13.5px; }
+.fin small { display: block; font-size: 11.5px; }
+.fin > .num { font-weight: 800; color: var(--muted); }
+@media (max-width: 860px) { .playoffs { grid-template-columns: 1fr; } }
 .bgame.bowlbox { padding: 0 8px 8px; border-radius: 14px; }
 .bgame.bowlbox .bowlhead { padding: 10px 6px 4px; font-size: 13px; }
 .bowlbox .bteam { background: transparent; border-color: var(--gold-soft); }
-.bowlbox .bteam.in { border-color: var(--gold); }
+.bowlbox .bteam.in { border-color: var(--ink); }
 .bteam.tbd { border-style: dashed; background: transparent; grid-template-columns: 18px minmax(0, 1fr); }
 .bteam small { display: block; font-size: 11.5px; line-height: 1.35; }
 .bteam .sd { font-weight: 800; color: var(--muted); text-align: center; }
@@ -535,7 +549,8 @@ for (const s of D.seasons) {
   }
   // Finished seasons by final place; otherwise by record, ties broken by head-to-head among the tied teams, then points for (the league's ESPN setting)
   const share = (t, group) => { let w = 0, n = 0; for (const m of s.matchups) { if (m.win === null || m.live || m.wk > s.regWeeks) continue; const me = m.h === t.id ? m.h : m.a === t.id ? m.a : null, opp = me && (m.h === t.id ? m.a : m.h); if (!me || !group.includes(opp)) continue; n++; if (m.win === t.id) w++; else if (m.win === 0) w += 0.5; } return n ? w / n : 0.5; };
-  s.standings = [...s.teams].sort((a, b) => (s.done && a.final && b.final ? a.final - b.final : (b.w - a.w) || (() => { const g = s.teams.filter((t) => t.w === a.w).map((t) => t.id); return share(b, g) - share(a, g); })() || (b.pf - a.pf)));
+  // Regular-season order: a finished season by its final regular-season rank (ESPN's seed, which already applied the tiebreakers)
+  s.standings = [...s.teams].sort((a, b) => (s.done && a.seed && b.seed ? a.seed - b.seed : (b.w - a.w) || (() => { const g = s.teams.filter((t) => t.w === a.w).map((t) => t.id); return share(b, g) - share(a, g); })() || (b.pf - a.pf)));
 }
 
 // Every completed game, one row per side
@@ -724,8 +739,13 @@ function asOf(s, N) {
     x.streak = last ? last + len : "";
   }
   const rows = Object.values(st);
-  if (N == null && s.done) rows.sort((a, b) => (a.t.final || 99) - (b.t.final || 99));
-  else rows.sort((a, b) => b.w - a.w || b.tie - a.tie || b.pf - a.pf);
+  // Regular-season order: a finished season by its final regular-season rank; otherwise record, then
+  // head-to-head among the teams tied on record, then points for (the league's tiebreakers)
+  if (N == null && s.done) rows.sort((a, b) => (a.t.seed || 99) - (b.t.seed || 99));
+  else {
+    const share = (x, grp) => { let w = 0, n = 0; for (const m of reg) { const opp = m.h === x.t.id ? m.a : m.a === x.t.id ? m.h : null; if (opp == null || !grp.includes(opp)) continue; n++; if (m.win === x.t.id) w++; else if (m.win === 0) w += 0.5; } return n ? w / n : 0.5; };
+    rows.sort((a, b) => b.w - a.w || b.tie - a.tie || (() => { const g = rows.filter((x) => x.w === a.w && x.tie === a.tie).map((x) => x.t.id); return share(b, g) - share(a, g); })() || b.pf - a.pf);
+  }
   return { rows, lim };
 }
 const recStr = (x) => `${x.w}-${x.l}${x.tie ? "-" + x.tie : ""}`;
@@ -736,7 +756,7 @@ function standings(s) {
   const isFinal = N == null;
   const regWks = s.weeks.filter((w) => w <= s.regWeeks && s.played.some((m) => m.wk === w));
   const picker = `<div class="filters"><label for="standWeek" class="muted">Standings After</label><select id="standWeek">
-    <option value="final">${s.done ? "Final (after playoffs)" : "Latest"}</option>${regWks.map((w) => `<option value="${w}"${N === w ? " selected" : ""}>Week ${w}</option>`).join("")}</select></div>`;
+    <option value="final">${s.done ? "Final regular season" : "Latest"}</option>${regWks.map((w) => `<option value="${w}"${N === w ? " selected" : ""}>Week ${w}</option>`).join("")}</select></div>`;
   const reg = s.played.filter((m) => m.wk <= lim);
   if (!reg.length) return picker + `<p class="muted">No games played yet.</p>`;
   const sides = reg.flatMap((m) => [{ t: s.byId[m.h], p: m.hp, wk: m.wk }, { t: s.byId[m.a], p: m.ap, wk: m.wk }]);
@@ -750,14 +770,14 @@ function standings(s) {
     <div class="box stat"><div class="k">Most Points For</div><div class="v num">${f2(pfTop.pf)}</div><div class="s">${esc(pfTop.t.name)}</div></div>
     <div class="box stat"><div class="k">Luckiest / Unluckiest</div><div class="v" style="font-size:17px">${esc(lucky.t.name)}</div><div class="s">${lucky.luck >= 0 ? "+" : ""}${f1(lucky.luck)} wins vs. expected · ${esc(unlucky.t.name)} ${f1(unlucky.luck)}</div></div>
   </div>`;
-  const showCut = !(isFinal && s.done);
+  const showCut = true;
   const body = rows.map((x, i) => `<tr class="${showCut && i === s.playoffTeams - 1 ? "cut" : ""}">
-    <td class="n">${isFinal && s.done && x.t.final ? x.t.final : i + 1}</td><td>${teamCell(x.t)}</td>
+    <td class="n">${i + 1}</td><td>${teamCell(x.t)}</td>
     <td class="n"><b>${recStr(x)}</b></td><td class="n">${f2(x.pf)}</td><td class="n">${f2(x.pa)}</td>
     <td class="n">${x.apW}-${x.apL}</td><td class="n ${x.luck > 0.4 ? "w" : x.luck < -0.4 ? "l" : ""}">${x.luck >= 0 ? "+" : ""}${f1(x.luck)}</td>
     <td class="n">${x.high}</td><td class="n">${x.streak ? `<span class="pill ${x.streak[0] === "W" ? "w" : x.streak[0] === "L" ? "l" : ""}">${x.streak}</span>` : ""}</td><td class="n">${x.adds}</td><td class="n">${x.trades}</td></tr>`).join("");
   const table = `<section><div class="box scroll"><table><thead><tr><th class="n">#</th><th>Team</th><th class="n">Record</th><th class="n">PF</th><th class="n">PA</th><th class="n" title="Record if you played every team every week">All-Play</th><th class="n" title="Actual wins minus all-play expected wins">Luck</th><th class="n" title="Weeks as the league's top scorer">Top Wk</th><th class="n">Streak</th><th class="n">Adds</th><th class="n">Trades</th></tr></thead><tbody>${body}</tbody></table></div>
-    <p class="note">${isFinal && s.done ? `Ranked by final finish after the ${s.playoffTeams}-team playoffs; records and streaks are regular season.` : `Regular season through week ${lim}. Dashed line marks the ${s.playoffTeams}-team playoff cut.`} All-play is your record if you'd played every other team every week; luck is real wins minus that expectation.</p></section>`;
+    <p class="note">${isFinal && s.done ? `Final regular-season standings; the dashed line marks the ${s.playoffTeams}-team playoff cut. Where everyone finished after the playoffs is on the Playoffs tab.` : `Regular season through week ${lim}. Dashed line marks the ${s.playoffTeams}-team playoff cut.`} All-play is your record if you'd played every other team every week; luck is real wins minus that expectation.</p></section>`;
   const wks = Object.keys(s.weekScores).map(Number).filter((w) => w <= lim).sort((a, b) => a - b);
   const all = sides.map((x) => x.p); const lo = Math.min(...all), hi = Math.max(...all);
   const cell = (p, isTop) => { const r = hi > lo ? (p - lo) / (hi - lo) : 0.5; return `<td class="c${isTop ? " hi" : ""}" style="background:color-mix(in oklab, var(--heat-hi) ${Math.round(r * 100)}%, var(--heat-lo))">${f1(p)}</td>`; };
@@ -1665,27 +1685,39 @@ function pictureHtml(s) {
 }
 // A season's Playoffs tab appears once its playoffs have started
 const hasPlayoffs = (s) => s.matchups.some((m) => m.tier === "WINNERS_BRACKET");
-// The playoff bracket as it was played (or is being played): seeds, each round's scores, the champion
+// The playoffs as played (or being played): the winners' bracket to the 🏆 Buckaroo Bowl, the consolation
+// bracket to the 🗑️ Bum Bowl, every team in one or the other, and where everyone finished
 function bracketHtml(s) {
-  const bw = bowlWeek(s), wb = s.matchups.filter((m) => m.tier === "WINNERS_BRACKET");
-  const fin = wb.find((m) => m.wk === bw), r1 = wb.filter((m) => m.wk === bw - 1);
-  if (!fin && !r1.length) return "";
-  const seed = (id) => s.byId[id].seed || "";
+  const bw = bowlWeek(s), n = s.teams.length, seed = (id) => s.byId[id].seed || "";
   const two = (wk) => s.spans(wk).length > 1;
-  const side = (m, id) => { const t = s.byId[id], pts = id === m.h ? m.hp : m.ap, done = m.win !== null && !m.live, won = done && m.win === id;
-    return `<div class="bteam${won ? " in" : done ? " lostb" : ""}"><span class="sd num">${seed(id)}</span>${badge(t, 1)}<div><b>${won && m === fin ? "🏆 " : ""}${esc(nameAt(t, m.wk))}</b><small class="muted">${mgrName(mgrAt(t, m.wk))}</small></div><span class="bp num">${m.live || done ? f2(pts) : ""}</span></div>`; };
-  const game = (m) => `<div class="bgame${m === fin ? " bowlgame bowlbox" : ""}">${m === fin ? `<div class="bowlhead"><span>🏆 Buckaroo Bowl ${roman(s.year - D.firstYear + 1)}</span></div>` : ""}${[m.h, m.a].sort((a, b) => seed(a) - seed(b)).map((id) => side(m, id)).join("")}</div>`;
-  const bye = s.byes.find((b) => b.wk === bw - 1 && b.tier === "WINNERS_BRACKET");
-  // The top seed's bye comes first, then the games in seed order
-  const round1 = (bye ? `<div class="bgame bye"><div class="bteam in"><span class="sd num">${seed(bye.h)}</span>${badge(s.byId[bye.h], 1)}<div><b>${esc(s.byId[bye.h].name)}</b><small class="muted">${mgrName(s.byId[bye.h].mgr)}</small></div><span></span></div><div class="bteam tbd"><span class="sd"></span><div><small class="muted">First-round bye</small></div></div></div>` : "")
-    + [...r1].sort((a, b) => Math.min(seed(a.h), seed(a.a)) - Math.min(seed(b.h), seed(b.a))).map(game).join("");
-  const third = s.matchups.find((m) => m.wk === bw && m.tier === "WINNERS_CONSOLATION_LADDER");
-  const champ = fin && fin.win ? s.byId[fin.win] : null, ru = champ ? s.byId[fin.win === fin.h ? fin.a : fin.h] : null;
-  const name = `Buckaroo Bowl ${roman(s.year - D.firstYear + 1)}`;
-  const card = `<div class="bchamp"><div class="k">🏆 ${name}</div>${champ ? `<div class="cfav">${badge(champ, 1)}<span><b>${esc(champ.name)}</b><small class="muted" style="display:block">${mgrName(champ.mgr)} · Champion</small></span></div><div class="cfav">${badge(ru, 1)}<span>${esc(ru.name)}<small class="muted" style="display:block">Runner-up</small></span></div>` : `<small class="muted">To be decided${fin && fin.live ? " · being played now" : ""}</small>`}</div>`;
-  return `<section style="margin:0 0 28px"><h3>Playoff Bracket <span class="muted" style="font-weight:500;font-size:14px">· ${s.year}</span></h3>
-    <div class="bracket">${round1 ? `<div class="bcol"><div class="k">${s.playoffTeams >= 4 ? "Semifinals" : "Round 1"}${two(bw - 1) ? " · two-week total" : ""}</div>${round1}</div>` : ""}
-    <div class="bcol bfinal"><div class="k">Final${fin && two(bw) ? " · two-week total" : ""}</div>${fin ? game(fin) : `<div class="bgame"><div class="bteam tbd"><span class="sd"></span><div><small class="muted">Winners of the first round</small></div></div></div>`}${third ? `<div class="k" style="margin-top:6px">3rd Place</div>${game(third)}` : ""}</div>${card}</div></section>`;
+  const ord = (k) => k + (["th", "st", "nd", "rd"][(k % 100 - 20) % 10] || ["th", "st", "nd", "rd"][k % 100] || "th");
+  const side = (m, id, big) => { const t = s.byId[id], pts = id === m.h ? m.hp : m.ap, done = m.win !== null && !m.live, won = done && m.win === id;
+    const mark = big && won ? (big === "bowl" ? "🏆 " : "") : t.final === n && s.done && big === "bum" ? "🗑️ " : "";
+    return `<div class="bteam${won ? " won" : done ? " lostb" : ""}"><span class="sd num">${seed(id)}</span>${badge(t, 1)}<div><b>${mark}${esc(nameAt(t, m.wk))}</b><small class="muted">${mgrName(mgrAt(t, m.wk))}</small></div><span class="bp num">${m.live || done ? f2(pts) : ""}</span></div>`; };
+  const game = (m, big) => [m.h, m.a].sort((x, y) => seed(x) - seed(y)).map((id) => side(m, id, big)).join("");
+  const byeCard = (b) => `<div class="bgame bye"><div class="bteam won"><span class="sd num">${seed(b.h)}</span>${badge(s.byId[b.h], 1)}<div><b>${esc(s.byId[b.h].name)}</b><small class="muted">${mgrName(s.byId[b.h].mgr)}</small></div><span></span></div><div class="bteam tbd"><span class="sd"></span><div><small class="muted">First-round bye</small></div></div></div>`;
+  // One bracket: its first round (byes first, then games in seed order) and its final in a titled card
+  const tree = (tier, title, cls) => {
+    const fin = s.matchups.find((m) => m.wk === bw && m.tier === tier), r1 = s.matchups.filter((m) => m.wk === bw - 1 && m.tier === tier);
+    const byes = s.byes.filter((x) => x.wk === bw - 1 && x.tier === tier);
+    if (!fin && !r1.length) return "";
+    const big = tier === "WINNERS_BRACKET" ? "bowl" : "bum";
+    // The Bum Bowl is whichever consolation game decided last place (its loser finished last); until then, the final
+    const loserOf = (m) => (m.win === m.h ? m.a : m.h);
+    const bum = big === "bum" ? (s.done ? [...r1, fin].find((m) => m && m.win && s.byId[loserOf(m)].final === n) : fin) : null;
+    const bumCard = (m) => `<div class="bgame bumbox"><div class="bowlhead"><span>🗑️ Bum Bowl</span></div>${game(m, "bum")}</div>`;
+    const first = byes.map(byeCard).join("") + [...r1].sort((x, y) => Math.min(seed(x.h), seed(x.a)) - Math.min(seed(y.h), seed(y.a))).map((m) => (m === bum ? bumCard(m) : `<div class="bgame">${game(m)}</div>`)).join("");
+    const placeOf = (m) => (s.done && m.win ? `${ord(Math.min(s.byId[m.h].final, s.byId[m.a].final))} Place` : "Consolation Final");
+    const third = big === "bowl" ? s.matchups.find((m) => m.wk === bw && m.tier === "WINNERS_CONSOLATION_LADDER") : null;
+    return `<div class="bracket">${first ? `<div class="bcol"><div class="k">${tier === "WINNERS_BRACKET" ? (s.playoffTeams >= 4 ? "Semifinals" : "Round 1") : "Consolation, Round 1"}${two(bw - 1) ? " · two-week total" : ""}</div>${first}</div>` : ""}
+      <div class="bcol bfinal"><div class="k">${big === "bum" && fin && fin !== bum ? placeOf(fin) : "Final"}${fin && two(bw) ? " · two-week total" : ""}</div>${fin ? (big === "bum" ? (fin === bum ? bumCard(fin) : `<div class="bgame">${game(fin)}</div>`) : `<div class="bgame ${cls}"><div class="bowlhead"><span>${title}</span></div>${game(fin, big)}</div>`) : `<div class="bgame"><div class="bteam tbd"><span class="sd"></span><div><small class="muted">Winners of the first round</small></div></div></div>`}
+      ${third ? `<div class="k" style="margin-top:6px">3rd Place</div><div class="bgame">${game(third)}</div>` : ""}</div></div>`;
+  };
+  const top = tree("WINNERS_BRACKET", `🏆 Buckaroo Bowl ${roman(s.year - D.firstYear + 1)}`, "bowlgame bowlbox"), bottom = tree("LOSERS_CONSOLATION_LADDER", "🗑️ Bum Bowl", "bumbox");
+  if (!top && !bottom) return `<p class="muted">The playoffs haven't started.</p>`;
+  const finish = s.done ? `<div class="finals"><div class="k">Final Standings</div>${[...s.teams].sort((a, b) => a.final - b.final).map((t) => `<div class="fin${t.final === 1 ? " champ" : ""}"><span class="num">${ord(t.final)}</span>${badge(t, 1)}<span><b>${t.final === 1 ? "🏆 " : t.final === n ? "🗑️ " : ""}${esc(t.name)}</b><small class="muted">${mgrName(t.mgr)}</small></span></div>`).join("")}</div>` : `<div class="finals"><div class="k">Final Standings</div><small class="muted">Set once the Buckaroo Bowl and the Bum Bowl are final.</small></div>`;
+  return `<section style="margin:0 0 28px"><div class="playoffs"><div class="trees">${top}${bottom ? `<div class="treegap"></div>${bottom}` : ""}</div>${finish}</div>
+    <p class="note">Seeds are regular-season finish. ${two(bw) || two(bw - 1) ? "Playoff rounds that season were two-week totals. " : ""}The 🗑️ Bum Bowl is the consolation game that decided last place.</p></section>`;
 }
 function oddsView() {
   const ys = years.filter((y) => S[y] && S[y].odds).reverse();
