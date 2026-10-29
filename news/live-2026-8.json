@@ -73,10 +73,51 @@
    "team": "",
    "about": "move",
    "at": "2026-10-29T06:15:44.122Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Team Pillbert jumping from 26% to 49% at 0-0 means the lineup picture changed in a big way. The model now treats this one as a coin flip against The Horse is Hea.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-10-29T15:04:49.125Z"
+  },
+  {
+   "author": "Pillbert Pessimist",
+   "handle": "@SonnyHatesLosing",
+   "text": "Philly out here rebuilding his roster at the last second like it's a heist movie. Two TE swaps and a QB pickup before kickoff, and somehow the win chance is up 23 points. I hate it here.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-10-29T14:36:16.499Z"
+  },
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "Team Pillbert (Alan) picked up Chig Okonkwo and dropped Keon Coleman, who had 21.1 points over three weeks. That's a notable cut for a tight end who has yet to score.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-10-29T15:15:49.125Z"
+  },
+  {
+   "author": "Windy City Waiver Watch",
+   "handle": "@WindyCityWaivers",
+   "text": "Randy added Tre Tucker off waivers after cutting Noel. Fine, a waiver claim isn't a trade, so the streak lives.",
+   "heat": 2,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-10-29T08:50:34.205Z"
   }
  ],
  "batches": [
   "2026-10-28T22:13:59.365Z",
-  "2026-10-29T06:15:44.122Z"
+  "2026-10-29T06:15:44.122Z",
+  "2026-10-29T15:15:49.125Z"
  ]
 }
