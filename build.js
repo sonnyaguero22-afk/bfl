@@ -282,7 +282,6 @@ for (const year of years) {
   for (const w of [L.status.latestScoringPeriod - 1, L.status.latestScoringPeriod]) if (lineups[w]) { const all = Object.values(lineups[w]).flat(); console.log(`::notice::${year} week ${w}: on bye ${all.filter((p) => p.st === "bye").map((p) => p.n).join(", ") || "none"}; out ${all.filter((p) => p.st === "out").map((p) => p.n).join(", ") || "none"}; games on now: ${gamesOn}`); }
   if (!done) {
     const sch = L.settings.scheduleSettings || {};
-    console.log(`::notice::TEMP ${year} schedule settings: ${JSON.stringify(Object.fromEntries(Object.entries(sch).filter(([k, v]) => typeof v !== "object" || (Array.isArray(v) && v.length < 20) || k === "divisions")))}`);
     console.log(`::notice::${year} ESPN tiebreak settings: ${JSON.stringify(Object.fromEntries(Object.entries({ ...sch, ...(L.settings.scoringSettings || {}) }).filter(([k]) => /tie|seed|rule/i.test(k))))}`);
   }
   if (!done) console.log(`::notice::${year} trades found: ${finalTrades.map((t) => `before week ${t.wk}, teams ${t.teams.join(" & ")}`).join("; ") || "none"}`);
