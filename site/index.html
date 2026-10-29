@@ -1064,7 +1064,7 @@ function mgrView() {
     return `<tr><td><button class="mlink" data-go="${s.year}"><b>${s.year}</b></button></td><td>${badge(t, 1)} ${esc(t.name)}</td><td class="n">${t.w}-${t.l}${t.t ? "-" + t.t : ""}</td><td class="n">${f2(t.pf)}</td><td class="n">${f2(t.pa)}</td><td>${s.done ? (t.final === 1 ? `<span class="pill gold">🏆 Champion</span>` : ord(t.final)) : `<span class="pill live">${ord(rank)} now</span>`}</td></tr>`; }).join("");
   const opps = mgrKeys.filter((o) => o !== k).map((o) => { const g = r.g.filter((x) => x.oppMgr === o); const w = g.filter((x) => x.won).length, t = g.filter((x) => x.tie).length; return { o, w, l: g.length - w - t, t, pf: g.reduce((a, x) => a + x.pts, 0), pa: g.reduce((a, x) => a + x.oppPts, 0), n: g.length }; }).sort((a, b) => (b.w - b.l) - (a.w - a.l));
   const gameLine = (x) => x ? `<b class="num">${f2(x.pts)}</b> <span class="muted">· ${x.year} wk ${x.wk} vs ${esc(x.opp.name)} (${x.won ? "W" : "L"})</span>` : "—";
-  return `<div class="vhead"><div style="display:flex;gap:14px;align-items:center">${mbadge(k)}<div><div class="eyebrow">Manager</div><h2>${mgrName(k)}</h2>${(() => { const y = lastYear, t = S[y] && S[y].teams.find((x) => x.mgr === k), b = t && D.news && D.news.bios[y] && D.news.bios[y][t.id]; return b ? `<p class="bio"><b>${esc(t.name)}</b> · ${esc(b.bio)} <span class="muted">(after Week ${b.wk})</span></p>` : ""; })()}${(() => { const j = LOC ? journey(k) : []; return j.length ? `<p class="whereline"><button class="mlink" data-go="map">📍</button> ${j.map((s) => `${placeLabel(s.pk)} <span class="muted num">${s.years.join(", ")}</span>`).join(` <span class="muted">→</span> `)}</p>` : ""; })()}</div></div>
+  return `<div class="vhead"><div style="display:flex;gap:14px;align-items:center">${mbadge(k)}<div><div class="eyebrow">Manager</div><h2>${mgrName(k)}</h2>${(() => { const y = lastYear, t = S[y] && S[y].teams.find((x) => x.mgr === k), b = t && D.news && D.news.bios[y] && D.news.bios[y][t.id]; return b ? `<p class="bio"><b>${esc(t.name)}</b> · ${esc(b.bio)} <span class="muted">(after Week ${b.wk})</span></p>` : ""; })()}${(() => { const j = LOC ? journey(k) : []; return j.length ? `<p class="whereline"><button class="mlink" data-go="map">📍</button> ${j.map((s) => `${placeLabel(s.pk)} <span class="muted num">${yearSpan(s.years)}</span>`).join(` <span class="muted">→</span> `)}</p>` : ""; })()}</div></div>
     <button class="pill" data-go="managers" style="border:0;cursor:pointer">← All managers</button></div>
   <div class="strip">
     <div class="box stat"><div class="k">Career Record</div><div class="v num">${r.w}-${r.l}${r.t ? "-" + r.t : ""}${hasKick(k) ? "*" : ""}</div><div class="s">${pct(r.w, r.l, r.t)} win pct · regular season</div></div>
@@ -1305,6 +1305,12 @@ function journey(k) {
 }
 let mapObj = null;
 
+// Years at a place as ranges: 2023–2025, and "2026–now" for a stint that runs into the season being played
+function yearSpan(ys) {
+  const live = S[lastYear] && !S[lastYear].done ? lastYear : null, out = [];
+  for (const y of [...new Set(ys)].sort((a, b) => a - b)) { const r = out[out.length - 1]; if (r && y === r[1] + 1) r[1] = y; else out.push([y, y]); }
+  return out.map(([a, b]) => (b === live ? `${a}–now` : a === b ? `${a}` : `${a}–${b}`)).join(", ");
+}
 function mapView() {
   if (!LOC) return `<p class="muted">No locations yet.</p>`;
   const sel = state.mapYear === "all" ? "all" : LOC_YEARS.includes(+state.mapYear) ? +state.mapYear : LOC_YEARS[LOC_YEARS.length - 1];
@@ -1336,7 +1342,7 @@ function mapView() {
       <div class="box stat"><div class="k">Most Miles Moved</div><div class="v num">${fmtMi(most.d)}</div><div class="s">${esc(D.managers[most.k].first)} · ${most.j.length - 1} moves</div></div>
       <div class="box stat"><div class="k">Never Moved</div><div class="v">${stay.length}</div><div class="s">${stay.map((x) => esc(D.managers[x.k].first)).join(", ") || "Nobody"}</div></div></div>`;
     side = [...rows].sort((a, b) => b.d - a.d).map((r) => `<div class="box rec"><div class="k" style="display:flex;justify-content:space-between;gap:8px"><button class="mlink team" data-go="mgr-${r.k}" style="min-width:0">${mbadge(r.k, 1)}<b>${mgrName(r.k)}</b></button><span class="num muted">${r.d ? fmtMi(r.d) : "stayed put"}</span></div>
-      <ol class="path">${r.j.map((s) => `<li><span>${placeLabel(s.pk)}</span><span class="num muted">${s.years.join(", ")}</span></li>`).join("")}</ol></div>`).join("");
+      <ol class="path">${r.j.map((s) => `<li><span>${placeLabel(s.pk)}</span><span class="num muted">${yearSpan(s.years)}</span></li>`).join("")}</ol></div>`).join("");
   }
   return `<div class="vhead"><div><div class="eyebrow">Around the League</div><h2>Map</h2><p>Where every manager was each season.${sel === "all" ? " Lines trace each person's moves." : ""}</p></div>${pills}</div>
   ${strip}<div class="mapwrap"><div id="map" class="box" role="img" aria-label="Map of manager locations"></div><div class="maplist">${side}</div></div>`;
@@ -1375,7 +1381,7 @@ function initMap() {
       const j = journey(k).filter((x) => mapped(x.pk));
       if (!j.length) continue;
       if (j.length > 1) L.polyline(j.map((s) => ll(s.pk)), { color: mgrColor(k), weight: 3, opacity: 0.85 }).addTo(mapObj);
-      for (const s of j.slice(0, -1)) L.circleMarker(ll(s.pk), { radius: 4, color: mgrColor(k), fillColor: mgrColor(k), fillOpacity: 1, weight: 0 }).addTo(mapObj).bindPopup(`${mgrName(k)}: ${placeLabel(s.pk)} (${s.years.join(", ")})`);
+      for (const s of j.slice(0, -1)) L.circleMarker(ll(s.pk), { radius: 4, color: mgrColor(k), fillColor: mgrColor(k), fillOpacity: 1, weight: 0 }).addTo(mapObj).bindPopup(`${mgrName(k)}: ${placeLabel(s.pk)} (${yearSpan(s.years)})`);
       const end = j[j.length - 1].pk;
       (last[end] = last[end] || []).push(k);
       j.forEach((s) => pts.push(ll(s.pk)));
