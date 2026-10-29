@@ -402,13 +402,17 @@ for (const s of seasons) for (const m of s.matchups) {
   if (!m._sides) continue;
   const g = simGame(playerModel, m._sides[0], m._sides[1], s.year * 1000 + m.wk * 10 + m.h, oppFor(s.year)[m.wk] || {});
   m.psim = Math.round(g.home * 1000) / 1000;
-  if (m._fixed) { m.psimFixed = Math.round(simGame(playerModel, m._fixed[0], m._fixed[1], s.year * 1000 + m.wk * 10 + m.h, oppFor(s.year)[m.wk] || {}).home * 1000) / 1000; delete m._fixed; }
-  // The biggest swing on each side
-  const top = [0, 1].map((k) => g.watch.find((x) => x.side === k)).filter(Boolean);
-  const pick = top.sort((a, b) => (b.boom - b.bust) - (a.boom - a.bust));
-  m.watch = pick.map(({ side, n, pos, pro, proj, boom, bust, boomAt, bustAt }) => ({ id: side ? m.a : m.h, n, pos, pro: pro.startsWith("FA-") ? "FA" : pro, proj, boom, bust, boomAt, bustAt }));
-  // QB + own receiver both still to play on one side: they boom and bust together
-  m.stacks = [0, 1].flatMap((k) => { const L = m._sides[k].filter((p) => p.left > 0); return L.filter((p) => p.pos === "QB").flatMap((q) => L.filter((r) => (r.pos === "WR" || r.pos === "TE") && r.pro === q.pro).map((r) => ({ id: k ? m.a : m.h, qb: q.n, rec: r.n }))); });
+  // The biggest swing on each side, and QB + own receiver both still to play on one side (they boom and bust together)
+  const watchOf = (g) => [0, 1].map((k) => g.watch.find((x) => x.side === k)).filter(Boolean).sort((a, b) => (b.boom - b.bust) - (a.boom - a.bust))
+    .map(({ side, n, pos, pro, proj, boom, bust, boomAt, bustAt }) => ({ id: side ? m.a : m.h, n, pos, pro: pro.startsWith("FA-") ? "FA" : pro, proj, boom, bust, boomAt, bustAt }));
+  const stacksOf = (sides) => [0, 1].flatMap((k) => { const L = sides[k].filter((p) => p.left > 0); return L.filter((p) => p.pos === "QB").flatMap((q) => L.filter((r) => (r.pos === "WR" || r.pos === "TE") && r.pro === q.pro).map((r) => ({ id: k ? m.a : m.h, qb: q.n, rec: r.n }))); });
+  m.watch = watchOf(g); m.stacks = stacksOf(m._sides);
+  // With holes filled too, so the preview's Ones to Watch match its win chances
+  if (m._fixed) {
+    const f = simGame(playerModel, m._fixed[0], m._fixed[1], s.year * 1000 + m.wk * 10 + m.h, oppFor(s.year)[m.wk] || {});
+    m.psimFixed = Math.round(f.home * 1000) / 1000; m.watchFixed = watchOf(f); m.stacksFixed = stacksOf(m._fixed);
+    delete m._fixed;
+  }
   delete m._sides;
   const nm = (id) => s.teams.find((t) => t.id === id).name;
   console.log(`::notice::Week ${m.wk}: ${nm(m.h)} ${Math.round(m.psim * 100)}%${m.espn != null ? ` (ESPN ${Math.round(m.espn * 100)}%)` : ""} vs ${nm(m.a)} | watch ${m.watch.map((x) => `${x.n} for ${nm(x.id)} (${x.boomAt}+: ${x.boom}%, under ${x.bustAt}: ${x.bust}%)`).join("; ")}${m.stacks.length ? ` | stacks ${m.stacks.map((k) => `${k.qb}+${k.rec}`).join(", ")}` : ""}${m.holes ? ` | holes ${m.holes.map((x) => `${x.n} (${nm(x.id)}, ${x.why})`).join(", ")} -> ${nm(m.h)} ${Math.round(m.psimFixed * 100)}% if fixed` : ""}`);

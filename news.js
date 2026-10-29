@@ -109,8 +109,8 @@ function previewFacts(s, W) {
         home_win_chance: pct(m.psimFixed ?? m.psim),
         spots_to_fill: m.holes ? m.holes.map((x) => `${x.n} (${x.pos}) for ${who(s.byId[x.id], W)}: ${x.why}`) : undefined,
         head_to_head: h2hBefore(mgrAt(s.byId[m.h], W), mgrAt(s.byId[m.a], W), s.year, W),
-        ones_to_watch: (m.watch || []).map((x) => ({ player: `${x.n} (${x.pos}, ${x.pro})`, for: who(s.byId[x.id], W), [`win_chance_if_he_scores_${x.boomAt}_or_more`]: `${x.boom}%`, [`if_under_${x.bustAt}`]: `${x.bust}%` })),
-        stacks: (m.stacks || []).map((k) => `${k.qb} and ${k.rec} for ${who(s.byId[k.id], W)}`) };
+        ones_to_watch: (m.watchFixed || m.watch || []).map((x) => ({ player: `${x.n} (${x.pos}, ${x.pro})`, for: who(s.byId[x.id], W), [`win_chance_if_he_scores_${x.boomAt}_or_more`]: `${x.boom}%`, [`if_under_${x.bustAt}`]: `${x.bust}%` })),
+        stacks: (m.stacksFixed || m.stacks || []).map((k) => `${k.qb} and ${k.rec} for ${who(s.byId[k.id], W)}`) };
     }),
     last_week_power_rankings: rk ? rk.map((x) => `${x.rank}. ${x.team}`) : undefined,
     playoff_picture: pictureFacts(s, W - 1),
