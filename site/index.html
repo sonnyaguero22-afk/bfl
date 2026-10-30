@@ -856,7 +856,8 @@ function weekly(s) {
     const bowl = isBowl(s, m), champ = bowl && m.win !== null && m.win !== 0 ? m.win : null;
     const key = `${wk}-${m.h}`, open = state.open === key;
     const winLabel = (id) => { const p = teamWin(s, m, id); if (p == null) return "";
-      if (m.win === null) return `<br><span class="odds">${m.on ? "Live win chance" : "Win chance"} <b>${winPct(p)}</b>${toGo(m, id)}</span>`;
+      // Luffy is the model's nickname (after One Piece); just here, so it stays a light touch
+      if (m.win === null) return `<br><span class="odds" title="Win chance from Luffy, the league's model">🍖 Luffy${m.on ? " (live)" : ""} <b>${winPct(p)}</b>${toGo(m, id)}</span>`;
       const upset = m.win === id && p < 0.35;
       return `<br><span class="odds">${upset ? `<span class="pill gold">Upset</span> ` : ""}Was ${winPct(p)} to win</span>`; };
     const side = (id, p) => { const t = s.byId[id]; const lost = m.win !== null && m.win !== id && m.win !== 0; return `<div class="side${lost ? " lost" : ""}"><span class="team">${badge(t)}<span><b${champ === id ? ` data-champ="${s.year}"` : ""}>${champ === id ? "🏆 " : ""}${esc(nameAt(t, m.wk))}</b><small>${mgrName(mgrAt(t, m.wk))}${kickedAt(t, m.wk) ? "*" : ""} · ${recLabel(id)}${winLabel(id)}</small></span></span><span class="pts">${f2(p)}</span></div>`; };
