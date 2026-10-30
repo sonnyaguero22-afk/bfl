@@ -983,7 +983,9 @@ const winPct = (p) => (p >= 0.995 ? ">99%" : p <= 0.005 ? "<1%" : `${Math.round(
 // Settled once the team behind has nobody left to play
 const settled = (m) => m.hleft != null && m.aleft != null && m.hp !== m.ap && (m.hp < m.ap ? m.hleft : m.aleft) === 0;
 const luffyPick = (s, m, id) => { const p = teamWin(s, m, id); return m.win === null && p != null && p > 0.5 && !settled(m); };
-const toGo = (m, id) => { const n = id === m.h ? m.hleft : m.aleft; return m.live && n != null ? ` · ${n ? `${n} to go` : "all done"}` : ""; };
+// Starters playing right now, and still to kick off
+const toGo = (m, id) => { const n = id === m.h ? m.hleft : m.aleft, on = (id === m.h ? m.hplay : m.aplay) || 0; if (!m.live || n == null) return "";
+  return ` · ${!n ? "all done" : [on && `${on} in play`, n - on && `${n - on} to go`].filter(Boolean).join(", ")}`; };
 const teamWin = (s, m, id) => { const p = winProb(s, m); return p == null ? null : id === m.h ? p : 1 - p; };
 // What happened to a team between checkpoints N-1 and N
 function oddsReason(s, id, N) {

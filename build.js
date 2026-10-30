@@ -246,18 +246,20 @@ for (const year of years) {
       if (nflClock) {
         for (const [side, key] of [[s.home, "h"], [s.away, "a"]]) {
           // Each player's remaining points can miss by about 60% either way (booms and busts)
-          let rem = 0, left = 0, vr = 0;
+          let rem = 0, left = 0, play = 0, vr = 0;
           for (const e of (side.rosterForCurrentScoringPeriod || { entries: [] }).entries) {
             if (e.lineupSlotId === 20 || e.lineupSlotId === 21) continue; // bench / IR
             const p = e.playerPoolEntry.player;
             const pj = (p.stats || []).find((x) => x.statSourceId === 1 && x.scoringPeriodId === m.wk);
             const f = nflClock(p.proTeamId), r = (pj ? pj.appliedTotal : 0) * f;
             if (f > 0) left++;
+            if (f > 0 && f < 1) play++; // his game is on right now
             rem += r;
             vr += (0.6 * r) ** 2;
           }
           m[key + "proj"] = r2(m[key + "p"] + rem);
           m[key + "left"] = left;
+          m[key + "play"] = play;
           m[key + "var"] = r2(vr);
         }
       }
