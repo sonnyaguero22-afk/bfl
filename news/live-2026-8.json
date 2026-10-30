@@ -153,12 +153,43 @@
    "team": "Dawgs",
    "about": "move",
    "at": "2026-10-29T20:41:17.618Z"
+  },
+  {
+   "author": "Hulk Smash Report",
+   "handle": "@HulkSmashReport",
+   "text": "Golden catches one for 10.5 and Brucie's squad is on the board before Dawgs even wake up. Coin-flip game, but the green guys are already throwing the first punch.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-10-30T01:34:22.157Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Golden's 10.5 puts No Banner only HULK at 51% against Dawgs, with Mekhi still at zero. One play moved this to a true toss-up, and Luffy is just watching it happen.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-10-30T01:35:22.157Z"
+  },
+  {
+   "author": "No Banner only HULK",
+   "handle": "@NoBanneronlyHULK",
+   "text": "Matthew Golden is up and running: 10.5 points and counting. HULK leads Dawgs early.",
+   "heat": 3,
+   "kind": "team",
+   "team": "No Banner only HULK",
+   "about": "game",
+   "at": "2026-10-30T01:36:22.157Z"
   }
  ],
  "batches": [
   "2026-10-28T22:13:59.365Z",
   "2026-10-29T06:15:44.122Z",
   "2026-10-29T15:15:49.125Z",
-  "2026-10-29T20:41:17.618Z"
+  "2026-10-29T20:41:17.618Z",
+  "2026-10-30T01:37:22.157Z"
  ]
 }
