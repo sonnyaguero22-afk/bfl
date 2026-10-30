@@ -1765,7 +1765,13 @@ function render() {
 $("#app").addEventListener("click", (e) => {
   const w = e.target.closest("[data-week]"); if (w) { state.week = +w.dataset.week; state.open = null; render(); return; }
   const mb = e.target.closest("[data-more]"); if (mb) { const open = mb.closest(".rec").classList.toggle("open"); mb.setAttribute("aria-expanded", open); mb.textContent = open ? "Show Top 10" : "Show Top " + (mb.closest(".rec").querySelectorAll("li").length + 1); return; }
-  const o = e.target.closest("[data-open]"); if (o) { state.open = state.open === o.dataset.open ? null : o.dataset.open; render(); return; }
+  // Opening a matchup brings it to the top of the screen; closing it goes back to where you were
+  const o = e.target.closest("[data-open]"); if (o) {
+    if (state.open == null) state.openFrom = window.scrollY;
+    state.open = state.open === o.dataset.open ? null : o.dataset.open; render();
+    const card = $(".game.open"), rail = $(".rail");
+    window.scrollTo({ top: card ? card.getBoundingClientRect().top + window.scrollY - (rail ? rail.offsetHeight : 0) - 10 : state.openFrom || 0 });
+    return; }
   const gw = e.target.closest("[data-goweek]"); if (gw) { const [y, w] = gw.dataset.goweek.split("|").map(Number); state.week = w; state.open = null; go(`${y}-weekly`); return; }
   const oy = e.target.closest("[data-oddsyear]"); if (oy) { state.oddsYear = +oy.dataset.oddsyear; state.oddsFocus = null; render(); return; }
   const ok = e.target.closest("[data-oddskey]"); if (ok) { state.oddsKey = ok.dataset.oddskey; render(); return; }
