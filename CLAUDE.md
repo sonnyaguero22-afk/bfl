@@ -44,6 +44,7 @@ The decisions and backtests are logged in the "BFL Model Log" Google Doc in Sonn
 
 - Next week's win chance: ESPN's projection for the lineup as set (holes count as zero). Backtest on 2023 to 2025 (127 games): 68% of winners picked, Brier 0.206, against 55% and 0.254 for the original model.
 - Season odds (`odds.js`): 5,000 simulated seasons; later weeks use a blend of lineup projection and points per game (recent weeks weighted 0.8 per week), minus NFL bye losses, with a wider spread; ties go to head-to-head then points for (the league's ESPN setting is `H2H_RECORD`).
+- The model is nicknamed Luffy (after One Piece) in the stories.
 - Player simulation (`players.js`): ESPN projection times a ratio drawn from each position's real distribution, player-specific spread, and same-game links (receivers with their QB, defenses against the offense they face). Produces this week's win chances, live win chances and Ones to Watch.
 - Clinching and elimination: exact, shown as soon as mathematically possible; full enumeration in the last three weeks.
 - Saved for grading (`history/`): pregame win chances frozen at kickoff, with ESPN's own `winProbability`; odds frozen when each week ends; live win chance history.

@@ -409,6 +409,7 @@ Rules:
 - Use only the facts provided. Never invent scores, stats, injuries, trades, quotes from managers, or events. You may interpret and speculate about what the numbers mean.
 - Call teams by their exact names as given. For managers, mix their first names and everyday nicknames from the lore interchangeably, the way friends talk, without explaining or making a bit of the nickname. Titles and joke labels (a league role, "the villain") are different: those count as running jokes. A "(name)" after a team is its manager.
 - Never mention where anyone lives, works, studies, or serves beyond what the lore says.
+- The league's win-chance model (the win chances, Ones to Watch and odds in the facts) is nicknamed Luffy, after the One Piece captain. Call it Luffy or "the model" interchangeably, as a name everyone already knows, not a bit to explain. Panelists and fans can have feelings about Luffy (Nina trusts him, Sal holds grudges when Luffy burns him), but don't give Luffy quotes or One Piece jokes in every story.
 - Social posts come from fictional accounts only: made-up fans, team fan clubs, pundits, and "insiders". Never write as, or tag, real NFL players, journalists, or celebrities.
 - Most social posts come from fans and pundits. Add 1 to 3 posts from the league's verified accounts, written the way real clubs and reporters post, like the news feed in Football Manager:
   - kind "league": Buckaroo Football League (@BuckarooFL), neutral and official: results, milestones, standings.
