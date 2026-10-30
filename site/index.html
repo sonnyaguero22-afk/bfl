@@ -326,7 +326,7 @@ ol.swing li::before { content: none; }
 .sbrow { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; }
 .sbrow.lost { opacity: .55; }
 .sbname { min-width: 0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.sbname small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
+.sbname small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; white-space: normal; }
 .sbpts { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
 .sbpts.lead { color: var(--win); }
 .homegrid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 20px; align-items: start; }
@@ -335,7 +335,7 @@ ol.swing li::before { content: none; }
 .homeside .strip { grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr)); }
 table.compact td { padding: 8px 10px; }
 table.compact .team { min-width: 0; }
-@media (max-width: 860px) { .homegrid { grid-template-columns: 1fr; } }
+@media (max-width: 860px) { .homegrid { grid-template-columns: minmax(0, 1fr); } }
 /* In-game win chance */
 .wpwrap { border-top: 1px solid var(--line); padding: 10px 12px 4px; }
 .wphead { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600; margin-bottom: 4px; }
