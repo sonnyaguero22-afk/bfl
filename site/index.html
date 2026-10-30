@@ -872,7 +872,7 @@ function weekly(s) {
   const bowlCard = html.filter((c) => c.includes('data-tier="bowl"')).join(""), rest = html.filter((c) => !c.includes('data-tier="bowl"')).join("");
   const grid = bowlCard ? `<div class="bowlwrap">${bowlCard}</div>${rest ? `<h3 class="subhead">${ms.some((m) => m.tier === "WINNERS_CONSOLATION_LADDER") ? "3rd Place and Consolation" : "Consolation"}</h3><div class="games">${rest}</div>` : ""}` : `<div class="games">${cards}</div>`;
   const luffy = ms.some((m) => luffyPick(s, m, m.h) || luffyPick(s, m, m.a));
-  return bar + `${grid}${byes ? `<p class="note">${byes}</p>` : ""}${luffy ? `<p class="note">🍖 Luffy's pick</p>` : ""}<p class="note">Click a game to see both starting lineups and the bench.${ms.some((m) => kickedAt(s.byId[m.h], wk) || kickedAt(s.byId[m.a], wk)) ? " * Kicked for inactivity: the team played on without its manager, and the game still counts on his record." : ""}${!s.done ? " Scores for the week in progress are a snapshot from when the data was last pulled." : ""}</p>`;
+  return bar + `${grid}${byes ? `<p class="note">${byes}</p>` : ""}${luffy ? `<p class="note">🍖 Luffy's Pick</p>` : ""}<p class="note">Click a game to see both starting lineups and the bench.${ms.some((m) => kickedAt(s.byId[m.h], wk) || kickedAt(s.byId[m.a], wk)) ? " * Kicked for inactivity: the team played on without its manager, and the game still counts on his record." : ""}${!s.done ? " Scores for the week in progress are a snapshot from when the data was last pulled." : ""}</p>`;
 }
 
 function draft(s) {
