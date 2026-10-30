@@ -856,8 +856,8 @@ function weekly(s) {
     const bowl = isBowl(s, m), champ = bowl && m.win !== null && m.win !== 0 ? m.win : null;
     const key = `${wk}-${m.h}`, open = state.open === key;
     const winLabel = (id) => { const p = teamWin(s, m, id); if (p == null) return "";
-      // Luffy is the model's nickname (after One Piece); just here, so it stays a light touch
-      if (m.win === null) return `<br><span class="odds" title="Win chance from Luffy, the league's model">🍖 Luffy${m.on ? " (live)" : ""} <b>${winPct(p)}</b>${toGo(m, id)}</span>`;
+      // The favorite gets Luffy's meat bone (the model's nickname, after One Piece) until the result is certain
+      if (m.win === null) return `<br><span class="odds">${m.on ? "Live win chance" : "Win chance"} <b>${winPct(p)}${luffyPick(s, m, id) ? ` <span title="Luffy's pick">🍖</span>` : ""}</b>${toGo(m, id)}</span>`;
       const upset = m.win === id && p < 0.35;
       return `<br><span class="odds">${upset ? `<span class="pill gold">Upset</span> ` : ""}Was ${winPct(p)} to win</span>`; };
     const side = (id, p) => { const t = s.byId[id]; const lost = m.win !== null && m.win !== id && m.win !== 0; return `<div class="side${lost ? " lost" : ""}"><span class="team">${badge(t)}<span><b${champ === id ? ` data-champ="${s.year}"` : ""}>${champ === id ? "🏆 " : ""}${esc(nameAt(t, m.wk))}</b><small>${mgrName(mgrAt(t, m.wk))}${kickedAt(t, m.wk) ? "*" : ""} · ${recLabel(id)}${winLabel(id)}</small></span></span><span class="pts">${f2(p)}</span></div>`; };
@@ -871,7 +871,8 @@ function weekly(s) {
   const html = cards.split(/(?=<div class="box game)/);
   const bowlCard = html.filter((c) => c.includes('data-tier="bowl"')).join(""), rest = html.filter((c) => !c.includes('data-tier="bowl"')).join("");
   const grid = bowlCard ? `<div class="bowlwrap">${bowlCard}</div>${rest ? `<h3 class="subhead">${ms.some((m) => m.tier === "WINNERS_CONSOLATION_LADDER") ? "3rd Place and Consolation" : "Consolation"}</h3><div class="games">${rest}</div>` : ""}` : `<div class="games">${cards}</div>`;
-  return bar + `${grid}${byes ? `<p class="note">${byes}</p>` : ""}<p class="note">Click a game to see both starting lineups and the bench.${ms.some((m) => kickedAt(s.byId[m.h], wk) || kickedAt(s.byId[m.a], wk)) ? " * Kicked for inactivity: the team played on without its manager, and the game still counts on his record." : ""}${!s.done ? " Scores for the week in progress are a snapshot from when the data was last pulled." : ""}</p>`;
+  const luffy = ms.some((m) => luffyPick(s, m, m.h) || luffyPick(s, m, m.a));
+  return bar + `${grid}${byes ? `<p class="note">${byes}</p>` : ""}${luffy ? `<p class="note">🍖 Luffy's pick</p>` : ""}<p class="note">Click a game to see both starting lineups and the bench.${ms.some((m) => kickedAt(s.byId[m.h], wk) || kickedAt(s.byId[m.a], wk)) ? " * Kicked for inactivity: the team played on without its manager, and the game still counts on his record." : ""}${!s.done ? " Scores for the week in progress are a snapshot from when the data was last pulled." : ""}</p>`;
 }
 
 function draft(s) {
@@ -979,6 +980,9 @@ function winProb(s, m) {
 }
 const winPct = (p) => (p >= 0.995 ? ">99%" : p <= 0.005 ? "<1%" : `${Math.round(p * 100)}%`);
 // "· 2 to go": starters whose NFL game hasn't finished, on live games
+// Settled once the team behind has nobody left to play
+const settled = (m) => m.hleft != null && m.aleft != null && m.hp !== m.ap && (m.hp < m.ap ? m.hleft : m.aleft) === 0;
+const luffyPick = (s, m, id) => { const p = teamWin(s, m, id); return m.win === null && p != null && p > 0.5 && !settled(m); };
 const toGo = (m, id) => { const n = id === m.h ? m.hleft : m.aleft; return m.live && n != null ? ` · ${n ? `${n} to go` : "all done"}` : ""; };
 const teamWin = (s, m, id) => { const p = winProb(s, m); return p == null ? null : id === m.h ? p : 1 - p; };
 // What happened to a team between checkpoints N-1 and N
