@@ -4,7 +4,7 @@ The league's history site: every season since 2023, Buckaroo Bowls, managers, pl
 
 ## How it stays up to date
 
-GitHub runs `.github/workflows/update.yml` every hour. `check-games.js` decides whether to update:
+GitHub runs `.github/workflows/update.yml` on a 15-minute schedule (in practice every few hours, so on game days each run starts the next). `check-games.js` decides whether to update:
 
 - every 15 minutes from 4 hours before an NFL kickoff until a few hours after games finish
 - twice a day otherwise, around 9am and 6pm Eastern

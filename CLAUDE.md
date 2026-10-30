@@ -4,7 +4,7 @@ A fan site for an 8-team ESPN fantasy league of friends (founded 2023, 6 teams t
 
 ## How it runs
 
-GitHub Actions (`.github/workflows/update.yml`) runs every 15 minutes; `check-games.js` decides whether to update: every 15 minutes from 4 hours before an NFL kickoff until a few hours after games, otherwise twice a day (about 9am and 6pm ET), and always on manual or push runs. Each update:
+GitHub Actions (`.github/workflows/update.yml`) is scheduled every 15 minutes, but GitHub only fires it every few hours, so on game days each run starts the next itself (`check-games.js next`: about every 15 minutes from 4 hours before an NFL kickoff until 5 hours after, hourly when a game is within a day, otherwise the chain stops and the schedule takes over). `check-games.js` decides whether a scheduled run updates (around games, or about 9am and 6pm ET); manual, push and chained runs always update. Each run checks out the latest `main`. Each update:
 
 1. `fetch.js current` downloads the season from ESPN (needs the `ESPN_S2` and `ESPN_SWID` secrets) into `data/` (raw files, never committed; they contain ESPN account IDs). Past seasons' NFL schedules are saved once to `archive/nfl_<year>.json`.
 2. `build.js` builds `public/` (the site) and `site/data.js`: seasons, odds (`odds.js`), this week's player-level simulation (`players.js`), story and post times (`when.js`). Finished seasons are archived to `archive/<year>.json`.

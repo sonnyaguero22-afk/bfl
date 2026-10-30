@@ -487,7 +487,7 @@ function pending() {
     const et = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" })), day = et.getDay(), hr = et.getHours();
     const finished = [...new Set(cur.matchups.map((m) => m.wk))].filter((w) => w <= cur.regWeeks && cur.matchups.filter((m) => m.wk === w).every(done)).sort((a, b) => a - b);
     const newest = finished[finished.length - 1];
-    const released = !(day === 1 || (day === 2 && hr < 9)) || process.env.GITHUB_EVENT_NAME === "workflow_dispatch";
+    const released = !(day === 1 || (day === 2 && hr < 9)) || (process.env.GITHUB_EVENT_NAME === "workflow_dispatch" && process.env.CHAINED !== "true");
     for (const W of finished) if (!have.has(`rankings-${cur.year}-${W}`) && (W < newest || released)) todo.push({ id: `rankings-${cur.year}-${W}`, type: "rankings", s: cur, wk: W + 0.5, facts: () => rankingsFacts(cur, W) });
   }
   if (cur && cur.draft && cur.draft.length && !have.has(`draft-${cur.year}`)) todo.push({ id: `draft-${cur.year}`, type: "draft", s: cur, wk: 0, facts: () => draftFacts(cur) });

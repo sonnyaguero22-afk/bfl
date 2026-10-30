@@ -1,16 +1,23 @@
 # Keeps the league site up to date on GitHub Pages.
-# Runs every 15 minutes; check-games.js decides whether to actually update
-# (every 15 minutes while NFL games are on, otherwise once a day at 9am ET).
+# Scheduled every 15 minutes; check-games.js decides whether to actually update (every 15 minutes
+# around NFL games, otherwise twice a day). GitHub fires the schedule only every few hours here, so
+# on game days each run starts the next one (the "next" job), and the schedule is the backup.
 name: Update league site
 
 on:
   schedule:
     - cron: "7,22,37,52 * * * *"
   workflow_dispatch:
+    inputs:
+      chained:
+        description: Started by the previous run (not by hand)
+        type: boolean
+        default: false
   push:
     branches: [main]
 
 permissions:
+  actions: write
   contents: write
   pages: write
   id-token: write
@@ -40,7 +47,11 @@ jobs:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
+      # The latest main, not the commit that queued this run: a run that waited behind another
+      # would otherwise start from stale history files
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -59,6 +70,7 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           LEAGUE_LORE: ${{ secrets.LEAGUE_LORE }}
           LEAGUE_LORE_EXTRA: ${{ secrets.LEAGUE_LORE_EXTRA || secrets.LEAGUE_LORE_II }}
+          CHAINED: ${{ inputs.chained || false }}
       - name: Post live reactions during games
         run: node live.js
         env:
@@ -74,7 +86,7 @@ jobs:
           for d in archive history news; do if [ -d "$d" ]; then git add "$d"; fi; done
           if ! git diff --cached --quiet; then
             git commit -m "Update league history"
-            git pull --rebase origin main
+            git pull --rebase -X theirs origin main # on a clash, this run's newer history wins
             git push
           fi
       - uses: actions/configure-pages@v5
@@ -83,3 +95,21 @@ jobs:
           path: public
       - id: deploy
         uses: actions/deploy-pages@v4
+
+  # On game days, start the next run (see check-games.js); runs never overlap (concurrency above)
+  next:
+    needs: [check, update]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - id: next
+        run: node check-games.js next
+      - if: steps.next.outputs.wait != '0'
+        run: sleep ${{ steps.next.outputs.wait }} && gh workflow run update.yml --ref main -f chained=true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}

@@ -1527,7 +1527,7 @@ function home() {
   const champ = prev && prev.teams.find((t) => t.final === 1);
   const fav = o ? [...s.teams].sort((a, b) => odd(b.id) - odd(a.id))[0] : rows[0].t;
 
-  return `<div class="vhead"><div><div class="eyebrow">Buckaroo Bowl ${roman(n)} · ${s.year}</div><h2>${wkName}${anyLive ? ` <span class="pill live" style="vertical-align:middle">● Live</span>` : ""}</h2><p>Scores as of ${when}. ${anyLive ? "Live scores refresh about every hour during games." : ""}</p></div>
+  return `<div class="vhead"><div><div class="eyebrow">Buckaroo Bowl ${roman(n)} · ${s.year}</div><h2>${wkName}${anyLive ? ` <span class="pill live" style="vertical-align:middle">● Live</span>` : ""}</h2><p>Scores as of ${when}. ${anyLive ? "Live scores refresh about every 15 minutes during games." : ""}</p></div>
     <button class="morebtn" data-goweek="${s.year}|${wk}">All Lineups →</button></div>
   <div class="scoreboard">${scoreCards}</div>
   ${NEWS.length ? `<section style="margin:0 0 28px"><div class="vhead" style="margin-bottom:12px"><h3 style="margin:0">Top Stories</h3><button class="morebtn" data-go="news">All News →</button></div><div class="topstories">${newsCard(NEWS[0], true)}<div class="newslist">${NEWS.slice(1, 3).map((a) => newsCard(a)).join("")}</div></div></section>` : ""}
