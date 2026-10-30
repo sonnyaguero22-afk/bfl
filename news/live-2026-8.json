@@ -183,6 +183,36 @@
    "team": "No Banner only HULK",
    "about": "game",
    "at": "2026-10-30T01:36:22.157Z"
+  },
+  {
+   "author": "Pillbert Pessimist",
+   "handle": "@PillbertPessimist",
+   "text": "Josh Jacobs just put Philly in front 18.2 to 11 and I'm already bracing for the victory lap. Sonny, please do something, anything.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-10-30T02:18:14.918Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Jacobs' +8.4 gets Team Pillbert to 18.2 and a 56% win chance. Luffy likes the lead, but 7.2 points on a Sunday morning is basically a rounding error.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-10-30T02:20:14.918Z"
+  },
+  {
+   "author": "Team Pillbert",
+   "handle": "@TeamPillbert",
+   "text": "Josh Jacobs is on the board with 8.4 and we've taken the lead over The Horse is Hea. 18.2 and counting.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Team Pillbert",
+   "about": "game",
+   "at": "2026-10-30T02:19:14.918Z"
   }
  ],
  "batches": [
@@ -190,6 +220,7 @@
   "2026-10-29T06:15:44.122Z",
   "2026-10-29T15:15:49.125Z",
   "2026-10-29T20:41:17.618Z",
-  "2026-10-30T01:37:22.157Z"
+  "2026-10-30T01:37:22.157Z",
+  "2026-10-30T02:21:14.918Z"
  ]
 }
