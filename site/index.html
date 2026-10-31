@@ -335,6 +335,9 @@ ol.swing li::before { content: none; }
 .homeside .strip { grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr)); }
 table.compact td { padding: 8px 10px; }
 table.compact .team { min-width: 0; }
+/* Home standings on phones: every column on screen, so no badges, tighter cells, short odds headers */
+@media (max-width: 560px) { .homestand td, .homestand th { padding: 8px 4px; } .homestand td.n { font-size: 12px; letter-spacing: -0.03em; } .homestand .team .badge { display: none; } .homestand td:first-child, .homestand th:first-child { display: none; } .homestand td:nth-child(2), .homestand th:nth-child(2) { padding-left: 10px; } .homestand td:last-child, .homestand th:last-child { padding-right: 10px; } .homestand .lg { display: none; } }
+.homestand td.n { white-space: nowrap; } .homestand .sm { display: none; } @media (max-width: 560px) { .homestand .sm { display: inline; } }
 @media (max-width: 860px) { .homegrid { grid-template-columns: minmax(0, 1fr); } }
 /* In-game win chance */
 .wpwrap { border-top: 1px solid var(--line); padding: 10px 12px 4px; }
@@ -428,6 +431,8 @@ table.compact .team { min-width: 0; }
 .hunt small { display: block; font-size: 11.5px; line-height: 1.35; }
 .hunt.out { opacity: .55; }
 @media (max-width: 860px) { .picwrap { grid-template-columns: 1fr; } .bracket { grid-auto-flow: row; } .bcol:not(.bfinal) .bgame::after { display: none; } }
+/* On Home the picture sits in the standings column, so it always uses the stacked layout */
+.homemain .picwrap { grid-template-columns: 1fr; } .homemain .bracket { grid-auto-flow: row; } .homemain .bcol:not(.bfinal) .bgame::after { display: none; }
 .bowlwrap { margin-bottom: 22px; }
 .bowlgame { background: linear-gradient(135deg, var(--gold-soft), var(--surface) 70%); border: 1.5px solid var(--gold); box-shadow: 0 0 0 4px var(--gold-soft); }
 .bowlwrap .bowlgame { max-width: 720px; margin: 0 auto; }
@@ -1485,7 +1490,7 @@ function home() {
   const games = s.matchups.filter((m) => m.wk === wk);
   const anyLive = games.some((m) => m.on);
   const o = s.odds, oi = o ? o.weeks.length - 1 : -1;
-  const odd = (id) => (o ? o.t[id].c[oi] : null);
+  const odd = (id, k = "c") => (o ? o.t[id][k][oi] : null);
   const rec = Object.fromEntries(asOf(s, Math.min(wk, s.regWeeks)).rows.map((x) => [x.t.id, x]));
   const wkName = wk > s.regWeeks ? (wk === Math.max(...s.matchups.map((m) => m.wk)) && s.done ? "Buckaroo Bowl " + roman(n) : "Playoffs") : `Week ${wk}`;
   const built = new Date(D.built);
@@ -1498,10 +1503,11 @@ function home() {
 
   // Standings snapshot with odds
   const rows = asOf(s, null).rows;
-  const delta = (id) => (o && oi > 0 ? o.t[id].c[oi] - o.t[id].c[oi - 1] : 0);
-  const table = `<div class="box scroll"><table class="compact"><thead><tr><th class="n">#</th><th>Team</th><th class="n">Record</th><th class="n">PF</th><th class="n">Title</th></tr></thead><tbody>
-    ${rows.map((x, i) => { const d = delta(x.t.id); return `<tr class="${!s.done && i === s.playoffTeams - 1 ? "cut" : ""}"><td class="n">${s.done && x.t.final ? x.t.final : i + 1}</td><td>${teamCell(x.t)}</td><td class="n"><b>${recStr(x)}</b></td><td class="n">${f1(x.pf)}</td>
-      <td class="n">${odd(x.t.id) != null ? `${pct1(odd(x.t.id))} <span class="${d > 0.5 ? "w" : d < -0.5 ? "l" : "muted"}">${d > 0.5 ? "▲" : d < -0.5 ? "▼" : ""}</span>` : "—"}</td></tr>`; }).join("")}
+  const delta = (id, k = "c") => (o && oi > 0 ? o.t[id][k][oi] - o.t[id][k][oi - 1] : 0);
+  const oddCell = (id, k) => { const v = odd(id, k), d = delta(id, k); return `<td class="n">${v != null ? `${pct1(v)}${k === "p" && Math.abs(d) > 0.5 ? ` <span class="${d > 0 ? "w" : "l"}">${d > 0 ? "▲" : "▼"}</span>` : ""}` : "—"}</td>`; };
+  const table = `<div class="box scroll"><table class="compact homestand"><thead><tr><th class="n">#</th><th>Team</th><th class="n"><span class="lg">Record</span><span class="sm">W-L</span></th><th class="n">PF</th><th class="n">PA</th>${s.done ? "" : `<th class="n"><span class="lg">Playoffs</span><span class="sm">Playoff</span></th>`}<th class="n">Title</th></tr></thead><tbody>
+    ${rows.map((x, i) => `<tr class="${!s.done && i === s.playoffTeams - 1 ? "cut" : ""}"><td class="n">${s.done && x.t.final ? x.t.final : i + 1}</td><td>${teamCell(x.t)}</td><td class="n"><b>${recStr(x)}</b></td><td class="n">${Math.round(x.pf)}</td><td class="n muted">${Math.round(x.pa)}</td>
+      ${s.done ? "" : oddCell(x.t.id, "p")}${oddCell(x.t.id, "c")}</tr>`).join("")}
     </tbody></table></div>`;
 
   // Stars of the featured week (started players), and the worst bench call
@@ -1535,7 +1541,8 @@ function home() {
   ${NEWS.length ? `<section style="margin:0 0 28px"><div class="vhead" style="margin-bottom:12px"><h3 style="margin:0">Top Stories</h3><button class="morebtn" data-go="news">All News →</button></div><div class="topstories">${newsCard(NEWS[0], true)}<div class="newslist">${NEWS.slice(1, 3).map((a) => newsCard(a)).join("")}</div></div></section>` : ""}
   <div class="homegrid">
     <div class="homemain">
-    <section><h3>Standings</h3>${table}<p class="note">${s.done ? "Final standings." : `Dashed line marks the playoff cut. Title odds update after each finished week.`}</p></section>
+    <section><h3>Standings</h3>${table}<p class="note">${s.done ? "Final standings." : `Dashed line marks the playoff cut. Odds update after each finished week; arrows show the change in playoff odds.`}</p></section>
+    ${s.odds && s.odds.picture && s.odds.picture.week >= 8 ? pictureHtml(s) : ""}
     <section><div class="vhead" style="margin-bottom:12px"><h3 style="margin:0">Latest Moves</h3><button class="morebtn" data-go="transactions">All Transactions →</button></div><div class="box rec"><ol class="swing">${latest}</ol></div></section>
     </div>
     <div class="homeside">
