@@ -213,6 +213,36 @@
    "team": "Team Pillbert",
    "about": "game",
    "at": "2026-10-30T02:19:14.918Z"
+  },
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "Counting or not Counting GV (Jordan) has dropped TE Jake Ferguson, 36 points in seven weeks, for Brenton Strange, who has 6.9 over three. That's a lot of production out the door for a streaky replacement.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-10-31T07:32:08.471Z"
+  },
+  {
+   "author": "Tight End Truther",
+   "handle": "@TETruther_GV",
+   "text": "JMoney cutting a guy averaging over 5 a week for a guy averaging 2.3? Bold. Maybe the band director in him just likes the name Strange.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-10-31T07:44:08.471Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Ferguson at about 5.1 a game versus Strange at 2.3 is not a close call on paper. With Counting or not Counting GV at 16% against The fumblers, Jordan needed upside and this looks like a lateral move at best.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-10-31T07:56:08.471Z"
   }
  ],
  "batches": [
@@ -221,6 +251,7 @@
   "2026-10-29T15:15:49.125Z",
   "2026-10-29T20:41:17.618Z",
   "2026-10-30T01:37:22.157Z",
-  "2026-10-30T02:21:14.918Z"
+  "2026-10-30T02:21:14.918Z",
+  "2026-10-31T19:43:21.153Z"
  ]
 }
