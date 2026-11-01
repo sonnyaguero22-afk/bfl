@@ -243,6 +243,36 @@
    "team": "",
    "about": "move",
    "at": "2026-10-31T07:56:08.471Z"
+  },
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "The Horse is Hea (Sonny) has added RB Omarion Hampton off waivers and cut Jordan Mason. Sonny is down 20.2 to 13.3 with a full slate still to come, so he's stocking the backfield.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-01T05:37:42.636Z"
+  },
+  {
+   "author": "Horse Stable Hand",
+   "handle": "@HorseStableHand",
+   "text": "Sonny grabbing Omarion Hampton at 1:30 in the morning. Commish energy, no sleep, all vibes. Let's ride.",
+   "heat": 2,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-01T05:37:42.636Z"
+  },
+  {
+   "author": "The Horse is Hea",
+   "handle": "@TheHorseisHea",
+   "text": "Welcome to the stable, Omarion Hampton! Jordan Mason, thanks for the memories.",
+   "heat": 2,
+   "kind": "team",
+   "team": "The Horse is Hea",
+   "about": "move",
+   "at": "2026-11-01T05:37:42.636Z"
   }
  ],
  "batches": [
@@ -252,6 +282,7 @@
   "2026-10-29T20:41:17.618Z",
   "2026-10-30T01:37:22.157Z",
   "2026-10-30T02:21:14.918Z",
-  "2026-10-31T19:43:21.153Z"
+  "2026-10-31T19:43:21.153Z",
+  "2026-11-01T05:37:42.636Z"
  ]
 }
