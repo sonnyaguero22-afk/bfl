@@ -34,7 +34,7 @@ Story types in `news.js`, each dated in-world by `when.js`:
 | trade | as soon as a trade is seen | before/after odds from frozen week-end snapshots |
 | draft | each season | draft-night coverage, no hindsight |
 | review, history, profile | when a season ends | season review, the league history (History tab), manager profiles |
-| live | during games and on roster moves | `live.js`, shown only in the social feed |
+| live | during games and on roster moves | `live.js`, shown only in the social feed; reacts to touchdowns, turnovers and big plays, and knows which starters' games are over |
 
 Writing rules live in `news.js` (`SYSTEM`): use only the facts given; running jokes and labels are rare; first names and everyday nicknames mixed naturally; Zoe's nickname is always written Z² (also enforced in `build.js`). The panel (all fictional, never real people): Dana Whitfield (insider), Marcus Pell (columnist), Sal Benedetto (gambler), Dr. Nina Kessler (analytics). Social posts have kinds (fan, pundit, reporter, team, league), a heat score that drives likes and virality, and a time; a post appears only once its time has passed.
 
@@ -47,7 +47,7 @@ The decisions and backtests are logged in the "BFL Model Log" Google Doc in Sonn
 - The model is nicknamed Luffy (after One Piece) in the stories.
 - Player simulation (`players.js`): ESPN projection times a ratio drawn from each position's real distribution, player-specific spread, and same-game links (receivers with their QB, defenses against the offense they face). Produces this week's win chances, live win chances and Ones to Watch.
 - Clinching and elimination: exact, shown as soon as mathematically possible; full enumeration in the last three weeks.
-- Saved for grading (`history/`): pregame win chances frozen at kickoff, with ESPN's own `winProbability`; odds frozen when each week ends; live win chance history.
+- Saved for grading (`history/`): pregame win chances frozen at kickoff, with ESPN's own `winProbability`; odds frozen when each week ends; live win chance history (one point per update: time, home win chance, both scores, and the plays `live.js` saw since the last update, such as touchdowns, which the chart marks and its scrubber lists).
 
 ## Conventions
 

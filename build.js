@@ -104,7 +104,7 @@ for (const year of years) {
           // st: "bye", or "out" when he has no stats for the week (settled below, once his game is over)
           const act = (p.stats || []).find((x) => x.statSourceId === 0 && x.scoringPeriodId === w);
           const st = nflBye[p.proTeamId] === w ? "bye" : !(act && Object.keys(act.stats || {}).length) && !e.playerPoolEntry.appliedStatTotal ? "dnp" : undefined;
-          return { n: p.fullName, pos: POS[p.defaultPositionId] || "", pro: PRO[p.proTeamId] || "", slot: SLOT[e.lineupSlotId] || "BN", pts: r2(e.playerPoolEntry.appliedStatTotal || 0), proj: pj ? r2(pj.appliedTotal) : null, st, _pt: p.proTeamId };
+          return { n: p.fullName, pos: POS[p.defaultPositionId] || "", pro: PRO[p.proTeamId] || "", slot: SLOT[e.lineupSlotId] || "BN", pts: r2(e.playerPoolEntry.appliedStatTotal || 0), proj: pj ? r2(pj.appliedTotal) : null, st, _pt: p.proTeamId, _x: act && act.stats };
         });
       }
     }
@@ -198,8 +198,18 @@ for (const year of years) {
   for (const w in lineups) for (const id in lineups[w]) for (const p of lineups[w][id]) {
     if (p.st === "dnp") p.st = +w < L.status.latestScoringPeriod || (nflClock && nflClock(p._pt) === 0) ? "out" : undefined;
     if (!p.st) delete p.st;
-    delete p._pt;
+    // This week's scoring plays (ESPN stat ids) and whether his game is still to come, under way or over,
+    // so live posts and the win chance chart can tell a touchdown from yardage and a finished game from one to come
+    if (!done && +w === L.status.latestScoringPeriod) {
+      const x = p._x || {}, n = (...ids) => ids.reduce((t, k) => t + (x[k] || 0), 0);
+      const plays = { ptd: n(4), rtd: n(25), ctd: n(43), dtd: n(93, 101, 102, 103, 104), fg: n(83), to: n(20, 72) };
+      for (const k in plays) if (plays[k]) (p.x = p.x || {})[k] = plays[k];
+      if (nflClock && p.st !== "bye") { const f = nflClock(p._pt); p.g = f === 1 ? "pre" : f === 0 ? "done" : "on"; }
+    }
+    delete p._pt; delete p._x;
   }
+  // So the stat ids can be checked against the box scores from a cloud session
+  if (!done && nflClock && lineups[L.status.latestScoringPeriod]) console.log(`::notice::${year} scoring plays so far: ${Object.values(lineups[L.status.latestScoringPeriod]).flat().filter((p) => p.x).map((p) => `${p.n} ${JSON.stringify(p.x)} (${p.pts})`).join("; ") || "none"}`);
   // Live scores for the week in progress
   if (exists(`wk_${year}_${L.status.currentMatchupPeriod}.json`)) {
     const W = load(`wk_${year}_${L.status.currentMatchupPeriod}.json`);
@@ -440,8 +450,10 @@ if (process.env.GITHUB_ACTIONS === "true") for (const { matchups, wp, histFile }
   for (const m of matchups) {
     const key = `${m.wk}-${m.h}-${m.a}`, pts = wp[key];
     if (m.live && m.psim != null && (m.on || m.hp || m.ap)) {
-      const p = m.psim;
-      (wp[key] = wp[key] || []).push([now, Math.round(p * 1000) / 1000, m.hp, m.ap]);
+      const p = Math.round(m.psim * 1000) / 1000, last = pts && pts[pts.length - 1];
+      // The second build of a run sees the same data: one point per update
+      if (last && now - last[0] < 10 * 60e3 && last[1] === p && last[2] === m.hp && last[3] === m.ap) continue;
+      (wp[key] = wp[key] || []).push([now, p, m.hp, m.ap]);
       changed = true;
     } else if (pts && m.win !== null && !m.live) {
       const fin = m.win === m.h ? 1 : m.win === m.a ? 0 : 0.5;
@@ -464,7 +476,7 @@ const { published, postTime } = require("./when");
 const periodsOf = Object.fromEntries(seasons.map((s) => [s.year, s.periods]));
 const news = { articles: articles.map(({ usage, model, bios: _b, ...a }) => {
   const pub = published(a, periodsOf[a.year]);
-  return pub ? { ...a, published: pub.toISOString(), social: (a.social || []).map((p, i) => ({ ...p, at: postTime(a, pub, p, i).toISOString() })) } : a;
+  return pub ? { ...a, published: pub.toISOString(), social: (a.social || []).map((p, i) => ({ ...p, at: postTime(a, pub, p, i, periodsOf[a.year]).toISOString() })) } : a;
 }), bios };
 
 // Where everyone was each season (hand-maintained, data/locations.json)

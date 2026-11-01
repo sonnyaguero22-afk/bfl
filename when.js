@@ -43,10 +43,16 @@ function published(a, periods) {
 }
 // A post's time: the writer's minutes offset when given, otherwise a stable spread around the story
 // (recap reactions from Sunday evening through Tuesday morning, other stories' over the following hours)
-function postTime(a, pub, p, i) {
+function postTime(a, pub, p, i, periods) {
   if (p.at) return new Date(p.at); // live posts carry their own time
   const off = Number.isFinite(p.when) ? p.when : a.type === "recap" ? -1800 + jitter(`${a.id}-${i}`, 2400) : 4 + jitter(`${a.id}-${i}`, 900);
-  return new Date(pub.getTime() + off * 60e3);
+  const t = new Date(pub.getTime() + off * 60e3);
+  // Preview posts look ahead to games, so they all go up before the week's first kickoff (Thursday 8:15pm ET,
+  // about two hours after the preview's natural time): a fan hyping a stack that already played reads wrong
+  // (later posts squeezed, in order, into the last few minutes before it)
+  if (a.type === "preview") { const nat = natural(a, periods), lim = Math.max(nat ? (nat - pub) / 60e3 + 105 : 0, 10), squeeze = Math.min(30, lim / 3);
+    if (off > lim) return new Date(pub.getTime() + (lim - (squeeze * lim) / off) * 60e3); }
+  return t;
 }
 // "Tue, Oct 27, 9:14 AM ET" for the writer
 const etLabel = (d) => d.toLocaleString("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) + " ET";

@@ -352,6 +352,22 @@ table.compact .team { min-width: 0; }
 .wpchart .ax { fill: var(--muted); font-size: 12px; font-family: var(--f-body); }
 .wpchart .ax.big { fill: var(--ink); font-size: 15px; font-weight: 700; }
 @media (max-width: 560px) { .wpchart:not(.mini) .ax { font-size: 20px; } .wpchart:not(.mini) .ax.big { font-size: 24px; } }
+.wpchart .wptd line { stroke: hsl(var(--h) var(--mgr-s) var(--mgr-l)); stroke-width: 1.5; stroke-dasharray: 2 3; vector-effect: non-scaling-stroke; }
+.wpchart .wptd circle { fill: hsl(var(--h) var(--mgr-s) var(--mgr-l)); stroke: var(--surface); stroke-width: 1.5; }
+.wpchart .wpfuture { fill: var(--surface); opacity: .72; pointer-events: none; }
+.wpchart .wpcur { stroke: var(--ink); stroke-width: 1.2; stroke-dasharray: 3 4; opacity: .7; }
+.wpchart .wpdot { fill: var(--ink); stroke: var(--surface); stroke-width: 2; }
+.wpscrubbed svg { touch-action: pan-y; cursor: ew-resize; }
+.wpscrub { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+.wpplay { flex: none; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line); background: var(--sunk); color: var(--ink); font-size: 11px; cursor: pointer; padding: 0; }
+.wprange { flex: 1; min-width: 0; accent-color: var(--brass); margin: 0; }
+.wpread { font-size: 12.5px; padding: 6px 0 4px; min-height: 44px; }
+.wpline1 { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 12px; }
+.wpmv { color: var(--muted); font-size: 11.5px; }
+.wpsc { display: inline-flex; align-items: center; gap: 6px; }
+.wpplays { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+.wpplay1 { border-left: 3px solid hsl(var(--h) var(--mgr-s) var(--mgr-l)); background: var(--sunk); border-radius: 4px; padding: 2px 7px; font-size: 11.5px; }
+.wpplay1 b { color: hsl(var(--h) var(--mgr-s) var(--mgr-l)); }
 /* News & Social */
 .newsgrid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 16px; align-items: start; }
 .newsmain, .newslist { display: grid; gap: 10px; }
@@ -1049,13 +1065,15 @@ function oddsTab(s) {
 }
 
 // ---------- In-game win chance chart (points saved by each update during games) ----------
+// Full-size frame (SVG units), shared by the chart and its scrubber
+const WPC = { W: 800, H: 210, L: 6, R: 68, T: 8, B: 28 };
 function wpChart(s, m, mini) {
   const pts = (s.wp || {})[`${m.wk}-${m.h}-${m.a}`];
   // No graph yet: say it's coming only while the game is being played; before kickoff or for a game that
   // finished without one (before live tracking began), leave the section out
   const playing = m.live && (m.on || m.hp || m.ap);
   if (!pts || pts.length < 2) return mini || !playing ? "" : `<p class="note" style="margin:10px 14px">The win chance graph fills in while the game is played. It updates every 15 minutes during games.</p>`;
-  const W = 800, H = mini ? 60 : 210, L = mini ? 0 : 6, R = mini ? 0 : 56, T = 8, B = mini ? 8 : 28;
+  const { W, L, R, T } = WPC, H = mini ? 60 : WPC.H, B = mini ? 8 : WPC.B;
   const n = pts.length, x = (i) => L + (i * (W - L - R)) / (n - 1), y = (p) => T + (1 - p) * (H - T - B), mid = y(0.5);
   const th = s.byId[m.h], ta = s.byId[m.a], id = `wp${s.year}x${m.wk}x${m.h}x${m.a}${mini ? "m" : ""}`;
   const mh = mgrAt(th, m.wk), ma = mgrAt(ta, m.wk);
@@ -1071,12 +1089,57 @@ function wpChart(s, m, mini) {
   if (!mini) {
     let prev = "";
     pts.forEach((q, i) => { const d = new Date(q[0]).toLocaleDateString(undefined, { weekday: "short" }); if (d !== prev) { svg += `<line x1="${x(i)}" x2="${x(i)}" y1="${T}" y2="${H - B}" class="wpday"/><text x="${x(i) + 4}" y="${H - 9}" class="ax">${d}</text>`; prev = d; } });
+    // Touchdowns: a tick from the team's edge (home on top, away below) to the line, at the update that saw it
+    pts.forEach((q, i) => { for (const side of [0, 1]) if ((q[4] || []).some((t) => t[0] === side && /TD/.test(t[3]))) {
+      const k = side ? ma : mh, edge = side ? H - B - 5 : T + 5;
+      svg += `<g class="wptd" style="--h:${hue[k]}${gray(k)}"><line x1="${x(i)}" x2="${x(i)}" y1="${edge}" y2="${y(q[1])}"/><circle cx="${x(i)}" cy="${edge}" r="4.5"/></g>`; } });
     const last = pts[n - 1][1];
-    svg += `<text x="${W - R + 8}" y="${T + 14}" class="ax big">${winPct(last)}</text><text x="${W - R + 8}" y="${H - B - 2}" class="ax big">${winPct(1 - last)}</text>`;
+    // The scrubber's cursor: later updates fade, and the percentages follow it
+    svg += `<rect class="wpfuture" x="${W - R}" y="0" width="0" height="${H - B}"/><line class="wpcur" x1="${W - R}" x2="${W - R}" y1="${T}" y2="${H - B}" style="display:none"/><circle class="wpdot" cx="${x(n - 1)}" cy="${y(last)}" r="5"/>`;
+    svg += `<text x="${W - R + 8}" y="${T + 14}" class="ax big wph">${winPct(last)}</text><text x="${W - R + 8}" y="${H - B - 2}" class="ax big wpa">${winPct(1 - last)}</text>`;
   }
   svg += "</svg>";
   if (mini) return `<div class="wpmini">${svg}</div>`;
-  return `<div class="wphead"><span>${badge(th, 1)} ${esc(nameAt(th, m.wk))}</span><b>Win Chance</b><span>${esc(nameAt(ta, m.wk))} ${badge(ta, 1)}</span></div>${svg}`;
+  return `<div class="wphead"><span>${badge(th, 1)} ${esc(nameAt(th, m.wk))}</span><b>Win Chance</b><span>${esc(nameAt(ta, m.wk))} ${badge(ta, 1)}</span></div>
+    <div class="wpscrubbed" data-wp="${s.year}|${m.wk}|${m.h}|${m.a}">${svg}
+    <div class="wpscrub"><button type="button" class="wpplay" aria-label="Replay the game">▶</button><input type="range" class="wprange" min="0" max="${n - 1}" value="${n - 1}" aria-label="Scrub through the game"></div>
+    <div class="wpread">${wpRead(s, m, pts, n - 1)}</div></div>`;
+}
+// What the scrubber shows for one update: the time, the score, the win chance and how it moved, and the plays behind it
+function wpRead(s, m, pts, i) {
+  const q = pts[i], was = i ? pts[i - 1] : null, th = s.byId[m.h], ta = s.byId[m.a];
+  const t = new Date(q[0]).toLocaleString(undefined, { weekday: "short", hour: "numeric", minute: "2-digit" });
+  const home = q[1] >= 0.5, lead = home ? [th, q[1]] : [ta, 1 - q[1]], fin = i === pts.length - 1 && (q[1] === 0 || q[1] === 1 || q[1] === 0.5);
+  // How far the leader's chance moved since the update before
+  const mv = was ? Math.round((q[1] - was[1]) * 100) * (home ? 1 : -1) : 0;
+  const plays = (q[4] || []).map(([side, nm, g, tg]) => { const k = mgrAt(side ? ta : th, m.wk);
+    return `<span class="wpplay1" style="--h:${hue[k]}${gray(k)}">${tg ? `<b>${tg === "TO" ? "Turnover" : tg}</b> ` : ""}${esc(nm)} <span class="num">${g > 0 ? "+" : ""}${f1(g)}</span></span>`; }).join("");
+  return `<div class="wpline1"><span class="muted">${fin ? "Final" : t}</span>
+    <span class="wpsc num">${badge(th, 1)} ${f1(q[2])} – ${f1(q[3])} ${badge(ta, 1)}</span>
+    <span>${fin ? (q[1] === 0.5 ? "Tie" : `${esc(nameAt(lead[0], m.wk))} win`) : `${esc(nameAt(lead[0], m.wk))} <b>${winPct(lead[1])}</b>${mv ? ` <span class="wpmv">${mv > 0 ? "▲" : "▼"}${Math.abs(mv)}</span>` : ""}`}</span></div>${plays ? `<div class="wpplays">${plays}</div>` : ""}`;
+}
+// Moving the scrubber: fade what came later, move the dot and the percentages, rewrite the readout
+function wpScrub(box, i) {
+  const [y, wk, h, a] = box.dataset.wp.split("|").map(Number), s = S[y], m = s.matchups.find((g) => g.wk === wk && g.h === h && g.a === a);
+  const pts = s.wp[`${wk}-${h}-${a}`], n = pts.length, { W, L, R, T, B, H } = WPC;
+  i = Math.max(0, Math.min(n - 1, i));
+  const x = L + (i * (W - L - R)) / (n - 1), yy = T + (1 - pts[i][1]) * (H - T - B), end = i === n - 1;
+  const svg = box.querySelector("svg"), set = (sel, at) => { const el = svg.querySelector(sel); for (const k in at) el.setAttribute(k, at[k]); return el; };
+  set(".wpfuture", { x, width: W - R - x });
+  set(".wpcur", { x1: x, x2: x }).style.display = end ? "none" : "";
+  set(".wpdot", { cx: x, cy: yy });
+  svg.querySelector(".wph").textContent = winPct(pts[i][1]); svg.querySelector(".wpa").textContent = winPct(1 - pts[i][1]);
+  box.querySelector(".wprange").value = i;
+  box.querySelector(".wpread").innerHTML = wpRead(s, m, pts, i);
+}
+// Replay: runs the game back from the first update in about six seconds (pressing again pauses)
+let wpTimer = null;
+function wpReplay(box) {
+  const btn = box.querySelector(".wpplay"), r = box.querySelector(".wprange"), n = +r.max + 1;
+  if (wpTimer) { clearInterval(wpTimer.id); const mine = wpTimer.box === box; for (const b of document.querySelectorAll(".wpplay")) b.textContent = "▶"; wpTimer = null; if (mine) return; }
+  let i = +r.value >= n - 1 ? 0 : +r.value;
+  wpScrub(box, i); btn.textContent = "❚❚";
+  wpTimer = { box, id: setInterval(() => { if (!box.isConnected || ++i >= n) { clearInterval(wpTimer.id); wpTimer = null; btn.textContent = "▶"; if (i >= n) return; } wpScrub(box, i); }, Math.max(40, Math.min(400, 6000 / n))) };
 }
 
 // ---------- League-wide views ----------
@@ -1823,7 +1886,19 @@ function oddsHover(e) {
 $("#app").addEventListener("pointermove", oddsHover);
 $("#app").addEventListener("pointerdown", oddsHover);
 document.addEventListener("pointerleave", () => oddsHover({ target: document.body }));
+// The win chance scrubber: the slider, a tap or drag on the chart, and the replay button
+const wpStop = () => { if (wpTimer) wpReplay(wpTimer.box); };
+function wpPoint(e) {
+  const box = e.target.closest && e.target.closest(".wpscrubbed"), svg = box && e.target.closest("svg");
+  if (!svg || (e.type === "pointermove" && !e.buttons)) return;
+  const r = svg.getBoundingClientRect(), n = +box.querySelector(".wprange").max + 1, vx = ((e.clientX - r.left) * WPC.W) / r.width;
+  wpStop(); wpScrub(box, Math.round(((vx - WPC.L) / (WPC.W - WPC.L - WPC.R)) * (n - 1)));
+}
+$("#app").addEventListener("pointerdown", wpPoint);
+$("#app").addEventListener("pointermove", wpPoint);
+$("#app").addEventListener("click", (e) => { const b = e.target.closest(".wpplay"); if (b) wpReplay(b.closest(".wpscrubbed")); });
 $("#app").addEventListener("input", (e) => {
+  if (e.target.classList.contains("wprange")) { wpStop(); wpScrub(e.target.closest(".wpscrubbed"), +e.target.value); }
   if (e.target.id === "pq") { state.pq = e.target.value; $("#plist").innerHTML = playerRows(); }
   if (e.target.id === "txq") { state.txq = e.target.value; $("#txlist").innerHTML = txRows(); }
 });
