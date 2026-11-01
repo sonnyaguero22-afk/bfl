@@ -353,6 +353,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-01T18:24:04.747Z"
+  },
+  {
+   "author": "Marching Band Mafia",
+   "handle": "@BandKidBrigade",
+   "text": "Tuten just punched it in and JMoney is in front of Randy for the first time all day. Somewhere a snare drum is rolling.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T19:22:03.382Z"
+  },
+  {
+   "author": "Counting or not Counting GV",
+   "handle": "@CountingornotCountingGV",
+   "text": "Bhayshul Tuten finds the end zone and we take the lead. Rachaad White and the Patriots D/ST are still to come.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Counting or not Counting GV",
+   "about": "game",
+   "at": "2026-11-01T19:23:03.382Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Tuten's touchdown flips the lead, but Luffy still has Counting or not Counting GV at 26% against The fumblers. Randy has Loveland, Diggs and the Bears D/ST left to play, and that's why.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T19:24:03.382Z"
   }
  ],
  "batches": [
@@ -365,6 +395,7 @@
   "2026-10-31T19:43:21.153Z",
   "2026-11-01T05:37:42.636Z",
   "2026-11-01T18:11:37.217Z",
-  "2026-11-01T18:26:04.747Z"
+  "2026-11-01T18:26:04.747Z",
+  "2026-11-01T19:24:03.382Z"
  ]
 }
