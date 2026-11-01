@@ -533,6 +533,46 @@
    "team": "Counting or not Counting GV",
    "about": "game",
    "at": "2026-11-01T21:47:03.038Z"
+  },
+  {
+   "author": "Zilgit Zone",
+   "handle": "@ZSquaredSZN",
+   "text": "Zoe's back in front by half a point. Puka and Maye are both still playing for Habib and Saquon hasn't even started for us. I'm not breathing until the last whistle.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T21:59:38.724Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Zoe takes the lead, but Luffy still has Habibsters at 77%. Puka Nacua and Drake Maye are still in action, while Zoe has only Saquon to come and Blake Corum is still playing.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T22:00:38.724Z"
+  },
+  {
+   "author": "Habib Nation",
+   "handle": "@HabibNationGA",
+   "text": "Half a point behind Zoe. After the season Habib has had, of course it comes down to this. Pull it out, Puka.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T22:01:38.724Z"
+  },
+  {
+   "author": "Ghostu-Spider SZN",
+   "handle": "@GhostuSpiderSZN",
+   "text": "Lead change in the Zoe-Habibsters game! We're up 77.22 to 76.7 with Saquon Barkley still to play. Stay with us.",
+   "heat": 3,
+   "kind": "team",
+   "team": "Ghostu-Spider SZN",
+   "about": "game",
+   "at": "2026-11-01T22:02:38.724Z"
   }
  ],
  "batches": [
@@ -550,6 +590,7 @@
   "2026-11-01T19:38:29.976Z",
   "2026-11-01T20:36:00.672Z",
   "2026-11-01T20:50:28.337Z",
-  "2026-11-01T21:48:03.038Z"
+  "2026-11-01T21:48:03.038Z",
+  "2026-11-01T22:02:38.724Z"
  ]
 }
