@@ -573,6 +573,46 @@
    "team": "Ghostu-Spider SZN",
    "about": "game",
    "at": "2026-11-01T22:02:38.724Z"
+  },
+  {
+   "author": "Zilgit Zone",
+   "handle": "@ZilgitZone",
+   "text": "Corum just punched it in for the Rams and Zoe is climbing right back into this. Saquon hasn't even kicked off yet, so I'm allowed to be a little loud.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T22:47:34.025Z"
+  },
+  {
+   "author": "Habib Nation",
+   "handle": "@HabibNation",
+   "text": "Of course Corum scores. Habib has Puka and Maye still going and I'm just watching Zoe's side of the board like it owes me money.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T22:49:34.025Z"
+  },
+  {
+   "author": "Sal Benedetto",
+   "handle": "@SalBetsBig",
+   "text": "Corum in the end zone and I'm telling you, Zoe is a LOCK to finish this off with Saquon still waiting in the wings. Habibsters can't hold this, write it down.",
+   "heat": 5,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T22:52:34.025Z"
+  },
+  {
+   "author": "Ghostu-Spider SZN",
+   "handle": "@GhostuSpiderSZN",
+   "text": "Blake Corum finds the end zone for the Rams! Saquon Barkley still to come. Stay with us.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Ghostu-Spider SZN",
+   "about": "game",
+   "at": "2026-11-01T22:55:34.025Z"
   }
  ],
  "batches": [
@@ -591,6 +631,7 @@
   "2026-11-01T20:36:00.672Z",
   "2026-11-01T20:50:28.337Z",
   "2026-11-01T21:48:03.038Z",
-  "2026-11-01T22:02:38.724Z"
+  "2026-11-01T22:02:38.724Z",
+  "2026-11-01T23:00:34.025Z"
  ]
 }
