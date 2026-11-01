@@ -453,6 +453,46 @@
    "team": "The fumblers",
    "about": "game",
    "at": "2026-11-01T20:35:00.672Z"
+  },
+  {
+   "author": "Hulk Smash Central",
+   "handle": "@HulkSmashCentral",
+   "text": "Hockenson in the end zone and Brucie's team is suddenly breathing again. Down twenty with Walker, Swift and the Rams still to come, I'm not leaving yet.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T20:41:28.337Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Hockenson's touchdown moved Luffy from 12% to 33% for No Banner only HULK against Dawgs. Ramon still has four starters yet to play, which is why it isn't lower.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T20:44:28.337Z"
+  },
+  {
+   "author": "Habib Nation",
+   "handle": "@HabibNation",
+   "text": "Habibsters back in front of Zoe by half a point. Puka and Maye haven't even played yet and I still can't breathe.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T20:39:28.337Z"
+  },
+  {
+   "author": "Sal Benedetto",
+   "handle": "@SalBetsBig",
+   "text": "Burrow gives it away and Jordan's lead is gone. I told you the quarterback was the problem, LOCK it in: Randy takes this one.",
+   "heat": 5,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T20:48:28.337Z"
   }
  ],
  "batches": [
@@ -468,6 +508,7 @@
   "2026-11-01T18:26:04.747Z",
   "2026-11-01T19:24:03.382Z",
   "2026-11-01T19:38:29.976Z",
-  "2026-11-01T20:36:00.672Z"
+  "2026-11-01T20:36:00.672Z",
+  "2026-11-01T20:50:28.337Z"
  ]
 }
