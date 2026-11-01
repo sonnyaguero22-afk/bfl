@@ -613,6 +613,46 @@
    "team": "Ghostu-Spider SZN",
    "about": "game",
    "at": "2026-11-01T22:55:34.025Z"
+  },
+  {
+   "author": "Habib Nation",
+   "handle": "@HabibNationBFL",
+   "text": "Puka in the end zone and Habib is up by thirteen with Maye still to throw. Nobody tell me it's safe yet, this season has trained me better than that.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T23:14:04.199Z"
+  },
+  {
+   "author": "Habibsters",
+   "handle": "@Habibsters",
+   "text": "PUKA! Puka Nacua finds the end zone for the Rams and Habibsters take the lead back, 101.58 to 88.72. Stay with us.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Habibsters",
+   "about": "game",
+   "at": "2026-11-01T23:14:04.199Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Nacua's touchdown moves Luffy to 92% for Habibsters. Zoe still has Saquon to come, so it isn't over, but she now needs a big night from him.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T23:15:04.199Z"
+  },
+  {
+   "author": "Zilgit Zone",
+   "handle": "@ZilgitZone",
+   "text": "Puka scores one minute after we finally took the lead. Rude. Saquon, whenever you're ready.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T23:15:04.199Z"
   }
  ],
  "batches": [
@@ -632,6 +672,7 @@
   "2026-11-01T20:50:28.337Z",
   "2026-11-01T21:48:03.038Z",
   "2026-11-01T22:02:38.724Z",
-  "2026-11-01T23:00:34.025Z"
+  "2026-11-01T23:00:34.025Z",
+  "2026-11-01T23:15:04.199Z"
  ]
 }
