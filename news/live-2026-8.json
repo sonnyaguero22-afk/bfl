@@ -313,6 +313,46 @@
    "team": "The Horse is Hea",
    "about": "game",
    "at": "2026-11-01T18:09:37.217Z"
+  },
+  {
+   "author": "Dawg Pound Dispatch",
+   "handle": "@DawgPoundDispatch",
+   "text": "Brock Bowers just walked into the end zone like he had a reservation. Mekhi's got a real game on his hands now.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T18:13:04.747Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Josh Allen scoring on the ground is why Luffy still likes No Banner only HULK even after the Bowers touchdown. Ramon's lead is 26.38 to 22.60 with Walker, Swift and the Rams still to play.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T18:17:04.747Z"
+  },
+  {
+   "author": "Bears Den Randy Fan",
+   "handle": "@DenOfMonsters",
+   "text": "Trevor Lawrence finds the end zone and The fumblers are back in this thing. Randy still has Loveland, Diggs and the Bears D to come. Do not call it yet.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T18:20:04.747Z"
+  },
+  {
+   "author": "Sal Benedetto",
+   "handle": "@SalBetsBig",
+   "text": "Fannin fumbles for Philly and Bucky Irving coughs it up for Sonny, same quarter. Both of them just handed me a LOCK on chaos. I'm riding the one who still has Jaxon Smith-Njigba coming. SONNY, LOCK IT IN.",
+   "heat": 5,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T18:24:04.747Z"
   }
  ],
  "batches": [
@@ -324,6 +364,7 @@
   "2026-10-30T02:21:14.918Z",
   "2026-10-31T19:43:21.153Z",
   "2026-11-01T05:37:42.636Z",
-  "2026-11-01T18:11:37.217Z"
+  "2026-11-01T18:11:37.217Z",
+  "2026-11-01T18:26:04.747Z"
  ]
 }
