@@ -978,10 +978,10 @@ function watchHtml(s, m) {
   const now = (x) => {
     if (!m.watchLocked) return "";
     const p = (L[x.id] || []).find((q) => q.n === x.n);
-    if (!p || p.slot === "BN" || p.slot === "IR") return `<br><small class="wstat">${p ? "Moved to the bench" : "No longer on the roster"}</small>`;
-    if (p.g === "pre") return `<br><small class="wstat">Yet to play</small>`;
+    if (!p || p.slot === "BN" || p.slot === "IR") return `<br><small class="wstat">${p ? "Benched" : "Off the Roster"}</small>`;
+    if (p.g === "pre") return `<br><small class="wstat">Yet to Play</small>`;
     const hit = x.boomAt != null && p.pts >= x.boomAt, dud = p.g === "done" && x.bustAt != null && p.pts < x.bustAt;
-    return `<br><small class="wstat${hit ? " hit" : dud ? " miss" : ""}"><b>${f1(p.pts)}</b> pts${p.g === "on" ? " · playing now" : p.g === "done" ? " · final" : ""}${hit ? " · big game ✓" : dud ? " · dud" : ""}</small>`;
+    return `<br><small class="wstat${hit ? " hit" : dud ? " miss" : ""}"><b>${f1(p.pts)}</b> pts${p.g === "on" ? " · In Play" : p.g === "done" ? " · Final" : ""}${hit ? " · 🔥 Big Game" : dud ? " · 🗑️ Dud" : ""}</small>`;
   };
   return `<div class="watch"><div class="k" title="The players whose games swing this matchup most. The point lines are each player's top-20% and bottom-20% outcomes, from his projection, his position and his own history.">Ones to Watch <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500">· ${m.watchLocked ? "picked at kickoff · " : ""}big game = his top 20%, dud = his bottom 20%</span></div>${m.watch.map((x) => { const st = stack(x);
     return `<div class="wrow">${badge(s.byId[x.id], 1)}<span><b class="wname">${pn(x.n)}</b> <small class="muted">${esc(x.pos)} · ${esc(x.pro)}${x.proj != null ? ` · proj ${f1(x.proj)}` : ""}</small><br><small>${x.boomAt != null ? `If he scores <b>${x.boomAt}+</b>, ${esc(who(x.id))} wins <b>${x.boom}%</b> · under <b>${x.bustAt}</b>, <b>${x.bust}%</b>` : `If he booms, ${esc(who(x.id))} wins <b>${x.boom}%</b> · if he busts, <b>${x.bust}%</b>`}${st ? ` · <span class="pill">Stack: ${esc(st.qb === x.n ? st.rec : st.qb)}</span>` : ""}</small>${now(x)}</span></div>`; }).join("")}</div>`;
@@ -1074,14 +1074,14 @@ function oddsTab(s) {
 
 // ---------- In-game win chance chart (points saved by each update during games) ----------
 // Full-size frame (SVG units), shared by the chart and its hover readout
-const WPC = { W: 800, H: 210, L: 6, R: 68, T: 8, B: 28 };
+const WPC = { W: 800, H: 228, L: 6, R: 68, T: 18, B: 40 }; // T and B leave room for the touchdown markers outside the plot
 function wpChart(s, m, mini) {
   const pts = (s.wp || {})[`${m.wk}-${m.h}-${m.a}`];
   // No graph yet: say it's coming only while the game is being played; before kickoff or for a game that
   // finished without one (before live tracking began), leave the section out
   const playing = m.live && (m.on || m.hp || m.ap);
   if (!pts || pts.length < 2) return mini || !playing ? "" : `<p class="note" style="margin:10px 14px">The win chance graph fills in while the game is played. It updates every 15 minutes during games.</p>`;
-  const { W, L, R, T } = WPC, H = mini ? 60 : WPC.H, B = mini ? 8 : WPC.B;
+  const { W, L, R } = WPC, H = mini ? 60 : WPC.H, T = mini ? 8 : WPC.T, B = mini ? 8 : WPC.B;
   const n = pts.length, x = (i) => L + (i * (W - L - R)) / (n - 1), y = (p) => T + (1 - p) * (H - T - B), mid = y(0.5);
   const th = s.byId[m.h], ta = s.byId[m.a], id = `wp${s.year}x${m.wk}x${m.h}x${m.a}${mini ? "m" : ""}`;
   const mh = mgrAt(th, m.wk), ma = mgrAt(ta, m.wk);
@@ -1097,9 +1097,9 @@ function wpChart(s, m, mini) {
   if (!mini) {
     let prev = "";
     pts.forEach((q, i) => { const d = new Date(q[0]).toLocaleDateString(undefined, { weekday: "short" }); if (d !== prev) { svg += `<line x1="${x(i)}" x2="${x(i)}" y1="${T}" y2="${H - B}" class="wpday"/><text x="${x(i) + 4}" y="${H - 9}" class="ax">${d}</text>`; prev = d; } });
-    // Touchdowns: a tick from the team's edge (home on top, away below) to the line, at the update that saw it
+    // Touchdowns: a dot just outside the plot (home above, away below) with a tick to the line, at the update that saw it
     pts.forEach((q, i) => { for (const side of [0, 1]) if ((q[4] || []).some((t) => t[0] === side && /TD/.test(t[3]))) {
-      const k = side ? ma : mh, edge = side ? H - B - 5 : T + 5;
+      const k = side ? ma : mh, edge = side ? H - B + 8 : T - 9;
       svg += `<g class="wptd" style="--h:${hue[k]}${gray(k)}"><line x1="${x(i)}" x2="${x(i)}" y1="${edge}" y2="${y(q[1])}"/><circle cx="${x(i)}" cy="${edge}" r="4.5"/></g>`; } });
     const last = pts[n - 1][1];
     // The hover cursor: later updates fade, and the percentages follow it
