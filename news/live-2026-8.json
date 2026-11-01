@@ -383,6 +383,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-01T19:24:03.382Z"
+  },
+  {
+   "author": "Habib Nation",
+   "handle": "@HabibNationGA",
+   "text": "Jaguars defense just scored and Habibsters got a lifeline. Down 17 with Puka and Maye still to play, so I'm not packing it in yet.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T19:29:29.976Z"
+  },
+  {
+   "author": "Bengals Bandwagon",
+   "handle": "@WhoDeyJMoney",
+   "text": "Burrow throws a touchdown and JMoney's lead gets a little more comfortable. Fine by me.",
+   "heat": 2,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T19:33:29.976Z"
+  },
+  {
+   "author": "Bears Den Randy Fan",
+   "handle": "@BearsDenRandy",
+   "text": "Lawrence turning it over right after Burrow scores. Randy is going to complain about this one for a week and still not trade anybody.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T19:36:29.976Z"
   }
  ],
  "batches": [
@@ -396,6 +426,7 @@
   "2026-11-01T05:37:42.636Z",
   "2026-11-01T18:11:37.217Z",
   "2026-11-01T18:26:04.747Z",
-  "2026-11-01T19:24:03.382Z"
+  "2026-11-01T19:24:03.382Z",
+  "2026-11-01T19:38:29.976Z"
  ]
 }
