@@ -463,8 +463,9 @@ if (process.env.GITHUB_ACTIONS === "true") for (const { matchups, wp, histFile }
   if (changed) { fs.mkdirSync(HISTORY, { recursive: true }); fs.writeFileSync(histFile, JSON.stringify(wp)); }
 }
 
-// House style for the AI writer's text: Zoe's nickname is written Z², however it comes out
-const polish = (text) => text.replace(/\bZ[ -]?squared\b|\bZ\^2/gi, "Z²");
+// House style for the AI writer's text: Zoe's nickname is written Z², however it comes out, and the
+// win-chance model is always Luffy (older stories called it "the model")
+const polish = (text) => text.replace(/\bZ[ -]?squared\b|\bZ\^2/gi, "Z²").replace(/\bin the model\b(?!s)/g, "in Luffy's eyes").replace(/\b[Tt]he [Mm]odel\b(?!s)/g, "Luffy");
 // AI-written news saved by news.js (news/*.json), newest first, plus each team's latest bio
 const NEWSDIR = path.join(__dirname, "news");
 const articles = fs.existsSync(NEWSDIR) ? fs.readdirSync(NEWSDIR).filter((f) => f.endsWith(".json")).map((f) => JSON.parse(polish(fs.readFileSync(path.join(NEWSDIR, f), "utf8")))) : [];
