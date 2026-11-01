@@ -493,6 +493,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-01T20:48:28.337Z"
+  },
+  {
+   "author": "Bengals Bandwagon",
+   "handle": "@BengalsBandwagon",
+   "text": "Burrow just walked it in himself and the game is over for him. Thirty-nine points from one quarterback is a ridiculous thing to get out of a guy who gave it away earlier.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T21:35:03.038Z"
+  },
+  {
+   "author": "Marching Band Mafia",
+   "handle": "@MarchingBandMafia",
+   "text": "Okay, I take back everything I said about Burrow. Jordan is up fifty with the quarterback done for the day, and I'm finally exhaling.",
+   "heat": 2,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T21:39:03.038Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Burrow's rushing touchdown flips this one for good. Luffy now has Counting or not Counting GV at 100% against The fumblers, and Randy's Loveland, Diggs and the Bears D/ST can't close a gap that size.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T21:43:03.038Z"
+  },
+  {
+   "author": "Counting or not Counting GV",
+   "handle": "@CountingornotCountingGV",
+   "text": "Joe Burrow takes it in on the ground and finishes his day with 39.48. Final from the quarterback, and what a way to close it out.",
+   "heat": 3,
+   "kind": "team",
+   "team": "Counting or not Counting GV",
+   "about": "game",
+   "at": "2026-11-01T21:47:03.038Z"
   }
  ],
  "batches": [
@@ -509,6 +549,7 @@
   "2026-11-01T19:24:03.382Z",
   "2026-11-01T19:38:29.976Z",
   "2026-11-01T20:36:00.672Z",
-  "2026-11-01T20:50:28.337Z"
+  "2026-11-01T20:50:28.337Z",
+  "2026-11-01T21:48:03.038Z"
  ]
 }
