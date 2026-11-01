@@ -1248,6 +1248,16 @@ function records() {
     const l = m.win === m.h ? m.a : m.h;
     upsets.push({ s, m, p, w: s.byId[m.win], l: s.byId[l], ws: m.win === m.h ? m.hp : m.ap, ls: m.win === m.h ? m.ap : m.hp });
   }
+  // Comebacks: the lowest live win chance a winner had once scoring began, and the most it trailed by
+  // (from the in-game history, kept since week 7 of 2026)
+  const comebacks = [];
+  for (const s of SS) for (const m of s.played) {
+    const pts = ((s.wp || {})[`${m.wk}-${m.h}-${m.a}`] || []).filter((q) => q[2] || q[3]);
+    if (!m.a || !m.win || !pts.length) continue;
+    const home = m.win === m.h, p = Math.min(...pts.map((q) => (home ? q[1] : 1 - q[1])));
+    if (p >= 0.5) continue;
+    comebacks.push({ s, m, p, down: Math.max(0, ...pts.map((q) => (home ? q[3] - q[2] : q[2] - q[3]))), w: s.byId[m.win], l: s.byId[home ? m.a : m.h], ws: home ? m.hp : m.ap, ls: home ? m.ap : m.hp });
+  }
   const when = (x) => `${x.from.year} wk ${x.from.wk} → ${x.to.year} wk ${x.to.wk}${x.active ? " · still going" : ""}`;
   const stWho = (x) => `${mgrName(x.mgr)}${x.kick ? "*" : ""} <span class="muted">(${[...x.teams].map(esc).join(" / ")})</span>`;
   const byLen = (a, b) => b.len - a.len || b.to.year - a.to.year || b.to.wk - a.to.wk;
@@ -1260,6 +1270,7 @@ function records() {
   ])}
   ${group("Single Games", [
     board("Biggest Upset", top(upsets, (a, b) => a.p - b.p), (x) => winPct(x.p), (x) => `${esc(nameAt(x.w, x.m.wk))} <span class="muted">(${esc(D.managers[mgrAt(x.w, x.m.wk)].first)}${kickedAt(x.w, x.m.wk) ? "*" : ""})</span> over ${esc(nameAt(x.l, x.m.wk))}`, (x) => `${f2(x.ws)}–${f2(x.ls)} · ${x.s.year} ${x.m.wk > x.s.regWeeks ? "playoffs" : "wk " + x.m.wk}`, "Ranked by the winner's chance to win going into the game."),
+    board("Biggest Comeback", top(comebacks, (a, b) => a.p - b.p), (x) => winPct(x.p), (x) => `${esc(nameAt(x.w, x.m.wk))} <span class="muted">(${esc(D.managers[mgrAt(x.w, x.m.wk)].first)}${kickedAt(x.w, x.m.wk) ? "*" : ""})</span> over ${esc(nameAt(x.l, x.m.wk))}`, (x) => `${x.down >= 0.05 ? `Down ${f1(x.down)} at one point · ` : ""}won ${f2(x.ws)}–${f2(x.ls)} · ${x.s.year} ${x.m.wk > x.s.regWeeks ? "playoffs" : "wk " + x.m.wk}`, "Ranked by the winner's lowest live win chance once scoring began. Tracked since week 7 of 2026."),
     board("Most Points in a Week", top(all, (a, b) => b.pts - a.pts), (x) => f2(x.pts), tn, ctx),
     board("Fewest Points in a Week", top(all, (a, b) => a.pts - b.pts), (x) => f2(x.pts), tn, ctx),
     board("Biggest Blowout", top(wins, (a, b) => (b.pts - b.oppPts) - (a.pts - a.oppPts)), (x) => "+" + f2(x.pts - x.oppPts), tn, (x) => `${f2(x.pts)}–${f2(x.oppPts)} · ${ctx(x)}`),
