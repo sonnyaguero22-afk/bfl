@@ -1,0 +1,67 @@
+{
+ "id": "final-2026-8",
+ "type": "final",
+ "year": 2026,
+ "wk": 8,
+ "created": "2026-11-01T16:58:31.345Z",
+ "title": "Sunday Final Word: Randy Reloads, Zoe's Packers Stack Cashes Early, and Philly Gets a Jacobs Bump",
+ "dek": "Late lineup swaps moved a few win chances, and the biggest swing belongs to a Habibsters team that is 86% to win without a point on the board.",
+ "body": [
+  "The headline game got a nudge toward Team Pillbert. Alan swapped Chuba Hubbard out for Josh Jacobs, and Jacobs already played and put up 20.2, which is the entire Team Pillbert scoreboard. The Horse is Hea has 13.3 from Christian Watson, and Sonny added Omarion Hampton in place of Jordan Mason. The model moved Philly from 49% to 56% in a game still wide open, with Gibbs and Smith-Njigba yet to come. Nina, Dana and Sal all stuck with The Horse is Hea, Marcus still has Philly, and Philly is currently winning, so he gets a smug little point for now.",
+  "The biggest movement is in Habibsters vs Ghostu-Spider SZN. Zoe already has 47.62 banked, with Jordan Love at 21.52, Tucker Kraft at 14.3, Tetairoa McMillan at 8.8 and Trey Smack at 3, so the Green Bay stack did exactly what she wanted. Habib still moved from 72% to 86% after swapping in Sam LaPorta and Braelon Allen for Breece Hall and Tyler Warren, which says the model likes his remaining pieces, especially Puka Nacua. Marcus remains the lone panelist on Zoe, and he has the early lead on the scoreboard to wave around.",
+  "Over in the other two games, Randy did the most work. The fumblers brought in Stefon Diggs, Trevor Lawrence and the Bears D/ST, and sent out Caleb Williams, the Browns D/ST and Tre Tucker. His chances against Counting or not Counting GV climbed, and Jordan's dropped from 32% to 17% even after he swapped Jake Ferguson for Brenton Strange. Elsewhere, No Banner only HULK has 17.4 from Matthew Golden and sits at 55%, up from 46%, while Dawgs haven't scored yet. Nobody has an unfilled spot an hour from kickoff, which is a clean bill of health for the whole league."
+ ],
+ "social": [
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Habibsters at 86% with zero points on the board is the model saying Zoe's early 47.62 is not enough. Puka is the swing: 97% for Habib if he hits 27 or more. I'm staying with Habibsters.",
+   "when": 8,
+   "heat": 3,
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Sal Benedetto",
+   "handle": "@SalBetsBig",
+   "text": "Jacobs got 20.2 for Philly and I'm still not flipping. The Horse is Hea is a LOCK. Gibbs hasn't even played yet. Don't make me say it twice.",
+   "when": 14,
+   "heat": 4,
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Buckaroo Football League",
+   "handle": "@BuckarooFL",
+   "text": "Final word before kickoff: Josh Jacobs has 20.2 for Team Pillbert, Jordan Love has 21.52 for Ghostu-Spider SZN, and all lineups lock at 1 PM ET.",
+   "when": 20,
+   "heat": 2,
+   "kind": "league",
+   "team": ""
+  },
+  {
+   "author": "Fumble Recovery Unit",
+   "handle": "@FumblersForever",
+   "text": "Stefon Diggs, Trevor Lawrence and the Bears D/ST all in the lineup. We did not come this far to only come this far. Let's go, Randy.",
+   "when": 32,
+   "heat": 3,
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Ghostu-Spider SZN",
+   "handle": "@GhostuSpiderSZN",
+   "text": "47.62 before the 1 PM games even start. Love, Kraft, McMillan and Smack all checked in. Let's see how Habib likes chasing us. #SZN",
+   "when": 45,
+   "heat": 3,
+   "kind": "team",
+   "team": "Ghostu-Spider SZN"
+  }
+ ],
+ "teams": [],
+ "model": "claude-sonnet-5-5",
+ "usage": {
+  "input": 4,
+  "output": 1424
+ }
+}
