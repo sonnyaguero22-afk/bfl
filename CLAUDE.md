@@ -47,7 +47,7 @@ The decisions and backtests are logged in the "BFL Model Log" Google Doc in Sonn
 - The model is nicknamed Luffy (after One Piece) in the stories.
 - Player simulation (`players.js`): ESPN projection times a ratio drawn from each position's real distribution, player-specific spread, and same-game links (receivers with their QB, defenses against the offense they face). Produces this week's win chances, live win chances and Ones to Watch.
 - Clinching and elimination: exact, shown as soon as mathematically possible; full enumeration in the last three weeks.
-- Saved for grading (`history/`): pregame win chances frozen at kickoff, with ESPN's own `winProbability`; odds frozen when each week ends; live win chance history (one point per update: time, home win chance, both scores, and the plays `live.js` saw since the last update, such as touchdowns, which the chart marks and its scrubber lists).
+- Saved for grading (`history/`): pregame win chances and Ones to Watch frozen at kickoff (the site keeps showing those Ones to Watch once a game starts, with how each is doing against his lines), with ESPN's own `winProbability`; odds frozen when each week ends; live win chance history (one point per update: time, home win chance, both scores, and the plays `live.js` saw since the last update, such as touchdowns, which the chart marks and its scrubber lists).
 
 ## Conventions
 

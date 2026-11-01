@@ -429,17 +429,27 @@ for (const s of seasons) for (const m of s.matchups) {
   const nm = (id) => s.teams.find((t) => t.id === id).name;
   console.log(`::notice::Week ${m.wk}: ${nm(m.h)} ${Math.round(m.psim * 100)}%${m.espn != null ? ` (ESPN ${Math.round(m.espn * 100)}%)` : ""} vs ${nm(m.a)} | watch ${m.watch.map((x) => `${x.n} for ${nm(x.id)} (${x.boomAt}+: ${x.boom}%, under ${x.bustAt}: ${x.bust}%)`).join("; ")}${m.stacks.length ? ` | stacks ${m.stacks.map((k) => `${k.qb}+${k.rec}`).join(", ")}` : ""}${m.holes ? ` | holes ${m.holes.map((x) => `${x.n} (${nm(x.id)}, ${x.why})`).join(", ")} -> ${nm(m.h)} ${Math.round(m.psimFixed * 100)}% if fixed` : ""}`);
 }
-// Pregame win chances, frozen at kickoff for the Report Card (history/pregame_<year>.json, saved by GitHub):
-// each game's last win chance before any points were scored, as the lineups were set then
-if (process.env.GITHUB_ACTIONS === "true") for (const s of seasons) {
+// Pregame win chances and Ones to Watch, frozen at kickoff for the Report Card (history/pregame_<year>.json,
+// saved by GitHub): each game's last ones before any points were scored, as the lineups were set then
+for (const s of seasons) {
   if (s.done) continue;
   const f = path.join(HISTORY, `pregame_${s.year}.json`), pre = fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, "utf8")) : {};
   let changed = false;
-  for (const m of s.matchups) if (m.live && m.psim != null && !m.hp && !m.ap) {
-    const k = `${m.wk}-${m.h}-${m.a}`;
-    if (!pre[k] || pre[k].p !== m.psim || pre[k].fixed !== m.psimFixed || pre[k].espn !== m.espn) { pre[k] = { p: m.psim, fixed: m.psimFixed, odds: winOdds(s, m), espn: m.espn, at: new Date().toISOString() }; changed = true; }
+  for (const m of s.matchups) if (m.live && m.psim != null && !m.hp && !m.ap && process.env.GITHUB_ACTIONS === "true") {
+    const k = `${m.wk}-${m.h}-${m.a}`, watch = JSON.stringify(m.watch || []), stacks = JSON.stringify(m.stacks || []);
+    if (!pre[k] || pre[k].p !== m.psim || pre[k].fixed !== m.psimFixed || pre[k].espn !== m.espn || JSON.stringify(pre[k].watch || []) !== watch || JSON.stringify(pre[k].stacks || []) !== stacks) {
+      pre[k] = { p: m.psim, fixed: m.psimFixed, odds: winOdds(s, m), espn: m.espn, watch: m.watch, stacks: m.stacks, at: new Date().toISOString() }; changed = true; }
   }
   if (changed) { fs.mkdirSync(HISTORY, { recursive: true }); fs.writeFileSync(f, JSON.stringify(pre)); }
+  // Once a game is under way its Ones to Watch stay the ones picked at kickoff, with their pregame lines:
+  // recomputed live they drift to whoever is left to play, which makes no sense mid-game
+  for (const m of s.matchups) {
+    const k = `${m.wk}-${m.h}-${m.a}`;
+    if (!m.live || !(m.hp || m.ap) || !pre[k] || !pre[k].watch) continue;
+    const L = Object.assign({}, ...((s.periods || {})[m.wk] || [m.wk]).map((sp) => s.lineups[sp] || {}));
+    m.watch = pre[k].watch.map((x) => ({ ...x, proj: x.proj ?? ((L[x.id] || []).find((p) => p.n === x.n) || {}).proj ?? null }));
+    m.stacks = pre[k].stacks || []; m.watchLocked = true;
+  }
 }
 
 // In-game win chance history: GitHub saves one point per update while a week is under way

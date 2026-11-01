@@ -457,6 +457,7 @@ h3.subhead { margin: 0 0 10px; font-size: 15px; color: var(--muted); }
 .confetti { position: absolute; width: 7px; height: 11px; border-radius: 2px; pointer-events: none; z-index: 60; }
 .watch { padding: 10px 14px 12px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
 .wname, .wname .plink, .pl.watchp .nm > .plink, .pl.watchp .nm > b { color: var(--gold); font-weight: 700; }
+.wstat { color: var(--muted); } .wstat b { color: var(--ink); } .wstat.hit, .wstat.hit b { color: var(--win); } .wstat.miss, .wstat.miss b { color: var(--loss); }
 .watch .k { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .wrow { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; font-size: 13.5px; line-height: 1.35; }
 .buzz { display: flex; gap: 14px; align-items: center; font-size: 12px; color: var(--muted); margin: 2px 0 4px; }
@@ -972,8 +973,18 @@ function watchHtml(s, m) {
   if (!m.live || !m.watch || !m.watch.length) return "";
   const who = (id) => mgrName(mgrAt(s.byId[id], m.wk));
   const stack = (x) => (m.stacks || []).find((k) => k.id === x.id && (k.qb === x.n || k.rec === x.n));
-  return `<div class="watch"><div class="k" title="The players whose games swing this matchup most. The point lines are each player's top-20% and bottom-20% outcomes, from his projection, his position and his own history.">Ones to Watch <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500">· big game = his top 20%, dud = his bottom 20%</span></div>${m.watch.map((x) => { const st = stack(x);
-    return `<div class="wrow">${badge(s.byId[x.id], 1)}<span><b class="wname">${pn(x.n)}</b> <small class="muted">${esc(x.pos)} · ${esc(x.pro)} · proj ${f1(x.proj)}</small><br><small>${x.boomAt != null ? `If he scores <b>${x.boomAt}+</b>, ${esc(who(x.id))} wins <b>${x.boom}%</b> · under <b>${x.bustAt}</b>, <b>${x.bust}%</b>` : `If he booms, ${esc(who(x.id))} wins <b>${x.boom}%</b> · if he busts, <b>${x.bust}%</b>`}${st ? ` · <span class="pill">Stack: ${esc(st.qb === x.n ? st.rec : st.qb)}</span>` : ""}</small></span></div>`; }).join("")}</div>`;
+  // Once the game is under way they stay the ones picked at kickoff; each shows how he's doing against his lines
+  const L = Object.assign({}, ...s.spans(m.wk).map((sp) => s.lineups[sp] || {}));
+  const now = (x) => {
+    if (!m.watchLocked) return "";
+    const p = (L[x.id] || []).find((q) => q.n === x.n);
+    if (!p || p.slot === "BN" || p.slot === "IR") return `<br><small class="wstat">${p ? "Moved to the bench" : "No longer on the roster"}</small>`;
+    if (p.g === "pre") return `<br><small class="wstat">Yet to play</small>`;
+    const hit = x.boomAt != null && p.pts >= x.boomAt, dud = p.g === "done" && x.bustAt != null && p.pts < x.bustAt;
+    return `<br><small class="wstat${hit ? " hit" : dud ? " miss" : ""}"><b>${f1(p.pts)}</b> pts${p.g === "on" ? " · playing now" : p.g === "done" ? " · final" : ""}${hit ? " · big game ✓" : dud ? " · dud" : ""}</small>`;
+  };
+  return `<div class="watch"><div class="k" title="The players whose games swing this matchup most. The point lines are each player's top-20% and bottom-20% outcomes, from his projection, his position and his own history.">Ones to Watch <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500">· ${m.watchLocked ? "picked at kickoff · " : ""}big game = his top 20%, dud = his bottom 20%</span></div>${m.watch.map((x) => { const st = stack(x);
+    return `<div class="wrow">${badge(s.byId[x.id], 1)}<span><b class="wname">${pn(x.n)}</b> <small class="muted">${esc(x.pos)} · ${esc(x.pro)}${x.proj != null ? ` · proj ${f1(x.proj)}` : ""}</small><br><small>${x.boomAt != null ? `If he scores <b>${x.boomAt}+</b>, ${esc(who(x.id))} wins <b>${x.boom}%</b> · under <b>${x.bustAt}</b>, <b>${x.bust}%</b>` : `If he booms, ${esc(who(x.id))} wins <b>${x.boom}%</b> · if he busts, <b>${x.bust}%</b>`}${st ? ` · <span class="pill">Stack: ${esc(st.qb === x.n ? st.rec : st.qb)}</span>` : ""}</small>${now(x)}</span></div>`; }).join("")}</div>`;
 }
 // Chance the home team wins (0-1). Live games use ESPN's live projected finals, with less
 // uncertainty the less there is left to play; otherwise team strength going into the week.
