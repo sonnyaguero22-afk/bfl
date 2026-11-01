@@ -273,6 +273,46 @@
    "team": "The Horse is Hea",
    "about": "move",
    "at": "2026-11-01T05:37:42.636Z"
+  },
+  {
+   "author": "Spider Web Watch",
+   "handle": "@zspiderwatch",
+   "text": "Steelers defense just showed up for Zoe. She's already sitting on a huge number and Habib's side is chasing from way back.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T18:00:37.217Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Jaguars D/ST makes it respectable for Habibsters, but Luffy still has them at 80% against Ghostu-Spider SZN. Puka Nacua and Drake Maye are still to play, so the ceiling is there.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T18:03:37.217Z"
+  },
+  {
+   "author": "Falcon Fanatic",
+   "handle": "@dawgsdeepcut",
+   "text": "Falcons defense coming up big for Mekhi right when Ramon was getting comfortable. Dawgs are not dead yet.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-01T18:06:37.217Z"
+  },
+  {
+   "author": "The Horse is Hea",
+   "handle": "@TheHorseisHea",
+   "text": "Bengals D/ST comes up big and we're right there with Team Pillbert. Nothing settled, plenty of Sunday left.",
+   "heat": 2,
+   "kind": "team",
+   "team": "The Horse is Hea",
+   "about": "game",
+   "at": "2026-11-01T18:09:37.217Z"
   }
  ],
  "batches": [
@@ -283,6 +323,7 @@
   "2026-10-30T01:37:22.157Z",
   "2026-10-30T02:21:14.918Z",
   "2026-10-31T19:43:21.153Z",
-  "2026-11-01T05:37:42.636Z"
+  "2026-11-01T05:37:42.636Z",
+  "2026-11-01T18:11:37.217Z"
  ]
 }
