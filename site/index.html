@@ -357,10 +357,7 @@ table.compact .team { min-width: 0; }
 .wpchart .wpfuture { fill: var(--surface); opacity: .72; pointer-events: none; }
 .wpchart .wpcur { stroke: var(--ink); stroke-width: 1.2; stroke-dasharray: 3 4; opacity: .7; }
 .wpchart .wpdot { fill: var(--ink); stroke: var(--surface); stroke-width: 2; }
-.wpscrubbed svg { touch-action: pan-y; cursor: ew-resize; }
-.wpscrub { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
-.wpplay { flex: none; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line); background: var(--sunk); color: var(--ink); font-size: 11px; cursor: pointer; padding: 0; }
-.wprange { flex: 1; min-width: 0; accent-color: var(--brass); margin: 0; }
+.wpscrubbed svg { touch-action: pan-y; cursor: crosshair; }
 .wpread { font-size: 12.5px; padding: 6px 0 4px; min-height: 44px; }
 .wpline1 { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 12px; }
 .wpmv { color: var(--muted); font-size: 11.5px; }
@@ -1065,7 +1062,7 @@ function oddsTab(s) {
 }
 
 // ---------- In-game win chance chart (points saved by each update during games) ----------
-// Full-size frame (SVG units), shared by the chart and its scrubber
+// Full-size frame (SVG units), shared by the chart and its hover readout
 const WPC = { W: 800, H: 210, L: 6, R: 68, T: 8, B: 28 };
 function wpChart(s, m, mini) {
   const pts = (s.wp || {})[`${m.wk}-${m.h}-${m.a}`];
@@ -1094,18 +1091,17 @@ function wpChart(s, m, mini) {
       const k = side ? ma : mh, edge = side ? H - B - 5 : T + 5;
       svg += `<g class="wptd" style="--h:${hue[k]}${gray(k)}"><line x1="${x(i)}" x2="${x(i)}" y1="${edge}" y2="${y(q[1])}"/><circle cx="${x(i)}" cy="${edge}" r="4.5"/></g>`; } });
     const last = pts[n - 1][1];
-    // The scrubber's cursor: later updates fade, and the percentages follow it
+    // The hover cursor: later updates fade, and the percentages follow it
     svg += `<rect class="wpfuture" x="${W - R}" y="0" width="0" height="${H - B}"/><line class="wpcur" x1="${W - R}" x2="${W - R}" y1="${T}" y2="${H - B}" style="display:none"/><circle class="wpdot" cx="${x(n - 1)}" cy="${y(last)}" r="5"/>`;
     svg += `<text x="${W - R + 8}" y="${T + 14}" class="ax big wph">${winPct(last)}</text><text x="${W - R + 8}" y="${H - B - 2}" class="ax big wpa">${winPct(1 - last)}</text>`;
   }
   svg += "</svg>";
   if (mini) return `<div class="wpmini">${svg}</div>`;
   return `<div class="wphead"><span>${badge(th, 1)} ${esc(nameAt(th, m.wk))}</span><b>Win Chance</b><span>${esc(nameAt(ta, m.wk))} ${badge(ta, 1)}</span></div>
-    <div class="wpscrubbed" data-wp="${s.year}|${m.wk}|${m.h}|${m.a}">${svg}
-    <div class="wpscrub"><button type="button" class="wpplay" aria-label="Replay the game">▶</button><input type="range" class="wprange" min="0" max="${n - 1}" value="${n - 1}" aria-label="Scrub through the game"></div>
+    <div class="wpscrubbed" data-wp="${s.year}|${m.wk}|${m.h}|${m.a}" data-n="${n}">${svg}
     <div class="wpread">${wpRead(s, m, pts, n - 1)}</div></div>`;
 }
-// What the scrubber shows for one update: the time, the score, the win chance and how it moved, and the plays behind it
+// What the readout shows for one update: the time, the score, the win chance and how it moved, and the plays behind it
 function wpRead(s, m, pts, i) {
   const q = pts[i], was = i ? pts[i - 1] : null, th = s.byId[m.h], ta = s.byId[m.a];
   const t = new Date(q[0]).toLocaleString(undefined, { weekday: "short", hour: "numeric", minute: "2-digit" });
@@ -1118,7 +1114,7 @@ function wpRead(s, m, pts, i) {
     <span class="wpsc num">${badge(th, 1)} ${f1(q[2])} – ${f1(q[3])} ${badge(ta, 1)}</span>
     <span>${fin ? (q[1] === 0.5 ? "Tie" : `${esc(nameAt(lead[0], m.wk))} win`) : `${esc(nameAt(lead[0], m.wk))} <b>${winPct(lead[1])}</b>${mv ? ` <span class="wpmv">${mv > 0 ? "▲" : "▼"}${Math.abs(mv)}</span>` : ""}`}</span></div>${plays ? `<div class="wpplays">${plays}</div>` : ""}`;
 }
-// Moving the scrubber: fade what came later, move the dot and the percentages, rewrite the readout
+// Rewinding the chart: fade what came later, move the dot and the percentages, rewrite the readout
 function wpScrub(box, i) {
   const [y, wk, h, a] = box.dataset.wp.split("|").map(Number), s = S[y], m = s.matchups.find((g) => g.wk === wk && g.h === h && g.a === a);
   const pts = s.wp[`${wk}-${h}-${a}`], n = pts.length, { W, L, R, T, B, H } = WPC;
@@ -1129,19 +1125,8 @@ function wpScrub(box, i) {
   set(".wpcur", { x1: x, x2: x }).style.display = end ? "none" : "";
   set(".wpdot", { cx: x, cy: yy });
   svg.querySelector(".wph").textContent = winPct(pts[i][1]); svg.querySelector(".wpa").textContent = winPct(1 - pts[i][1]);
-  box.querySelector(".wprange").value = i;
   box.querySelector(".wpread").innerHTML = wpRead(s, m, pts, i);
 }
-// Replay: runs the game back from the first update in about six seconds (pressing again pauses)
-let wpTimer = null;
-function wpReplay(box) {
-  const btn = box.querySelector(".wpplay"), r = box.querySelector(".wprange"), n = +r.max + 1;
-  if (wpTimer) { clearInterval(wpTimer.id); const mine = wpTimer.box === box; for (const b of document.querySelectorAll(".wpplay")) b.textContent = "▶"; wpTimer = null; if (mine) return; }
-  let i = +r.value >= n - 1 ? 0 : +r.value;
-  wpScrub(box, i); btn.textContent = "❚❚";
-  wpTimer = { box, id: setInterval(() => { if (!box.isConnected || ++i >= n) { clearInterval(wpTimer.id); wpTimer = null; btn.textContent = "▶"; if (i >= n) return; } wpScrub(box, i); }, Math.max(40, Math.min(400, 6000 / n))) };
-}
-
 // ---------- League-wide views ----------
 function trophies() {
   const cards = [...years].reverse().map((y) => {
@@ -1886,19 +1871,20 @@ function oddsHover(e) {
 $("#app").addEventListener("pointermove", oddsHover);
 $("#app").addEventListener("pointerdown", oddsHover);
 document.addEventListener("pointerleave", () => oddsHover({ target: document.body }));
-// The win chance scrubber: the slider, a tap or drag on the chart, and the replay button
-const wpStop = () => { if (wpTimer) wpReplay(wpTimer.box); };
+// The win chance chart rewinds under the mouse (a tap or drag on phones) and snaps back to now when the mouse leaves
 function wpPoint(e) {
   const box = e.target.closest && e.target.closest(".wpscrubbed"), svg = box && e.target.closest("svg");
-  if (!svg || (e.type === "pointermove" && !e.buttons)) return;
-  const r = svg.getBoundingClientRect(), n = +box.querySelector(".wprange").max + 1, vx = ((e.clientX - r.left) * WPC.W) / r.width;
-  wpStop(); wpScrub(box, Math.round(((vx - WPC.L) / (WPC.W - WPC.L - WPC.R)) * (n - 1)));
+  if (!svg || (e.type === "pointermove" && e.pointerType !== "mouse" && !e.buttons)) return;
+  const r = svg.getBoundingClientRect(), n = +box.dataset.n, vx = ((e.clientX - r.left) * WPC.W) / r.width;
+  wpScrub(box, Math.round(((vx - WPC.L) / (WPC.W - WPC.L - WPC.R)) * (n - 1)));
 }
 $("#app").addEventListener("pointerdown", wpPoint);
 $("#app").addEventListener("pointermove", wpPoint);
-$("#app").addEventListener("click", (e) => { const b = e.target.closest(".wpplay"); if (b) wpReplay(b.closest(".wpscrubbed")); });
+$("#app").addEventListener("pointerout", (e) => {
+  const svg = e.pointerType === "mouse" && e.target.closest && e.target.closest(".wpscrubbed svg");
+  if (svg && !svg.contains(e.relatedTarget)) { const box = svg.closest(".wpscrubbed"); wpScrub(box, +box.dataset.n - 1); }
+});
 $("#app").addEventListener("input", (e) => {
-  if (e.target.classList.contains("wprange")) { wpStop(); wpScrub(e.target.closest(".wpscrubbed"), +e.target.value); }
   if (e.target.id === "pq") { state.pq = e.target.value; $("#plist").innerHTML = playerRows(); }
   if (e.target.id === "txq") { state.txq = e.target.value; $("#txlist").innerHTML = txRows(); }
 });
