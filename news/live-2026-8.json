@@ -723,6 +723,36 @@
    "team": "Dawgs",
    "about": "game",
    "at": "2026-11-02T02:34:44.248Z"
+  },
+  {
+   "author": "GV Gang",
+   "handle": "@GVGangFF",
+   "text": "Rachaad White punches one in for Washington and Jordan's game is officially over with a 138 on the board. Randy can keep his Bears D/ST, this one is done.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-02T04:23:32.191Z"
+  },
+  {
+   "author": "Counting or not Counting GV",
+   "handle": "@CountingornotCountingGV",
+   "text": "Rachaad White finishes the night with a touchdown, and that wraps up a 138.28 to 88.3 win over The fumblers. Nice work, Jordan.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Counting or not Counting GV",
+   "about": "game",
+   "at": "2026-11-02T04:27:32.191Z"
+  },
+  {
+   "author": "Fumbler Faithful",
+   "handle": "@FumblerFaithful",
+   "text": "Rachaad White scores a garbage-time touchdown for Jordan, which is a bit rude considering we were already down forty. Bears D/ST, please make this look better than it is.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-02T04:30:32.191Z"
   }
  ],
  "batches": [
@@ -745,6 +775,7 @@
   "2026-11-01T23:00:34.025Z",
   "2026-11-01T23:15:04.199Z",
   "2026-11-02T02:07:57.208Z",
-  "2026-11-02T02:36:44.248Z"
+  "2026-11-02T02:36:44.248Z",
+  "2026-11-02T04:32:32.191Z"
  ]
 }
