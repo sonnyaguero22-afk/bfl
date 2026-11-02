@@ -653,6 +653,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-01T23:15:04.199Z"
+  },
+  {
+   "author": "Zilgit Zone",
+   "handle": "@ZilgitZone",
+   "text": "Saquon just walked into the end zone and I'm standing in my living room like a lunatic. Twenty points to make up and he's still on the field.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-02T02:06:57.208Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Barkley's touchdown makes it Habibsters 120.96, Ghostu-Spider SZN 99.82, and Luffy still has Habibsters at 97%. Zoe has no one left after Saquon, so he needs a monster finish.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-02T02:04:57.208Z"
+  },
+  {
+   "author": "Ghostu-Spider SZN",
+   "handle": "@GhostuSpiderSZN",
+   "text": "SAQUON! Barkley punches it in for the Eagles and we're within 21 of Habibsters, 99.82 to 120.96. Stay with us.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Ghostu-Spider SZN",
+   "about": "game",
+   "at": "2026-11-02T02:02:57.208Z"
+  },
+  {
+   "author": "Habib Nation",
+   "handle": "@HabibNation",
+   "text": "Saquon scores and I'm calmly staring at the wall. Habib has nobody left to play, so all I can do is watch and wait.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-02T01:59:57.208Z"
   }
  ],
  "batches": [
@@ -673,6 +713,7 @@
   "2026-11-01T21:48:03.038Z",
   "2026-11-01T22:02:38.724Z",
   "2026-11-01T23:00:34.025Z",
-  "2026-11-01T23:15:04.199Z"
+  "2026-11-01T23:15:04.199Z",
+  "2026-11-02T02:07:57.208Z"
  ]
 }
