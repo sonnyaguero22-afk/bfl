@@ -693,6 +693,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-02T01:59:57.208Z"
+  },
+  {
+   "author": "Fumbler Faithful",
+   "handle": "@FumblerFaithful",
+   "text": "Diggs catches one and it barely matters, because Randy is down 43 to Jordan and Burrow already put up the whole neighborhood. Still, nice to see a touchdown on our side.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-02T02:30:44.248Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Daniels throwing a touchdown pass pushes Dawgs to 122.9 against Ramon's 101.66. Luffy still gives No Banner only HULK 2%, and Swift would need a monster night to change that.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-02T02:33:44.248Z"
+  },
+  {
+   "author": "Dawgs",
+   "handle": "@Dawgs",
+   "text": "Jayden Daniels finds the end zone for Washington and we're up 122.9 to 101.66. Stay with us.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Dawgs",
+   "about": "game",
+   "at": "2026-11-02T02:34:44.248Z"
   }
  ],
  "batches": [
@@ -714,6 +744,7 @@
   "2026-11-01T22:02:38.724Z",
   "2026-11-01T23:00:34.025Z",
   "2026-11-01T23:15:04.199Z",
-  "2026-11-02T02:07:57.208Z"
+  "2026-11-02T02:07:57.208Z",
+  "2026-11-02T02:36:44.248Z"
  ]
 }
