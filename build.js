@@ -414,6 +414,8 @@ for (const s of seasons) for (const m of s.matchups) {
   if (!m._sides) continue;
   const g = simGame(playerModel, m._sides[0], m._sides[1], s.year * 1000 + m.wk * 10 + m.h, oppFor(s.year)[m.wk] || {});
   m.psim = Math.round(g.home * 1000) / 1000;
+  // Decided once the team behind has nobody left to play: exactly 100% or 0%, not a simulated 99.9%
+  if (m.hleft != null && m.aleft != null && m.hp !== m.ap && (m.hp < m.ap ? m.hleft : m.aleft) === 0) m.psim = m.hp > m.ap ? 1 : 0;
   // The biggest swing on each side, and QB + own receiver both still to play on one side (they boom and bust together)
   const watchOf = (g) => [0, 1].map((k) => g.watch.find((x) => x.side === k)).filter(Boolean).sort((a, b) => (b.boom - b.bust) - (a.boom - a.bust))
     .map(({ side, n, pos, pro, proj, boom, bust, boomAt, bustAt }) => ({ id: side ? m.a : m.h, n, pos, pro: pro.startsWith("FA-") ? "FA" : pro, proj, boom, bust, boomAt, bustAt }));

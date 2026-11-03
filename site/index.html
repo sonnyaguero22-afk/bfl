@@ -1007,7 +1007,8 @@ function winProb(s, m) {
   const len = s.spans(m.wk).length, mh = s.odds.t[m.h][k][i], ma = s.odds.t[m.a][k][i];
   return Phi(((mh - ma) * len) / (spread * Math.sqrt(2 * len)));
 }
-const winPct = (p) => (p >= 0.995 ? ">99%" : p <= 0.005 ? "<1%" : `${Math.round(p * 100)}%`);
+// A decided game is exactly 100% or 0%; only a near-certain one reads >99% or <1%
+const winPct = (p) => (p >= 1 ? "100%" : p <= 0 ? "0%" : p >= 0.995 ? ">99%" : p <= 0.005 ? "<1%" : `${Math.round(p * 100)}%`);
 // "· 2 to go": starters whose NFL game hasn't finished, on live games
 // Settled once the team behind has nobody left to play
 const settled = (m) => m.hleft != null && m.aleft != null && m.hp !== m.ap && (m.hp < m.ap ? m.hleft : m.aleft) === 0;
