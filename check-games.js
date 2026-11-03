@@ -1,6 +1,6 @@
 // Decides whether this run should update the site, and (with "next") when the next run should start.
 // Update every 15 minutes from 4 hours before an NFL kickoff (inactives and lineup swaps) until a few
-// hours after, twice a day otherwise (around 9am and 6pm Eastern), and always on manual runs.
+// hours after, on any scheduled run between 7am and 11pm Eastern otherwise, and always on manual runs.
 // GitHub's own schedule fires only every few hours on this repo, so on game days each run starts the
 // next one itself: "next" writes wait=<seconds> (0 stops the chain and leaves it to the schedule).
 const fs = require("fs");
@@ -18,7 +18,9 @@ const next = (why, min) => out("wait", min * 60, min ? `Next run in about ${min 
   if (!NEXT && process.env.GITHUB_EVENT_NAME && process.env.GITHUB_EVENT_NAME !== "schedule") return decide("started by hand, by a code change or by the previous run", true);
   const etHour = +new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", hour: "numeric", hourCycle: "h23" }).format(new Date());
   const etMin = new Date().getUTCMinutes(); // Eastern time is a whole-hour offset from UTC
-  if (!NEXT && (etHour === 9 || etHour === 18) && etMin < 30) return decide(`twice-daily update (${etHour === 9 ? "9am" : "6pm"} ET)`, true);
+  // GitHub fires the schedule only every few hours, at unpredictable minutes, so any daytime run updates
+  // (a narrow 9am/6pm window was often missed, leaving the Tuesday recap waiting most of a day)
+  if (!NEXT && etHour >= 7 && etHour < 23) return decide(`daytime update (${etHour}:${String(etMin).padStart(2, "0")} ET)`, true);
   try {
     const res = await fetch("https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard");
     const sb = await res.json();
