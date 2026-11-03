@@ -753,6 +753,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-02T04:30:32.191Z"
+  },
+  {
+   "author": "Seattle Sweat",
+   "handle": "@SeaSweat206",
+   "text": "The Seahawks defense just showed up for Philly and it's already over for Sonny. Jaxon Smith-Njigba is the only guy he has left and he's down 56 points. Brutal.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-03T01:16:13.182Z"
+  },
+  {
+   "author": "Fumbler Faithful",
+   "handle": "@FumblerFaithful",
+   "text": "The Bears defense finally made a play, and it cut the Jordan gap to 38. Nobody asked for a respectable loss but I'll take it.",
+   "heat": 2,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-03T01:21:13.182Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Seahawks D/ST pushes Team Pillbert to 109.4 against 52.7 for The Horse is Hea. Luffy has it at 100%, and Sonny has only Jaxon Smith-Njigba left to chase that gap.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-03T01:24:13.182Z"
   }
  ],
  "batches": [
@@ -776,6 +806,7 @@
   "2026-11-01T23:15:04.199Z",
   "2026-11-02T02:07:57.208Z",
   "2026-11-02T02:36:44.248Z",
-  "2026-11-02T04:32:32.191Z"
+  "2026-11-02T04:32:32.191Z",
+  "2026-11-03T01:25:13.182Z"
  ]
 }
