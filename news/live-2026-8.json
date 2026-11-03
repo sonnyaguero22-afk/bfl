@@ -873,6 +873,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-03T03:18:51.967Z"
+  },
+  {
+   "author": "Fumbler Faithful",
+   "handle": "@FumblerFaithful",
+   "text": "Loveland coughs it up in a game that was already gone. Randy is down 33 to JMoney, so nobody has to feel it too much, but that's still a Bears tight end putting it on the turf.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-03T03:38:51.001Z"
+  },
+  {
+   "author": "Marcus Pell",
+   "handle": "@MarcusPellWrites",
+   "text": "Colston Loveland fumbles in Chicago and Randy's night gets a little worse. At least Randy won't trade him, so they can suffer together.",
+   "heat": 4,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-03T03:41:51.001Z"
+  },
+  {
+   "author": "GV Counting Club",
+   "handle": "@GVCountingClub",
+   "text": "Loveland puts the ball on the ground and Jordan's lead over The fumblers is still comfortable. The scoreboard does the counting, as usual.",
+   "heat": 2,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-03T03:45:51.001Z"
   }
  ],
  "batches": [
@@ -900,6 +930,7 @@
   "2026-11-03T01:25:13.182Z",
   "2026-11-03T01:39:40.565Z",
   "2026-11-03T02:37:39.247Z",
-  "2026-11-03T03:20:51.967Z"
+  "2026-11-03T03:20:51.967Z",
+  "2026-11-03T03:49:51.001Z"
  ]
 }
