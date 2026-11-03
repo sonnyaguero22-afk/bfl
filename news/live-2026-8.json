@@ -843,6 +843,36 @@
    "team": "Team Pillbert",
    "about": "game",
    "at": "2026-11-03T02:35:39.247Z"
+  },
+  {
+   "author": "Brucie's Bandwagon",
+   "handle": "@BillsMafiaBrucie",
+   "text": "Swift punches it in for the Bears and Ramon is suddenly back within shouting distance. Sixteen points to make up and he's only got Swift left, so it's a long shot.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-03T03:11:51.967Z"
+  },
+  {
+   "author": "Dawgs Kennel",
+   "handle": "@KennelKai",
+   "text": "Swift just scored for Brucie and I'm doing math with my hands. Kai is up 16 and every Bears carry is making me a little sick.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-03T03:14:51.967Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "D'Andre Swift's touchdown helps No Banner only HULK, but Luffy still has Dawgs ahead and No Banner at 0%. It takes a lot more than one score to close a gap this size.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-03T03:18:51.967Z"
   }
  ],
  "batches": [
@@ -869,6 +899,7 @@
   "2026-11-02T04:32:32.191Z",
   "2026-11-03T01:25:13.182Z",
   "2026-11-03T01:39:40.565Z",
-  "2026-11-03T02:37:39.247Z"
+  "2026-11-03T02:37:39.247Z",
+  "2026-11-03T03:20:51.967Z"
  ]
 }
