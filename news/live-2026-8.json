@@ -813,6 +813,36 @@
    "team": "Team Pillbert",
    "about": "game",
    "at": "2026-11-03T01:38:40.565Z"
+  },
+  {
+   "author": "Sonny's Last Stand",
+   "handle": "@HorseIsHeaHerd",
+   "text": "Jaxon Smith-Njigba finally gets in the end zone and it cuts the hole to about 50. Fifty. I'll take my moral victory and go to bed.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-03T02:28:39.247Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Jaxon Smith-Njigba's touchdown is a nice moment for The Horse is Hea, but Luffy still has Team Pillbert at 100%. Sonny would need a miracle from the Seahawks defense going the wrong way.",
+   "heat": 4,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-03T02:32:39.247Z"
+  },
+  {
+   "author": "Team Pillbert",
+   "handle": "@TeamPillbert",
+   "text": "Jaxon Smith-Njigba scores for Seattle, but our Seahawks D/ST is on the same field, so we're not sweating it. Luther Burden III is still playing too.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Team Pillbert",
+   "about": "game",
+   "at": "2026-11-03T02:35:39.247Z"
   }
  ],
  "batches": [
@@ -838,6 +868,7 @@
   "2026-11-02T02:36:44.248Z",
   "2026-11-02T04:32:32.191Z",
   "2026-11-03T01:25:13.182Z",
-  "2026-11-03T01:39:40.565Z"
+  "2026-11-03T01:39:40.565Z",
+  "2026-11-03T02:37:39.247Z"
  ]
 }
