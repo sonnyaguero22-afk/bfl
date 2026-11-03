@@ -1,0 +1,55 @@
+{
+ "id": "live-2026-9",
+ "type": "live",
+ "year": 2026,
+ "wk": 9,
+ "created": "2026-11-03T15:57:43.076Z",
+ "title": "Week 9 Live",
+ "dek": "",
+ "body": [],
+ "social": [
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "Team Pillbert has dropped quarterback Geno Smith, who put up 18 points in his one week of work. Alan's QB plans for the week ahead are worth watching.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-03T14:28:00.103Z"
+  },
+  {
+   "author": "Bayou Brian",
+   "handle": "@BrianBayouFF",
+   "text": "Philly cutting a quarterback who just gave him 18 points is a bold way to start a Tuesday. Hope there's a plan, because I can't see it.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-03T14:40:00.103Z"
+  },
+  {
+   "author": "Habibster Nation",
+   "handle": "@HabibsterNation",
+   "text": "Geno Smith is out on the wire and Alan is the one who put him there. Habib is being handed a head start in this matchup and we'll take it.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-03T14:52:00.103Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Habibsters sit at 43% against Team Pillbert, so a quarterback shuffle on Alan's side matters. Dropping 18 points of production is a risk I'd want explained.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-03T15:04:00.103Z"
+  }
+ ],
+ "batches": [
+  "2026-11-03T15:57:48.657Z"
+ ]
+}

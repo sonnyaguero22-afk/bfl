@@ -1,0 +1,72 @@
+{
+ "id": "trade-2026-9-2-5",
+ "type": "trade",
+ "year": 2026,
+ "wk": 9,
+ "created": "2026-11-03T15:57:42.951Z",
+ "title": "Kai Cashes In Again: Dawgs Land Jonathan Taylor and Amon-Ra St. Brown, Randy Bets on Tee Higgins",
+ "dek": "Mekhi turned a benched receiver and a one-week rental into a running back and a receiver who combined for 248.2 points, and now he gets to face the guy he traded with this Sunday.",
+ "body": [
+  "The deal is two-for-two on paper, but the points are not close. Dawgs sent Tee Higgins and Jameson Williams to The fumblers for Jonathan Taylor and Amon-Ra St. Brown. Taylor came over with 133.7 points on the season and St. Brown with 114.5, a combined 248.2. Higgins brings 118.1 and Williams 49.4, a combined 167.5, which means Randy signed off on roughly an 80-point gap in season production heading into Week 9.",
+  "For Kai, this is the second half of a two-step. He pried Williams and James Cook III loose from Sonny a week ago, kept Williams for exactly one week, then packaged him with Higgins, who had just scored 32.5 points on the Dawgs bench, for two players who start every week no matter who is managing. The man known for working the waiver wire is now working the trade block with the same energy, and he keeps walking away with the bigger names. Taylor gives Mekhi a workhorse alongside Cook, and St. Brown joins Ja'Marr Chase in a receiver room that suddenly looks unfair.",
+  "For Randy, the read is a bet on upside over track record. Higgins is coming off that 32.5-point week and has nearly matched St. Brown's season total, so if you squint, Randy swapped one WR1 for another and then took Williams as a lottery ticket in exchange for an elite running back. That is a big squint. The fumblers have lost five straight, and a guy who usually guards his roster like a vault decided this was the moment to shake things up. Credit for trying something; the question is whether it was the right something.",
+  "Luffy has a clear opinion. After the deal, Dawgs sit at 45% to make the playoffs and 13% to win the Buckaroo Bowl, real contender numbers for a team that was 2-5 two weeks ago. The fumblers are at 5% playoff odds and 1% title odds, which is life support with the plug in Randy's hand. On paper, Mekhi won this one, and it isn't especially close.",
+  "And the best part: these two play each other this week. Higgins gets an immediate shot at the team that benched him, Taylor and St. Brown get to debut against the team that let them go, and the loser is probably out of the race. If Randy wins, he gets to call the trade a masterstroke for at least seven days. If Kai wins, nobody will let Randy forget who he gave him the ammunition."
+ ],
+ "social": [
+  {
+   "author": "Dawgs",
+   "handle": "@Dawgs",
+   "text": "Welcome to the Dawgs, Jonathan Taylor and Amon-Ra St. Brown. 248.2 points between you, and your first game in the kennel is against your old team. No pressure. #DawgsUp",
+   "when": -1500,
+   "heat": 3,
+   "kind": "team",
+   "team": "Dawgs"
+  },
+  {
+   "author": "Fumble Recovery Unit",
+   "handle": "@FumblersForever",
+   "text": "Randy finally trades and it's Jonathan Taylor AND Amon-Ra for a guy who was riding Kai's bench. I asked for a fix, not this. 2 AM and I'm reading the box score again hoping the numbers changed.",
+   "when": -1320,
+   "heat": 6,
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Luffy after the deal: Dawgs 45% to make the playoffs, 13% to win it all. The fumblers 5% and 1%. Season production went 248.2 to Mekhi, 167.5 to Randy. Higgins can close part of that gap, but not on his own. This is a Dawgs win on paper.",
+   "when": 45,
+   "heat": 3,
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Sal Benedetto",
+   "handle": "@SalBetsBig",
+   "text": "Kai fleeced Randy in broad daylight and now they PLAY each other. Dawgs Sunday is a LOCK. Two locks in two weeks on this team. Stop asking me how I do it.",
+   "when": 180,
+   "heat": 5,
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Bench Mob Bulletin",
+   "handle": "@BenchMobBFL",
+   "text": "Tee Higgins scores 32.5 on a bench and gets traded for an elite RB. I score 32.5 points of sarcasm at work and get a talking-to. The system is rigged.",
+   "when": 610,
+   "heat": 8,
+   "kind": "fan",
+   "team": ""
+  }
+ ],
+ "teams": [
+  2,
+  5
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 2449
+ }
+}
