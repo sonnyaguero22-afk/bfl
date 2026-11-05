@@ -127,11 +127,42 @@
    "team": "",
    "about": "move",
    "at": "2026-11-04T23:09:07.425Z"
+  },
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "Team Pillbert added Tyler Allgeier off the free agent list. He's a running back with nothing on the board in his one week of production, so this reads as depth for Alan, not a statement.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-05T00:29:37.391Z"
+  },
+  {
+   "author": "Habibster Nation",
+   "handle": "@HabibsterNation",
+   "text": "Philly picking up Tyler Allgeier with a lineup already stacked at running back. Either he knows something or he just likes clicking the add button.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-05T00:17:37.391Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Habibsters are at 41% against Team Pillbert. Allgeier hasn't produced anything yet, so I wouldn't read much into this add unless Alan is planning a swap.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-05T00:05:37.391Z"
   }
  ],
  "batches": [
   "2026-11-03T15:57:48.657Z",
   "2026-11-04T17:57:30.623Z",
-  "2026-11-04T23:35:02.183Z"
+  "2026-11-04T23:35:02.183Z",
+  "2026-11-05T03:43:08.776Z"
  ]
 }
