@@ -456,6 +456,7 @@ table.compact .team { min-width: 0; }
 }
 @media (max-width: 640px) { .elotable .wide { display: none; } .elotable .team b { white-space: nowrap; } }
 .awgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.awsub { margin: 14px 0 8px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
 .award { display: grid; gap: 4px; padding: 12px 14px; min-width: 0; }
 @media (max-width: 520px) { .awgrid { grid-template-columns: 1fr 1fr; gap: 8px; } .award { padding: 10px; } .award .who { font-size: 14px; flex-wrap: wrap; } }
 .award .k { font-size: 12px; font-weight: 700; }
@@ -1234,6 +1235,7 @@ function mgrView() {
   </div>
   ${hasKick(k) ? `<p class="note" style="margin:-16px 0 24px">* Includes games after ${esc(D.managers[k].first)} was kicked for inactivity, when the team played on without him.</p>` : ""}
   ${PROFILE[k] ? `<section class="profile" style="margin:0 0 32px"><div class="eyebrow">Career Profile</div><h3 class="headline" style="font-size:clamp(22px,3vw,28px);margin:4px 0 12px">${esc(PROFILE[k].title)}</h3><div class="artbody">${PROFILE[k].body.map((p) => `<p>${esc(p)}</p>`).join("")}</div>${aiNote}</section>` : ""}
+  ${(() => { const aw = mgrAwardsOf(k); return aw.length ? `<section><h3>Awards</h3><div class="box rec"><ol class="swing">${aw.map((x) => `<li><span>${x.e} <b>${x.nm}</b> <span class="muted">· ${x.cat} · ${x.y}</span><small class="ctx sub">${x.stat}</small></span></li>`).join("")}</ol></div></section>` : ""; })()}
   <section><h3>Season by Season</h3><div class="box scroll"><table><thead><tr><th>Year</th><th>Team Name</th><th class="n">Record</th><th class="n">PF</th><th class="n">PA</th><th>Finish</th></tr></thead><tbody>${seasonRows}</tbody></table></div></section>
   ${(() => { const mp = mgrPlayers(k); if (!mp.length) return "";
     const top = (f) => [...mp].sort((a, b) => f(b) - f(a)).slice(0, 5);
@@ -1404,13 +1406,73 @@ function seasonAwards(s) {
 const ordinal = (k) => k + (["th", "st", "nd", "rd"][(k % 100 - 20) % 10] || ["th", "st", "nd", "rd"][k % 100] || "th");
 // A player's awards from finished seasons
 const awardsOf = (p) => D.seasons.filter((s) => s.done).flatMap((s) => { const a = seasonAwards(s); return AWARDS.filter(([k]) => a[k] && a[k].p === p).map(([k, e, nm]) => ({ k, e, nm, y: s.year })); });
+// ---------- Manager awards: things a title doesn't measure, one per season ----------
+const MGR_AWARDS = [
+  ["vegapunk", "🧪", "Vegapunk", "Best Draft", "Most points as a starter from the players he drafted, while they were still his"],
+  ["wapol", "🍽️", "Wapol", "Waiver King", "Most points as a starter from players he picked up, after the pickup; he'll eat anything"],
+  ["doflamingo", "🦩", "Doflamingo", "Trade Shark", "Biggest points edge from trades: what he got scored for him minus what he gave up scored for them, from the trade on"],
+  ["blackbeard", "🏴‍☠️", "Blackbeard", "Luckiest", "Most regular-season wins while scoring below that week's median"],
+  ["bonclay", "🦢", "Bon Clay", "Unluckiest", "Most regular-season losses while scoring above that week's median"],
+  ["bellamy", "🙃", "Bellamy", "Lineup Blunders", "Most losses where one of his benched players outscored the margin"],
+  ["marco", "🔥", "Marco", "Biggest Laboon Climber", "The biggest rise in Laboon rating over the season"],
+];
+const MAW = {};
+function seasonMgrAwards(s) {
+  if (MAW[s.year]) return MAW[s.year];
+  const y = s.year, out = {}, add = (o, k, v) => { if (k && k !== "nomanager") o[k] = (o[k] || 0) + v; };
+  // Ties share the award
+  const top = (key, o, stat, min = 0) => { const k = Object.keys(o).sort((a, b) => o[b] - o[a])[0]; if (k && o[k] > min) out[key] = { ks: Object.keys(o).filter((x) => Math.abs(o[x] - o[k]) < 1e-9), stat: stat(o[k], k) }; };
+  const mpOf = (w) => s.sp2mp?.[w.wk] ?? w.wk;
+  // Drafted, picked up and traded-for players: points as a starter for that team while they stayed
+  const draft = {}, waiver = {}, trade = {};
+  for (const p of PL) {
+    const ev = p.ev.filter((e) => e.y === y), ws = p.weeks.filter((w) => w.y === y && w.fin && w.start);
+    ev.forEach((e, i) => {
+      const end = ev.slice(i + 1).find((f) => f.type !== "add" || f.t.id !== e.t.id), from = Math.ceil(e.wk), to = end ? end.wk : 99;
+      const pts = sum(ws.filter((w) => w.t.id === e.t.id && mpOf(w) >= from && mpOf(w) < to), (w) => w.pts);
+      if (e.type === "draft") add(draft, e.mgr, pts); else if (e.type === "add") add(waiver, e.mgr, pts);
+      else if (e.type === "trade") { add(trade, e.mgr, pts); if (e.from) add(trade, mgrAt(e.from, from), -pts); } // each side gains what its new players scored and loses what the other side's did
+    });
+  }
+  top("vegapunk", draft, (v) => `${f1(v)} pts from his picks`);
+  top("wapol", waiver, (v) => `${f1(v)} pts from pickups`);
+  if (s.trades.length) top("doflamingo", trade, (v) => `+${f1(v)} pts on his trades`);
+  // Luck: wins below the week's median, losses above it (regular season)
+  const lucky = {}, unlucky = {}, blunder = {};
+  for (let wk = 1; wk <= s.regWeeks; wk++) {
+    const ms = s.played.filter((m) => m.wk === wk && m.a); if (!ms.length) continue;
+    const sc = ms.flatMap((m) => [m.hp, m.ap]).sort((a, b) => a - b), med = (sc[(sc.length - 1) >> 1] + sc[sc.length >> 1]) / 2;
+    for (const m of ms) for (const [id, me, them] of [[m.h, m.hp, m.ap], [m.a, m.ap, m.hp]]) {
+      const k = mgrAt(s.byId[id], wk);
+      if (m.win === id && me < med) add(lucky, k, 1);
+      if (m.win !== id && m.win !== 0 && me > med) add(unlucky, k, 1);
+    }
+  }
+  // Blunders: losses (any week) where a benched player alone outscored the margin
+  for (const m of s.played.filter((m) => m.a)) for (const [id, lost] of [[m.h, m.win === m.a], [m.a, m.win === m.h]]) {
+    if (!lost) continue;
+    const bench = s.spans(m.wk).flatMap((sp) => ((s.lineups[sp] || {})[id] || []).filter((q) => q.slot === "BN"));
+    if (bench.some((q) => q.pts > Math.abs(m.hp - m.ap))) add(blunder, mgrAt(s.byId[id], m.wk), 1);
+  }
+  top("blackbeard", lucky, (v) => `${v} win${v === 1 ? "" : "s"} with a below-median score`);
+  top("bonclay", unlucky, (v) => `${v} loss${v === 1 ? "" : "es"} with an above-median score`);
+  top("bellamy", blunder, (v) => `${v} loss${v === 1 ? "" : "es"} a benched player could have flipped`);
+  // Marco: Laboon change over the season
+  const climb = {};
+  for (const [k, hs] of Object.entries(ELO.hist)) { const h = hs.filter((x) => x.y === y); if (h.length) climb[k] = h[h.length - 1].r - h[0].pre; }
+  top("marco", climb, (v) => `+${Math.round(v)} Laboon`);
+  return (MAW[y] = out);
+}
+const mgrAwardsOf = (k) => D.seasons.filter((s) => s.done).flatMap((s) => { const a = seasonMgrAwards(s); return MGR_AWARDS.filter(([key]) => a[key] && a[key].ks.includes(k)).map(([key, e, nm, cat]) => ({ key, e, nm, cat, y: s.year, stat: a[key].stat })); });
+
 function awardsView() {
   const ys = D.seasons.filter((s) => s.done || s.played.length).map((s) => s.year).reverse();
-  return `<div class="vhead"><div><div class="eyebrow">All-Time</div><h2>Awards</h2><p>Player awards for every season, named for the Straw Hats and friends. Finished seasons are final; the current one shows who's leading so far.</p></div></div>
-  ${ys.map((y) => { const s = S[y], a = seasonAwards(s);
-    return `<section><h3>${y} ${s.done ? `<span class="muted" style="font-weight:500;font-size:14px">· Buckaroo Bowl ${roman(y - D.firstYear + 1)}</span>` : `<span class="pill live" style="vertical-align:middle">So far</span>`}</h3><div class="awgrid">${AWARDS.filter(([k]) => a[k]).map(([k, e, nm, cat, why]) => { const x = a[k];
-      return `<div class="box award${k === "ace" ? " shame" : k === "king" || k === "onepiece" ? " top" : ""}" title="${esc(why)}"><div class="k">${e} ${nm} <span class="muted">· ${cat}</span></div><div class="who">${posTag(x.p.pos)}${pn(x.p.n)}</div><small class="muted">${badge(x.t, 1)} ${esc(x.t.name)} · ${mgrName(x.t.mgr)}</small><small>${x.stat}</small></div>`; }).join("")}</div></section>`; }).join("")}
-  <section><h3>How They're Decided</h3><div class="box rec"><ol class="swing">${AWARDS.map(([, e, nm, cat, why]) => `<li><span>${e} <b>${nm}</b> <span class="muted">· ${cat}</span><small class="ctx sub">${esc(why)}</small></span></li>`).join("")}</ol></div>
+  return `<div class="vhead"><div><div class="eyebrow">All-Time</div><h2>Awards</h2><p>Player and manager awards for every season, named for the Straw Hats and friends. Finished seasons are final; the current one shows who's leading so far.</p></div></div>
+  ${ys.map((y) => { const s = S[y], a = seasonAwards(s), ma = seasonMgrAwards(s);
+    const mgrCards = MGR_AWARDS.filter(([k]) => ma[k]).map(([k, e, nm, cat, why]) => `<div class="box award${k === "bellamy" ? " shame" : ""}" title="${esc(why)}"><div class="k">${e} ${nm} <span class="muted">· ${cat}</span></div><div class="who">${ma[k].ks.map((m) => `${mbadge(m, 1)} <button class="mlink" data-go="mgr-${m}">${mgrName(m)}</button>`).join(" ")}</div><small>${ma[k].stat}${ma[k].ks.length > 1 ? " each (tied)" : ""}</small></div>`).join("");
+    return `<section><h3>${y} ${s.done ? `<span class="muted" style="font-weight:500;font-size:14px">· Buckaroo Bowl ${roman(y - D.firstYear + 1)}</span>` : `<span class="pill live" style="vertical-align:middle">So far</span>`}</h3><h4 class="awsub">Players</h4><div class="awgrid">${AWARDS.filter(([k]) => a[k]).map(([k, e, nm, cat, why]) => { const x = a[k];
+      return `<div class="box award${k === "ace" ? " shame" : k === "king" || k === "onepiece" ? " top" : ""}" title="${esc(why)}"><div class="k">${e} ${nm} <span class="muted">· ${cat}</span></div><div class="who">${posTag(x.p.pos)}${pn(x.p.n)}</div><small class="muted">${badge(x.t, 1)} ${esc(x.t.name)} · ${mgrName(x.t.mgr)}</small><small>${x.stat}</small></div>`; }).join("")}</div>${mgrCards ? `<h4 class="awsub">Managers</h4><div class="awgrid">${mgrCards}</div>` : ""}</section>`; }).join("")}
+  <section><h3>How They're Decided</h3><div class="box rec"><ol class="swing">${[...AWARDS, ...MGR_AWARDS].map(([, e, nm, cat, why]) => `<li><span>${e} <b>${nm}</b> <span class="muted">· ${cat}</span><small class="ctx sub">${esc(why)}</small></span></li>`).join("")}</ol></div>
   <p class="note">Points count only in weeks a lineup played a game, playoffs and consolation games included. The team shown is where he scored the most.</p></section>`;
 }
 
@@ -1548,10 +1610,10 @@ function wikiHtml(p, best) {
   const honors = [...rings.map((r) => `won Buckaroo Bowl ${roman(r.n)} with the ${esc(r.team)}`), ...(won.length ? [`took home ${andList(won)}`] : [])];
   const it = p.pos === "D/ST", He = it ? "It" : "He";
   const shame = grouped.filter((a) => SHAME[a.k]);
-  let lead = `<p><b>${esc(p.n)}</b> is ${role} ${it ? "that" : "who"} has been on a Buckaroo Football League roster in ${yrs(p.years)}. ${p.mgrs.length ? `${He} has played for ${andList(p.mgrs.map(mgrName))}${p.starts ? `, scoring ${f1(p.ptsS)} points in ${p.starts} start${p.starts === 1 ? "" : "s"}` : ""}.` : ""}</p>`;
+  let lead = `<p><b>${esc(p.n)}</b> is ${role} ${it ? "that" : "who"} has been on a Buckaroo Football League roster ${p.years.length > 1 && p.years[p.years.length - 1] - p.years[0] === p.years.length - 1 ? `from ${p.years[0]} to ${p.years[p.years.length - 1]}` : `in ${yrs(p.years)}`}. ${p.mgrs.length ? `${He} has played for ${andList(p.mgrs.map(mgrName))}${p.starts ? `, scoring ${f1(p.ptsS)} points in ${p.starts} start${p.starts === 1 ? "" : "s"}` : ""}.` : ""}</p>`;
   if (honors.length || shame.length) lead += `<p>${honors.length ? `${He} ${andList(honors)}.` : ""}${shame.map((a) => ` ${He} also owns ${a.e} ${a.nm}, ${SHAME[a.k]}, for ${yrs(a.ys)}.`).join("")}</p>`;
   // BFL career, one section per season
-  const career = [...p.years].reverse().map((y) => {
+  const career = [...p.years].map((y) => {
     const s = S[y], bits = [], ev = p.ev.filter((e) => e.y === y), ws = p.weeks.filter((w) => w.y === y), st = ws.filter((w) => w.start);
     for (const e of ev) {
       if (e.type === "draft") bits.push(`${e.txt.replace(/^Drafted/, "Drafted")} by ${tm(e.t, y, 1)}.`);
