@@ -197,6 +197,46 @@
    "team": "Counting or not Counting GV",
    "about": "game",
    "at": "2026-11-06T01:30:33.767Z"
+  },
+  {
+   "author": "Horse Hea Heads",
+   "handle": "@HorseHeaHeads",
+   "text": "Parker Washington finds the end zone and Sonny takes the lead right back. Jordan had about four minutes of being happy.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-06T02:21:46.973Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "The Horse is Hea is up to 83% now that Parker Washington has the lead flipped. The fumblers are still only at 23% against Dawgs despite Trevor Lawrence's touchdown, because Mekhi hasn't started a single player yet.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-06T02:25:46.973Z"
+  },
+  {
+   "author": "Windy City Fumble",
+   "handle": "@WindyCityFumble",
+   "text": "Trevor Lawrence throws a touchdown and Randy is up sixteen on Mekhi before Ja'Marr Chase has even played. I refuse to be comfortable about this.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-06T02:28:46.973Z"
+  },
+  {
+   "author": "The fumblers",
+   "handle": "@Thefumblers",
+   "text": "Trevor Lawrence hits paydirt through the air and we're out in front early. Nice start in Jacksonville.",
+   "heat": 2,
+   "kind": "team",
+   "team": "The fumblers",
+   "about": "game",
+   "at": "2026-11-06T02:29:46.973Z"
   }
  ],
  "batches": [
@@ -204,6 +244,7 @@
   "2026-11-04T17:57:30.623Z",
   "2026-11-04T23:35:02.183Z",
   "2026-11-05T03:43:08.776Z",
-  "2026-11-06T01:31:33.767Z"
+  "2026-11-06T01:31:33.767Z",
+  "2026-11-06T02:30:46.973Z"
  ]
 }
