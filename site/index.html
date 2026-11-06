@@ -456,6 +456,10 @@ table.compact .team { min-width: 0; }
 }
 @media (max-width: 640px) { .elotable .wide { display: none; } .elotable .team b { white-space: nowrap; } }
 .awgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.mlink.awl { font: inherit; }
+/* Wiki-style pages: links look like links */
+.wikimain .mlink, .wikimain .plink, .infobox .mlink, .award .k .awl, .swing .awl { color: var(--brass); }
+.infobox .ibh.gold .mlink { color: inherit; }
 .awsub { margin: 14px 0 8px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
 .award { display: grid; gap: 4px; padding: 12px 14px; min-width: 0; }
 @media (max-width: 520px) { .awgrid { grid-template-columns: 1fr 1fr; gap: 8px; } .award { padding: 10px; } .award .who { font-size: 14px; flex-wrap: wrap; } }
@@ -729,6 +733,7 @@ function parseHash() {
   if ((m = h.match(/^(\d{4})(?:-(\w+))?$/)) && years.includes(+m[1])) { if (+m[1] !== state.year) { state.standWeek = null; state.rosterWeek = null; state.oddsFocus = null; } state.view = "season"; state.year = +m[1]; state.tab = TABS.some((t) => t[0] === m[2]) ? m[2] : "standings"; }
   else if ((m = h.match(/^mgr-(\w+)$/)) && D.managers[m[1]]) { state.view = "mgr"; state.mgr = m[1]; }
   else if ((m = h.match(/^p-([a-z0-9-]+)$/)) && P[m[1]]) { state.view = "player"; state.pk = m[1]; }
+  else if ((m = h.match(/^aw-([a-z]+)$/)) && awInfo(m[1])) { state.view = "award"; state.aw = m[1]; }
   else if ((m = h.match(/^news-([a-z0-9-]+)$/)) && NEWS.some((a) => a.id === m[1])) { state.view = "article"; state.newsId = m[1]; }
   else if (["home", "news", "rankings", "social", "trophies", "managers", "map", "players", "overrated", "transactions", "odds", "h2h", "ratings", "awards", "mgrawards", "records"].includes(h)) state.view = h;
   else state.view = "home"; // no or unknown hash: the home page
@@ -750,7 +755,7 @@ const SECTIONS = {
   awards: [["awards", "Players"], ["mgrawards", "Managers"]],
   trophies: [["trophies", "Buckaroo Bowls"], ["records", "Record Book"]],
 };
-const groupOf = (v) => (v === "mgr" ? "managers" : v === "player" ? "players" : v === "article" ? "news" : Object.keys(SECTIONS).find((g) => SECTIONS[g].some(([k]) => k === v)) || v);
+const groupOf = (v) => (v === "award" ? "awards" : v === "mgr" ? "managers" : v === "player" ? "players" : v === "article" ? "news" : Object.keys(SECTIONS).find((g) => SECTIONS[g].some(([k]) => k === v)) || v);
 // The section tabs for the page's group, shown above its content
 const sectionTabs = (v) => { const g = groupOf(v), list = SECTIONS[g]; if (!list || !list.some(([k]) => k === v)) return "";
   return `<div class="tabs sectiontabs" role="tablist">${list.map(([k, l]) => `<button data-go="${k}" aria-current="${v === k}">${l}</button>`).join("")}</div>`; };
@@ -1237,7 +1242,7 @@ function mgrView() {
   </div>
   ${hasKick(k) ? `<p class="note" style="margin:-16px 0 24px">* Includes games after ${esc(D.managers[k].first)} was kicked for inactivity, when the team played on without him.</p>` : ""}
   ${PROFILE[k] ? `<section class="profile" style="margin:0 0 32px"><div class="eyebrow">Career Profile</div><h3 class="headline" style="font-size:clamp(22px,3vw,28px);margin:4px 0 12px">${esc(PROFILE[k].title)}</h3><div class="artbody">${PROFILE[k].body.map((p) => `<p>${esc(p)}</p>`).join("")}</div>${aiNote}</section>` : ""}
-  ${(() => { const aw = mgrAwardsOf(k); return aw.length ? `<section><h3>Awards</h3><div class="box rec"><ol class="swing">${aw.map((x) => `<li><span>${x.e} <b>${x.nm}</b> <span class="muted">· ${x.cat} · ${x.y}</span><small class="ctx sub">${x.stat}</small></span></li>`).join("")}</ol></div></section>` : ""; })()}
+  ${(() => { const aw = mgrAwardsOf(k); return aw.length ? `<section><h3>Awards</h3><div class="box rec"><ol class="swing">${aw.map((x) => `<li><span>${x.e} <b>${awLink(x.key)}</b> <span class="muted">· ${x.cat} · ${x.y}</span><small class="ctx sub">${x.stat}</small></span></li>`).join("")}</ol></div></section>` : ""; })()}
   <section><h3>Season by Season</h3><div class="box scroll"><table><thead><tr><th>Year</th><th>Team Name</th><th class="n">Record</th><th class="n">PF</th><th class="n">PA</th><th>Finish</th></tr></thead><tbody>${seasonRows}</tbody></table></div></section>
   ${(() => { const mp = mgrPlayers(k); if (!mp.length) return "";
     const top = (f) => [...mp].sort((a, b) => f(b) - f(a)).slice(0, 5);
@@ -1475,15 +1480,65 @@ function awardsView(kind) {
   const bar = `<div class="weekbar" style="margin:0">${ys.map((yy) => `<button data-awyear="${yy}" aria-current="${yy === y}">${yy}</button>`).join("")}</div>`;
   let cards;
   if (mgr) { const ma = seasonMgrAwards(s);
-    cards = MGR_AWARDS.filter(([k]) => ma[k]).map(([k, e, nm, cat, why]) => `<div class="box award${k === "bellamy" ? " shame" : ""}" title="${esc(why)}"><div class="k">${e} ${nm} <span class="muted">· ${cat}</span></div><div class="who">${ma[k].ks.map((m) => `${mbadge(m, 1)} <button class="mlink" data-go="mgr-${m}">${mgrName(m)}</button>`).join(" ")}</div><small>${ma[k].stat}</small></div>`).join(""); }
+    cards = MGR_AWARDS.filter(([k]) => ma[k]).map(([k, e, nm, cat, why]) => `<div class="box award${k === "bellamy" ? " shame" : ""}" title="${esc(why)}"><div class="k">${e} ${awLink(k)} <span class="muted">· ${cat}</span></div><div class="who">${ma[k].ks.map((m) => `${mbadge(m, 1)} <button class="mlink" data-go="mgr-${m}">${mgrName(m)}</button>`).join(" ")}</div><small>${ma[k].stat}</small></div>`).join(""); }
   else { const a = seasonAwards(s);
     cards = AWARDS.filter(([k]) => a[k]).map(([k, e, nm, cat, why]) => { const x = a[k];
-      return `<div class="box award${k === "ace" || k === "buggy" ? " shame" : k === "king" || k === "onepiece" ? " top" : ""}" title="${esc(why)}"><div class="k">${e} ${nm} <span class="muted">· ${cat}</span></div><div class="who">${posTag(x.p.pos)}${pn(x.p.n)}</div><small class="muted">${badge(x.t, 1)} ${esc(x.t.name)} · ${mgrName(x.t.mgr)}</small><small>${x.stat}</small></div>`; }).join(""); }
+      return `<div class="box award${k === "ace" || k === "buggy" ? " shame" : k === "king" || k === "onepiece" ? " top" : ""}" title="${esc(why)}"><div class="k">${e} ${awLink(k)} <span class="muted">· ${cat}</span></div><div class="who">${posTag(x.p.pos)}${pn(x.p.n)}</div><small class="muted">${badge(x.t, 1)} ${esc(x.t.name)} · ${mgrName(x.t.mgr)}</small><small>${x.stat}</small></div>`; }).join(""); }
   const list = mgr ? MGR_AWARDS : AWARDS;
   return `<div class="vhead"><div><div class="eyebrow">${s.done ? `Buckaroo Bowl ${roman(y - D.firstYear + 1)} · ${y}` : `${y} · so far`}</div><h2>${mgr ? "Manager" : "Player"} Awards</h2><p>${mgr ? "The things a title doesn't measure, named for the Straw Hats' friends and foes." : "The season's best (and worst) players, named for the Straw Hats and friends."} ${s.done ? "" : "The season isn't over, so these are the leaders so far."}</p></div>${bar}</div>
   <div class="awgrid">${cards || `<p class="muted">Nothing to award yet.</p>`}</div>
-  <section><h3>How They're Decided</h3><div class="box rec"><ol class="swing">${list.map(([, e, nm, cat, why]) => `<li><span>${e} <b>${nm}</b> <span class="muted">· ${cat}</span><small class="ctx sub">${esc(why)}</small></span></li>`).join("")}</ol></div>
+  <section><h3>How They're Decided</h3><div class="box rec"><ol class="swing">${list.map(([k, e, nm, cat, why]) => `<li><span>${e} <b>${awLink(k)}</b> <span class="muted">· ${cat}</span><small class="ctx sub">${esc(why)}</small></span></li>`).join("")}</ol></div>
   <p class="note">${mgr ? "Luck and blunders count regular-season weeks (blunders count playoffs too). Every award has one winner; a tie on a count goes to the bigger margin." : "Points count only in weeks a lineup played a game, playoffs and consolation games included. The team shown is where he scored the most."}</p></section>`;
+}
+
+// ---------- Award pages: one wiki-style article per award, with every winner ----------
+const AW_NAMED = {
+  king: "Named for the title Luffy has chased since the first chapter: King of the Pirates, last held by Gol D. Roger.",
+  onepiece: "Named for Gol D. Roger's treasure, the prize waiting at the end of the Grand Line.",
+  nami: "Named for the Straw Hats' navigator. She steers the ship; a quarterback steers the offense.",
+  sanji: "Named for the Straw Hats' cook, who fights only with his legs.",
+  zoro: "Named for the Straw Hats' swordsman, whose famously bad sense of direction makes him an interesting choice for a route runner.",
+  franky: "Named for the Straw Hats' cyborg shipwright, built like a tank.",
+  usopp: "Named for the Straw Hats' sniper, deadly accurate from long range.",
+  jinbe: "Named for the Straw Hats' helmsman, a Fish-Man Karate master and the crew's wall.",
+  robin: "Named for the Straw Hats' archaeologist, who digs up what history buried.",
+  sunny: "Named for the Thousand Sunny, the ship Franky built to replace the Going Merry: the upgrade you trade for.",
+  chopper: "Named for the Straw Hats' doctor, who gets people back on their feet.",
+  brook: "Named for the Straw Hats' musician, a skeleton who waited decades on his own, like points left on a bench.",
+  buggy: "Named for Buggy the Clown, who keeps rising in rank without ever quite earning it.",
+  ace: "Named for Portgas D. Ace. Around the league, a zero is a donut, and a donut is an Ace.",
+  vegapunk: "Named for Dr. Vegapunk, the world's greatest scientist, who plans everything years ahead.",
+  wapol: "Named for Wapol, the king of Drum Island whose Devil Fruit lets him eat anything, including what everyone else threw away.",
+  doflamingo: "Named for Donquixote Doflamingo, the underworld broker who deals in everything.",
+  blackbeard: "Named for Marshall D. Teach, who keeps stumbling into power other people earned.",
+  bonclay: "Named for Mr. 2 Bon Clay, who gives everything for his friends and gets nothing back.",
+  bellamy: "Named for Bellamy the Hyena, who picks the wrong fight every time.",
+  marco: "Named for Marco the Phoenix, who rises from the flames.",
+};
+const awInfo = (k) => { const a = AWARDS.find((x) => x[0] === k); if (a) return { k, e: a[1], nm: a[2], cat: a[3], why: a[4], mgr: false }; const m = MGR_AWARDS.find((x) => x[0] === k); return m && { k, e: m[1], nm: m[2], cat: m[3], why: m[4], mgr: true }; };
+const awLink = (k, label) => `<button class="mlink awl" data-go="aw-${k}">${label ?? awInfo(k).nm}</button>`;
+function awardView() {
+  const a = awInfo(state.aw); if (!a) return "";
+  const seasons = D.seasons.filter((s) => s.done || s.played.length);
+  const rows = seasons.map((s) => { const w = a.mgr ? seasonMgrAwards(s)[a.k] : seasonAwards(s)[a.k]; return w && { s, w }; }).filter(Boolean).reverse();
+  const final = rows.filter((r) => r.s.done);
+  const whoKey = (r) => (a.mgr ? r.w.ks[0] : r.w.p.k), whoName = (r) => (a.mgr ? mgrName(r.w.ks[0]) : esc(r.w.p.n));
+  const tally = {}; for (const r of final) (tally[whoKey(r)] = tally[whoKey(r)] || { r, n: 0 }).n++;
+  const multi = Object.values(tally).filter((x) => x.n > 1).sort((x, y) => y.n - x.n);
+  const link = (r) => (a.mgr ? `${mbadge(r.w.ks[0], 1)} <button class="mlink" data-go="mgr-${r.w.ks[0]}">${mgrName(r.w.ks[0])}</button>` : `${posTag(r.w.p.pos)}${pn(r.w.p.n)}`);
+  const latest = final[0];
+  const lead = `<p>${/^The /.test(a.nm) ? "" : "The "}<b>${a.e} ${esc(a.nm)}</b> is the Buckaroo Football League's ${a.mgr ? "manager" : "player"} award for <b>${esc(a.cat)}</b>, given once a season: ${esc(a.why.charAt(0).toLowerCase() + a.why.slice(1))}.</p><p>${esc(AW_NAMED[a.k] || "")}${latest ? ` The most recent winner is ${link(latest)} (<button class="mlink" data-go="${latest.s.year}">${latest.s.year}</button>).` : ""}${multi.length ? ` ${andList(multi.map((x) => `${latest && whoKey(x.r) === whoKey(latest) ? "He" : link(x.r)} has won it ${x.n === 2 ? "twice" : `${x.n} times`}`))}.` : ""}</p>`;
+  const table = `<div class="box scroll"><table class="compact"><thead><tr><th>Season</th><th>Winner</th>${a.mgr ? "" : "<th>Team</th>"}<th>Why</th></tr></thead><tbody>${rows.map((r) => `<tr><td><button class="mlink" data-go="${r.s.year}"><b>${r.s.year}</b></button>${r.s.done ? "" : ` <span class="pill live">So far</span>`}</td><td>${link(r)}</td>${a.mgr ? "" : `<td><span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap">${badge(r.w.t, 1)} ${esc(r.w.t.name)} <span class="muted">· <button class="mlink" data-go="mgr-${r.w.t.mgr}">${mgrName(r.w.t.mgr)}</button></span></span></td>`}<td>${r.w.stat}</td></tr>`).join("")}</tbody></table></div>`;
+  const others = (a.mgr ? MGR_AWARDS : AWARDS).filter((x) => x[0] !== a.k).map((x) => `${x[1]} ${awLink(x[0])}`).join(" · ");
+  const info = `<aside class="infobox box ibd-only"><div class="ibhead">${a.e} ${esc(a.nm)}</div><div class="ibsub">${a.mgr ? "Manager" : "Player"} award</div><table>
+    <tr><th>Awarded for</th><td>${esc(a.cat)}</td></tr>
+    <tr><th>First awarded</th><td>${final.length ? final[final.length - 1].s.year : "Not yet"}</td></tr>
+    <tr><th>Times awarded</th><td>${final.length}</td></tr>
+    ${latest ? `<tr><th>Latest winner</th><td>${whoName(latest)} <span class="muted">(${latest.s.year})</span></td></tr>` : ""}
+    ${multi.length ? `<tr><th>Most wins</th><td>${whoName(multi[0].r)} <span class="muted">(${multi[0].n})</span></td></tr>` : ""}
+  </table></aside>`;
+  return `<div class="vhead"><div><div class="eyebrow">${a.mgr ? "Manager" : "Player"} Award</div><h2>${a.e} ${esc(a.nm)}</h2></div><button class="pill" data-go="${a.mgr ? "mgrawards" : "awards"}" style="border:0;cursor:pointer">← All ${a.mgr ? "manager" : "player"} awards</button></div>
+  <div class="wiki"><article class="wikimain">${lead}${info.replace("ibd-only", "ibm-only")}<h3 class="wikisub">Winners</h3>${table}<h3 class="wikisub">See Also</h3><p>${others}</p></article>${info}</div>`;
 }
 
 function records() {
@@ -1616,12 +1671,12 @@ function wikiHtml(p, best) {
   const role = p.pos === "D/ST" ? `the ${nfl ? esc(nfl) : esc(p.pro)} defense` : `${/^[aeiou]/.test(POS_NAME[p.pos] || "") ? "an" : "a"} ${POS_NAME[p.pos] || esc(p.pos)}${nfl ? ` for the ${esc(nfl)}` : ""}`;
   const grouped = Object.values(aw.reduce((o, a) => { (o[a.k] = o[a.k] || { ...a, ys: [] }).ys.push(a.y); return o; }, {}));
   const SHAME = { ace: "the league's most costly donut", buggy: "the season's biggest bust" };
-  const won = grouped.filter((a) => !SHAME[a.k]).map((a) => `the ${a.nm} award (${yrs(a.ys)})`);
-  const honors = [...rings.map((r) => `won Buckaroo Bowl ${roman(r.n)} with the ${esc(r.team)}`), ...(won.length ? [`took home ${andList(won)}`] : [])];
+  const won = grouped.filter((a) => !SHAME[a.k]).map((a) => `the ${awLink(a.k)} award (${yrs(a.ys)})`);
+  const honors = [...rings.map((r) => `won <button class="mlink" data-go="${r.y}-playoffs">Buckaroo Bowl ${roman(r.n)}</button> with the ${esc(r.team)}`), ...(won.length ? [`took home ${andList(won)}`] : [])];
   const it = p.pos === "D/ST", He = it ? "It" : "He";
   const shame = grouped.filter((a) => SHAME[a.k]);
-  let lead = `<p><b>${esc(p.n)}</b> is ${role} ${it ? "that" : "who"} has been on a Buckaroo Football League roster ${p.years.length > 1 && p.years[p.years.length - 1] - p.years[0] === p.years.length - 1 ? `from ${p.years[0]} to ${p.years[p.years.length - 1]}` : `in ${yrs(p.years)}`}. ${p.mgrs.length ? `${He} has played for ${andList(p.mgrs.map(mgrName))}${p.starts ? `, scoring ${f1(p.ptsS)} points in ${p.starts} start${p.starts === 1 ? "" : "s"}` : ""}.` : ""}</p>`;
-  if (honors.length || shame.length) lead += `<p>${honors.length ? `${He} ${andList(honors)}.` : ""}${shame.map((a) => ` ${He} also owns ${a.e} ${a.nm}, ${SHAME[a.k]}, for ${yrs(a.ys)}.`).join("")}</p>`;
+  let lead = `<p><b>${esc(p.n)}</b> is ${role} ${it ? "that" : "who"} has been on a Buckaroo Football League roster ${p.years.length > 1 && p.years[p.years.length - 1] - p.years[0] === p.years.length - 1 ? `from ${p.years[0]} to ${p.years[p.years.length - 1]}` : `in ${yrs(p.years)}`}. ${p.mgrs.length ? `${He} has played for ${andList(p.mgrs.map((k) => `<button class="mlink" data-go="mgr-${k}">${mgrName(k)}</button>`))}${p.starts ? `, scoring ${f1(p.ptsS)} points in ${p.starts} start${p.starts === 1 ? "" : "s"}` : ""}.` : ""}</p>`;
+  if (honors.length || shame.length) lead += `<p>${honors.length ? `${He} ${andList(honors)}.` : ""}${shame.map((a) => ` ${He} also owns ${a.e} ${awLink(a.k)}, ${SHAME[a.k]}, for ${yrs(a.ys)}.`).join("")}</p>`;
   // BFL career, one section per season
   const career = [...p.years].map((y) => {
     const s = S[y], bits = [], ev = p.ev.filter((e) => e.y === y), ws = p.weeks.filter((w) => w.y === y), st = ws.filter((w) => w.start);
@@ -1639,8 +1694,8 @@ function wikiHtml(p, best) {
     const picks = Object.entries((s && s.pregame) || {}).flatMap(([k, v]) => v.watch.filter((x) => x.n === p.n).map((x) => { const wk = +k.split("-")[0]; const e = (s.spans(wk)).map((sp) => ((s.lineups[sp] || {})[x.id] || []).find((q) => q.n === x.n)).filter(Boolean); const pts = sum(e, (q) => q.pts || 0); return { big: x.boomAt != null && pts >= x.boomAt, dud: x.bustAt != null && pts < x.bustAt && s.matchups.some((m) => m.wk === wk && m.win !== null && !m.live) }; }));
     if (picks.length) bits.push(`Luffy picked ${it ? "it" : "him"} as a One to Watch ${picks.length === 1 ? "once" : `${picks.length} times`} (${picks.filter((x) => x.big).length} big game${picks.filter((x) => x.big).length === 1 ? "" : "s"}, ${picks.filter((x) => x.dud).length} dud${picks.filter((x) => x.dud).length === 1 ? "" : "s"}).`);
     const r = rings.find((x) => x.y === y); if (r) bits.push(`${He} was on the roster that won 🏆 Buckaroo Bowl ${roman(r.n)}.`);
-    const a = aw.filter((x) => x.y === y); if (a.length) bits.push(`Awards: ${a.map((x) => `${x.e} ${x.nm}`).join(", ")}.`);
-    return `<h4>${y}${s && !s.done ? " <span class=\"muted\" style=\"font-weight:500\">(in progress)</span>" : ""}</h4><p>${bits.join(" ") || "On a roster, but never in a lineup that counted."}</p>`;
+    const a = aw.filter((x) => x.y === y); if (a.length) bits.push(`Awards: ${a.map((x) => `${x.e} ${awLink(x.k)}`).join(", ")}.`);
+    return `<h4><button class="mlink" data-go="${y}">${y}</button>${s && !s.done ? " <span class=\"muted\" style=\"font-weight:500\">(in progress)</span>" : ""}</h4><p>${bits.join(" ") || "On a roster, but never in a lineup that counted."}</p>`;
   }).join("");
   // In the news: stories that mention him, newest first, like references
   const refs = ALL_NEWS.filter((a) => a.type !== "live" && a.type !== "profile" && JSON.stringify([a.title, a.dek, a.body]).includes(p.n)).sort((a, b) => b.year - a.year || (b.wk || 0) - (a.wk || 0));
@@ -1651,9 +1706,9 @@ function wikiHtml(p, best) {
   const row = (k, v) => (v ? `<tr><th>${k}</th><td>${v}</td></tr>` : "");
   const info = `<aside class="infobox box"><div class="ibhead">${esc(p.n)}</div><div class="ibsub">${posTag(p.pos)} ${nfl ? esc(nfl) : esc(p.pro)}</div><table>
     ${row("BFL seasons", yrs(p.years))}
-    ${row("Managers", p.mgrs.map((k) => `<span class="ibm">${mbadge(k, 1)} ${mgrName(k)}</span>`).join(""))}
+    ${row("Managers", p.mgrs.map((k) => `<span class="ibm">${mbadge(k, 1)} <button class="mlink" data-go="mgr-${k}">${mgrName(k)}</button></span>`).join(""))}
     ${row("Drafted", drafted.join("<br>") || "Undrafted")}
-    ${rings.length || aw.length ? `<tr><th colspan="2" class="ibsec">Honors</th></tr><tr><td colspan="2">${rings.map((r) => `<div class="ibh gold">🏆 Buckaroo Bowl ${roman(r.n)} Champion <span class="muted">(${esc(r.team)})</span></div>`).join("")}${grouped.map((a) => `<div class="ibh${SHAME[a.k] ? " l" : ""}">${a.e} ${a.nm} <span class="muted">${yrs(a.ys)}</span></div>`).join("")}</td></tr>` : ""}
+    ${rings.length || aw.length ? `<tr><th colspan="2" class="ibsec">Honors</th></tr><tr><td colspan="2">${rings.map((r) => `<div class="ibh gold">🏆 <button class="mlink" data-go="${r.y}-playoffs">Buckaroo Bowl ${roman(r.n)}</button> Champion <span class="muted">(${esc(r.team)})</span></div>`).join("")}${grouped.map((a) => `<div class="ibh${SHAME[a.k] ? " l" : ""}">${a.e} ${awLink(a.k)} <span class="muted">${yrs(a.ys)}</span></div>`).join("")}</td></tr>` : ""}
     <tr><th colspan="2" class="ibsec">BFL career</th></tr>
     ${row("Starts", p.starts)}
     ${row("Points as a starter", f1(p.ptsS))}
@@ -2175,7 +2230,7 @@ function render() {
   chrome();
   if (mapObj) { mapObj.remove(); mapObj = null; }
   const v = state.view;
-  $("#app").innerHTML = sectionTabs(v) + (v === "season" ? seasonView() : v === "mgr" ? mgrView() : v === "managers" ? managers() : v === "players" ? playersView() : v === "player" ? playerView() : v === "home" ? home() : v === "news" ? newsView() : v === "rankings" ? rankingsView() : v === "article" ? articleView() : v === "social" ? socialView() : v === "odds" ? oddsView() : v === "map" ? mapView() : v === "overrated" ? overratedView() : v === "transactions" ? txView() : v === "h2h" ? h2h() : v === "ratings" ? ratingsView() : v === "records" ? records() : v === "awards" ? awardsView("p") : v === "mgrawards" ? awardsView("m") : trophies());
+  $("#app").innerHTML = sectionTabs(v) + (v === "season" ? seasonView() : v === "mgr" ? mgrView() : v === "managers" ? managers() : v === "players" ? playersView() : v === "player" ? playerView() : v === "home" ? home() : v === "news" ? newsView() : v === "rankings" ? rankingsView() : v === "article" ? articleView() : v === "social" ? socialView() : v === "odds" ? oddsView() : v === "map" ? mapView() : v === "overrated" ? overratedView() : v === "transactions" ? txView() : v === "h2h" ? h2h() : v === "ratings" ? ratingsView() : v === "records" ? records() : v === "award" ? awardView() : v === "awards" ? awardsView("p") : v === "mgrawards" ? awardsView("m") : trophies());
   document.title = "Buckaroo League History";
   if (v === "map") initMap();
   if (v === "season") setTimeout(celebrate, 200);
