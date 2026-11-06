@@ -463,6 +463,22 @@ table.compact .team { min-width: 0; }
 .award small { display: block; font-size: 12px; line-height: 1.35; }
 .award.top { border-color: var(--gold); }
 .award.shame .k { color: var(--loss); }
+.wiki { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; align-items: start; margin-bottom: 24px; }
+.wikimain p { line-height: 1.6; margin: 0 0 12px; }
+.wikimain h4 { margin: 16px 0 4px; font-size: 15px; }
+h3.wikisub { border-bottom: 1px solid var(--line); padding-bottom: 6px; margin: 22px 0 10px; }
+.wikirefs { margin: 0; padding-left: 22px; display: grid; gap: 6px; font-size: 13.5px; }
+.infobox { padding: 0; overflow: hidden; font-size: 13px; }
+.infobox .ibhead { padding: 10px 12px 2px; font-weight: 800; font-size: 16px; text-align: center; }
+.infobox .ibsub { padding: 0 12px 10px; text-align: center; color: var(--muted); border-bottom: 1px solid var(--line); }
+.infobox table { font-size: 13px; }
+.infobox th, .infobox td { padding: 6px 12px; vertical-align: top; border-bottom: 1px solid var(--line); }
+.infobox th { text-transform: none; letter-spacing: 0; font-size: 12px; color: var(--muted); width: 40%; white-space: normal; }
+.infobox th.ibsec { text-align: center; color: var(--ink); background: var(--surface-2, transparent); font-weight: 700; }
+.infobox .ibm { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; }
+.infobox .ibh { margin: 2px 0; } .infobox .ibh.gold { color: var(--gold); font-weight: 600; } .infobox .ibh.l { color: var(--loss); }
+.ibm-only { display: none; }
+@media (max-width: 860px) { .wiki { grid-template-columns: 1fr; } .ibd-only { display: none; } .ibm-only { display: block; margin: 4px 0 8px; } }
 .huntcol { display: grid; gap: 8px; }
 .hunt { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
 .hunt small { display: block; font-size: 11.5px; line-height: 1.35; }
@@ -1515,6 +1531,65 @@ function playerRows() {
   ${shown.map((p) => `<tr><td>${pWho(p)}</td><td class="muted">${esc(p.pro)}</td><td><span style="display:flex;gap:3px">${p.mgrs.map((k) => mbadge(k, 1)).join("")}</span></td><td class="n">${p.wks}</td><td class="n">${p.starts}</td><td class="n">${f1(p.ptsS)}</td><td class="n">${f1(p.ptsB)}</td><td class="n">${p.adds + p.drops + p.trades}</td></tr>`).join("") || `<tr><td colspan="8" class="muted">No players match that search.</td></tr>`}
   </tbody></table></div><p class="note">${list.length} player${list.length === 1 ? "" : "s"}${list.length > shown.length ? `, showing the top ${shown.length}. Search to find anyone else` : ""}.</p>`;
 }
+// ---------- Player pages read like a wiki article: an infobox on the side, his BFL story in the middle ----------
+const NFL_TEAMS = { ARI: "Arizona Cardinals", ATL: "Atlanta Falcons", BAL: "Baltimore Ravens", BUF: "Buffalo Bills", CAR: "Carolina Panthers", CHI: "Chicago Bears", CIN: "Cincinnati Bengals", CLE: "Cleveland Browns", DAL: "Dallas Cowboys", DEN: "Denver Broncos", DET: "Detroit Lions", GB: "Green Bay Packers", HOU: "Houston Texans", IND: "Indianapolis Colts", JAX: "Jacksonville Jaguars", KC: "Kansas City Chiefs", LV: "Las Vegas Raiders", LAC: "Los Angeles Chargers", LAR: "Los Angeles Rams", MIA: "Miami Dolphins", MIN: "Minnesota Vikings", NE: "New England Patriots", NO: "New Orleans Saints", NYG: "New York Giants", NYJ: "New York Jets", PHI: "Philadelphia Eagles", PIT: "Pittsburgh Steelers", SF: "San Francisco 49ers", SEA: "Seattle Seahawks", TB: "Tampa Bay Buccaneers", TEN: "Tennessee Titans", WSH: "Washington Commanders", WAS: "Washington Commanders" };
+const POS_NAME = { QB: "quarterback", RB: "running back", WR: "wide receiver", TE: "tight end", K: "kicker", "D/ST": "defense" };
+const andList = (a) => (a.length < 2 ? a.join("") : `${a.slice(0, -1).join(", ")} and ${a[a.length - 1]}`);
+function wikiHtml(p, best) {
+  const nfl = NFL_TEAMS[p.pro], rings = ringsOf(p), aw = awardsOf(p);
+  const tm = (t, y, wk) => `<b>${esc(nameAt(t, wk || 1))}</b> (${mgrName(mgrAt(t, wk || 1))})`;
+  // Lead paragraph
+  const role = p.pos === "D/ST" ? `the ${nfl ? esc(nfl) : esc(p.pro)} defense` : `${/^[aeiou]/.test(POS_NAME[p.pos] || "") ? "an" : "a"} ${POS_NAME[p.pos] || esc(p.pos)}${nfl ? ` for the ${esc(nfl)}` : ""}`;
+  const grouped = Object.values(aw.reduce((o, a) => { (o[a.k] = o[a.k] || { ...a, ys: [] }).ys.push(a.y); return o; }, {}));
+  const SHAME = { ace: "the league's most costly donut", buggy: "the season's biggest bust" };
+  const won = grouped.filter((a) => !SHAME[a.k]).map((a) => `the ${a.nm} award (${a.ys.join(", ")})`);
+  const honors = [...rings.map((r) => `won Buckaroo Bowl ${roman(r.n)} with the ${esc(r.team)}`), ...(won.length ? [`took home ${andList(won)}`] : [])];
+  const it = p.pos === "D/ST", He = it ? "It" : "He";
+  const shame = grouped.filter((a) => SHAME[a.k]);
+  let lead = `<p><b>${esc(p.n)}</b> is ${role} ${it ? "that" : "who"} has been on a Buckaroo Football League roster in ${andList(p.years.map(String))}. ${p.mgrs.length ? `${He} has played for ${andList(p.mgrs.map(mgrName))}${p.starts ? `, scoring ${f1(p.ptsS)} points in ${p.starts} start${p.starts === 1 ? "" : "s"}` : ""}.` : ""}</p>`;
+  if (honors.length || shame.length) lead += `<p>${honors.length ? `${He} ${andList(honors)}.` : ""}${shame.map((a) => ` ${He} also owns ${a.e} ${a.nm}, ${SHAME[a.k]}, for ${andList(a.ys.map(String))}.`).join("")}</p>`;
+  // BFL career, one section per season
+  const career = [...p.years].reverse().map((y) => {
+    const s = S[y], bits = [], ev = p.ev.filter((e) => e.y === y), ws = p.weeks.filter((w) => w.y === y), st = ws.filter((w) => w.start);
+    for (const e of ev) {
+      if (e.type === "draft") bits.push(`${e.txt.replace(/^Drafted/, "Drafted")} by ${tm(e.t, y, 1)}.`);
+      else if (e.type === "add") bits.push(`Picked up by ${tm(e.t, y, e.wk)} in week ${e.wk}.`);
+      else if (e.type === "drop") bits.push(`Dropped by ${tm(e.t, y, e.wk)} in week ${e.wk}.`);
+      else if (e.type === "trade") bits.push(`Traded to ${tm(e.t, y, Math.ceil(e.wk))}${e.from ? ` by the ${esc(nameAt(e.from, Math.ceil(e.wk)))}` : ""} before week ${Math.ceil(e.wk)}.`);
+    }
+    if (st.length) { const top = [...st].sort((a, b) => b.pts - a.pts)[0], donut = st.filter((w) => w.pts <= 0).length;
+      bits.push(`${He} scored ${f1(sum(st, (w) => w.pts))} points in ${st.length} start${st.length === 1 ? "" : "s"}, best ${f1(top.pts)} in week ${top.wk}${donut ? `, with ${donut} donut${donut === 1 ? "" : "s"}` : ""}.`); }
+    const bn = ws.filter((w) => w.slot === "BN");
+    if (bn.length && sum(bn, (w) => w.pts) > 0) bits.push(`${f1(sum(bn, (w) => w.pts))} more points came on the bench across ${bn.length} week${bn.length === 1 ? "" : "s"}.`);
+    // Ones to Watch picks that season
+    const picks = Object.entries((s && s.pregame) || {}).flatMap(([k, v]) => v.watch.filter((x) => x.n === p.n).map((x) => { const wk = +k.split("-")[0]; const e = (s.spans(wk)).map((sp) => ((s.lineups[sp] || {})[x.id] || []).find((q) => q.n === x.n)).filter(Boolean); const pts = sum(e, (q) => q.pts || 0); return { big: x.boomAt != null && pts >= x.boomAt, dud: x.bustAt != null && pts < x.bustAt && s.matchups.some((m) => m.wk === wk && m.win !== null && !m.live) }; }));
+    if (picks.length) bits.push(`Luffy picked ${it ? "it" : "him"} as a One to Watch ${picks.length === 1 ? "once" : `${picks.length} times`} (${picks.filter((x) => x.big).length} big game${picks.filter((x) => x.big).length === 1 ? "" : "s"}, ${picks.filter((x) => x.dud).length} dud${picks.filter((x) => x.dud).length === 1 ? "" : "s"}).`);
+    const r = rings.find((x) => x.y === y); if (r) bits.push(`${He} was on the roster that won 🏆 Buckaroo Bowl ${roman(r.n)}.`);
+    const a = aw.filter((x) => x.y === y); if (a.length) bits.push(`Awards: ${a.map((x) => `${x.e} ${x.nm}`).join(", ")}.`);
+    return `<h4>${y}${s && !s.done ? " <span class=\"muted\" style=\"font-weight:500\">(in progress)</span>" : ""}</h4><p>${bits.join(" ") || "On a roster, but never in a lineup that counted."}</p>`;
+  }).join("");
+  // In the news: stories that mention him, newest first, like references
+  const refs = ALL_NEWS.filter((a) => a.type !== "live" && a.type !== "profile" && JSON.stringify([a.title, a.dek, a.body]).includes(p.n)).sort((a, b) => b.year - a.year || (b.wk || 0) - (a.wk || 0));
+  const news = refs.length ? `<h3 class="wikisub">In the News</h3><ol class="wikirefs">${refs.slice(0, 15).map((a) => `<li><button class="mlink" data-go="news-${a.id}">“${esc(a.title)}”</button> <span class="muted">· ${newsWhen(a)}</span></li>`).join("")}</ol>${refs.length > 15 ? `<p class="note">And ${refs.length - 15} more.</p>` : ""}` : "";
+  // Infobox
+  const drafted = p.ev.filter((e) => e.type === "draft").map((e) => { const m = e.txt.match(/round (\d+), pick (\d+)/); return `${e.y}: ${m ? `Rd ${m[1]}, pick ${m[2]}` : "drafted"} · ${esc(nameAt(e.t, 1))}`; });
+  const row = (k, v) => (v ? `<tr><th>${k}</th><td>${v}</td></tr>` : "");
+  const info = `<aside class="infobox box"><div class="ibhead">${esc(p.n)}</div><div class="ibsub">${posTag(p.pos)} ${nfl ? esc(nfl) : esc(p.pro)}</div><table>
+    ${row("BFL seasons", p.years.join(", "))}
+    ${row("Managers", p.mgrs.map((k) => `<span class="ibm">${mbadge(k, 1)} ${mgrName(k)}</span>`).join(""))}
+    ${row("Drafted", drafted.join("<br>") || "Undrafted")}
+    ${rings.length || aw.length ? `<tr><th colspan="2" class="ibsec">Honors</th></tr><tr><td colspan="2">${rings.map((r) => `<div class="ibh gold">🏆 Buckaroo Bowl ${roman(r.n)} champion <span class="muted">(${esc(r.team)})</span></div>`).join("")}${grouped.map((a) => `<div class="ibh${SHAME[a.k] ? " l" : ""}">${a.e} ${a.nm} <span class="muted">${a.ys.join(", ")}</span></div>`).join("")}</td></tr>` : ""}
+    <tr><th colspan="2" class="ibsec">BFL career</th></tr>
+    ${row("Starts", p.starts)}
+    ${row("Points as a starter", f1(p.ptsS))}
+    ${row("Per start", p.starts ? f1(p.ptsS / p.starts) : "")}
+    ${row("Best game", best ? `${f1(best.pts)} <span class="muted">(${best.y} wk ${best.wk})</span>` : "")}
+    ${row("Bench points", p.benched ? `${f1(p.ptsB)} <span class="muted">(${p.benched} wks)</span>` : "")}
+    ${row("Moves", `${p.drafts} drafted · ${p.adds} pickup${p.adds === 1 ? "" : "s"} · ${p.drops} drop${p.drops === 1 ? "" : "s"} · ${p.trades} trade${p.trades === 1 ? "" : "s"}`)}
+  </table></aside>`;
+  return `<div class="wiki"><article class="wikimain">${lead}${info.replace('class="infobox box"', 'class="infobox box ibm-only"')}<h3 class="wikisub">BFL Career</h3>${career}${news}</article>${info.replace('class="infobox box"', 'class="infobox box ibd-only"')}</div>`;
+}
+
 function playerView() {
   const p = P[state.pk];
   const icon = { draft: "Draft", add: "Pickup", drop: "Drop", trade: "Trade" };
@@ -1525,13 +1600,8 @@ function playerView() {
   const best = [...p.weeks].filter((w) => w.start).sort((a, b) => b.pts - a.pts)[0];
   return `<div class="vhead"><div><div class="eyebrow">${posTag(p.pos)}${esc(p.pro)} · in the league ${p.years.join(", ")}</div><h2>${esc(p.n)}</h2></div>
     <button class="pill" data-go="players" style="border:0;cursor:pointer">← All players</button></div>
-  ${ringsOf(p).length || awardsOf(p).length ? `<div class="rings" style="display:flex;flex-wrap:wrap;gap:8px;margin:-6px 0 16px">${ringsOf(p).map((r) => `<span class="pill gold">🏆 Buckaroo Bowl ${roman(r.n)} Champion · ${esc(r.team)} (${mgrName(r.mgr)})</span>`).join("")}${awardsOf(p).map((a) => `<button class="pill${a.k === "ace" ? " l" : ""}" data-go="awards" style="border:0;cursor:pointer">${a.e} ${a.nm} ${a.y}</button>`).join("")}</div>` : ""}
-  <div class="strip">
-    <div class="box stat"><div class="k">Points as a Starter</div><div class="v num">${f1(p.ptsS)}</div><div class="s">${p.starts} starts${best ? ` · best ${f1(best.pts)} (${best.y} wk ${best.wk})` : ""}</div></div>
-    <div class="box stat"><div class="k">Points on the Bench</div><div class="v num">${f1(p.ptsB)}</div><div class="s">${p.benched} weeks benched</div></div>
-    <div class="box stat"><div class="k">Managers</div><div class="v">${p.mgrs.length}</div><div class="s">${firsts(p.mgrs)}</div></div>
-    <div class="box stat"><div class="k">Moves</div><div class="v num">${p.drafts + p.adds + p.drops + p.trades}</div><div class="s">${p.drafts} drafted · ${p.adds} pickups · ${p.drops} drops · ${p.trades} trades</div></div>
-  </div>
+  ${wikiHtml(p, best)}
+  <h3 class="wikisub">Statistics</h3>
   <section><h3>With Each Manager</h3><div class="box scroll"><table><thead><tr><th>Manager</th><th>Seasons</th><th class="n">Wks Rostered</th><th class="n">Starts</th><th class="n">Pts Started</th><th class="n">Pts Benched</th><th class="n">Best Start</th></tr></thead><tbody>${byM}</tbody></table></div></section>
   <section><h3>Transaction History</h3>${timeline ? `<div class="box scroll"><table><thead><tr><th>Year</th><th>When</th><th>Move</th><th>Team</th><th>Details</th></tr></thead><tbody>${timeline}</tbody></table></div>` : `<p class="muted">No drafts, pickups, drops or trades on record.</p>`}</section>
   <section><h3>Week by Week</h3><div class="box scroll"><table><thead><tr><th>Year</th><th class="n">NFL Wk</th><th>Team</th><th>Slot</th><th class="n">Pts</th></tr></thead><tbody>
