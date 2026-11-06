@@ -505,8 +505,9 @@ h3.subhead { margin: 0 0 10px; font-size: 15px; color: var(--muted); }
 .buzz { display: flex; gap: 14px; align-items: center; font-size: 12px; color: var(--muted); margin: 2px 0 4px; }
 .buzz .pill { padding: 0 6px; font-size: 10px; }
 .sectiontabs { margin: 0 0 18px; }
-@media (max-width: 520px) { nav.top { flex-wrap: nowrap; width: 100%; justify-content: space-between; } nav.top button { padding: 6px 7px; font-size: 12.5px; } }
-@media (max-width: 380px) { nav.top button { padding: 6px 4px; font-size: 12px; } }
+@media (max-width: 520px) { nav.top { flex-wrap: nowrap; width: 100%; justify-content: space-between; gap: 0; } nav.top button { padding: 6px 5px; font-size: 12px; } }
+@media (max-width: 400px) { nav.top button { padding: 6px 3px; font-size: 11.5px; } }
+@media (max-width: 370px) { nav.top button { padding: 5px 2px; font-size: 11px; letter-spacing: -.1px; } }
 .tick { color: var(--brass); font-weight: 800; font-size: 12px; }
 .phead .pill { padding: 1px 6px; font-size: 10px; margin-left: 2px; }
 .avatar { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; color: var(--surface); background: hsl(var(--h) var(--mgr-s) var(--mgr-l)); }
@@ -729,7 +730,7 @@ function parseHash() {
   else if ((m = h.match(/^mgr-(\w+)$/)) && D.managers[m[1]]) { state.view = "mgr"; state.mgr = m[1]; }
   else if ((m = h.match(/^p-([a-z0-9-]+)$/)) && P[m[1]]) { state.view = "player"; state.pk = m[1]; }
   else if ((m = h.match(/^news-([a-z0-9-]+)$/)) && NEWS.some((a) => a.id === m[1])) { state.view = "article"; state.newsId = m[1]; }
-  else if (["home", "news", "rankings", "social", "trophies", "managers", "map", "players", "overrated", "transactions", "odds", "h2h", "ratings", "awards", "records"].includes(h)) state.view = h;
+  else if (["home", "news", "rankings", "social", "trophies", "managers", "map", "players", "overrated", "transactions", "odds", "h2h", "ratings", "awards", "mgrawards", "records"].includes(h)) state.view = h;
   else state.view = "home"; // no or unknown hash: the home page
 }
 // Each page gets its own history entry so the browser's back button returns to it,
@@ -745,7 +746,8 @@ document.addEventListener("click", (e) => { const b = e.target.closest("[data-go
 const SECTIONS = {
   news: [["news", "News"], ["rankings", "Power Rankings"], ["social", "Social"]],
   managers: [["managers", "Managers"], ["ratings", "Laboon"], ["h2h", "Head-to-Head"], ["map", "Map"]],
-  players: [["players", "Players"], ["awards", "Awards"], ["overrated", "Overrated"], ["transactions", "Transactions"]],
+  players: [["players", "Players"], ["overrated", "Overrated"], ["transactions", "Transactions"]],
+  awards: [["awards", "Players"], ["mgrawards", "Managers"]],
   trophies: [["trophies", "Buckaroo Bowls"], ["records", "Record Book"]],
 };
 const groupOf = (v) => (v === "mgr" ? "managers" : v === "player" ? "players" : v === "article" ? "news" : Object.keys(SECTIONS).find((g) => SECTIONS[g].some(([k]) => k === v)) || v);
@@ -754,7 +756,7 @@ const sectionTabs = (v) => { const g = groupOf(v), list = SECTIONS[g]; if (!list
   return `<div class="tabs sectiontabs" role="tablist">${list.map(([k, l]) => `<button data-go="${k}" aria-current="${v === k}">${l}</button>`).join("")}</div>`; };
 function chrome() {
   // Six top tabs; each group's sections get a tab row of their own (see SECTIONS)
-  const nav = [["home", "Home"], ["news", "News"], ["odds", "Odds"], ["managers", "Managers"], ["players", "Players"], ["trophies", "History"]];
+  const nav = [["home", "Home"], ["news", "News"], ["odds", "Odds"], ["managers", "Managers"], ["players", "Players"], ["awards", "Awards"], ["trophies", "History"]];
   const curNav = groupOf(state.view);
   $("#topnav").innerHTML = nav.map(([k, l]) => `<button data-go="${k}" aria-current="${curNav === k}">${l}</button>`).join("");
   $("#rail").innerHTML = `<span class="lbl">Seasons</span>` + [...years].reverse().map((y) => {
@@ -1466,15 +1468,22 @@ function seasonMgrAwards(s) {
 }
 const mgrAwardsOf = (k) => D.seasons.filter((s) => s.done).flatMap((s) => { const a = seasonMgrAwards(s); return MGR_AWARDS.filter(([key]) => a[key] && a[key].ks.includes(k)).map(([key, e, nm, cat]) => ({ key, e, nm, cat, y: s.year, stat: a[key].stat })); });
 
-function awardsView() {
+function awardsView(kind) {
   const ys = D.seasons.filter((s) => s.done || s.played.length).map((s) => s.year).reverse();
-  return `<div class="vhead"><div><div class="eyebrow">All-Time</div><h2>Awards</h2><p>Player and manager awards for every season, named for the Straw Hats and friends. Finished seasons are final; the current one shows who's leading so far.</p></div></div>
-  ${ys.map((y) => { const s = S[y], a = seasonAwards(s), ma = seasonMgrAwards(s);
-    const mgrCards = MGR_AWARDS.filter(([k]) => ma[k]).map(([k, e, nm, cat, why]) => `<div class="box award${k === "bellamy" ? " shame" : ""}" title="${esc(why)}"><div class="k">${e} ${nm} <span class="muted">· ${cat}</span></div><div class="who">${ma[k].ks.map((m) => `${mbadge(m, 1)} <button class="mlink" data-go="mgr-${m}">${mgrName(m)}</button>`).join(" ")}</div><small>${ma[k].stat}</small></div>`).join("");
-    return `<section><h3>${y} ${s.done ? `<span class="muted" style="font-weight:500;font-size:14px">· Buckaroo Bowl ${roman(y - D.firstYear + 1)}</span>` : `<span class="pill live" style="vertical-align:middle">So far</span>`}</h3><h4 class="awsub">Players</h4><div class="awgrid">${AWARDS.filter(([k]) => a[k]).map(([k, e, nm, cat, why]) => { const x = a[k];
-      return `<div class="box award${k === "ace" ? " shame" : k === "king" || k === "onepiece" ? " top" : ""}" title="${esc(why)}"><div class="k">${e} ${nm} <span class="muted">· ${cat}</span></div><div class="who">${posTag(x.p.pos)}${pn(x.p.n)}</div><small class="muted">${badge(x.t, 1)} ${esc(x.t.name)} · ${mgrName(x.t.mgr)}</small><small>${x.stat}</small></div>`; }).join("")}</div>${mgrCards ? `<h4 class="awsub">Managers</h4><div class="awgrid">${mgrCards}</div>` : ""}</section>`; }).join("")}
-  <section><h3>How They're Decided</h3><div class="box rec"><ol class="swing">${[...AWARDS, ...MGR_AWARDS].map(([, e, nm, cat, why]) => `<li><span>${e} <b>${nm}</b> <span class="muted">· ${cat}</span><small class="ctx sub">${esc(why)}</small></span></li>`).join("")}</ol></div>
-  <p class="note">Points count only in weeks a lineup played a game, playoffs and consolation games included. The team shown is where he scored the most.</p></section>`;
+  const y = ys.includes(+state.awYear) ? +state.awYear : ys[0];
+  const s = S[y], mgr = kind === "m";
+  const bar = `<div class="weekbar" style="margin:0">${ys.map((yy) => `<button data-awyear="${yy}" aria-current="${yy === y}">${yy}</button>`).join("")}</div>`;
+  let cards;
+  if (mgr) { const ma = seasonMgrAwards(s);
+    cards = MGR_AWARDS.filter(([k]) => ma[k]).map(([k, e, nm, cat, why]) => `<div class="box award${k === "bellamy" ? " shame" : ""}" title="${esc(why)}"><div class="k">${e} ${nm} <span class="muted">· ${cat}</span></div><div class="who">${ma[k].ks.map((m) => `${mbadge(m, 1)} <button class="mlink" data-go="mgr-${m}">${mgrName(m)}</button>`).join(" ")}</div><small>${ma[k].stat}</small></div>`).join(""); }
+  else { const a = seasonAwards(s);
+    cards = AWARDS.filter(([k]) => a[k]).map(([k, e, nm, cat, why]) => { const x = a[k];
+      return `<div class="box award${k === "ace" || k === "buggy" ? " shame" : k === "king" || k === "onepiece" ? " top" : ""}" title="${esc(why)}"><div class="k">${e} ${nm} <span class="muted">· ${cat}</span></div><div class="who">${posTag(x.p.pos)}${pn(x.p.n)}</div><small class="muted">${badge(x.t, 1)} ${esc(x.t.name)} · ${mgrName(x.t.mgr)}</small><small>${x.stat}</small></div>`; }).join(""); }
+  const list = mgr ? MGR_AWARDS : AWARDS;
+  return `<div class="vhead"><div><div class="eyebrow">${s.done ? `Buckaroo Bowl ${roman(y - D.firstYear + 1)} · ${y}` : `${y} · so far`}</div><h2>${mgr ? "Manager" : "Player"} Awards</h2><p>${mgr ? "The things a title doesn't measure, named for the Straw Hats' friends and foes." : "The season's best (and worst) players, named for the Straw Hats and friends."} ${s.done ? "" : "The season isn't over, so these are the leaders so far."}</p></div>${bar}</div>
+  <div class="awgrid">${cards || `<p class="muted">Nothing to award yet.</p>`}</div>
+  <section><h3>How They're Decided</h3><div class="box rec"><ol class="swing">${list.map(([, e, nm, cat, why]) => `<li><span>${e} <b>${nm}</b> <span class="muted">· ${cat}</span><small class="ctx sub">${esc(why)}</small></span></li>`).join("")}</ol></div>
+  <p class="note">${mgr ? "Luck and blunders count regular-season weeks (blunders count playoffs too). Every award has one winner; a tie on a count goes to the bigger margin." : "Points count only in weeks a lineup played a game, playoffs and consolation games included. The team shown is where he scored the most."}</p></section>`;
 }
 
 function records() {
@@ -2166,7 +2175,7 @@ function render() {
   chrome();
   if (mapObj) { mapObj.remove(); mapObj = null; }
   const v = state.view;
-  $("#app").innerHTML = sectionTabs(v) + (v === "season" ? seasonView() : v === "mgr" ? mgrView() : v === "managers" ? managers() : v === "players" ? playersView() : v === "player" ? playerView() : v === "home" ? home() : v === "news" ? newsView() : v === "rankings" ? rankingsView() : v === "article" ? articleView() : v === "social" ? socialView() : v === "odds" ? oddsView() : v === "map" ? mapView() : v === "overrated" ? overratedView() : v === "transactions" ? txView() : v === "h2h" ? h2h() : v === "ratings" ? ratingsView() : v === "records" ? records() : v === "awards" ? awardsView() : trophies());
+  $("#app").innerHTML = sectionTabs(v) + (v === "season" ? seasonView() : v === "mgr" ? mgrView() : v === "managers" ? managers() : v === "players" ? playersView() : v === "player" ? playerView() : v === "home" ? home() : v === "news" ? newsView() : v === "rankings" ? rankingsView() : v === "article" ? articleView() : v === "social" ? socialView() : v === "odds" ? oddsView() : v === "map" ? mapView() : v === "overrated" ? overratedView() : v === "transactions" ? txView() : v === "h2h" ? h2h() : v === "ratings" ? ratingsView() : v === "records" ? records() : v === "awards" ? awardsView("p") : v === "mgrawards" ? awardsView("m") : trophies());
   document.title = "Buckaroo League History";
   if (v === "map") initMap();
   if (v === "season") setTimeout(celebrate, 200);
@@ -2183,6 +2192,7 @@ $("#app").addEventListener("click", (e) => {
     window.scrollTo({ top: card ? card.getBoundingClientRect().top + window.scrollY - (rail ? rail.offsetHeight : 0) - 10 : state.openFrom || 0 });
     return; }
   const gw = e.target.closest("[data-goweek]"); if (gw) { const [y, w] = gw.dataset.goweek.split("|").map(Number); state.week = w; state.open = null; go(`${y}-weekly`); return; }
+  const ay = e.target.closest("[data-awyear]"); if (ay) { state.awYear = +ay.dataset.awyear; render(); return; }
   const oy = e.target.closest("[data-oddsyear]"); if (oy) { state.oddsYear = +oy.dataset.oddsyear; state.oddsFocus = null; render(); return; }
   const ok = e.target.closest("[data-oddskey]"); if (ok) { state.oddsKey = ok.dataset.oddskey; render(); return; }
   const ef = e.target.closest("[data-elofocus]"); if (ef) { state.eloFocus = state.eloFocus === ef.dataset.elofocus ? null : ef.dataset.elofocus; render(); return; }
