@@ -1266,7 +1266,7 @@ function eloChart() {
     const last = hs[hs.length - 1];
     svg += `<g style="--h:${hue[k]}${gray(k)}" class="ln${dim ? " dim" : ""}${focus === k ? " on" : ""}">${segs.map((sg) => `<polyline points="${sg.join(" ")}"/>`).join("")}<circle cx="${x(last.i)}" cy="${y(last.r)}" r="4"/></g>`;
   }
-  return svg + `</svg>`;
+  return svg + `<line class="hoverline" x1="0" x2="0" y1="${T}" y2="${H - B}" style="display:none"/></svg>`;
 }
 function ratingsView() {
   const rows = Object.keys(ELO.hist).map((k) => { const hs = ELO.hist[k], last = hs[hs.length - 1], peak = hs.reduce((a, b) => (b.r > a.r ? b : a)), low = hs.reduce((a, b) => (b.r < a.r ? b : a));
@@ -1280,8 +1280,8 @@ function ratingsView() {
   // Biggest single-game swings: upsets the rating didn't see coming
   const chance = (p) => 1 / (1 + 10 ** ((p.oppR - p.pre) / 400));
   const ups = Object.entries(ELO.hist).flatMap(([k, hs]) => hs.map((p) => ({ k, ...p }))).filter((p) => p.won === 1).sort((a, b) => chance(a) - chance(b)).slice(0, 5);
-  return `<div class="vhead"><div><div class="eyebrow">All-Time Ratings</div><h2>Laboon</h2><p>A running rating for every manager since 2023 (an Elo rating, named for the whale who never forgets). Beat a higher-rated manager and you gain more; lose to a lower-rated one and you drop more. Click a manager to highlight the line.</p></div></div>
-  <div class="box" style="padding:10px 8px 4px">${eloChart()}</div>
+  return `<div class="vhead"><div><div class="eyebrow">All-Time Ratings</div><h2>Laboon</h2><p>A running rating for every manager since 2023 (an Elo rating, named for the whale who never forgets). Beat a higher-rated manager and you gain more; lose to a lower-rated one and you drop more. Hover over the chart (or tap it on a phone) to see everyone that week. Click a manager to highlight the line.</p></div></div>
+  <div class="box oddswrap elowrap" style="padding:10px 8px 4px">${eloChart()}<div class="oddstip" hidden></div></div>
   <section style="margin-top:16px"><div class="box scroll"><table class="compact elotable"><thead><tr><th class="n">#</th><th>Manager</th><th class="n">Rating</th><th class="n">Last Game</th><th class="n wide">Peak</th><th class="n wide">Low</th><th class="n wide">Games</th></tr></thead><tbody>${body}</tbody></table></div></section>
   <section><h3>Biggest Upsets</h3><div class="box rec"><ol class="swing">${ups.map((p) => `<li><span>${mbadge(p.k, 1)} <b>${mgrName(p.k)}</b> beat ${mgrName(p.opp)} <span class="muted">· ${p.y} wk ${p.wk}${ELO.steps[p.i].po ? " · playoffs" : ""}</span><small class="ctx sub">${f1(p.pts)}–${f1(p.op)} with a ${Math.round(100 * chance(p))}% chance by rating</small></span><span class="num w">+${Math.round(p.d)}</span></li>`).join("")}</ol></div>
   <p class="note">Everyone starts at 1500, the league average. Each game moves both managers by up to 24 points (36 in the winners' bracket), more for an upset, less for an expected win; points scored don't count, only the result. Each new season pulls every rating halfway back to 1500, since rosters start over at the draft. Games go to whoever ran the team that week. On 2023 to 2025 it picked 58% of winners, so read it as a résumé, not a forecast.</p></section>`;
@@ -1392,7 +1392,14 @@ function records() {
 }
 
 // ---------- Players ----------
-const pWho = (p) => `${posTag(p.pos)}${pn(p.n)}`;
+// Buckaroo Bowl rings: on the champion's roster (starting or bench) for the Bowl
+let RINGS = null;
+const ringsOf = (p) => {
+  if (!RINGS) { RINGS = {}; for (const s of D.seasons.filter((x) => x.done)) { const c = s.teams.find((t) => t.final === 1); if (!c) continue; const sps = s.spans(bowlWeek(s));
+    for (const q of PL) if (q.weeks.some((w) => w.y === s.year && w.t.id === c.id && sps.includes(w.wk))) (RINGS[q.k] = RINGS[q.k] || []).push({ y: s.year, n: s.year - D.firstYear + 1, mgr: c.mgr, team: c.name }); } }
+  return RINGS[p.k] || [];
+};
+const pWho = (p) => `${posTag(p.pos)}${pn(p.n)}${ringsOf(p).length ? ` <span title="Buckaroo Bowl ${ringsOf(p).map((r) => roman(r.n)).join(", ")} champion">${"🏆".repeat(ringsOf(p).length)}</span>` : ""}`;
 const firsts = (ks) => ks.map((k) => esc(D.managers[k].first)).join(", ");
 function topMgr(p, f) { const c = {}; for (const w of p.weeks.filter(f)) c[w.mgr] = (c[w.mgr] || 0) + 1; const k = Object.keys(c).sort((a, b) => c[b] - c[a])[0]; return k ? D.managers[k].first : "—"; }
 const PSORT = { ptsS: ["Points as a Starter", (p) => p.ptsS], ptsB: ["Points on the Bench", (p) => p.ptsB], wks: ["Weeks Rostered", (p) => p.wks], mgrs: ["Managers", (p) => p.mgrs.length], moves: ["Times Moved", (p) => p.adds + p.drops + p.trades], name: ["Name", null] };
@@ -1436,6 +1443,7 @@ function playerView() {
   const best = [...p.weeks].filter((w) => w.start).sort((a, b) => b.pts - a.pts)[0];
   return `<div class="vhead"><div><div class="eyebrow">${posTag(p.pos)}${esc(p.pro)} · in the league ${p.years.join(", ")}</div><h2>${esc(p.n)}</h2></div>
     <button class="pill" data-go="players" style="border:0;cursor:pointer">← All players</button></div>
+  ${ringsOf(p).length ? `<div class="rings" style="display:flex;flex-wrap:wrap;gap:8px;margin:-6px 0 16px">${ringsOf(p).map((r) => `<span class="pill gold">🏆 Buckaroo Bowl ${roman(r.n)} Champion · ${esc(r.team)} (${mgrName(r.mgr)})</span>`).join("")}</div>` : ""}
   <div class="strip">
     <div class="box stat"><div class="k">Points as a Starter</div><div class="v num">${f1(p.ptsS)}</div><div class="s">${p.starts} starts${best ? ` · best ${f1(best.pts)} (${best.y} wk ${best.wk})` : ""}</div></div>
     <div class="box stat"><div class="k">Points on the Bench</div><div class="v num">${f1(p.ptsB)}</div><div class="s">${p.benched} weeks benched</div></div>
@@ -1982,6 +1990,7 @@ function oddsHover(e) {
   const wrap = e.target.closest && e.target.closest(".oddswrap");
   for (const w of document.querySelectorAll(".oddswrap")) if (w !== wrap) { const t = w.querySelector(".oddstip"); if (t) t.hidden = true; const l = w.querySelector(".hoverline"); if (l) l.style.display = "none"; }
   if (!wrap) return;
+  if (wrap.classList.contains("elowrap")) return eloHover(e, wrap);
   const s = S[+wrap.dataset.y], key = wrap.dataset.key, o = s && s.odds;
   if (!o) return;
   const svg = wrap.querySelector("svg"), r = svg.getBoundingClientRect(), n = o.weeks.length;
@@ -1996,6 +2005,22 @@ function oddsHover(e) {
   tip.hidden = false;
   const px = ((x / OC.W) * r.width) + (r.left - wrap.getBoundingClientRect().left);
   const wW = wrap.clientWidth, tw = tip.offsetWidth;
+  tip.style.left = Math.max(4, Math.min(wW - tw - 4, px > wW / 2 ? px - tw - 14 : px + 14)) + "px";
+}
+// Laboon's chart: every manager's rating after the week under the pointer, with that week's change
+function eloHover(e, wrap) {
+  const svg = wrap.querySelector("svg"), r = svg.getBoundingClientRect(), n = ELO.steps.length, { W, L, R } = ER;
+  const vx = ((e.clientX - r.left) * W) / r.width;
+  const i = Math.max(0, Math.min(n - 1, Math.round(((vx - L) / (W - L - R)) * (n - 1))));
+  const x = L + (n <= 1 ? 0 : (i * (W - L - R)) / (n - 1)), st = ELO.steps[i];
+  const line = svg.querySelector(".hoverline"); line.setAttribute("x1", x); line.setAttribute("x2", x); line.style.display = "";
+  // Managers in that season, at their rating after that week (or their last game before it)
+  const rows = Object.entries(ELO.hist).map(([k, hs]) => { let p = null; for (const h of hs) if (h.i <= i && h.y === st.y) p = h; return p && { k, p }; }).filter(Boolean).sort((a, b) => b.p.r - a.p.r);
+  const tip = wrap.querySelector(".oddstip");
+  tip.innerHTML = `<b>${st.y} · Week ${st.wk}${st.po ? " · Playoffs" : ""}</b>` + rows.map(({ k, p }) => { const now = p.i === i, d = Math.round(p.d);
+    return `<div class="${state.eloFocus === k ? "sel" : ""}">${mbadge(k, 1)}<span>${mgrName(k)}${now ? ` <small class="muted">${p.won === 1 ? "beat" : p.won === 0 ? "lost to" : "tied"} ${esc(D.managers[p.opp] ? D.managers[p.opp].first : "")}</small>` : ""}</span><span class="num">${Math.round(p.r)}${now ? ` <small class="${d > 0 ? "w" : d < 0 ? "l" : "muted"}">${d > 0 ? "+" : ""}${d}</small>` : ""}</span></div>`; }).join("");
+  tip.hidden = false;
+  const px = ((x / W) * r.width) + (r.left - wrap.getBoundingClientRect().left), wW = wrap.clientWidth, tw = tip.offsetWidth;
   tip.style.left = Math.max(4, Math.min(wW - tw - 4, px > wW / 2 ? px - tw - 14 : px + 14)) + "px";
 }
 $("#app").addEventListener("pointermove", oddsHover);
