@@ -457,6 +457,7 @@ h3.subhead { margin: 0 0 10px; font-size: 15px; color: var(--muted); }
 .confetti { position: absolute; width: 7px; height: 11px; border-radius: 2px; pointer-events: none; z-index: 60; }
 .watch { padding: 10px 14px 12px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
 .wname, .wname .plink, .pl.watchp .nm > .plink, .pl.watchp .nm > b { color: var(--gold); font-weight: 700; }
+.inj, .wstat b.inj { color: var(--loss); }
 .wstat { color: var(--muted); } .wstat b { color: var(--ink); } .wstat.hit, .wstat.hit b { color: var(--win); } .wstat.miss, .wstat.miss b { color: var(--loss); }
 .watch .k { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .wrow { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; font-size: 13.5px; line-height: 1.35; }
@@ -836,7 +837,7 @@ function lineupWeek(s, wk, id) {
   // This game's Ones to Watch stand out in the lineup
   const gm = s.matchups.find((m) => m.watch && (m.h === id || m.a === id) && s.spans(m.wk).includes(+wk));
   const watched = new Set(gm ? gm.watch.filter((x) => x.id === id).map((x) => x.n) : []);
-  const row = (p) => `<div class="pl${p.slot === "BN" || p.slot === "IR" ? " bn" : ""}${watched.has(p.n) ? " watchp" : ""}"><span class="slot">${esc(p.slot)}</span><span class="nm">${pn(p.n)} <small>${esc(p.pos)} · ${esc(p.pro)}${p.st ? ` · <b>${p.st === "bye" ? "BYE" : "OUT"}</b>` : ""}</small></span><span class="p">${f1(p.pts)}</span></div>`;
+  const row = (p) => `<div class="pl${p.slot === "BN" || p.slot === "IR" ? " bn" : ""}${watched.has(p.n) ? " watchp" : ""}"><span class="slot">${esc(p.slot)}</span><span class="nm">${pn(p.n)} <small>${esc(p.pos)} · ${esc(p.pro)}${p.st ? ` · <b>${p.st === "bye" ? "BYE" : "OUT"}</b>` : p.inj ? ` · <b class="inj">${injTag(p.inj)}</b>` : ""}</small></span><span class="p">${f1(p.pts)}</span></div>`;
   const bpts = bench.filter((p) => p.slot === "BN").reduce((a, p) => a + p.pts, 0);
   return `${start.map(row).join("")}<div class="bnhead"><span>Bench</span><span class="num">${f1(bpts)} pts left on bench</span></div>${bench.map(row).join("")}`;
 }
@@ -979,9 +980,10 @@ function watchHtml(s, m) {
     if (!m.watchLocked) return "";
     const p = (L[x.id] || []).find((q) => q.n === x.n);
     if (!p || p.slot === "BN" || p.slot === "IR") return `<br><small class="wstat">${p ? "Benched" : "Off the Roster"}</small>`;
-    if (p.g === "pre") return `<br><small class="wstat">Yet to Play</small>`;
+    const hurt = p.inj ? ` · <b class="inj">${injTag(p.inj)}</b>` : "";
+    if (p.g === "pre") return `<br><small class="wstat">Yet to Play${hurt}</small>`;
     const hit = x.boomAt != null && p.pts >= x.boomAt, dud = p.g === "done" && x.bustAt != null && p.pts < x.bustAt;
-    return `<br><small class="wstat${hit ? " hit" : dud ? " miss" : ""}"><b>${f1(p.pts)}</b> pts${p.g === "on" ? " · In Play" : p.g === "done" ? " · Final" : ""}${hit ? " · 🔥 Big Game" : dud ? " · 🗑️ Dud" : ""}</small>`;
+    return `<br><small class="wstat${hit ? " hit" : dud ? " miss" : ""}"><b>${f1(p.pts)}</b> pts${p.g === "on" ? " · In Play" : p.g === "done" ? " · Final" : ""}${hit ? " · 🔥 Big Game" : dud ? " · 🗑️ Dud" : ""}${hurt}</small>`;
   };
   return `<div class="watch"><div class="k" title="The players whose games swing this matchup most. The point lines are each player's top-20% and bottom-20% outcomes, from his projection, his position and his own history.">Ones to Watch <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500">· ${m.watchLocked ? "picked at kickoff · " : ""}big game = his top 20%, dud = his bottom 20%</span></div>${m.watch.map((x) => { const st = stack(x);
     return `<div class="wrow">${badge(s.byId[x.id], 1)}<span><b class="wname">${pn(x.n)}</b> <small class="muted">${esc(x.pos)} · ${esc(x.pro)}${x.proj != null ? ` · proj ${f1(x.proj)}` : ""}</small><br><small>${x.boomAt != null ? `If he scores <b>${x.boomAt}+</b>, ${esc(who(x.id))} wins <b>${x.boom}%</b> · under <b>${x.bustAt}</b>, <b>${x.bust}%</b>` : `If he booms, ${esc(who(x.id))} wins <b>${x.boom}%</b> · if he busts, <b>${x.bust}%</b>`}${st ? ` · <span class="pill">Stack: ${esc(st.qb === x.n ? st.rec : st.qb)}</span>` : ""}</small>${now(x)}</span></div>`; }).join("")}</div>`;
@@ -1008,6 +1010,8 @@ function winProb(s, m) {
   return Phi(((mh - ma) * len) / (spread * Math.sqrt(2 * len)));
 }
 // A decided game is exactly 100% or 0%; only a near-certain one reads >99% or <1%
+// ESPN's injury designation, as the short tag ESPN shows (Q, D, O, IR)
+const injTag = (s) => ({ QUESTIONABLE: "Q", DOUBTFUL: "D", OUT: "O", INJURY_RESERVE: "IR", SUSPENSION: "SSPD", DAY_TO_DAY: "DTD" })[s] || s;
 const winPct = (p) => (p >= 1 ? "100%" : p <= 0 ? "0%" : p >= 0.995 ? ">99%" : p <= 0.005 ? "<1%" : `${Math.round(p * 100)}%`);
 // "· 2 to go": starters whose NFL game hasn't finished, on live games
 // Settled once the team behind has nobody left to play
@@ -1121,7 +1125,7 @@ function wpRead(s, m, pts, i) {
   // How far the leader's chance moved since the update before
   const mv = was ? Math.round((q[1] - was[1]) * 100) * (home ? 1 : -1) : 0;
   const plays = (q[4] || []).map(([side, nm, g, tg]) => { const k = mgrAt(side ? ta : th, m.wk);
-    return `<span class="wpplay1" style="--h:${hue[k]}${gray(k)}">${tg ? `<b>${tg === "TO" ? "Turnover" : tg}</b> ` : ""}${esc(nm)} <span class="num">${g > 0 ? "+" : ""}${f1(g)}</span></span>`; }).join("");
+    return `<span class="wpplay1" style="--h:${hue[k]}${gray(k)}">${tg ? `<b>${tg === "TO" ? "Turnover" : tg === "INJ" ? "🚑 Hurt" : tg}</b> ` : ""}${esc(nm)} <span class="num">${g > 0 ? "+" : ""}${f1(g)}</span></span>`; }).join("");
   return `<div class="wpline1"><span class="muted">${fin ? "Final" : t}</span>
     <span class="wpsc num">${badge(th, 1)} ${f1(q[2])} – ${f1(q[3])} ${badge(ta, 1)}</span>
     <span>${fin ? (q[1] === 0.5 ? "Tie" : `${esc(nameAt(lead[0], m.wk))} win`) : `${esc(nameAt(lead[0], m.wk))} <b>${winPct(lead[1])}</b>${mv ? ` <span class="wpmv">${mv > 0 ? "▲" : "▼"}${Math.abs(mv)}</span>` : ""}`}</span></div>${plays ? `<div class="wpplays">${plays}</div>` : ""}`;

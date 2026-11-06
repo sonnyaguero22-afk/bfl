@@ -104,7 +104,7 @@ for (const year of years) {
           // st: "bye", or "out" when he has no stats for the week (settled below, once his game is over)
           const act = (p.stats || []).find((x) => x.statSourceId === 0 && x.scoringPeriodId === w);
           const st = nflBye[p.proTeamId] === w ? "bye" : !(act && Object.keys(act.stats || {}).length) && !e.playerPoolEntry.appliedStatTotal ? "dnp" : undefined;
-          return { n: p.fullName, pos: POS[p.defaultPositionId] || "", pro: PRO[p.proTeamId] || "", slot: SLOT[e.lineupSlotId] || "BN", pts: r2(e.playerPoolEntry.appliedStatTotal || 0), proj: pj ? r2(pj.appliedTotal) : null, st, _pt: p.proTeamId, _x: act && act.stats };
+          return { n: p.fullName, pos: POS[p.defaultPositionId] || "", pro: PRO[p.proTeamId] || "", slot: SLOT[e.lineupSlotId] || "BN", pts: r2(e.playerPoolEntry.appliedStatTotal || 0), proj: pj ? r2(pj.appliedTotal) : null, st, _pt: p.proTeamId, _x: act && act.stats, _inj: p.injuryStatus };
         });
       }
     }
@@ -194,6 +194,9 @@ for (const year of years) {
       kicks = [...new Set((sb.events || []).map((ev) => ev.date && new Date(ev.date).toISOString()).filter(Boolean))].sort(); // this NFL week's kickoff times, for when.js and news.js
     }
   }
+  // Share of a player's game still to play for him: none once he's ruled out mid-game (hurt and not coming back),
+  // so Luffy stops counting on points he won't score
+  const leftFor = (p, w) => { const f = nflClock ? nflClock(p.proTeamId) : nflBye[p.proTeamId] === w ? 0 : 1; return f > 0 && f < 1 && ["OUT", "INJURY_RESERVE"].includes(p.injuryStatus) ? 0 : f; };
   // A player with no stats only counts as out once his NFL game is over (earlier weeks always are)
   for (const w in lineups) for (const id in lineups[w]) for (const p of lineups[w][id]) {
     if (p.st === "dnp") p.st = +w < L.status.latestScoringPeriod || (nflClock && nflClock(p._pt) === 0) ? "out" : undefined;
@@ -205,8 +208,10 @@ for (const year of years) {
       const plays = { ptd: n(4), rtd: n(25), ctd: n(43), dtd: n(93, 101, 102, 103, 104), fg: n(83), to: n(20, 72) };
       for (const k in plays) if (plays[k]) (p.x = p.x || {})[k] = plays[k];
       if (nflClock && p.st !== "bye") { const f = nflClock(p._pt); p.g = f === 1 ? "pre" : f === 0 ? "done" : "on"; }
+      // ESPN's injury designation (questionable, out...), which it also changes when a player gets hurt during a game
+      if (p._inj && !["ACTIVE", "NORMAL"].includes(p._inj)) p.inj = p._inj;
     }
-    delete p._pt; delete p._x;
+    delete p._pt; delete p._x; delete p._inj;
   }
   // So the stat ids can be checked against the box scores from a cloud session
   if (!done && nflClock && lineups[L.status.latestScoringPeriod]) console.log(`::notice::${year} scoring plays so far: ${Object.values(lineups[L.status.latestScoringPeriod]).flat().filter((p) => p.x).map((p) => `${p.n} ${JSON.stringify(p.x)} (${p.pts})`).join("; ") || "none"}`);
@@ -229,7 +234,7 @@ for (const year of years) {
       if (nflClock || (m.hp === 0 && m.ap === 0)) m._sides = [s.home, s.away].map((side) => (side.rosterForCurrentScoringPeriod || { entries: [] }).entries
         .filter((e) => e.lineupSlotId !== 20 && e.lineupSlotId !== 21).map((e) => {
           const p = e.playerPoolEntry.player, pj = (p.stats || []).find((x) => x.statSourceId === 1 && x.scoringPeriodId === m.wk);
-          const left = nflClock ? nflClock(p.proTeamId) : nflBye[p.proTeamId] === m.wk ? 0 : 1;
+          const left = leftFor(p, m.wk);
           return { n: p.fullName, pos: POS[p.defaultPositionId] || "", pro: PRO[p.proTeamId] || `FA-${p.id}`, proj: pj ? pj.appliedTotal : 0, pts: e.playerPoolEntry.appliedStatTotal || 0, left };
         }));
       // Starters on bye or ruled out whose spot can still be filled, and the lineup with each swapped for the best
@@ -239,7 +244,7 @@ for (const year of years) {
         m.holes = []; m._fixed = [s.home, s.away].map((side, k) => {
           const es = (side.rosterForCurrentScoringPeriod || { entries: [] }).entries, used = new Set();
           const row = (e) => { const p = e.playerPoolEntry.player, pj = (p.stats || []).find((x) => x.statSourceId === 1 && x.scoringPeriodId === m.wk);
-            const bye = nflBye[p.proTeamId] === m.wk, left = nflClock ? nflClock(p.proTeamId) : bye ? 0 : 1;
+            const bye = nflBye[p.proTeamId] === m.wk, left = leftFor(p, m.wk);
             return { n: p.fullName, pos: POS[p.defaultPositionId] || "", pro: PRO[p.proTeamId] || `FA-${p.id}`, proj: pj ? pj.appliedTotal : 0, pts: e.playerPoolEntry.appliedStatTotal || 0, left,
               why: bye ? "on bye" : left === 1 && OUT.includes(p.injuryStatus) ? "ruled out" : null }; };
           const bench = es.filter((e) => e.lineupSlotId === 20).map(row).filter((p) => !p.why && p.left === 1);
@@ -261,7 +266,7 @@ for (const year of years) {
             if (e.lineupSlotId === 20 || e.lineupSlotId === 21) continue; // bench / IR
             const p = e.playerPoolEntry.player;
             const pj = (p.stats || []).find((x) => x.statSourceId === 1 && x.scoringPeriodId === m.wk);
-            const f = nflClock(p.proTeamId), r = (pj ? pj.appliedTotal : 0) * f;
+            const f = leftFor(p, m.wk), r = (pj ? pj.appliedTotal : 0) * f;
             if (f > 0) left++;
             if (f > 0 && f < 1) play++; // his game is on right now
             rem += r;
@@ -466,11 +471,12 @@ if (process.env.GITHUB_ACTIONS === "true") for (const { matchups, wp, histFile }
       const p = Math.round(m.psim * 1000) / 1000, last = pts && pts[pts.length - 1];
       // The second build of a run sees the same data: one point per update
       if (last && now - last[0] < 10 * 60e3 && last[1] === p && last[2] === m.hp && last[3] === m.ap) continue;
-      (wp[key] = wp[key] || []).push([now, p, m.hp, m.ap]);
+      // [time, Luffy, home points, away points, plays (filled in by live.js), ESPN's own live chance]
+      (wp[key] = wp[key] || []).push([now, p, m.hp, m.ap, null, m.espn ?? null]);
       changed = true;
     } else if (pts && m.win !== null && !m.live) {
       const fin = m.win === m.h ? 1 : m.win === m.a ? 0 : 0.5;
-      if (pts[pts.length - 1][1] !== fin || pts[pts.length - 1][2] !== m.hp) { pts.push([now, fin, m.hp, m.ap]); changed = true; }
+      if (pts[pts.length - 1][1] !== fin || pts[pts.length - 1][2] !== m.hp) { pts.push([now, fin, m.hp, m.ap, null, fin]); changed = true; }
     }
   }
   if (changed) { fs.mkdirSync(HISTORY, { recursive: true }); fs.writeFileSync(histFile, JSON.stringify(wp)); }

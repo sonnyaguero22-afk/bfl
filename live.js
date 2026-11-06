@@ -1,6 +1,6 @@
 // Live social posts during games. Each update compares this week's scores, win chances and
 // players' points with the last update (history/livestate_<year>.json), and when something
-// happened (a touchdown, a big play, a turnover, a lead change, a big swing, a Ones to Watch player clearing his line, a
+// happened (a touchdown, a big play, a turnover, an injury, a lead change, a big swing, a Ones to Watch player clearing his line, a
 // final), and when anyone picks up or drops a player (waivers or free agency, any day of the week),
 // asks Claude for a few posts reacting to it, saved to news/live-<year>-<week>.json.
 // At most 2 batches (calls) an hour and 20 a day.
@@ -44,6 +44,9 @@ function told(d, pos) {
 const tag = (d) => { const td = d.ptd + d.rtd + d.ctd + d.dtd; return td ? (td > 1 ? `${td} TD` : "TD") : d.fg ? "FG" : d.to ? "TO" : ""; };
 // Where a starter's NFL game stands, so the posts don't treat a finished game as one to come
 const GAME = { pre: "yet to play", on: "playing now", done: "game over" };
+// ESPN's injury designations, in words
+const INJ = { QUESTIONABLE: "questionable", DOUBTFUL: "doubtful", OUT: "out", INJURY_RESERVE: "on injured reserve", SUSPENSION: "suspended", DAY_TO_DAY: "day to day" };
+const injured = (s) => INJ[s] || (s ? s.toLowerCase().replace(/_/g, " ") : "");
 
 // What the scoreboard looks like right now
 const starters = (id) => ((cur.lineups[W] || {})[id] || []).filter((p) => p.slot !== "BN" && p.slot !== "IR");
@@ -53,6 +56,8 @@ const now = {
   // Each starter's points and scoring plays so far: [points, TD passes, rushing TDs, receiving TDs, D/ST TDs, field goals, turnovers]
   players: Object.fromEntries(games.flatMap((m) => [m.h, m.a]).flatMap((id) => starters(id).map((p) => [`${id}|${p.n}`, [p.pts, ...PLAYS.map((k) => (p.x || {})[k] || 0)]]))),
   moves: cur.moves.map((m) => `${m.date}|${m.tm}`),
+  // Each starter's injury designation, to catch a player getting hurt mid-game or ruled out before his game
+  inj: Object.fromEntries(games.flatMap((m) => [m.h, m.a]).flatMap((id) => starters(id).filter((p) => p.inj).map((p) => [`${id}|${p.n}`, p.inj]))),
   at: Date.now(),
 };
 const before = fs.existsSync(STATE) ? JSON.parse(fs.readFileSync(STATE, "utf8")) : null;
@@ -87,6 +92,13 @@ if (before && before.wk === W) {
       const x = (m.watch || []).find((w) => w.n === p.n && w.id === id);
       if (x && was < x.boomAt && p.pts >= x.boomAt) events.push(`ONE TO WATCH HIT: ${p.n} cleared his ${x.boomAt}-point line for ${team(id)}; that line was worth a ${x.boom}% win chance (${label})`);
       if (Math.abs(gain) >= 1 || tag(d)) list.push([id === m.h ? 0 : 1, p.n, gain, tag(d)]);
+      // Injuries: hurt during his game (any new designation), or ruled out before it while still in the lineup.
+      // Saves from before injuries were kept count every designation as already seen.
+      const wasInj = before.inj ? before.inj[k] : p.inj;
+      if (p.inj && p.inj !== wasInj) {
+        if (p.g === "on" || (p.g === "done" && was !== p.pts)) { events.push(`INJURY: ${p.n} (${p.pos}, ${p.pro}) got hurt during his game and is now listed ${injured(p.inj)}, with ${p.pts} points so far, for ${team(id)} (${label})`); const mine = list.find((x) => x[1] === p.n && !x[3]); if (mine) mine[3] = "INJ"; else list.push([id === m.h ? 0 : 1, p.n, gain, "INJ"]); }
+        else if (p.g === "pre" && ["OUT", "DOUBTFUL", "INJURY_RESERVE", "SUSPENSION"].includes(p.inj)) events.push(`INJURY NEWS: ${p.n} (${p.pos}, ${p.pro}) is now listed ${injured(p.inj)} before his game, and he's still in ${team(id)}'s starting lineup (${label})`);
+      }
     }
     // The plays behind this update's point on the win chance chart
     if (list.length) plays[`${W}-${m.h}-${m.a}`] = list.sort((x, y) => !!y[3] - !!x[3] || Math.abs(y[2]) - Math.abs(x[2])).slice(0, 6);
@@ -113,8 +125,8 @@ if (before && before.moves) {
     events.push(e); moveAt[e] = m.date;
   }
 }
-// Most important first, and at most 10 per update: finals, lead changes, touchdowns, swings, Ones to Watch, the biggest plays, turnovers, then moves
-const ORDER = ["FINAL", "LEAD CHANGE", "TOUCHDOWN", "SWING", "ONE TO WATCH", "BIG PLAY", "TURNOVER", "MOVE"];
+// Most important first, and at most 10 per update: finals, lead changes, touchdowns, injuries, swings, Ones to Watch, the biggest plays, turnovers, then moves
+const ORDER = ["FINAL", "LEAD CHANGE", "TOUCHDOWN", "INJURY", "SWING", "ONE TO WATCH", "BIG PLAY", "TURNOVER", "MOVE"];
 const gain = (e) => +((e.match(/\+([\d.]+)/) || [])[1] || 0);
 events.sort((a, b) => ORDER.findIndex((k) => a.startsWith(k)) - ORDER.findIndex((k) => b.startsWith(k)) || gain(b) - gain(a)).splice(10);
 if (!events.length) { console.log(before && before.wk === W ? "Nothing new since the last update." : "First snapshot saved."); save(); process.exit(0); }
@@ -133,11 +145,11 @@ const POSTS = { type: "object", additionalProperties: false, required: ["posts"]
 POSTS.properties.posts.items.required.push("event");
 const scoreboard = games.map((m) => `${team(m.h)} ${m.hp} vs ${team(m.a)} ${m.ap}${m.win != null ? " (final)" : m.psim != null ? `, ${nameAt(cur.byId[m.h], W)} win chance ${pct(m.psim)}` : ""}`);
 // Every starter's game status, so a post never waits on a player who already played (or cheers one who hasn't)
-const where = (id) => { const by = { done: [], on: [], pre: [] }; for (const p of starters(id)) if (p.g) by[p.g].push(p.g === "pre" ? p.n : `${p.n} ${p.pts}`);
+const where = (id) => { const by = { done: [], on: [], pre: [] }; for (const p of starters(id)) if (p.g) by[p.g].push(`${p.n}${p.g === "pre" ? "" : ` ${p.pts}`}${p.inj ? ` (${injured(p.inj)})` : ""}`);
   return `${team(id)}: ${Object.entries(by).filter(([, xs]) => xs.length).map(([g, xs]) => `${GAME[g]}: ${xs.join(", ")}`).join("; ")}`; };
 const lineups = starters(games[0] ? games[0].h : 0).some((p) => p.g) ? games.flatMap((m) => [m.h, m.a]).map(where) : [];
 const clock = new Date().toLocaleString("en-US", { timeZone: "America/New_York", weekday: "long", hour: "numeric", minute: "2-digit" });
-const ask = `It's week ${W}, ${clock} ET. Write 2 to 4 social posts reacting to what just happened around the league, the way the timeline does: fans of the teams involved (celebrating, panicking, raging), a pundit or panelist with a quick take, an insider on a roster move, maybe a team's official account after a big play, a final or a pickup ("welcome to the squad"). React to the play itself, the way people do when it happens: name the touchdown, the interception or the final and what it does to their matchup, and say it the way a real person in a group chat or on the timeline would, in their own voice. Vary it: some fans are hyped, some deadpan, some bitter, some just relieved; avoid stock hype phrases, catchphrases and forced slang, and don't open several posts the same way. Talk about players and what they did, never in stat-line shorthand like "+8.4". Only a numbers person (Dr. Nina Kessler, or a stats account) cites win chances. A depth add or a drop of a nobody gets a post only if there's a joke in it; a big bid, a big name dropped, or a pickup that fills a hole is worth talking about. Keep each post short, one or two sentences, and react to these events only; use the scores and game statuses as context. Mind the clock and each player's status: a player whose game is over has played (don't say he's due, or still to come), and one yet to play hasn't. event is the number of the event a post reacts to; minutes_ago is how long ago it was posted, from 0 to 14.
+const ask = `It's week ${W}, ${clock} ET. Write 2 to 4 social posts reacting to what just happened around the league, the way the timeline does: fans of the teams involved (celebrating, panicking, raging), a pundit or panelist with a quick take, an insider on a roster move, maybe a team's official account after a big play, a final or a pickup ("welcome to the squad"). React to the play itself, the way people do when it happens: name the touchdown, the interception or the final and what it does to their matchup, and say it the way a real person in a group chat or on the timeline would, in their own voice. Vary it: some fans are hyped, some deadpan, some bitter, some just relieved; avoid stock hype phrases, catchphrases and forced slang, and don't open several posts the same way. Talk about players and what they did, never in stat-line shorthand like "+8.4". A player getting hurt draws worry and lineup panic from his team's fans, never jokes about the injury itself. Only a numbers person (Dr. Nina Kessler, or a stats account) cites win chances. A depth add or a drop of a nobody gets a post only if there's a joke in it; a big bid, a big name dropped, or a pickup that fills a hole is worth talking about. Keep each post short, one or two sentences, and react to these events only; use the scores and game statuses as context. Mind the clock and each player's status: a player whose game is over has played (don't say he's due, or still to come), and one yet to play hasn't. event is the number of the event a post reacts to; minutes_ago is how long ago it was posted, from 0 to 14.
 
 Events since the last update:
 ${events.map((e, i) => `${i + 1}. ${e}`).join("\n")}
