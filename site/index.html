@@ -641,7 +641,7 @@ for (const s of D.seasons) {
       for (const e of s.lineups[wk][id]) player(e.n, e.pos, e.pro).weeks.push({ y: s.year, wk: +wk, t, mgr: mgrAt(t, mp), slot: e.slot, pts: e.pts, proj: e.proj, fin: gm.win !== null, start: e.slot !== "BN" && e.slot !== "IR" });
     }
   }
-  for (const d of s.draft) { const t = s.byId[d.tm]; player(d.n, d.pos, d.pro).ev.push({ y: s.year, wk: 0, o: d.pk, type: "draft", t, mgr: mgrAt(t, 1), lab: "Draft", txt: `Drafted in round ${d.rd}, pick ${d.pk}${d.keeper ? " (keeper)" : ""}` }); }
+  for (const d of s.draft) { const t = s.byId[d.tm]; player(d.n, d.pos, d.pro).ev.push({ y: s.year, wk: 0, o: d.pk, rd: d.rd, rp: d.rp, type: "draft", t, mgr: mgrAt(t, 1), lab: "Draft", txt: `Drafted in round ${d.rd}, pick ${d.pk}${d.keeper ? " (keeper)" : ""}` }); }
   for (const m of s.moves) {
     const t = s.byId[m.tm];
     for (const x of m.drop) { const [n, pos] = x.split("|"); player(n, pos).ev.push({ y: s.year, wk: m.wk, o: m.date, type: "drop", t, mgr: mgrAt(t, m.wk), lab: `Wk ${m.wk}`, txt: "Dropped" }); }
@@ -1574,7 +1574,8 @@ function wikiHtml(p, best) {
   const refs = ALL_NEWS.filter((a) => a.type !== "live" && a.type !== "profile" && JSON.stringify([a.title, a.dek, a.body]).includes(p.n)).sort((a, b) => b.year - a.year || (b.wk || 0) - (a.wk || 0));
   const news = refs.length ? `<h3 class="wikisub">In the News</h3><ol class="wikirefs">${refs.slice(0, 15).map((a) => `<li><button class="mlink" data-go="news-${a.id}">“${esc(a.title)}”</button> <span class="muted">· ${newsWhen(a)}</span></li>`).join("")}</ol>${refs.length > 15 ? `<p class="note">And ${refs.length - 15} more.</p>` : ""}` : "";
   // Infobox
-  const drafted = p.ev.filter((e) => e.type === "draft").map((e) => { const m = e.txt.match(/round (\d+), pick (\d+)/); return `${e.y}: ${m ? `Rd ${m[1]}, pick ${m[2]}` : "drafted"} · ${esc(nameAt(e.t, 1))}`; });
+  // Fantasy shorthand: 6.09 is round 6, 9th pick of the round; the full pick shows on hover
+  const drafted = p.ev.filter((e) => e.type === "draft").map((e) => `${e.y}: <span title="Round ${e.rd}, pick ${e.rp} (${ordinal(e.o)} overall)">${e.rd}.${String(e.rp).padStart(2, "0")}</span> · ${esc(nameAt(e.t, 1))}`);
   const row = (k, v) => (v ? `<tr><th>${k}</th><td>${v}</td></tr>` : "");
   const info = `<aside class="infobox box"><div class="ibhead">${esc(p.n)}</div><div class="ibsub">${posTag(p.pos)} ${nfl ? esc(nfl) : esc(p.pro)}</div><table>
     ${row("BFL seasons", yrs(p.years))}
