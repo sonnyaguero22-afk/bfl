@@ -728,8 +728,8 @@ document.addEventListener("click", (e) => { const b = e.target.closest("[data-go
 const SECTIONS = {
   news: [["news", "News"], ["rankings", "Power Rankings"], ["social", "Social"]],
   managers: [["managers", "Managers"], ["ratings", "Laboon"], ["h2h", "Head-to-Head"], ["map", "Map"]],
-  players: [["players", "Players"], ["overrated", "Overrated"], ["transactions", "Transactions"]],
-  trophies: [["trophies", "Buckaroo Bowls"], ["awards", "Awards"], ["records", "Record Book"]],
+  players: [["players", "Players"], ["awards", "Awards"], ["overrated", "Overrated"], ["transactions", "Transactions"]],
+  trophies: [["trophies", "Buckaroo Bowls"], ["records", "Record Book"]],
 };
 const groupOf = (v) => (v === "mgr" ? "managers" : v === "player" ? "players" : v === "article" ? "news" : Object.keys(SECTIONS).find((g) => SECTIONS[g].some(([k]) => k === v)) || v);
 // The section tabs for the page's group, shown above its content
