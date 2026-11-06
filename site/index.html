@@ -1481,7 +1481,7 @@ const ringsOf = (p) => {
     for (const q of PL) if (q.weeks.some((w) => w.y === s.year && w.t.id === c.id && sps.includes(w.wk))) (RINGS[q.k] = RINGS[q.k] || []).push({ y: s.year, n: s.year - D.firstYear + 1, mgr: c.mgr, team: c.name }); } }
   return RINGS[p.k] || [];
 };
-const pWho = (p) => `${posTag(p.pos)}${pn(p.n)}${ringsOf(p).length ? ` <span title="Buckaroo Bowl ${ringsOf(p).map((r) => roman(r.n)).join(", ")} champion">${"🏆".repeat(ringsOf(p).length)}</span>` : ""}`;
+const pWho = (p) => `${posTag(p.pos)}${pn(p.n)}`;
 const firsts = (ks) => ks.map((k) => esc(D.managers[k].first)).join(", ");
 function topMgr(p, f) { const c = {}; for (const w of p.weeks.filter(f)) c[w.mgr] = (c[w.mgr] || 0) + 1; const k = Object.keys(c).sort((a, b) => c[b] - c[a])[0]; return k ? D.managers[k].first : "—"; }
 const PSORT = { ptsS: ["Points as a Starter", (p) => p.ptsS], ptsB: ["Points on the Bench", (p) => p.ptsB], wks: ["Weeks Rostered", (p) => p.wks], mgrs: ["Managers", (p) => p.mgrs.length], moves: ["Times Moved", (p) => p.adds + p.drops + p.trades], name: ["Name", null] };
