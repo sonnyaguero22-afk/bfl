@@ -439,6 +439,21 @@ table.compact .team { min-width: 0; }
 .bchamp { display: grid; gap: 8px; background: var(--surface); border: 1px solid var(--gold); border-radius: 12px; padding: 12px; }
 .bchamp .k { color: var(--gold); }
 .cfav { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 8px; align-items: center; font-size: 13.5px; }
+.stretch .opps { display: flex; flex-wrap: wrap; gap: 6px; }
+.stretch .oppc { display: inline-flex; flex-direction: column; align-items: center; gap: 1px; }
+.stretch .oppc small { font-size: 10px; }
+.stretch .rootc { font-size: 12.5px; line-height: 1.4; min-width: 200px; }
+.stretch .tm { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+.stretch .tm small { display: block; font-size: 11.5px; }
+@media (max-width: 640px) {
+  .stretch thead { display: none; }
+  .stretch tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 10px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  .stretch td { padding: 0; border: 0; }
+  .stretch .opps-td, .stretch .rootc { grid-column: 1 / -1; } .stretch td.n { order: 1; } .stretch .opps-td { order: 2; } .stretch .rootc { order: 3; }
+  .stretch .rootc { min-width: 0; }
+  .stretch .rootc::before { content: "Root for: "; color: var(--muted); font-weight: 600; }
+  .stretch .tm { white-space: normal; }
+}
 .huntcol { display: grid; gap: 8px; }
 .hunt { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
 .hunt small { display: block; font-size: 11.5px; line-height: 1.35; }
@@ -1789,6 +1804,25 @@ function pictureHtml(s) {
     <div class="huntcol"><div class="k">In the Hunt</div>${hunt || `<small class="muted">Everyone's in.</small>`}</div></div>
     <p class="note">Seeds use the league's tiebreakers (head-to-head, then points for). The percentage beside a team in a game is its projected chance to win that game. "With a win" and "with a loss" are playoff odds depending on next week's result. Clinches, eliminations and scenarios are exact and show as soon as one is mathematically possible; until the last three weeks they never rely on a tiebreaker.</p></section>`;
 }
+// Down the Stretch: each team's remaining schedule, how hard it is, and next week's games to root for
+function stretchHtml(s) {
+  if (s.done || s.curWeek > s.regWeeks) return "";
+  const P = s.odds && s.odds.picture;
+  if (!P || !P.sos || !P.rootFor) return "";
+  const nm = (id) => esc(s.byId[id].name);
+  const order = [...s.teams].sort((a, b) => (P.sos[b.id].avg ?? 0) - (P.sos[a.id].avg ?? 0)), n = s.teams.length;
+  const rk = Object.fromEntries(order.map((t, i) => [t.id, i + 1]));
+  const ord = (k) => k + (["th", "st", "nd", "rd"][k] || "th");
+  const hard = (id) => (rk[id] === 1 ? "Hardest" : rk[id] === n ? "Easiest" : rk[id] <= n / 2 ? `${ord(rk[id])} hardest` : `${ord(n + 1 - rk[id])} easiest`);
+  const rows = s.standings.map((t) => {
+    const x = P.sos[t.id], st = (P.status || {})[t.id];
+    const opp = x.opp.map((o) => `<span class="oppc" title="Week ${o.wk}: ${nm(o.id)}">${badge(s.byId[o.id], 1)}<small class="muted num">${o.wk}</small></span>`).join("");
+    const root = st ? `<span class="muted">${st === "clinched" ? "Clinched" : "Eliminated"}</span>` : (P.rootFor[t.id] || []).slice(0, 2).map((r) => `<div>${nm(r.winner)} over ${nm(r.loser)} <span class="w num">+${r.gain % 1 ? r.gain.toFixed(1) : r.gain}</span></div>`).join("") || `<span class="muted">Nothing moves the needle</span>`;
+    return `<tr><td><div class="tm">${badge(t, 1)}<span><b>${esc(t.name)}</b><small class="muted">${t.w}-${t.l}${t.t ? "-" + t.t : ""} · Playoffs ${pct1(s.odds.t[t.id].p[s.odds.t[t.id].p.length - 1])}</small></span></div></td><td class="opps-td"><div class="opps">${opp}</div></td><td class="n"><b class="num">${x.avg == null ? "—" : Math.round(x.avg)}</b><small class="muted" style="display:block">${hard(t.id)}</small></td><td class="rootc">${root}</td></tr>`;
+  }).join("");
+  return `<section style="margin:0 0 28px"><h3>Down the Stretch</h3><div class="box scroll"><table class="compact stretch"><thead><tr><th>Team</th><th>Rest of Schedule</th><th class="n">Opp. Strength</th><th>Root For in Week ${P.week + 1}</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <p class="note">Opponent strength is the average points per game Luffy expects from a team's remaining opponents (recent weeks count more, and next lineups are folded in), so higher is harder; the small number under each opponent is the week. "Root for" lists the other games next week that move a team's playoff odds the most, with the gain in percentage points if they go that way.</p></section>`;
+}
 // A season's Playoffs tab appears once its playoffs have started
 const hasPlayoffs = (s) => s.matchups.some((m) => m.tier === "WINNERS_BRACKET");
 // The playoffs as played (or being played): the winners' bracket to the 🏆 Buckaroo Bowl, the consolation
@@ -1830,7 +1864,7 @@ function oddsView() {
   const y = ys.includes(+state.oddsYear) ? +state.oddsYear : ys[0];
   state.oddsYear = y;
   return `<div class="vhead"><div><div class="eyebrow">Buckaroo Bowl ${roman(y - D.firstYear + 1)}</div><h2>Odds</h2><p>${S[y].done ? `How the ${y} race unfolded.` : `The ${y} race, updated after every finished week.`}</p></div>
-    <div class="weekbar" style="margin:0">${ys.map((yy) => `<button data-oddsyear="${yy}" aria-current="${yy === y}">${yy}</button>`).join("")}</div></div>${pictureHtml(S[y])}${oddsTab(S[y])}`;
+    <div class="weekbar" style="margin:0">${ys.map((yy) => `<button data-oddsyear="${yy}" aria-current="${yy === y}">${yy}</button>`).join("")}</div></div>${pictureHtml(S[y])}${stretchHtml(S[y])}${oddsTab(S[y])}`;
 }
 
 // ---------- Render ----------

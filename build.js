@@ -364,6 +364,7 @@ for (const s of seasons) {
   delete s.played; delete s.sp2mp;
   const P = s.odds && s.odds.picture;
   if (P) console.log(`::notice::${s.year} playoff picture after week ${P.week}: ${s.teams.map((t) => `${t.name} ${Math.round(P.teams[t.id].ifWin.p)}% win / ${Math.round(P.teams[t.id].ifLose.p)}% loss${P.status && P.status[t.id] ? ` (${P.status[t.id]})` : ""}${P.seed && P.seed[t.id] ? ` (${P.seed[t.id]})` : ""}${P.scenarios && P.scenarios[t.id] && P.scenarios[t.id].length ? ` [${P.scenarios[t.id].length} scenario(s)]` : ""}`).join("; ")}`);
+  if (P && P.rootFor) console.log(`::notice::${s.year} root for in week ${P.week + 1}: ${s.teams.map((t) => `${t.name} (opponents ${Math.round(P.sos[t.id].avg)}): ${P.rootFor[t.id].slice(0, 2).map((r) => `${s.teams.find((x) => x.id === r.winner).name} over ${s.teams.find((x) => x.id === r.loser).name} +${r.gain}`).join(", ") || "none"}`).join("; ")}`);
   // Odds as they stood when each week ended, frozen (history/odds_<year>.json, saved by GitHub).
   // The newest week's odds keep changing with lineups and trades; this keeps a "before" to compare with.
   if (!s.done && s.odds) {

@@ -228,6 +228,10 @@ function seasonOdds(s) {
     // What's at stake next week: each team's odds in the seasons where it wins or loses that game
     const stake = Object.fromEntries(ids.map((id) => [id, { w: { n: 0, p: 0, c: 0 }, l: { n: 0, p: 0, c: 0 } }]));
     let nextWon = {};
+    // Who to root for: each team's playoff odds by the result of every other game next week
+    const nextGames = rest.filter((g) => g[2] === N + 1);
+    const root = Object.fromEntries(ids.map((id) => [id, nextGames.map(() => [{ n: 0, p: 0 }, { n: 0, p: 0 }])]));
+    let nextRes = [];
     const playRound = (mp, a, b) => {
       // A round that already happened keeps its real winner
       if (s.done && mp <= N) { const m = s.matchups.find((x) => x.wk === mp && [x.h, x.a].includes(a) && [x.h, x.a].includes(b)); if (m && m.win) return m.win; }
@@ -241,12 +245,12 @@ function seasonOdds(s) {
       else {
         const rec = Object.fromEntries(ids.map((id) => [id, { w: base[id].w, pf: base[id].pf }]));
         const H = Object.fromEntries(ids.map((id) => [id, { ...h2h[id] }]));
-        nextWon = {};
+        nextWon = {}; nextRes = [];
         for (const [h, a, wk] of rest) {
           const sh = score(h, wk), sa = score(a, wk);
           rec[h].pf += sh; rec[a].pf += sa;
           if (sh >= sa) { rec[h].w++; beat(H, h, a, 1); } else { rec[a].w++; beat(H, a, h, 1); }
-          if (wk === N + 1) { nextWon[h] = sh >= sa; nextWon[a] = sh < sa; }
+          if (wk === N + 1) { nextWon[h] = sh >= sa; nextWon[a] = sh < sa; nextRes.push(sh >= sa ? 1 : 0); }
         }
         seeds = rank(ids, rec, H);
       }
@@ -270,12 +274,26 @@ function seasonOdds(s) {
       else if (po === 2) champ = playRound(r1mp, field[0], field[1]);
       else champ = field[0];
       cnt[champ].c++;
+      nextRes.forEach((hw, j) => { for (const id of ids) { const x = root[id][j][hw]; x.n++; if (field.includes(id)) x.p++; } });
       for (const id in nextWon) { const x = stake[id][nextWon[id] ? "w" : "l"]; x.n++; if (field.includes(+id)) x.p++; if (champ === +id) x.c++; }
     }
     // The playoff picture, for the newest week of a season in progress
     if (!s.done && N === lastCheck && N < s.regWeeks) {
       const pc = (x, k) => (x.n ? r1((x[k] / x.n) * 100) : null);
       picture = { week: N, teams: Object.fromEntries(ids.map((id) => [id, { ifWin: { p: pc(stake[id].w, "p"), c: pc(stake[id].w, "c") }, ifLose: { p: pc(stake[id].l, "p"), c: pc(stake[id].l, "c") } }])) };
+      // Root for: the other games next week that move a team's playoff odds at least a point, biggest first
+      picture.rootFor = Object.fromEntries(ids.map((id) => [id, nextGames.map(([h, a], j) => {
+        if (h === id || a === id) return null;
+        const [aw, hw] = root[id][j];
+        if (!aw.n || !hw.n) return null;
+        const d = ((hw.p / hw.n) - (aw.p / aw.n)) * 100;
+        return { winner: d >= 0 ? h : a, loser: d >= 0 ? a : h, gain: r1(Math.abs(d)) };
+      }).filter((x) => x && x.gain >= 1).sort((x, y) => y.gain - x.gain)]));
+      // Strength of the rest of the schedule: opponents' long-run strength (the later-weeks blend), averaged
+      picture.sos = Object.fromEntries(ids.map((id) => {
+        const opp = rest.filter((g) => g[0] === id || g[1] === id).map(([h, a, wk]) => ({ wk, id: h === id ? a : h }));
+        return [id, { opp, avg: opp.length ? r1(opp.reduce((x, o) => x + far[o.id], 0) / opp.length) : null }];
+      }));
       Object.assign(picture, scenarios(ids, base, h2h, rest, N, po, (id) => far[id]));
     }
     for (const id of ids) { out[id].c.push(r1((cnt[id].c / SIMS) * 100)); out[id].p.push(r1((cnt[id].p / SIMS) * 100)); out[id].l.push(r1((cnt[id].l / SIMS) * 100)); }
