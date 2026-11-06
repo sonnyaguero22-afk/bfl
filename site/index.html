@@ -1534,6 +1534,8 @@ function playerRows() {
 // ---------- Player pages read like a wiki article: an infobox on the side, his BFL story in the middle ----------
 const NFL_TEAMS = { ARI: "Arizona Cardinals", ATL: "Atlanta Falcons", BAL: "Baltimore Ravens", BUF: "Buffalo Bills", CAR: "Carolina Panthers", CHI: "Chicago Bears", CIN: "Cincinnati Bengals", CLE: "Cleveland Browns", DAL: "Dallas Cowboys", DEN: "Denver Broncos", DET: "Detroit Lions", GB: "Green Bay Packers", HOU: "Houston Texans", IND: "Indianapolis Colts", JAX: "Jacksonville Jaguars", KC: "Kansas City Chiefs", LV: "Las Vegas Raiders", LAC: "Los Angeles Chargers", LAR: "Los Angeles Rams", MIA: "Miami Dolphins", MIN: "Minnesota Vikings", NE: "New England Patriots", NO: "New Orleans Saints", NYG: "New York Giants", NYJ: "New York Jets", PHI: "Philadelphia Eagles", PIT: "Pittsburgh Steelers", SF: "San Francisco 49ers", SEA: "Seattle Seahawks", TB: "Tampa Bay Buccaneers", TEN: "Tennessee Titans", WSH: "Washington Commanders", WAS: "Washington Commanders" };
 const POS_NAME = { QB: "quarterback", RB: "running back", WR: "wide receiver", TE: "tight end", K: "kicker", "D/ST": "defense" };
+// Years as ranges: 2023, 2024, 2025 → 2023–2025; gaps stay apart (2023, 2025)
+const yrs = (ys) => { const out = []; for (const y of [...new Set(ys)].sort((a, b) => a - b)) { const r = out[out.length - 1]; if (r && y === r[1] + 1) r[1] = y; else out.push([y, y]); } return out.map(([a, b]) => (a === b ? `${a}` : `${a}–${b}`)).join(", "); };
 const andList = (a) => (a.length < 2 ? a.join("") : `${a.slice(0, -1).join(", ")} and ${a[a.length - 1]}`);
 function wikiHtml(p, best) {
   const nfl = NFL_TEAMS[p.pro], rings = ringsOf(p), aw = awardsOf(p);
@@ -1542,12 +1544,12 @@ function wikiHtml(p, best) {
   const role = p.pos === "D/ST" ? `the ${nfl ? esc(nfl) : esc(p.pro)} defense` : `${/^[aeiou]/.test(POS_NAME[p.pos] || "") ? "an" : "a"} ${POS_NAME[p.pos] || esc(p.pos)}${nfl ? ` for the ${esc(nfl)}` : ""}`;
   const grouped = Object.values(aw.reduce((o, a) => { (o[a.k] = o[a.k] || { ...a, ys: [] }).ys.push(a.y); return o; }, {}));
   const SHAME = { ace: "the league's most costly donut", buggy: "the season's biggest bust" };
-  const won = grouped.filter((a) => !SHAME[a.k]).map((a) => `the ${a.nm} award (${a.ys.join(", ")})`);
+  const won = grouped.filter((a) => !SHAME[a.k]).map((a) => `the ${a.nm} award (${yrs(a.ys)})`);
   const honors = [...rings.map((r) => `won Buckaroo Bowl ${roman(r.n)} with the ${esc(r.team)}`), ...(won.length ? [`took home ${andList(won)}`] : [])];
   const it = p.pos === "D/ST", He = it ? "It" : "He";
   const shame = grouped.filter((a) => SHAME[a.k]);
-  let lead = `<p><b>${esc(p.n)}</b> is ${role} ${it ? "that" : "who"} has been on a Buckaroo Football League roster in ${andList(p.years.map(String))}. ${p.mgrs.length ? `${He} has played for ${andList(p.mgrs.map(mgrName))}${p.starts ? `, scoring ${f1(p.ptsS)} points in ${p.starts} start${p.starts === 1 ? "" : "s"}` : ""}.` : ""}</p>`;
-  if (honors.length || shame.length) lead += `<p>${honors.length ? `${He} ${andList(honors)}.` : ""}${shame.map((a) => ` ${He} also owns ${a.e} ${a.nm}, ${SHAME[a.k]}, for ${andList(a.ys.map(String))}.`).join("")}</p>`;
+  let lead = `<p><b>${esc(p.n)}</b> is ${role} ${it ? "that" : "who"} has been on a Buckaroo Football League roster in ${yrs(p.years)}. ${p.mgrs.length ? `${He} has played for ${andList(p.mgrs.map(mgrName))}${p.starts ? `, scoring ${f1(p.ptsS)} points in ${p.starts} start${p.starts === 1 ? "" : "s"}` : ""}.` : ""}</p>`;
+  if (honors.length || shame.length) lead += `<p>${honors.length ? `${He} ${andList(honors)}.` : ""}${shame.map((a) => ` ${He} also owns ${a.e} ${a.nm}, ${SHAME[a.k]}, for ${yrs(a.ys)}.`).join("")}</p>`;
   // BFL career, one section per season
   const career = [...p.years].reverse().map((y) => {
     const s = S[y], bits = [], ev = p.ev.filter((e) => e.y === y), ws = p.weeks.filter((w) => w.y === y), st = ws.filter((w) => w.start);
@@ -1575,10 +1577,10 @@ function wikiHtml(p, best) {
   const drafted = p.ev.filter((e) => e.type === "draft").map((e) => { const m = e.txt.match(/round (\d+), pick (\d+)/); return `${e.y}: ${m ? `Rd ${m[1]}, pick ${m[2]}` : "drafted"} · ${esc(nameAt(e.t, 1))}`; });
   const row = (k, v) => (v ? `<tr><th>${k}</th><td>${v}</td></tr>` : "");
   const info = `<aside class="infobox box"><div class="ibhead">${esc(p.n)}</div><div class="ibsub">${posTag(p.pos)} ${nfl ? esc(nfl) : esc(p.pro)}</div><table>
-    ${row("BFL seasons", p.years.join(", "))}
+    ${row("BFL seasons", yrs(p.years))}
     ${row("Managers", p.mgrs.map((k) => `<span class="ibm">${mbadge(k, 1)} ${mgrName(k)}</span>`).join(""))}
     ${row("Drafted", drafted.join("<br>") || "Undrafted")}
-    ${rings.length || aw.length ? `<tr><th colspan="2" class="ibsec">Honors</th></tr><tr><td colspan="2">${rings.map((r) => `<div class="ibh gold">🏆 Buckaroo Bowl ${roman(r.n)} champion <span class="muted">(${esc(r.team)})</span></div>`).join("")}${grouped.map((a) => `<div class="ibh${SHAME[a.k] ? " l" : ""}">${a.e} ${a.nm} <span class="muted">${a.ys.join(", ")}</span></div>`).join("")}</td></tr>` : ""}
+    ${rings.length || aw.length ? `<tr><th colspan="2" class="ibsec">Honors</th></tr><tr><td colspan="2">${rings.map((r) => `<div class="ibh gold">🏆 Buckaroo Bowl ${roman(r.n)} Champion <span class="muted">(${esc(r.team)})</span></div>`).join("")}${grouped.map((a) => `<div class="ibh${SHAME[a.k] ? " l" : ""}">${a.e} ${a.nm} <span class="muted">${yrs(a.ys)}</span></div>`).join("")}</td></tr>` : ""}
     <tr><th colspan="2" class="ibsec">BFL career</th></tr>
     ${row("Starts", p.starts)}
     ${row("Points as a starter", f1(p.ptsS))}
@@ -1598,7 +1600,7 @@ function playerView() {
   const timeline = p.ev.map((e) => `<tr><td class="num">${e.y}</td><td class="num muted">${e.lab}</td><td><span class="pill ${e.type === "add" ? "w" : e.type === "drop" ? "l" : e.type === "trade" ? "gold" : ""}">${icon[e.type]}</span></td><td>${teamCell(e.t)}</td><td>${esc(e.txt)}</td></tr>`).join("");
   const weeks = [...p.weeks].sort((a, b) => b.y - a.y || b.wk - a.wk);
   const best = [...p.weeks].filter((w) => w.start).sort((a, b) => b.pts - a.pts)[0];
-  return `<div class="vhead"><div><div class="eyebrow">${posTag(p.pos)}${esc(p.pro)} · in the league ${p.years.join(", ")}</div><h2>${esc(p.n)}</h2></div>
+  return `<div class="vhead"><div><div class="eyebrow">${posTag(p.pos)}${esc(p.pro)} · in the league ${yrs(p.years)}</div><h2>${esc(p.n)}</h2></div>
     <button class="pill" data-go="players" style="border:0;cursor:pointer">← All players</button></div>
   ${wikiHtml(p, best)}
   <h3 class="wikisub">Statistics</h3>
