@@ -995,21 +995,25 @@ const erf = (x) => { const t = 1 / (1 + 0.3275911 * Math.abs(x)); const y = 1 - 
 const Phi = (z) => 0.5 * (1 + erf(z / Math.SQRT2));
 // Ones to Watch: the players still to play whose game swings this matchup most, from the player sim
 function watchHtml(s, m) {
-  if (!m.live || !m.watch || !m.watch.length) return "";
+  // Finished games show the picks frozen at kickoff, graded against their lines
+  const saved = !m.live && (s.pregame || {})[`${m.wk}-${m.h}-${m.a}`];
+  if (saved) m = { ...m, watch: saved.watch, stacks: saved.stacks || [], watchLocked: true };
+  if ((!m.live && !saved) || !m.watch || !m.watch.length) return "";
+  const final = !m.live;
   const who = (id) => mgrName(mgrAt(s.byId[id], m.wk));
   const stack = (x) => (m.stacks || []).find((k) => k.id === x.id && (k.qb === x.n || k.rec === x.n));
   // Once the game is under way they stay the ones picked at kickoff; each shows how he's doing against his lines
-  const L = Object.assign({}, ...s.spans(m.wk).map((sp) => s.lineups[sp] || {}));
   const now = (x) => {
     if (!m.watchLocked) return "";
-    const p = (L[x.id] || []).find((q) => q.n === x.n);
+    const ps = s.spans(m.wk).map((sp) => ((s.lineups[sp] || {})[x.id] || []).find((q) => q.n === x.n)).filter(Boolean);
+    const p = ps.length ? { ...ps[ps.length - 1], pts: sum(ps, (q) => q.pts || 0), g: final ? "done" : ps[ps.length - 1].g, slot: ps.some((q) => q.slot !== "BN" && q.slot !== "IR") ? "ST" : "BN" } : null;
     if (!p || p.slot === "BN" || p.slot === "IR") return `<br><small class="wstat">${p ? "Benched" : "Off the Roster"}</small>`;
     const hurt = p.inj ? ` · <b class="inj">${injTag(p.inj)}</b>` : "";
     if (p.g === "pre") return `<br><small class="wstat">Yet to Play${hurt}</small>`;
     const hit = x.boomAt != null && p.pts >= x.boomAt, dud = p.g === "done" && x.bustAt != null && p.pts < x.bustAt;
     return `<br><small class="wstat${hit ? " hit" : dud ? " miss" : ""}"><b>${f1(p.pts)}</b> pts${p.g === "on" ? " · In Play" : p.g === "done" ? " · Final" : ""}${hit ? " · 🔥 Big Game" : dud ? " · 🗑️ Dud" : ""}${hurt}</small>`;
   };
-  return `<div class="watch"><div class="k" title="The players whose games swing this matchup most. The point lines are each player's top-20% and bottom-20% outcomes, from his projection, his position and his own history.">Ones to Watch <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500">· ${m.watchLocked ? "picked at kickoff · " : ""}big game = his top 20%, dud = his bottom 20%</span></div>${m.watch.map((x) => { const st = stack(x);
+  return `<div class="watch"><div class="k" title="The players whose games swing this matchup most. The point lines are each player's top-20% and bottom-20% outcomes, from his projection, his position and his own history.">Ones to Watch <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500">· ${final ? "picked at kickoff, graded · " : m.watchLocked ? "picked at kickoff · " : ""}big game = his top 20%, dud = his bottom 20%</span></div>${m.watch.map((x) => { const st = stack(x);
     return `<div class="wrow">${badge(s.byId[x.id], 1)}<span><b class="wname">${pn(x.n)}</b> <small class="muted">${esc(x.pos)} · ${esc(x.pro)}${x.proj != null ? ` · proj ${f1(x.proj)}` : ""}</small><br><small>${x.boomAt != null ? `If he scores <b>${x.boomAt}+</b>, ${esc(who(x.id))} wins <b>${x.boom}%</b> · under <b>${x.bustAt}</b>, <b>${x.bust}%</b>` : `If he booms, ${esc(who(x.id))} wins <b>${x.boom}%</b> · if he busts, <b>${x.bust}%</b>`}${st ? ` · <span class="pill">Stack: ${esc(st.qb === x.n ? st.rec : st.qb)}</span>` : ""}</small>${now(x)}</span></div>`; }).join("")}</div>`;
 }
 // Chance the home team wins (0-1). Live games use ESPN's live projected finals, with less

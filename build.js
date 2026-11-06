@@ -461,6 +461,13 @@ for (const s of seasons) {
   }
 }
 
+// The site's look back at past Ones to Watch: the picks frozen at kickoff, for every season that has them
+for (const s of seasons) {
+  const f = path.join(HISTORY, `pregame_${s.year}.json`);
+  if (!fs.existsSync(f)) continue;
+  s.pregame = Object.fromEntries(Object.entries(JSON.parse(fs.readFileSync(f, "utf8"))).filter(([, v]) => v.watch && v.watch.length).map(([k, v]) => [k, { p: v.p, watch: v.watch, stacks: v.stacks || [] }]));
+}
+
 // In-game win chance history: GitHub saves one point per update while a week is under way
 // (history/live_<year>.json, kept in the repo). Local builds only read it.
 if (process.env.GITHUB_ACTIONS === "true") for (const { matchups, wp, histFile } of pendingHistory) {
