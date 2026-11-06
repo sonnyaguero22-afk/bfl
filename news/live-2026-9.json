@@ -157,12 +157,53 @@
    "team": "",
    "about": "move",
    "at": "2026-11-05T00:05:37.391Z"
+  },
+  {
+   "author": "Jordan's Section",
+   "handle": "@GVBandCamp",
+   "text": "Bhayshul Tuten punches it in for Counting or not Counting GV and JMoney is up on Sonny before most of his lineup has even kicked off. I'll take it.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-06T01:22:33.767Z"
+  },
+  {
+   "author": "Habibster Nation",
+   "handle": "@HabibsterNation",
+   "text": "Jaguars D/ST just handed Habib ten points before Philly has even touched the board. First time all season the luck has gone our way, don't jinx it.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-06T01:26:33.767Z"
+  },
+  {
+   "author": "Sal Benedetto",
+   "handle": "@SalBetsBig",
+   "text": "Jaguars D/ST for Habibsters is exactly what I said, LOCK. Alan is down ten and hasn't played a snap, and I'm not taking questions.",
+   "heat": 5,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-06T01:28:33.767Z"
+  },
+  {
+   "author": "Counting or not Counting GV",
+   "handle": "@CountingornotCountingGV",
+   "text": "Touchdown, Bhayshul Tuten! He finds the end zone and we jump out to an early lead on The Horse is Hea.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Counting or not Counting GV",
+   "about": "game",
+   "at": "2026-11-06T01:30:33.767Z"
   }
  ],
  "batches": [
   "2026-11-03T15:57:48.657Z",
   "2026-11-04T17:57:30.623Z",
   "2026-11-04T23:35:02.183Z",
-  "2026-11-05T03:43:08.776Z"
+  "2026-11-05T03:43:08.776Z",
+  "2026-11-06T01:31:33.767Z"
  ]
 }
