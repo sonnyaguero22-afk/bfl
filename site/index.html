@@ -719,7 +719,7 @@ document.addEventListener("click", (e) => { const b = e.target.closest("[data-go
 // Top-tab groups and their sections; a page outside any group (a season) lights no top tab
 const SECTIONS = {
   news: [["news", "News"], ["rankings", "Power Rankings"], ["social", "Social"]],
-  managers: [["managers", "Managers"], ["ratings", "Ratings"], ["h2h", "Head-to-Head"], ["map", "Map"]],
+  managers: [["managers", "Managers"], ["ratings", "Laboon"], ["h2h", "Head-to-Head"], ["map", "Map"]],
   players: [["players", "Players"], ["overrated", "Overrated"], ["transactions", "Transactions"]],
   trophies: [["trophies", "Buckaroo Bowls"], ["records", "Record Book"]],
 };
@@ -1220,7 +1220,7 @@ function mgrView() {
     ${opps.map((x) => `<tr><td><button class="mlink team" data-go="mgr-${x.o}">${mbadge(x.o, 1)}<b>${mgrName(x.o)}</b></button></td><td class="n ${x.w > x.l ? "w" : x.w < x.l ? "l" : ""}">${x.n ? `${x.w}-${x.l}${x.t ? "-" + x.t : ""}` : "—"}</td><td class="n">${x.n ? f2(x.pf) : ""}</td><td class="n">${x.n ? f2(x.pa) : ""}</td></tr>`).join("")}</tbody></table></div><p class="note">Includes playoff games.</p></section>`;
 }
 
-// ---------- Manager ratings (Elo): every finished game since 2023, in order ----------
+// ---------- Laboon, the manager ratings (Elo): every finished game since 2023, in order ----------
 // Backtested on 2023-25 (136 games): wins only beat margin-weighted, K 24 beat 8 to 48, and pulling
 // ratings halfway back to average each season beat keeping them. It picks 58% of winners (Brier 0.246),
 // so it measures who has been best over time, not who wins next week; Luffy does that.
@@ -1252,7 +1252,7 @@ function eloChart() {
   const all = Object.values(ELO.hist).flat().map((x) => x.r);
   const lo = Math.floor((Math.min(1500, ...all) - 10) / 50) * 50, hi = Math.ceil((Math.max(1500, ...all) + 10) / 50) * 50;
   const x = (i) => L + (n <= 1 ? 0 : (i * (W - L - R)) / (n - 1)), y = (v) => T + ((hi - v) * (H - T - B)) / (hi - lo);
-  let svg = `<svg viewBox="0 0 ${W} ${H}" class="oddschart" role="img" aria-label="Manager ratings over time">`;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" class="oddschart" role="img" aria-label="Laboon ratings over time">`;
   for (let v = lo; v <= hi; v += 50) svg += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" class="grid"${v === 1500 ? ' style="stroke-dasharray:4 4"' : ""}/><text x="${L - 8}" y="${y(v) + 4}" class="ax" text-anchor="end">${v}</text>`;
   // Season boundaries
   ELO.steps.forEach((st, i) => { if (i === 0 || ELO.steps[i - 1].y !== st.y) svg += `${i ? `<line x1="${x(i) - 0.5}" x2="${x(i) - 0.5}" y1="${T}" y2="${H - B}" class="grid"/>` : ""}<text x="${x(i) + 4}" y="${H - 10}" class="ax">${st.y}</text>`; });
@@ -1280,7 +1280,7 @@ function ratingsView() {
   // Biggest single-game swings: upsets the rating didn't see coming
   const chance = (p) => 1 / (1 + 10 ** ((p.oppR - p.pre) / 400));
   const ups = Object.entries(ELO.hist).flatMap(([k, hs]) => hs.map((p) => ({ k, ...p }))).filter((p) => p.won === 1).sort((a, b) => chance(a) - chance(b)).slice(0, 5);
-  return `<div class="vhead"><div><div class="eyebrow">All-Time</div><h2>Ratings</h2><p>A running rating for every manager since 2023 (Elo). Beat a higher-rated manager and you gain more; lose to a lower-rated one and you drop more. Click a manager to highlight the line.</p></div></div>
+  return `<div class="vhead"><div><div class="eyebrow">All-Time Ratings</div><h2>Laboon</h2><p>A running rating for every manager since 2023 (an Elo rating, named for the whale who never forgets). Beat a higher-rated manager and you gain more; lose to a lower-rated one and you drop more. Click a manager to highlight the line.</p></div></div>
   <div class="box" style="padding:10px 8px 4px">${eloChart()}</div>
   <section style="margin-top:16px"><div class="box scroll"><table class="compact elotable"><thead><tr><th class="n">#</th><th>Manager</th><th class="n">Rating</th><th class="n">Last Game</th><th class="n wide">Peak</th><th class="n wide">Low</th><th class="n wide">Games</th></tr></thead><tbody>${body}</tbody></table></div></section>
   <section><h3>Biggest Upsets</h3><div class="box rec"><ol class="swing">${ups.map((p) => `<li><span>${mbadge(p.k, 1)} <b>${mgrName(p.k)}</b> beat ${mgrName(p.opp)} <span class="muted">· ${p.y} wk ${p.wk}${ELO.steps[p.i].po ? " · playoffs" : ""}</span><small class="ctx sub">${f1(p.pts)}–${f1(p.op)} with a ${Math.round(100 * chance(p))}% chance by rating</small></span><span class="num w">+${Math.round(p.d)}</span></li>`).join("")}</ol></div>
