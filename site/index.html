@@ -1411,17 +1411,17 @@ const MGR_AWARDS = [
   ["vegapunk", "🧪", "Vegapunk", "Best Draft", "Most points as a starter from the players he drafted, while they were still his"],
   ["wapol", "🍽️", "Wapol", "Waiver King", "Most points as a starter from players he picked up, after the pickup; he'll eat anything"],
   ["doflamingo", "🦩", "Doflamingo", "Trade Shark", "Biggest points edge from trades: what he got scored for him minus what he gave up scored for them, from the trade on"],
-  ["blackbeard", "🏴‍☠️", "Blackbeard", "Luckiest", "Most regular-season wins while scoring below that week's median"],
-  ["bonclay", "🦢", "Bon Clay", "Unluckiest", "Most regular-season losses while scoring above that week's median"],
-  ["bellamy", "🙃", "Bellamy", "Lineup Blunders", "Most losses where one of his benched players outscored the margin"],
+  ["blackbeard", "🏴‍☠️", "Blackbeard", "Luckiest", "Most regular-season wins while scoring below that week's median (a tie goes to whoever was further below)"],
+  ["bonclay", "🦢", "Bon Clay", "Unluckiest", "Most regular-season losses while scoring above that week's median (a tie goes to whoever was further above)"],
+  ["bellamy", "🙃", "Bellamy", "Lineup Blunders", "Most losses where one of his benched players outscored the margin (a tie goes to whoever left more on the bench)"],
   ["marco", "🔥", "Marco", "Biggest Laboon Climber", "The biggest rise in Laboon rating over the season"],
 ];
 const MAW = {};
 function seasonMgrAwards(s) {
   if (MAW[s.year]) return MAW[s.year];
   const y = s.year, out = {}, add = (o, k, v) => { if (k && k !== "nomanager") o[k] = (o[k] || 0) + v; };
-  // Ties share the award
-  const top = (key, o, stat, min = 0) => { const k = Object.keys(o).sort((a, b) => o[b] - o[a])[0]; if (k && o[k] > min) out[key] = { ks: Object.keys(o).filter((x) => Math.abs(o[x] - o[k]) < 1e-9), stat: stat(o[k], k) }; };
+  // One winner each: ties on a count go to the bigger tiebreak total (tb)
+  const top = (key, o, stat, tb = {}) => { const k = Object.keys(o).sort((a, b) => o[b] - o[a] || (tb[b] || 0) - (tb[a] || 0))[0]; if (k && o[k] > 0) out[key] = { ks: [k], stat: stat(o[k], k) }; };
   const mpOf = (w) => s.sp2mp?.[w.wk] ?? w.wk;
   // Drafted, picked up and traded-for players: points as a starter for that team while they stayed
   const draft = {}, waiver = {}, trade = {};
@@ -1438,25 +1438,26 @@ function seasonMgrAwards(s) {
   top("wapol", waiver, (v) => `${f1(v)} pts from pickups`);
   if (s.trades.length) top("doflamingo", trade, (v) => `+${f1(v)} pts on his trades`);
   // Luck: wins below the week's median, losses above it (regular season)
-  const lucky = {}, unlucky = {}, blunder = {};
+  const lucky = {}, unlucky = {}, blunder = {}, luckBy = {}, unluckBy = {}, blunderBy = {};
   for (let wk = 1; wk <= s.regWeeks; wk++) {
     const ms = s.played.filter((m) => m.wk === wk && m.a); if (!ms.length) continue;
     const sc = ms.flatMap((m) => [m.hp, m.ap]).sort((a, b) => a - b), med = (sc[(sc.length - 1) >> 1] + sc[sc.length >> 1]) / 2;
     for (const m of ms) for (const [id, me, them] of [[m.h, m.hp, m.ap], [m.a, m.ap, m.hp]]) {
       const k = mgrAt(s.byId[id], wk);
-      if (m.win === id && me < med) add(lucky, k, 1);
-      if (m.win !== id && m.win !== 0 && me > med) add(unlucky, k, 1);
+      if (m.win === id && me < med) { add(lucky, k, 1); add(luckBy, k, med - me); }
+      if (m.win !== id && m.win !== 0 && me > med) { add(unlucky, k, 1); add(unluckBy, k, me - med); }
     }
   }
   // Blunders: losses (any week) where a benched player alone outscored the margin
   for (const m of s.played.filter((m) => m.a)) for (const [id, lost] of [[m.h, m.win === m.a], [m.a, m.win === m.h]]) {
     if (!lost) continue;
     const bench = s.spans(m.wk).flatMap((sp) => ((s.lineups[sp] || {})[id] || []).filter((q) => q.slot === "BN"));
-    if (bench.some((q) => q.pts > Math.abs(m.hp - m.ap))) add(blunder, mgrAt(s.byId[id], m.wk), 1);
+    const margin = Math.abs(m.hp - m.ap), best = Math.max(0, ...bench.map((q) => q.pts));
+    if (best > margin) { add(blunder, mgrAt(s.byId[id], m.wk), 1); add(blunderBy, mgrAt(s.byId[id], m.wk), best - margin); }
   }
-  top("blackbeard", lucky, (v) => `${v} win${v === 1 ? "" : "s"} with a below-median score`);
-  top("bonclay", unlucky, (v) => `${v} loss${v === 1 ? "" : "es"} with an above-median score`);
-  top("bellamy", blunder, (v) => `${v} loss${v === 1 ? "" : "es"} a benched player could have flipped`);
+  top("blackbeard", lucky, (v, k) => `${v} win${v === 1 ? "" : "s"} with a below-median score, ${f1(luckBy[k])} pts under in all`, luckBy);
+  top("bonclay", unlucky, (v, k) => `${v} loss${v === 1 ? "" : "es"} with an above-median score, ${f1(unluckBy[k])} pts over in all`, unluckBy);
+  top("bellamy", blunder, (v, k) => `${v} loss${v === 1 ? "" : "es"} a benched player could have flipped, by ${f1(blunderBy[k])} pts in all`, blunderBy);
   // Marco: Laboon change over the season
   const climb = {};
   for (const [k, hs] of Object.entries(ELO.hist)) { const h = hs.filter((x) => x.y === y); if (h.length) climb[k] = h[h.length - 1].r - h[0].pre; }
@@ -1469,7 +1470,7 @@ function awardsView() {
   const ys = D.seasons.filter((s) => s.done || s.played.length).map((s) => s.year).reverse();
   return `<div class="vhead"><div><div class="eyebrow">All-Time</div><h2>Awards</h2><p>Player and manager awards for every season, named for the Straw Hats and friends. Finished seasons are final; the current one shows who's leading so far.</p></div></div>
   ${ys.map((y) => { const s = S[y], a = seasonAwards(s), ma = seasonMgrAwards(s);
-    const mgrCards = MGR_AWARDS.filter(([k]) => ma[k]).map(([k, e, nm, cat, why]) => `<div class="box award${k === "bellamy" ? " shame" : ""}" title="${esc(why)}"><div class="k">${e} ${nm} <span class="muted">· ${cat}</span></div><div class="who">${ma[k].ks.map((m) => `${mbadge(m, 1)} <button class="mlink" data-go="mgr-${m}">${mgrName(m)}</button>`).join(" ")}</div><small>${ma[k].stat}${ma[k].ks.length > 1 ? " each (tied)" : ""}</small></div>`).join("");
+    const mgrCards = MGR_AWARDS.filter(([k]) => ma[k]).map(([k, e, nm, cat, why]) => `<div class="box award${k === "bellamy" ? " shame" : ""}" title="${esc(why)}"><div class="k">${e} ${nm} <span class="muted">· ${cat}</span></div><div class="who">${ma[k].ks.map((m) => `${mbadge(m, 1)} <button class="mlink" data-go="mgr-${m}">${mgrName(m)}</button>`).join(" ")}</div><small>${ma[k].stat}</small></div>`).join("");
     return `<section><h3>${y} ${s.done ? `<span class="muted" style="font-weight:500;font-size:14px">· Buckaroo Bowl ${roman(y - D.firstYear + 1)}</span>` : `<span class="pill live" style="vertical-align:middle">So far</span>`}</h3><h4 class="awsub">Players</h4><div class="awgrid">${AWARDS.filter(([k]) => a[k]).map(([k, e, nm, cat, why]) => { const x = a[k];
       return `<div class="box award${k === "ace" ? " shame" : k === "king" || k === "onepiece" ? " top" : ""}" title="${esc(why)}"><div class="k">${e} ${nm} <span class="muted">· ${cat}</span></div><div class="who">${posTag(x.p.pos)}${pn(x.p.n)}</div><small class="muted">${badge(x.t, 1)} ${esc(x.t.name)} · ${mgrName(x.t.mgr)}</small><small>${x.stat}</small></div>`; }).join("")}</div>${mgrCards ? `<h4 class="awsub">Managers</h4><div class="awgrid">${mgrCards}</div>` : ""}</section>`; }).join("")}
   <section><h3>How They're Decided</h3><div class="box rec"><ol class="swing">${[...AWARDS, ...MGR_AWARDS].map(([, e, nm, cat, why]) => `<li><span>${e} <b>${nm}</b> <span class="muted">· ${cat}</span><small class="ctx sub">${esc(why)}</small></span></li>`).join("")}</ol></div>
