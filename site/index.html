@@ -455,6 +455,14 @@ table.compact .team { min-width: 0; }
   .stretch .tm { white-space: normal; }
 }
 @media (max-width: 640px) { .elotable .wide { display: none; } .elotable .team b { white-space: nowrap; } }
+.awgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.award { display: grid; gap: 4px; padding: 12px 14px; min-width: 0; }
+@media (max-width: 520px) { .awgrid { grid-template-columns: 1fr 1fr; gap: 8px; } .award { padding: 10px; } .award .who { font-size: 14px; flex-wrap: wrap; } }
+.award .k { font-size: 12px; font-weight: 700; }
+.award .who { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+.award small { display: block; font-size: 12px; line-height: 1.35; }
+.award.top { border-color: var(--gold); }
+.award.shame .k { color: var(--loss); }
 .huntcol { display: grid; gap: 8px; }
 .hunt { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
 .hunt small { display: block; font-size: 11.5px; line-height: 1.35; }
@@ -704,7 +712,7 @@ function parseHash() {
   else if ((m = h.match(/^mgr-(\w+)$/)) && D.managers[m[1]]) { state.view = "mgr"; state.mgr = m[1]; }
   else if ((m = h.match(/^p-([a-z0-9-]+)$/)) && P[m[1]]) { state.view = "player"; state.pk = m[1]; }
   else if ((m = h.match(/^news-([a-z0-9-]+)$/)) && NEWS.some((a) => a.id === m[1])) { state.view = "article"; state.newsId = m[1]; }
-  else if (["home", "news", "rankings", "social", "trophies", "managers", "map", "players", "overrated", "transactions", "odds", "h2h", "ratings", "records"].includes(h)) state.view = h;
+  else if (["home", "news", "rankings", "social", "trophies", "managers", "map", "players", "overrated", "transactions", "odds", "h2h", "ratings", "awards", "records"].includes(h)) state.view = h;
   else state.view = "home"; // no or unknown hash: the home page
 }
 // Each page gets its own history entry so the browser's back button returns to it,
@@ -721,7 +729,7 @@ const SECTIONS = {
   news: [["news", "News"], ["rankings", "Power Rankings"], ["social", "Social"]],
   managers: [["managers", "Managers"], ["ratings", "Laboon"], ["h2h", "Head-to-Head"], ["map", "Map"]],
   players: [["players", "Players"], ["overrated", "Overrated"], ["transactions", "Transactions"]],
-  trophies: [["trophies", "Buckaroo Bowls"], ["records", "Record Book"]],
+  trophies: [["trophies", "Buckaroo Bowls"], ["awards", "Awards"], ["records", "Record Book"]],
 };
 const groupOf = (v) => (v === "mgr" ? "managers" : v === "player" ? "players" : v === "article" ? "news" : Object.keys(SECTIONS).find((g) => SECTIONS[g].some(([k]) => k === v)) || v);
 // The section tabs for the page's group, shown above its content
@@ -1316,6 +1324,76 @@ function streaks(year) {
   return out;
 }
 
+// ---------- Awards: One Piece-named player awards for every season (finished seasons final, the current one "so far") ----------
+const AWARDS = [
+  ["king", "👑", "Pirate King", "Season MVP", "Most points as a starter, any position, playoffs included"],
+  ["onepiece", "💎", "The One Piece", "Buckaroo Bowl MVP", "Top scorer for the champion in the Buckaroo Bowl"],
+  ["nami", "🧭", "Nami", "Best QB", "Most points as a starter at quarterback; she steers the ship"],
+  ["sanji", "🦵", "Sanji", "Best RB", "Most points as a starter at running back; he fights with his legs"],
+  ["zoro", "⚔️", "Zoro", "Best WR", "Most points as a starter at receiver (whether or not he found the end zone on the first try)"],
+  ["franky", "🔧", "Franky", "Best TE", "Most points as a starter at tight end; built like a tank"],
+  ["usopp", "🎯", "Usopp", "Best K", "Most points as a starter at kicker; the sniper"],
+  ["jinbe", "🌊", "Jinbe", "Best D/ST", "Most points as a starter at D/ST; the wall"],
+  ["robin", "📜", "Robin", "Best Pickup", "Most points as a starter for the team that picked him up, before he left it; buried treasure"],
+  ["sunny", "☀️", "Thousand Sunny", "Best Trade Acquisition", "Most points as a starter for the team that traded for him"],
+  ["chopper", "🩺", "Chopper", "Comeback Player", "Biggest jump in points per start from the first half of the season to the second (3+ starts in each)"],
+  ["brook", "🎻", "Brook", "Bench King", "Most points left on the bench"],
+  ["buggy", "🤡", "Buggy", "Biggest Bust", "A top-three-round pick who finished furthest below where he was drafted (all points while rostered)"],
+  ["ace", "🍩", "Ace", "Most Costly Donut", "The biggest zero (or worse) from a starter in a loss, ranked by how much he was projected for; D/ST doesn't count"],
+];
+const AW = {};
+function seasonAwards(s) {
+  if (AW[s.year]) return AW[s.year];
+  const out = {}, y = s.year, n = s.teams.length;
+  const rows = PL.map((p) => ({ p, ws: p.weeks.filter((w) => w.y === y && w.fin) })).filter((x) => x.ws.length);
+  const stPts = (ws) => sum(ws.filter((w) => w.start), (w) => w.pts);
+  const mostAt = (ws) => { const c = {}; for (const w of ws) c[w.t.id] = (c[w.t.id] || 0) + (w.start ? w.pts : 0.001); return s.byId[Object.keys(c).sort((a, b) => c[b] - c[a])[0]]; };
+  const best = (key, list, val, stat) => { const top = list.filter((x) => val(x) != null).sort((a, b) => val(b) - val(a))[0]; if (top && val(top) > 0) out[key] = { p: top.p, t: top.t || mostAt(top.ws), stat: stat(top) }; };
+  best("king", rows, (x) => stPts(x.ws), (x) => `${f1(stPts(x.ws))} pts in ${x.ws.filter((w) => w.start).length} starts`);
+  for (const [key, pos] of [["nami", "QB"], ["sanji", "RB"], ["zoro", "WR"], ["franky", "TE"], ["usopp", "K"], ["jinbe", "D/ST"]])
+    best(key, rows.filter((x) => x.p.pos === pos), (x) => stPts(x.ws), (x) => `${f1(stPts(x.ws))} pts in ${x.ws.filter((w) => w.start).length} starts`);
+  best("brook", rows, (x) => sum(x.ws.filter((w) => w.slot === "BN"), (w) => w.pts), (x) => `${f1(sum(x.ws.filter((w) => w.slot === "BN"), (w) => w.pts))} pts on the bench`);
+  // The One Piece: the champion's top starter in the Bowl
+  const champ = s.done && s.teams.find((t) => t.final === 1);
+  if (champ) { const sps = s.spans(bowlWeek(s)); best("onepiece", rows.map((x) => ({ ...x, t: champ, bw: x.ws.filter((w) => w.start && w.t.id === champ.id && sps.includes(w.wk)) })).filter((x) => x.bw.length), (x) => sum(x.bw, (w) => w.pts), (x) => `${f1(sum(x.bw, (w) => w.pts))} pts in the Bowl`); }
+  // Robin and Thousand Sunny: points as a starter for the team that got him, until his next move
+  const stint = (type) => rows.flatMap((x) => { const ev = x.p.ev.filter((e) => e.y === y); return ev.map((e, i) => { if (e.type !== type) return null;
+    const end = ev.slice(i + 1).find((f) => f.type !== "add" || f.t.id !== e.t.id), from = Math.ceil(e.wk), to = end ? end.wk : 99;
+    const ws = x.ws.filter((w) => w.start && w.t.id === e.t.id && (s.sp2mp?.[w.wk] ?? w.wk) >= from && (s.sp2mp?.[w.wk] ?? w.wk) < to);
+    return { p: x.p, t: e.t, pts: sum(ws, (w) => w.pts), n: ws.length, wk: from }; }).filter(Boolean); });
+  best("robin", stint("add"), (x) => x.pts, (x) => `${f1(x.pts)} pts in ${x.n} starts after a week ${x.wk} pickup`);
+  best("sunny", stint("trade"), (x) => x.pts, (x) => `${f1(x.pts)} pts in ${x.n} starts after the week ${x.wk} trade`);
+  // Chopper: first half vs second half points per start
+  const mid = s.regWeeks / 2;
+  best("chopper", rows.map((x) => { const st = x.ws.filter((w) => w.start), a = st.filter((w) => (s.sp2mp?.[w.wk] ?? w.wk) <= mid), b = st.filter((w) => (s.sp2mp?.[w.wk] ?? w.wk) > mid);
+    return a.length >= 3 && b.length >= 3 ? { ...x, a: sum(a, (w) => w.pts) / a.length, b: sum(b, (w) => w.pts) / b.length } : null; }).filter(Boolean),
+    (x) => x.b - x.a, (x) => `${f1(x.a)} → ${f1(x.b)} pts per start`);
+  // Buggy: top-three-round picks, drafted spot vs where his points ranked among everyone rostered
+  const tot = rows.map((x) => ({ ...x, tot: sum(x.ws, (w) => w.pts) })).sort((a, b) => b.tot - a.tot);
+  const rk = new Map(tot.map((x, i) => [x.p, i + 1]));
+  best("buggy", PL.map((p) => { const d = p.ev.find((e) => e.y === y && e.type === "draft"); if (!d || d.o > n * 3) return null; const r = rk.get(p) || tot.length + 1; return { p, t: d.t, ws: [], pk: d.o, r }; }).filter(Boolean),
+    (x) => x.r - x.pk, (x) => `Pick ${x.pk}, finished ${ordinal(x.r)} in points`);
+  // Ace: zeros in a starting lineup, worst first: lost games his projection would have won, then by projection
+  const donuts = rows.filter((x) => x.p.pos !== "D/ST").flatMap((x) => x.ws.filter((w) => w.start && w.pts <= 0).map((w) => { const mp = s.sp2mp?.[w.wk] ?? w.wk, m = s.matchups.find((g) => g.wk === mp && (g.h === w.t.id || g.a === w.t.id));
+    const lost = m && m.win !== null && m.win !== w.t.id && m.win !== 0, margin = m ? Math.abs(m.hp - m.ap) : 0;
+    return { p: x.p, t: w.t, w, lost, margin, flip: lost && (w.proj || 0) > margin, cost: (lost ? 1000 : 0) + (w.proj || 0) }; }));
+  const ace = donuts.sort((a, b) => b.cost - a.cost)[0];
+  if (ace) out.ace = { p: ace.p, t: ace.t, stat: `Week ${ace.w.wk}: ${f1(ace.w.pts)} on a ${f1(ace.w.proj || 0)} projection, ${ace.lost ? `in ${/^8|^1[18]\./.test(f1(ace.margin)) ? "an" : "a"} ${f1(ace.margin)}-point loss${ace.flip ? " (his projection would have won it)" : ""}` : "in a win"} · ${donuts.length} donuts started league-wide` };
+  return (AW[y] = out);
+}
+const ordinal = (k) => k + (["th", "st", "nd", "rd"][(k % 100 - 20) % 10] || ["th", "st", "nd", "rd"][k % 100] || "th");
+// A player's awards from finished seasons
+const awardsOf = (p) => D.seasons.filter((s) => s.done).flatMap((s) => { const a = seasonAwards(s); return AWARDS.filter(([k]) => a[k] && a[k].p === p).map(([k, e, nm]) => ({ k, e, nm, y: s.year })); });
+function awardsView() {
+  const ys = D.seasons.filter((s) => s.done || s.played.length).map((s) => s.year).reverse();
+  return `<div class="vhead"><div><div class="eyebrow">All-Time</div><h2>Awards</h2><p>Player awards for every season, named for the Straw Hats and friends. Finished seasons are final; the current one shows who's leading so far.</p></div></div>
+  ${ys.map((y) => { const s = S[y], a = seasonAwards(s);
+    return `<section><h3>${y} ${s.done ? `<span class="muted" style="font-weight:500;font-size:14px">· Buckaroo Bowl ${roman(y - D.firstYear + 1)}</span>` : `<span class="pill live" style="vertical-align:middle">So far</span>`}</h3><div class="awgrid">${AWARDS.filter(([k]) => a[k]).map(([k, e, nm, cat, why]) => { const x = a[k];
+      return `<div class="box award${k === "ace" ? " shame" : k === "king" || k === "onepiece" ? " top" : ""}" title="${esc(why)}"><div class="k">${e} ${nm} <span class="muted">· ${cat}</span></div><div class="who">${posTag(x.p.pos)}${pn(x.p.n)}</div><small class="muted">${badge(x.t, 1)} ${esc(x.t.name)} · ${mgrName(x.t.mgr)}</small><small>${x.stat}</small></div>`; }).join("")}</div></section>`; }).join("")}
+  <section><h3>How They're Decided</h3><div class="box rec"><ol class="swing">${AWARDS.map(([, e, nm, cat, why]) => `<li><span>${e} <b>${nm}</b> <span class="muted">· ${cat}</span><small class="ctx sub">${esc(why)}</small></span></li>`).join("")}</ol></div>
+  <p class="note">Points count only in weeks a lineup played a game, playoffs and consolation games included. The team shown is where he scored the most.</p></section>`;
+}
+
 function records() {
   // Year filter: all-time by default, or one season
   const Y = state.recYear && S[state.recYear] ? +state.recYear : null, inY = (y) => !Y || y === Y;
@@ -1443,7 +1521,7 @@ function playerView() {
   const best = [...p.weeks].filter((w) => w.start).sort((a, b) => b.pts - a.pts)[0];
   return `<div class="vhead"><div><div class="eyebrow">${posTag(p.pos)}${esc(p.pro)} · in the league ${p.years.join(", ")}</div><h2>${esc(p.n)}</h2></div>
     <button class="pill" data-go="players" style="border:0;cursor:pointer">← All players</button></div>
-  ${ringsOf(p).length ? `<div class="rings" style="display:flex;flex-wrap:wrap;gap:8px;margin:-6px 0 16px">${ringsOf(p).map((r) => `<span class="pill gold">🏆 Buckaroo Bowl ${roman(r.n)} Champion · ${esc(r.team)} (${mgrName(r.mgr)})</span>`).join("")}</div>` : ""}
+  ${ringsOf(p).length || awardsOf(p).length ? `<div class="rings" style="display:flex;flex-wrap:wrap;gap:8px;margin:-6px 0 16px">${ringsOf(p).map((r) => `<span class="pill gold">🏆 Buckaroo Bowl ${roman(r.n)} Champion · ${esc(r.team)} (${mgrName(r.mgr)})</span>`).join("")}${awardsOf(p).map((a) => `<button class="pill${a.k === "ace" ? " l" : ""}" data-go="awards" style="border:0;cursor:pointer">${a.e} ${a.nm} ${a.y}</button>`).join("")}</div>` : ""}
   <div class="strip">
     <div class="box stat"><div class="k">Points as a Starter</div><div class="v num">${f1(p.ptsS)}</div><div class="s">${p.starts} starts${best ? ` · best ${f1(best.pts)} (${best.y} wk ${best.wk})` : ""}</div></div>
     <div class="box stat"><div class="k">Points on the Bench</div><div class="v num">${f1(p.ptsB)}</div><div class="s">${p.benched} weeks benched</div></div>
@@ -1948,7 +2026,7 @@ function render() {
   chrome();
   if (mapObj) { mapObj.remove(); mapObj = null; }
   const v = state.view;
-  $("#app").innerHTML = sectionTabs(v) + (v === "season" ? seasonView() : v === "mgr" ? mgrView() : v === "managers" ? managers() : v === "players" ? playersView() : v === "player" ? playerView() : v === "home" ? home() : v === "news" ? newsView() : v === "rankings" ? rankingsView() : v === "article" ? articleView() : v === "social" ? socialView() : v === "odds" ? oddsView() : v === "map" ? mapView() : v === "overrated" ? overratedView() : v === "transactions" ? txView() : v === "h2h" ? h2h() : v === "ratings" ? ratingsView() : v === "records" ? records() : trophies());
+  $("#app").innerHTML = sectionTabs(v) + (v === "season" ? seasonView() : v === "mgr" ? mgrView() : v === "managers" ? managers() : v === "players" ? playersView() : v === "player" ? playerView() : v === "home" ? home() : v === "news" ? newsView() : v === "rankings" ? rankingsView() : v === "article" ? articleView() : v === "social" ? socialView() : v === "odds" ? oddsView() : v === "map" ? mapView() : v === "overrated" ? overratedView() : v === "transactions" ? txView() : v === "h2h" ? h2h() : v === "ratings" ? ratingsView() : v === "records" ? records() : v === "awards" ? awardsView() : trophies());
   document.title = "Buckaroo League History";
   if (v === "map") initMap();
   if (v === "season") setTimeout(celebrate, 200);
