@@ -81,6 +81,28 @@ async function get(url, file, headers = {}) {
       console.log(`${y} NFL schedule saved`);
     } catch (err) { console.log(`${y} NFL schedule unavailable (${err.message})`); }
   }
+  // The NFL scoring plays of each finished season's Buckaroo Bowl and Bum Bowl weeks, saved once to archive/
+  // (public NFL data), so the Bowl articles can tell the games in the order things happened
+  for (let y = 2023; y <= current; y++) {
+    const A = path.join(ARCHIVE, `${y}.json`), f = path.join(ARCHIVE, `plays_${y}.json`);
+    if (!fs.existsSync(A) || fs.existsSync(f)) continue;
+    try {
+      const s = JSON.parse(fs.readFileSync(A, "utf8")).season, bw = s.regWeeks + (s.playoffTeams >= 3 ? 2 : 1);
+      const weeks = [...new Set([bw - 1, bw].flatMap((w) => ((s.periods || {})[w] || [w]).map(Number)))].sort((a, b) => a - b);
+      const out = {};
+      for (const w of weeks) {
+        const sb = await (await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=${y}&seasontype=2&week=${w}`)).json();
+        out[w] = [];
+        for (const ev of sb.events || []) {
+          const sum = await (await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=${ev.id}`)).json();
+          out[w].push({ game: ev.shortName, start: ev.date, plays: (sum.scoringPlays || []).map((p) => ({ q: p.period && p.period.number, clock: p.clock && p.clock.displayValue, team: p.team && p.team.abbreviation, type: p.scoringType && p.scoringType.abbreviation, text: p.text })) });
+        }
+      }
+      if (!Object.values(out).some((g) => g.length)) { console.log(`${y} Bowl-week plays: none returned`); continue; }
+      fs.writeFileSync(f, JSON.stringify(out));
+      console.log(`${y} Bowl-week scoring plays saved (NFL weeks ${weeks.join(", ")})`);
+    } catch (err) { console.log(`${y} Bowl-week plays unavailable (${err.message})`); }
+  }
   // NFL game states and clocks, so live win chances know who still has to play
   if (process.argv.slice(2).includes("current")) {
     try {
