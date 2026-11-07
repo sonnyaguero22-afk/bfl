@@ -640,9 +640,11 @@ for (const s of D.seasons) for (const m of s.played) {
 }
 
 // ---------- Player index: everyone who has been on a league roster ----------
-const slug = (n) => String(n).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+// One page per player even when ESPN adds a suffix between seasons ("James Cook" → "James Cook III")
+const slug = (n) => String(n).toLowerCase().replace(/[.']/g, "").replace(/\s+(jr|sr|ii|iii|iv|v)$/, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const sameName = (a, b) => slug(a) === slug(b);
 const P = {};
-const player = (n, pos, pro) => { const k = slug(n); const p = P[k] || (P[k] = { k, n, pos: "", pro: "", weeks: [], ev: [] }); if (pos) p.pos = pos; if (pro) p.pro = pro; return p; };
+const player = (n, pos, pro) => { const k = slug(n); const p = P[k] || (P[k] = { k, n, names: [], pos: "", pro: "", weeks: [], ev: [] }); p.n = n; if (!p.names.includes(n)) p.names.push(n); if (pos) p.pos = pos; if (pro) p.pro = pro; return p; };
 for (const s of D.seasons) {
   for (const wk in s.lineups) {
     const mp = s.sp2mp[wk] ?? +wk;
@@ -741,7 +743,7 @@ function parseHash() {
   let m;
   if ((m = h.match(/^(\d{4})(?:-(\w+))?$/)) && years.includes(+m[1])) { if (+m[1] !== state.year) { state.standWeek = null; state.rosterWeek = null; state.oddsFocus = null; } state.view = "season"; state.year = +m[1]; state.tab = TABS.some((t) => t[0] === m[2]) ? m[2] : "standings"; }
   else if ((m = h.match(/^mgr-(\w+)$/)) && D.managers[m[1]]) { state.view = "mgr"; state.mgr = m[1]; }
-  else if ((m = h.match(/^p-([a-z0-9-]+)$/)) && P[m[1]]) { state.view = "player"; state.pk = m[1]; }
+  else if ((m = h.match(/^p-([a-z0-9-]+)$/)) && (P[m[1]] || P[slug(m[1].replace(/-/g, " "))])) { state.view = "player"; state.pk = P[m[1]] ? m[1] : slug(m[1].replace(/-/g, " ")); } // old links with a suffix ("james-cook-iii") still work
   else if ((m = h.match(/^aw-([a-z]+)$/)) && awInfo(m[1])) { state.view = "award"; state.aw = m[1]; }
   else if ((m = h.match(/^news-([a-z0-9-]+)$/)) && NEWS.some((a) => a.id === m[1])) { state.view = "article"; state.newsId = m[1]; }
   else if (["home", "news", "rankings", "social", "trophies", "managers", "map", "players", "overrated", "transactions", "odds", "h2h", "ratings", "awards", "mgrawards", "records"].includes(h)) state.view = h;
@@ -1795,8 +1797,8 @@ function seasonStory(p, y, ref = refMaker()) {
   // Moves after he arrived
   for (const e of ev.slice(1)) {
     const wk = Math.ceil(e.wk);
-    if (e.type === "trade") { const tr = s.trades.find((t) => t.wk === wk && (t.got[e.t.id] || []).some((x) => x.split("|")[0] === p.n));
-      const back = tr && e.from ? (tr.got[e.from.id] || []).map((x) => x.split("|")[0]) : [], with_ = tr ? (tr.got[e.t.id] || []).map((x) => x.split("|")[0]).filter((n) => n !== p.n) : [];
+    if (e.type === "trade") { const tr = s.trades.find((t) => t.wk === wk && (t.got[e.t.id] || []).some((x) => sameName(x.split("|")[0], p.n)));
+      const back = tr && e.from ? (tr.got[e.from.id] || []).map((x) => x.split("|")[0]) : [], with_ = tr ? (tr.got[e.t.id] || []).map((x) => x.split("|")[0]).filter((n) => !sameName(n, p.n)) : [];
       out.push(`Before week ${wk}, ${e.from ? ref(mgrAt(e.from, wk)) : "his team"} traded ${him}${with_.length ? ` and ${andList(with_.map(esc))}` : ""} to ${ownTeam(e.t, wk)}${back.length ? ` for ${andList(back.map(esc))}` : ""}.`); }
     else if (e.type === "drop") out.push(cap(`${ownTeam(e.t, wk)} released ${him} in week ${wk}.`));
     else if (e.type === "add") out.push(cap(`${ownTeam(e.t, wk)} picked ${him} up in week ${wk}.`));
@@ -1810,7 +1812,7 @@ function seasonStory(p, y, ref = refMaker()) {
   else if (bpts >= 30) out.push(`Another ${f1(bpts)} points came on the bench across ${count(bn.length)} weeks.`);
   if (has("buggy")) out.push(`Drafted ${ordinal(has("buggy").a.x.pk)} overall but ${ordinal(has("buggy").a.x.r)} in points, ${he} was named the season's ${awLink("buggy")}, its biggest bust.`);
   // Ones to Watch
-  const picks = Object.entries(s.pregame || {}).flatMap(([k, v]) => v.watch.filter((x) => x.n === p.n).map((x) => { const wk = +k.split("-")[0], e = s.spans(wk).map((sp) => ((s.lineups[sp] || {})[x.id] || []).find((q) => q.n === x.n)).filter(Boolean), pts = sum(e, (q) => q.pts || 0);
+  const picks = Object.entries(s.pregame || {}).flatMap(([k, v]) => v.watch.filter((x) => sameName(x.n, p.n)).map((x) => { const wk = +k.split("-")[0], e = s.spans(wk).map((sp) => ((s.lineups[sp] || {})[x.id] || []).find((q) => q.n === x.n)).filter(Boolean), pts = sum(e, (q) => q.pts || 0);
     return { big: x.boomAt != null && pts >= x.boomAt, done: s.matchups.some((m) => m.wk === wk && m.win !== null && !m.live) }; }));
   if (picks.length) { const big = picks.filter((x) => x.big).length; out.push(`Luffy named ${him} a One to Watch ${picks.length === 1 ? "once" : `${picks.length} times`}${big ? `, and ${he} delivered a big game ${big === 1 ? (picks.length === 1 ? "that time" : "once") : `${big} times`}` : ""}.`); }
   // How his team finished
@@ -1826,7 +1828,7 @@ function seasonStory(p, y, ref = refMaker()) {
 const mostAtTeam = (ws) => { const c = new Map(); for (const w of ws) c.set(w.t, (c.get(w.t) || 0) + w.pts); return [...c.entries()].sort((a, b) => b[1] - a[1])[0][0]; };
 
 // Is he on a league roster right now? (in a lineup, starting or bench, in the newest week of the newest season)
-const lastOnRoster = (p) => { const s = S[lastYear]; if (!s) return false; const wk = Math.max(0, ...Object.keys(s.lineups).map(Number)); return Object.values(s.lineups[wk] || {}).some((L) => L.some((e) => e.n === p.n)); };
+const lastOnRoster = (p) => { const s = S[lastYear]; if (!s) return false; const wk = Math.max(0, ...Object.keys(s.lineups).map(Number)); return Object.values(s.lineups[wk] || {}).some((L) => L.some((e) => sameName(e.n, p.n))); };
 function wikiHtml(p, best) {
   const nfl = NFL_TEAMS[p.pro], rings = ringsOf(p), aw = awardsOf(p);
   const tm = (t, y, wk) => `<b>${esc(nameAt(t, wk || 1))}</b> (${mgrName(mgrAt(t, wk || 1))})`;
@@ -1852,7 +1854,7 @@ function wikiHtml(p, best) {
   const pageRef = refMaker();
   const career = [...p.years].map((y) => `<h4><button class="mlink" data-go="${y}">${y}</button>${S[y] && !S[y].done ? ` <span class="muted" style="font-weight:500">(in progress)</span>` : ""}</h4><p>${seasonStory(p, y, pageRef)}</p>`).join("");
   // In the news: stories that mention him, newest first, like references
-  const refs = ALL_NEWS.filter((a) => a.type !== "live" && a.type !== "profile" && JSON.stringify([a.title, a.dek, a.body]).includes(p.n)).sort((a, b) => b.year - a.year || (b.wk || 0) - (a.wk || 0));
+  const refs = ALL_NEWS.filter((a) => a.type !== "live" && a.type !== "profile" && (p.names || [p.n]).some((n) => JSON.stringify([a.title, a.dek, a.body]).includes(n))).sort((a, b) => b.year - a.year || (b.wk || 0) - (a.wk || 0));
   const news = refs.length ? `<h3 class="wikisub">In the News</h3><ol class="wikirefs">${refs.slice(0, 15).map((a) => `<li><button class="mlink" data-go="news-${a.id}">“${esc(a.title)}”</button> <span class="muted">· ${newsWhen(a)}</span></li>`).join("")}</ol>${refs.length > 15 ? `<p class="note">And ${refs.length - 15} more.</p>` : ""}` : "";
   // Infobox
   // Fantasy shorthand: 6.09 is round 6, 9th pick of the round; the full pick shows on hover

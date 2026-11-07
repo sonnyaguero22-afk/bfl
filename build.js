@@ -334,12 +334,14 @@ seasons.sort((a, b) => a.year - b.year);
 const nflStatus = (() => {
   const y = years[years.length - 1], f = y && path.join(DATA, `players_${y}.json`);
   if (!f || !fs.existsSync(f)) return null;
-  const pool = new Map(JSON.parse(fs.readFileSync(f, "utf8")).map((p) => [p.fullName, p]));
+  // Matched without suffixes: older seasons say "James Cook", ESPN now says "James Cook III"
+  const base = (n) => n.toLowerCase().replace(/[.']/g, "").replace(/\s+(jr|sr|ii|iii|iv|v)$/, "");
+  const pool = new Map(JSON.parse(fs.readFileSync(f, "utf8")).map((p) => [base(p.fullName), p]));
   const names = new Set(seasons.flatMap((s) => [...Object.values(s.lineups).flatMap((L) => Object.values(L).flat().map((e) => e.n)), ...s.draft.map((d) => d.n)]));
   const out = {};
   for (const n of names) {
     if (/D\/ST$/.test(n)) continue;
-    const p = pool.get(n);
+    const p = pool.get(base(n));
     out[n] = !p || p.active === false ? "r" : p.proTeamId ? `t:${PRO[p.proTeamId] || "?"}` : "f";
   }
   const c = { t: 0, f: 0, r: 0 }; for (const v of Object.values(out)) c[v[0]]++;
