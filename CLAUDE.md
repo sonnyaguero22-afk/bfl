@@ -33,6 +33,7 @@ Story types in `news.js`, each dated in-world by `when.js`:
 | final | Sunday, 75 minutes before the 1pm games | short Sonnet follow-up: lineup moves and win chance changes since the preview, Thursday's points, holes still unfilled |
 | trade | as soon as a trade is seen | before/after odds from frozen week-end snapshots |
 | draft | each season | draft-night coverage, no hindsight |
+| bowl | when a season ends | wiki article for each Buckaroo Bowl and Bum Bowl (`bowl-<year>`, `bum-<year>`), shown on its game page, not in the feed |
 | review, history, profile | when a season ends | season review, the league history (History tab), manager profiles |
 | live | during games and on roster moves | `live.js`, shown only in the social feed; reacts to touchdowns, turnovers and big plays, and knows which starters' games are over |
 
@@ -49,6 +50,7 @@ The decisions and backtests are logged in the "BFL Model Log" Google Doc in Sonn
 - Laboon, the manager ratings (Elo, `site/index.html`, Managers > Laboon; named after the One Piece whale): all finished games since 2023, wins only, K 24 (1.5x in the winners' bracket), halfway back to 1500 each season. Backtest on 2023 to 2025 (136 games): 58% of winners, Brier 0.246; a résumé, not a forecast.
 - Awards (own top tab, Players and Managers sub-tabs with a season picker; `seasonAwards` in `site/index.html`): One Piece-named player awards for every season (Pirate King MVP, The One Piece Bowl MVP, Nami QB, Sanji RB, Zoro WR, Franky TE, Usopp K, Jinbe D/ST, Robin pickup, Thousand Sunny trade, Chopper comeback, Brook bench, Buggy bust, Ace donut); the current season shows "so far". Bowl-winning rosters get rings on their player pages (not in lists, which would get crowded).
 - Manager pages (`mgrWiki`) and player pages (`wikiHtml`, `seasonStory`) read like wiki articles: an infobox, a lead written from the numbers, then the story (the Opus career profile for managers, a templated paragraph per season for players). Manager squares use initials, except Z² (Zoe) and J$ (Jordan).
+- Season Overview tab (`seasonOverview`, default for finished seasons), Bowl and Bum Bowl pages (`#bowl-<year>`, `#bum-<year>`, `gameView`: infobox, Opus article, win chance chart, box score, preceded/succeeded by) and Laboon's wiki intro and records (`laboonIntro`).
 - Award pages (`#aw-<key>`, `awardView`): a wiki article per award (what it's for, why the One Piece name, every winner, see also). Player pages, award cards and manager pages link to them; wiki-style pages color their links.
 - Manager awards (Awards > Managers, `seasonMgrAwards`): Vegapunk best draft, Wapol waiver king, Doflamingo trade shark, Blackbeard luckiest, Bon Clay unluckiest, Bellamy lineup blunders, Marco biggest Laboon climber; always one winner (count ties go to the bigger margin). Also listed on each manager's page.
 - Down the Stretch (Odds page): remaining opponents' strength and next week's games to root for, from the season simulation.

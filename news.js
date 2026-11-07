@@ -315,6 +315,35 @@ function reviewFacts(s) {
   };
 }
 
+// A Buckaroo Bowl or Bum Bowl, for its wiki page: both teams' seasons, the path there, and the game player by player
+function gameFacts(s, kind) {
+  const n = s.teams.length, bw = s.regWeeks + (s.playoffTeams >= 3 ? 2 : 1), lo = (m) => (m.win === m.h ? m.a : m.h);
+  const m = kind === "bowl" ? s.matchups.find((x) => x.wk === bw && x.tier === "WINNERS_BRACKET" && done(x))
+    : s.matchups.filter((x) => (x.wk === bw || x.wk === bw - 1) && x.tier === "LOSERS_CONSOLATION_LADDER" && done(x)).find((x) => s.byId[lo(x)].final === n);
+  if (!m) return null;
+  const rec = recordsThrough(s, s.regWeeks), two = spans(s, m.wk).length > 1;
+  const side = (id) => {
+    const t = s.byId[id], per = {};
+    for (const sp of spans(s, m.wk)) for (const e of (s.lineups[sp] || {})[id] || []) { const x = (per[e.n] = per[e.n] || { player: `${e.n} (${e.pos}, ${e.pro})`, points: 0, projected: 0, started: false }); x.points += e.pts || 0; x.projected += e.proj || 0; if (e.slot !== "BN" && e.slot !== "IR") x.started = true; }
+    const all = Object.values(per).map((x) => ({ ...x, points: r1(x.points), projected: r1(x.projected) }));
+    const path = s.matchups.filter((x) => done(x) && x.wk > s.regWeeks && x.wk < m.wk && (x.h === id || x.a === id)).map((x) => `${x.win === id ? "beat" : "lost to"} ${who(s.byId[x.h === id ? x.a : x.h], x.wk)} ${x.h === id ? x.hp : x.ap}-${x.h === id ? x.ap : x.hp}`);
+    const series = s.matchups.filter((x) => done(x) && x.wk <= s.regWeeks && [x.h, x.a].includes(m.h) && [x.h, x.a].includes(m.a)).map((x) => `week ${x.wk}: ${x.win === id ? "won" : "lost"} ${x.h === id ? x.hp : x.ap}-${x.h === id ? x.ap : x.hp}`);
+    const k = mgrAt(t, m.wk), titles = D.seasons.filter((z) => z.done && z.year < s.year && z.teams.some((u) => u.final === 1 && mgrAt(u, 99) === k)).map((z) => z.year);
+    return { team: who(t, m.wk), manager: mgr(k), seed: t.seed, regular_season_record: `${rec[id].w}-${rec[id].l}`, regular_season_points: r1(rec[id].pf), final_finish: `${t.final} of ${n}`,
+      earlier_playoff_games: path.length ? path : undefined, regular_season_meetings: series.length ? series : undefined, earlier_titles: titles.length ? titles : "none",
+      score: id === m.h ? m.hp : m.ap, starters: all.filter((x) => x.started).sort((a, b) => b.points - a.points).map(({ started, ...x }) => x), bench: all.filter((x) => !x.started && x.points > 0).sort((a, b) => b.points - a.points).map(({ started, ...x }) => x) };
+  };
+  const wp = (s.wp || {})[`${m.wk}-${m.h}-${m.a}`];
+  const swing = wp && wp.length ? { lowest_win_chance_for_the_winner: `${Math.round(100 * Math.min(...wp.map((q) => (m.win === m.h ? q[1] : 1 - q[1]))))}%` } : undefined;
+  return {
+    game: kind === "bowl" ? `Buckaroo Bowl ${["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"][s.year - D.firstYear + 1] || s.year - D.firstYear + 1}` : `${s.year} Bum Bowl`,
+    what_it_decided: kind === "bowl" ? "the league championship" : `last place: the loser finished ${n} of ${n}`,
+    season: s.year, weeks: spans(s, m.wk), two_week_total: two || undefined,
+    winner: who(s.byId[m.win], m.wk), final_score: `${who(s.byId[m.win], m.wk)} ${m.win === m.h ? m.hp : m.ap} - ${m.win === m.h ? m.ap : m.hp} ${who(s.byId[lo(m)], m.wk)}`, margin: r1(Math.abs(m.hp - m.ap)),
+    in_game_swing: swing, teams: [side(m.win), side(lo(m))],
+  };
+}
+
 // The draft, as it looked on draft day: every pick, each team's haul, position runs, keepers
 function draftFacts(s) {
   const prev = S[s.year - 1];
@@ -440,6 +469,8 @@ const schemas = {
     bios: { type: "array", items: { type: "object", additionalProperties: false, required: ["team", "bio"], properties: { team: str, bio: str } } } } },
   trade: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "social"], properties: { ...ARTICLE, social: SOCIAL } },
   review: { type: "object", additionalProperties: false, required: ["title", "dek", "body"], properties: ARTICLE },
+  bowl: { type: "object", additionalProperties: false, required: ["title", "dek", "chapters"], properties: { title: str, dek: str,
+    chapters: { type: "array", items: { type: "object", additionalProperties: false, required: ["heading", "body"], properties: { heading: str, body: { type: "array", items: str } } } } } },
   draft: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "social"], properties: { ...ARTICLE, social: SOCIAL } },
   preview: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "picks", "social"], properties: { ...ARTICLE, social: SOCIAL,
     picks: { type: "array", items: { type: "object", additionalProperties: false, required: ["game", "panel"], properties: { game: str,
@@ -461,6 +492,7 @@ const asks = {
   preview: "Write the weekly preview for this week of the Buckaroo Football League, like a network's pregame show, going up two hours before the week's first NFL game: a headline, a one-sentence dek, and 3 to 5 body paragraphs on the week's best storylines. Lead with stories, not numbers: rivalries and head-to-head history, momentum (streaks, last_three, last_three_scores: who's surging, who's sliding), new faces from recent trades, notable position-versus-position matchups between the two starting lineups (a QB duel, a team's receivers against the other's backfield), the stakes in the standings, and a sleeper or underrated player who could swing a game. Numbers are seasoning: at most one win chance per game, stated once, and say playoff stakes in words (a loss drops him out of the playoff spots, a win nearly locks it up) rather than listing odds. Name the Ones to Watch as the players who decide a game, without their percentages or point thresholds. The win chances assume each manager fills the spots in spots_to_fill (starters on bye or ruled out) with his best bench player, as nearly everyone does by Sunday; treat them as the real numbers, and don't build the headline, a storyline, a pick or a post around an unfilled spot (a passing clause at most). Then the panel's picks: for every game in games (use its game text exactly), each of the four panelists picks a winner (the exact team name, without the manager), a confidence (lean, confident or lock; Sal calls plenty of locks, Nina rarely does) and a 1 to 3 sentence take in their own voice. Dr. Nina Kessler is the stats voice: she is the one who cites the win chances, Ones to Watch thresholds and odds. The other three argue from momentum, matchups, history, grudges and gut, with few or no percentages. Across the panel, somebody should flag an underrated pick or sleeper. Picks should disagree sometimes, and panelists can needle each other or bring up their season_picks record. Then 5 to 8 social posts, all posted after the story goes up and before the week's first kickoff two hours later (when 0 to 100): panelists hyping their lock, and fans reacting to a specific panelist's take on their team, annoyed or gloating, the way fanbases do online. Fans may only quote or paraphrase what a panelist actually said in this preview.",
   final: "Write the Sunday final word for this week of the Buckaroo Football League: a short pregame update going up after the NFL inactives, just before the 1pm games, following up on Thursday's preview (preview_title). A headline, a one-sentence dek, and 2 to 3 short body paragraphs on what changed since the preview: lineup moves (moved_into_lineup, moved_out, moves_since_preview), how the win chances moved from home_win_chance_at_preview to home_win_chance_now (only where it moved enough to matter, and keep the numbers few), and what the players who already_played did for their teams. unfilled_spots are starters on bye or ruled out still in a lineup an hour before kickoff, and those are real news now: say who hasn't fixed it, and what it costs (home_win_chance_now as set against home_win_chance_if_filled). If nothing much changed, keep it short and say so; don't invent drama. A panelist can stand by a pick or flip it in a line, in their own voice. Then 3 to 5 social posts, all posted after the story goes up and before kickoff (when 0 to 75): fans and panelists reacting to the late news.",
   history: "Write the official history of the Buckaroo Football League for the front of its trophy room, like a club history in Football Manager or a long-form feature: a headline, a one-sentence dek, and 4 to 6 chapters, each with a short heading and 2 to 4 paragraphs. Tell it as one story across the seasons: how it started, each Buckaroo Bowl and what decided it, dynasties and droughts, rises and collapses, the rivalries the head-to-head records reveal, and the moments people still bring up. End with a short chapter that sets up the present (from since_then, without any of its results). Every number must come from the facts.",
+  bowl: "Write an encyclopedia article about this game for the league's wiki, the way Wikipedia covers a Super Bowl: the title is just the game's name (the game field), a one-sentence dek, and 3 or 4 sections, each with a short heading and 1 to 3 paragraphs: Background (both teams' seasons, seeds, how they got there, any history between them this season and earlier titles), Game summary (how it was decided: the players who won it, starters who flopped against their projection, bench points that would have changed it; for a two-week total, how it built), and Aftermath (what it meant: a first or repeat title, or last place and the Bum Bowl's shame). Encyclopedic: third person, past tense, measured, no social posts, but it can carry the league's personality in a light touch. Use only the facts given.",
   review: "Write a season-in-review story for this finished season: a headline, a one-sentence dek, and 5 to 7 body paragraphs telling the story of the season from draft to Buckaroo Bowl, including the champion, the last-place finisher, the playoff games, and any notable notes.",
 };
 
@@ -468,6 +500,8 @@ const asks = {
 function pending() {
   const have = new Set(fs.existsSync(NEWS) ? fs.readdirSync(NEWS).map((f) => f.replace(/\.json$/, "")) : []);
   const todo = [];
+  // Each Buckaroo Bowl and Bum Bowl gets a wiki article once its season is done
+  for (const s of D.seasons.filter((x) => x.done)) for (const kind of ["bowl", "bum"]) if (!have.has(`${kind}-${s.year}`) && gameFacts(s, kind)) todo.push({ id: `${kind}-${s.year}`, type: "bowl", s, wk: 98, facts: () => gameFacts(s, kind) });
   for (const s of D.seasons.filter((x) => x.done)) if (!have.has(`review-${s.year}`)) todo.push({ id: `review-${s.year}`, type: "review", s, wk: 99, facts: () => reviewFacts(s) });
   const cur = D.seasons.filter((x) => !x.done).slice(-1)[0] || null;
   // The week's preview two hours before the week's first NFL kickoff (Thursday 6pm ET when the kickoff
@@ -514,7 +548,7 @@ function pending() {
 // The last few stories, so a new one doesn't repeat their jokes and angles
 function recentStories(n = 4) {
   if (!fs.existsSync(NEWS)) return [];
-  return fs.readdirSync(NEWS).map((f) => JSON.parse(fs.readFileSync(path.join(NEWS, f), "utf8"))).filter((a) => !["profile", "history", "live"].includes(a.type))
+  return fs.readdirSync(NEWS).map((f) => JSON.parse(fs.readFileSync(path.join(NEWS, f), "utf8"))).filter((a) => !["profile", "history", "live", "bowl"].includes(a.type))
     .sort((a, b) => (a.created < b.created ? 1 : -1)).slice(0, n)
     .map((a) => ({ title: a.title, body: a.body, social: (a.social || []).map((p) => `${p.author} (${p.handle}): ${p.text}`), trade_watch: (a.trade_watch || []).map((t) => t.take) }));
 }
@@ -523,8 +557,8 @@ async function write(client, job) {
   const facts = job.facts();
   // Profiles stand on their own, and draft-day coverage mustn't know how the season went
   // Rankings for past weeks mustn't see later stories, so they get none
-  const recent = ["profile", "draft", "history", "rankings"].includes(job.type) ? [] : recentStories();
-  const wk = ["review", "profile", "history"].includes(job.type) ? null : job.type === "rankings" ? Math.floor(job.wk) : Math.ceil(job.wk);
+  const recent = ["profile", "draft", "history", "rankings", "bowl"].includes(job.type) ? [] : recentStories();
+  const wk = ["review", "profile", "history", "bowl"].includes(job.type) ? null : job.type === "rankings" ? Math.floor(job.wk) : Math.ceil(job.wk);
   const pub = published({ id: job.id, type: job.type, year: job.s.year, wk, created: new Date().toISOString() }, job.s.periods);
   const dated = pub ? `\n\nThis story goes up ${etLabel(pub)}; time the social posts' "when" from that.` : "";
   const avoid = recent.length ? `\n\nThe league's most recent stories, for reference only. Readers just read these, so don't reuse their jokes, nicknames-as-punchlines, or angles; find fresh ones:\n${JSON.stringify(recent)}` : "";

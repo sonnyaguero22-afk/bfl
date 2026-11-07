@@ -491,6 +491,9 @@ h3.wikisub { border-bottom: 1px solid var(--line); padding-bottom: 6px; margin: 
 .infobox .ibh { margin: 2px 0; } .infobox .ibh.gold { color: var(--gold); font-weight: 600; } .infobox .ibh.l { color: var(--loss); }
 .ibm-only { display: none; }
 @media (max-width: 860px) { .wiki { grid-template-columns: 1fr; } .ibd-only { display: none; } .ibm-only { display: block; margin: 4px 0 8px; } }
+.infobox td.ibscore div { display: flex; align-items: center; gap: 6px; padding: 2px 0; } .infobox td.ibscore .num { margin-left: auto; font-weight: 700; }
+.succ { display: flex; justify-content: space-between; gap: 8px; padding: 8px 12px; font-size: 12.5px; }
+.boxpair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; } @media (max-width: 760px) { .boxpair { grid-template-columns: 1fr; } }
 .huntcol { display: grid; gap: 8px; }
 .hunt { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
 .hunt small { display: block; font-size: 11.5px; line-height: 1.35; }
@@ -735,16 +738,17 @@ const board = (title, list, val, who, sub, note) => !list.length ? "" : `<div cl
   ${list.length > 10 ? `<button class="morebtn" data-more aria-expanded="false">Show Top ${list.length}</button>` : ""}${note ? `<div class="ctx">${note}</div>` : ""}</div>`;
 
 // ---------- Routing ----------
-const TABS = [["standings", "Standings"], ["playoffs", "Playoffs"], ["odds", "Title Odds"], ["weekly", "Weekly Scores"], ["draft", "Draft Board"], ["trades", "Trades"], ["moves", "Adds & Drops"], ["rosters", "Rosters"]];
+const TABS = [["overview", "Overview"], ["standings", "Standings"], ["playoffs", "Playoffs"], ["odds", "Title Odds"], ["weekly", "Weekly Scores"], ["draft", "Draft Board"], ["trades", "Trades"], ["moves", "Adds & Drops"], ["rosters", "Rosters"]];
 const state = { view: "home", year: lastYear, tab: "standings", week: null, open: null, moveTeam: "all", rosterTeam: null };
 
 function parseHash() {
   const h = (location.hash || "").slice(1);
   let m;
-  if ((m = h.match(/^(\d{4})(?:-(\w+))?$/)) && years.includes(+m[1])) { if (+m[1] !== state.year) { state.standWeek = null; state.rosterWeek = null; state.oddsFocus = null; } state.view = "season"; state.year = +m[1]; state.tab = TABS.some((t) => t[0] === m[2]) ? m[2] : "standings"; }
+  if ((m = h.match(/^(\d{4})(?:-(\w+))?$/)) && years.includes(+m[1])) { if (+m[1] !== state.year) { state.standWeek = null; state.rosterWeek = null; state.oddsFocus = null; } state.view = "season"; state.year = +m[1]; state.tab = TABS.some((t) => t[0] === m[2]) ? m[2] : S[+m[1]] && S[+m[1]].done ? "overview" : "standings"; }
   else if ((m = h.match(/^mgr-(\w+)$/)) && D.managers[m[1]]) { state.view = "mgr"; state.mgr = m[1]; }
   else if ((m = h.match(/^p-([a-z0-9-]+)$/)) && (P[m[1]] || P[slug(m[1].replace(/-/g, " "))])) { state.view = "player"; state.pk = P[m[1]] ? m[1] : slug(m[1].replace(/-/g, " ")); } // old links with a suffix ("james-cook-iii") still work
   else if ((m = h.match(/^aw-([a-z]+)$/)) && awInfo(m[1])) { state.view = "award"; state.aw = m[1]; }
+  else if ((m = h.match(/^(bowl|bum)-(\d{4})$/)) && S[+m[2]] && S[+m[2]].done) { state.view = "game"; state.gameKind = m[1]; state.year = +m[2]; }
   else if ((m = h.match(/^news-([a-z0-9-]+)$/)) && NEWS.some((a) => a.id === m[1])) { state.view = "article"; state.newsId = m[1]; }
   else if (["home", "news", "rankings", "social", "trophies", "managers", "map", "players", "overrated", "transactions", "odds", "h2h", "ratings", "awards", "mgrawards", "records"].includes(h)) state.view = h;
   else state.view = "home"; // no or unknown hash: the home page
@@ -766,7 +770,7 @@ const SECTIONS = {
   awards: [["awards", "Players"], ["mgrawards", "Managers"]],
   trophies: [["trophies", "Buckaroo Bowls"], ["records", "Record Book"]],
 };
-const groupOf = (v) => (v === "award" ? "awards" : v === "mgr" ? "managers" : v === "player" ? "players" : v === "article" ? "news" : Object.keys(SECTIONS).find((g) => SECTIONS[g].some(([k]) => k === v)) || v);
+const groupOf = (v) => (v === "game" ? "trophies" : v === "award" ? "awards" : v === "mgr" ? "managers" : v === "player" ? "players" : v === "article" ? "news" : Object.keys(SECTIONS).find((g) => SECTIONS[g].some(([k]) => k === v)) || v);
 // The section tabs for the page's group, shown above its content
 const sectionTabs = (v) => { const g = groupOf(v), list = SECTIONS[g]; if (!list || !list.some(([k]) => k === v)) return "";
   return `<div class="tabs sectiontabs" role="tablist">${list.map(([k, l]) => `<button data-go="${k}" aria-current="${v === k}">${l}</button>`).join("")}</div>`; };
@@ -785,6 +789,82 @@ function chrome() {
 }
 
 // ---------- Season views ----------
+// ---------- Season overviews and Bowl pages, wiki style ----------
+const bowlGame = (s) => s.matchups.find((m) => m.wk === bowlWeek(s) && m.tier === "WINNERS_BRACKET");
+// The Bum Bowl: the consolation game whose loser finished last
+const bumGame = (s) => { if (!s.done) return null; const n = s.teams.length, bw = bowlWeek(s), lo = (m) => (m.win === m.h ? m.a : m.h);
+  return s.matchups.filter((m) => (m.wk === bw || m.wk === bw - 1) && m.tier === "LOSERS_CONSOLATION_LADDER" && m.win).find((m) => s.byId[lo(m)].final === n) || null; };
+const gameLink = (kind, y, label) => `<button class="mlink" data-go="${kind}-${y}">${label}</button>`;
+const bowlName = (y) => `Buckaroo Bowl ${roman(y - D.firstYear + 1)}`;
+// One side of a game: each player's points over the game's weeks (two-week rounds add up)
+function boxSide(s, m, id) {
+  const per = {};
+  for (const sp of s.spans(m.wk)) for (const e of (s.lineups[sp] || {})[id] || []) { const x = (per[e.n] = per[e.n] || { n: e.n, pos: e.pos, pts: 0, proj: 0, start: false }); x.pts += e.pts || 0; x.proj += e.proj || 0; if (e.slot !== "BN" && e.slot !== "IR") x.start = true; }
+  const ord = ["QB", "RB", "WR", "TE", "K", "D/ST"];
+  return Object.values(per).sort((a, b) => b.start - a.start || ord.indexOf(a.pos) - ord.indexOf(b.pos) || b.pts - a.pts);
+}
+function seasonOverview(s) {
+  const y = s.year, n = s.teams.length, ref = refMaker(), named = new Set(), own = (t) => (named.has(t.id) ? teamThe(t.name) : (named.add(t.id), ownTeamFull(t, s.regWeeks, ref)));
+  const champ = s.done && s.teams.find((t) => t.final === 1), last = s.done && s.teams.find((t) => t.final === n), top = s.teams.find((t) => t.seed === 1) || s.standings[0];
+  const bg = s.done && bowlGame(s), bum = s.done && bumGame(s), runner = bg && s.byId[bg.win === bg.h ? bg.a : bg.h];
+  const sc = (m, w) => (m.win === m.h ? `${f1(m.hp)}–${f1(m.ap)}` : `${f1(m.ap)}–${f1(m.hp)}`);
+  const mostPf = [...s.teams].sort((a, b) => b.pf - a.pf)[0];
+  const weeks = s.played.filter((m) => m.a && s.spans(m.wk).length === 1).flatMap((m) => [{ t: s.byId[m.h], p: m.hp, wk: m.wk }, { t: s.byId[m.a], p: m.ap, wk: m.wk }]);
+  const hi = [...weeks].sort((a, b) => b.p - a.p)[0], lo = [...weeks].sort((a, b) => a.p - b.p)[0];
+  const aw = seasonAwards(s), ma = seasonMgrAwards(s);
+  // Lead
+  let lead = `<p>The <b>${y} Buckaroo Football League season</b> was the league's ${nth(y - D.firstYear + 1)} season, with ${count(n)} teams playing a ${s.regWeeks}-week regular season${s.done ? ` and a ${s.playoffTeams}-team playoff` : ""}.`;
+  if (s.done && champ) lead += ` ${own(champ)} won ${gameLink("bowl", y, bowlName(y))}${runner && bg ? `, beating ${own(runner)} ${sc(bg)}` : ""}.${last ? ` ${cap1(own(last))} finished last${bum ? `, losing the ${gameLink("bum", y, "Bum Bowl")}` : ""}.` : ""}</p>`;
+  else { const o = s.odds, fav = o && [...s.teams].sort((a, b) => o.t[b.id].c[o.t[b.id].c.length - 1] - o.t[a.id].c[o.t[a.id].c.length - 1])[0];
+    const lead0 = s.standings[0]; lead += ` Through week ${Math.max(0, ...s.played.filter((m) => m.wk <= s.regWeeks).map((m) => m.wk))}, ${own(lead0)} ${lead0.final ? "" : "leads"} the standings at ${lead0.w}–${lead0.l}${fav ? `, and <button class="mlink" data-go="odds">Luffy</button> makes ${fav === lead0 ? "them" : own(fav)} the title favorite at ${pct1(o.t[fav.id].c[o.t[fav.id].c.length - 1])}` : ""}.</p>`; }
+  // Regular season
+  const reg = `<h3 class="wikisub">Regular Season</h3><p>${cap1(own(top))} ${s.done ? `earned the No. 1 seed at ${top.w}–${top.l}` : `sits first at ${top.w}–${top.l}`}${mostPf !== top ? `, while ${own(mostPf)} scored the most points (${f1(mostPf.pf)})` : `, and also scored the most points (${f1(mostPf.pf)})`}. ${hi ? `The highest single week was ${f1(hi.p)} by ${own(hi.t)} in week ${hi.wk}; the lowest was ${f1(lo.p)} by ${own(lo.t)} in week ${lo.wk}.` : ""} ${s.trades.length ? `Managers made ${count(s.trades.length)} trade${s.trades.length === 1 ? "" : "s"}${s.done ? "" : " so far"}.` : "No trades were made."}</p>`;
+  // Playoffs
+  let po = "";
+  if (s.done && bg) { const semis = s.matchups.filter((m) => m.wk === bowlWeek(s) - 1 && m.tier === "WINNERS_BRACKET" && m.win);
+    po = `<h3 class="wikisub">Playoffs</h3><p>${cap1(semis.map((m) => `${own(s.byId[m.win])} beat ${own(s.byId[m.win === m.h ? m.a : m.h])} ${sc(m)}`).join("; "))}${semis.length ? ". " : ""}In ${gameLink("bowl", y, bowlName(y))}, ${own(champ)} beat ${own(runner)} ${sc(bg)}${s.spans(bg.wk).length > 1 ? " over two weeks" : ""}.${bum ? ` In the ${gameLink("bum", y, "Bum Bowl")}, ${own(s.byId[bum.win])} sent ${own(last)} to last place, ${sc(bum)}.` : ""}</p>`; }
+  // Awards
+  const awl = AWARDS.filter(([k]) => aw[k]).slice(0, 4).map(([k]) => `${theAw(k)} went to ${pn(aw[k].p.n)}`), mwl = MGR_AWARDS.filter(([k]) => ma[k]).slice(0, 3).map(([k]) => `${theAw(k)} to ${ref(ma[k].ks[0])}`);
+  const awards = awl.length ? `<h3 class="wikisub">Awards</h3><p>${cap1(andList(awl))}${s.done ? "" : " so far"}; among the managers, ${andList(mwl)}. <button class="mlink" data-awyear="${y}" data-go="awards">See every ${y} award</button>.</p>` : "";
+  const review = ALL_NEWS.find((a) => a.id === `review-${y}`);
+  const rv = review ? `<h3 class="wikisub">Season Review</h3><p><button class="mlink" data-go="news-${review.id}">“${esc(review.title)}”</button> <span class="muted">· ${esc(review.dek)}</span></p>` : "";
+  const row = (a, v) => (v ? `<tr><th>${a}</th><td>${v}</td></tr>` : "");
+  const info = `<aside class="infobox box"><div class="ibhead">${y} season</div><div class="ibsub">Buckaroo Football League</div><table>
+    ${row("Teams", n)}${row("Regular season", `${s.regWeeks} weeks`)}${row("Playoff teams", s.playoffTeams)}
+    ${s.done ? `<tr><th colspan="2" class="ibsec">Results</th></tr>${row("Champion", champ ? `${badge(champ, 1)} ${esc(champ.name)} <span class="muted">(${mgrName(champ.mgr)})</span>` : "")}${row("Runner-up", runner ? `${esc(runner.name)} <span class="muted">(${mgrName(runner.mgr)})</span>` : "")}${row("Last place", last ? `${esc(last.name)} <span class="muted">(${mgrName(last.mgr)})</span>` : "")}${row("Title game", gameLink("bowl", y, bowlName(y)))}` : ""}
+    <tr><th colspan="2" class="ibsec">Season</th></tr>${row(s.done ? "No. 1 seed" : "Leader", `${esc(top.name)} <span class="muted">(${top.w}–${top.l})</span>`)}${row("Most points", `${esc(mostPf.name)} <span class="muted">(${f1(mostPf.pf)})</span>`)}${row(awInfo("king").e + " Pirate King", aw.king ? pn(aw.king.p.n) : "")}${row("Trades", s.trades.length)}
+  </table>${succession("season", y)}</aside>`;
+  return `<div class="wiki"><article class="wikimain">${lead}${info.replace('class="infobox box"', 'class="infobox box ibm-only"')}${reg}${po}${awards}${rv}</article>${info.replace('class="infobox box"', 'class="infobox box ibd-only"')}</div>`;
+}
+const cap1 = (x) => x.replace(/^(<[^>]+>)?(\w)/, (m0, tag, c) => (tag || "") + c.toUpperCase());
+// "Preceded by / Succeeded by", like the box at the foot of a Wikipedia article
+function succession(kind, y) {
+  const has = (yy) => S[yy] && (kind === "season" || S[yy].done), prev = has(y - 1) ? y - 1 : null, next = has(y + 1) ? y + 1 : null;
+  const go = (yy) => (kind === "season" ? `<button class="mlink" data-go="${yy}">${yy}</button>` : gameLink(kind, yy, kind === "bowl" ? bowlName(yy) : `${yy} Bum Bowl`));
+  return prev || next ? `<div class="succ"><span>${prev ? `← ${go(prev)}` : ""}</span><span>${next ? `${go(next)} →` : ""}</span></div>` : "";
+}
+function gameView() {
+  const s = S[state.year], y = s.year, kind = state.gameKind, m = kind === "bowl" ? bowlGame(s) : bumGame(s);
+  if (!m) return `<p class="muted">No game on record.</p>`;
+  const title = kind === "bowl" ? bowlName(y) : `${y} Bum Bowl`, win = s.byId[m.win], lose = s.byId[m.win === m.h ? m.a : m.h];
+  const pts = (t) => (t.id === m.h ? m.hp : m.ap), two = s.spans(m.wk).length > 1;
+  const art = ALL_NEWS.find((a) => a.id === `${kind}-${y}`);
+  const ref = refMaker(), named = new Set(), own = (t) => (named.has(t.id) ? teamThe(t.name) : (named.add(t.id), ownTeamFull(t, m.wk, ref)));
+  const op = kind === "bowl" ? seasonAwards(s).onepiece : null;
+  const lead = `<p>${kind === "bowl" ? `<b>${title}</b> was the championship game of the <button class="mlink" data-go="${y}">${y} Buckaroo Football League season</button>` : `The <b>${title}</b> was the consolation game that decided last place in the <button class="mlink" data-go="${y}">${y} season</button>`}, played ${two ? `over weeks ${s.spans(m.wk).join(" and ")}` : `in week ${s.spans(m.wk)[0]}`}. ${cap1(own(win))} beat ${own(lose)}, ${f1(pts(win))}–${f1(pts(lose))}${kind === "bowl" ? "" : `, leaving ${teamThe(lose.name)} last`}.${op ? ` ${pn(op.p.n)} scored ${f1(op.v)} points and won ${awLink("onepiece")} as the game's top scorer.` : ""}</p>`;
+  const body = art ? (art.chapters || [{ heading: "", body: art.body }]).map((c) => `${c.heading ? `<h3 class="wikisub">${esc(c.heading)}</h3>` : ""}${c.body.map((x) => `<p>${esc(x)}</p>`).join("")}`).join("") + aiNote
+    : `<p class="note">The full article on this game is written with the next site update.</p>`;
+  const side = (t) => { const rows = boxSide(s, m, t.id); return `<div class="box scroll"><table class="compact"><thead><tr><th colspan="2">${badge(t, 1)} ${esc(t.name)} <span class="muted">· ${mgrName(t.mgr)}</span></th><th class="n">${f1(pts(t))}</th></tr></thead><tbody>${rows.map((r) => `<tr class="${r.start ? "" : "muted"}"><td>${posTag(r.pos)}${pn(r.n)}</td><td class="muted">${r.start ? "" : "Bench"}</td><td class="n">${f1(r.pts)}${r.proj ? ` <span class="muted">/ ${f1(r.proj)}</span>` : ""}</td></tr>`).join("")}</tbody></table></div>`; };
+  const chart = wpChart(s, m);
+  const row = (a, v) => (v ? `<tr><th>${a}</th><td>${v}</td></tr>` : "");
+  const info = `<aside class="infobox box"><div class="ibhead">${kind === "bowl" ? "🏆" : "🗑️"} ${title}</div><div class="ibsub">${y} season</div><table>
+    <tr><td colspan="2" class="ibscore"><div>${badge(win, 1)} <b>${esc(win.name)}</b><span class="num">${f1(pts(win))}</span></div><div>${badge(lose, 1)} ${esc(lose.name)}<span class="num">${f1(pts(lose))}</span></div></td></tr>
+    ${row("Played", two ? `Weeks ${s.spans(m.wk).join("–")}` : `Week ${s.spans(m.wk)[0]}`)}${row("Seeds", `${win.seed || "—"} vs ${lose.seed || "—"}`)}${row("Winner", `${mgrName(win.mgr)}`)}${row("Margin", f1(Math.abs(m.hp - m.ap)))}${op ? row(`${awInfo("onepiece").e} The One Piece`, pn(op.p.n)) : ""}
+  </table>${succession(kind, y)}</aside>`;
+  return `<div class="vhead"><div><div class="eyebrow">${kind === "bowl" ? "Championship" : "Consolation"} · ${y}</div><h2>${title}</h2></div><button class="pill" data-go="${y}" style="border:0;cursor:pointer">← ${y} season</button></div>
+  <div class="wiki"><article class="wikimain">${lead}${info.replace('class="infobox box"', 'class="infobox box ibm-only"')}${body}${chart ? `<h3 class="wikisub">Win Chance</h3><div class="wpwrap">${chart}</div>` : ""}<h3 class="wikisub">Box Score</h3><div class="boxpair">${side(win)}${side(lose)}</div></article>${info.replace('class="infobox box"', 'class="infobox box ibd-only"')}</div>`;
+}
+
 function seasonView() {
   const y = state.year, s = S[y];
   const n = y - D.firstYear + 1;
@@ -794,7 +874,7 @@ function seasonView() {
   const champ = s.done ? s.teams.find((t) => t.final === 1) : null;
   const status = s.done ? `Champion: ${esc(champ.name)} (${mgrName(champ.mgr)})` : `Week ${s.curWeek} of ${s.regWeeks} · regular season in progress`;
   if (state.tab === "playoffs" && !hasPlayoffs(s)) state.tab = "standings";
-  const tabBody = { standings, playoffs: bracketHtml, odds: oddsTab, weekly, draft, trades, moves, rosters }[state.tab](s);
+  const tabBody = { overview: seasonOverview, standings, playoffs: bracketHtml, odds: oddsTab, weekly, draft, trades, moves, rosters }[state.tab](s);
   return `<div class="vhead"><div><div class="eyebrow">Buckaroo Bowl ${roman(n)}</div><h2>${y} Season</h2><p>${status}</p></div>
     ${!s.done ? `<span class="pill live">● In Progress</span>` : `<span class="pill gold">Final</span>`}</div>
     ${(s.notes || []).map((n) => `<p class="callout">${esc(n)}</p>`).join("")}
@@ -1250,7 +1330,7 @@ function mgrWiki(k, r) {
   const cur = Object.entries(ELO.hist).filter(([, h]) => h[h.length - 1].y === lastYear).sort((a, b) => b[1][b[1].length - 1].r - a[1][a[1].length - 1].r).map(([m]) => m);
   const lrank = cur.indexOf(k) + 1;
   const aw = mgrAwardsOf(k), grouped = Object.values(aw.reduce((o, a) => { (o[a.key] = o[a.key] || { ...a, ys: [] }).ys.push(a.y); return o; }, {}));
-  const bowls = r.titles.map((y) => `<button class="mlink" data-go="${y}-playoffs">Buckaroo Bowl ${roman(y - D.firstYear + 1)}</button> (${y})`);
+  const bowls = r.titles.map((y) => `<button class="mlink" data-go="bowl-${y}">Buckaroo Bowl ${roman(y - D.firstYear + 1)}</button> (${y})`);
   // Lead
   let lead = `<p><b>${mgrName(k)}</b> is a manager in the Buckaroo Football League who has played ${run ? (ys.length === lastYear - D.firstYear + 1 ? `every season since ${ys[0]}` : `from ${ys[0]} to ${ys[ys.length - 1]}`) : `in ${yrs(ys)}`}, as ${andList(teamList)}. ${ref(k)} has a career regular-season record of ${r.w}–${r.l}${r.t ? `–${r.t}` : ""} (${pct(r.w, r.l, r.t)}) and averages ${f1(r.ppg)} points a game.</p>`;
   lead += `<p>${bowls.length ? `${ref(k)} won ${andList(bowls)}` : `${ref(k)} has not yet won a Buckaroo Bowl`}${r.playoffs ? `${bowls.length ? " in" : ", despite reaching the playoffs"} ${bowls.length ? `${count(r.playoffs)} playoff trip${r.playoffs === 1 ? "" : "s"}` : r.playoffs === 1 ? "once" : r.playoffs === 2 ? "twice" : `${count(r.playoffs)} times`}${r.pw + r.pl ? ` (${r.pw}–${r.pl} in playoff games)` : ""}` : ""}.${now ? ` ${ref(k)}'s <button class="mlink" data-go="ratings">Laboon</button> rating stands at ${Math.round(now.r)}${lrank ? `, ${nth(lrank)} in the league` : ""}${peak ? `, with a peak of ${Math.round(peak.r)} in ${peak.y}` : ""}.` : ""}${grouped.length ? ` ${ref(k)} has won ${andList(grouped.map((a) => `the ${awLink(a.key)} award (${yrs(a.ys)})`))}.` : ""}</p>`;
@@ -1271,7 +1351,7 @@ function mgrWiki(k, r) {
     ${row("Playoffs", r.playoffs ? `${r.playoffs} appearance${r.playoffs === 1 ? "" : "s"}${r.pw + r.pl ? ` · ${r.pw}–${r.pl}` : ""}` : "None yet")}
     ${row("Points per game", f1(r.ppg))}
     ${row("Laboon", now ? `${Math.round(now.r)}${lrank ? ` <span class="muted">(${nth(lrank)})</span>` : ""}` : "")}
-    ${bowls.length || grouped.length ? `<tr><th colspan="2" class="ibsec">Honors</th></tr><tr><td colspan="2">${r.titles.map((y) => `<div class="ibh gold">🏆 <button class="mlink" data-go="${y}-playoffs">Buckaroo Bowl ${roman(y - D.firstYear + 1)}</button> Champion</div>`).join("")}${grouped.map((a) => `<div class="ibh${a.key === "bellamy" ? " l" : ""}">${a.e} ${awLink(a.key)} <span class="muted">${yrs(a.ys)}</span></div>`).join("")}</td></tr>` : ""}
+    ${bowls.length || grouped.length ? `<tr><th colspan="2" class="ibsec">Honors</th></tr><tr><td colspan="2">${r.titles.map((y) => `<div class="ibh gold">🏆 <button class="mlink" data-go="bowl-${y}">Buckaroo Bowl ${roman(y - D.firstYear + 1)}</button> Champion</div>`).join("")}${grouped.map((a) => `<div class="ibh${a.key === "bellamy" ? " l" : ""}">${a.e} ${awLink(a.key)} <span class="muted">${yrs(a.ys)}</span></div>`).join("")}</td></tr>` : ""}
   </table></aside>`;
   return `<div class="wiki"><article class="wikimain">${lead}${info.replace('class="infobox box"', 'class="infobox box ibm-only"')}${season}${career}${awards}</article>${info.replace('class="infobox box"', 'class="infobox box ibd-only"')}</div>`;
 }
@@ -1351,6 +1431,26 @@ function eloChart() {
   }
   return svg + `<line class="hoverline" x1="0" x2="0" y1="${T}" y2="${H - B}" style="display:none"/></svg>`;
 }
+// Laboon's wiki-style opening: what it is, where the name comes from, and its records
+function laboonIntro() {
+  const all = Object.entries(ELO.hist).flatMap(([k, hs]) => hs.map((p) => ({ k, ...p })));
+  if (!all.length) return "";
+  const hi = all.reduce((a, b) => (b.r > a.r ? b : a)), lo = all.reduce((a, b) => (b.r < a.r ? b : a)), jump = all.reduce((a, b) => (b.d > a.d ? b : a));
+  // Weeks at No. 1: after each week, whoever is rated highest among that season's managers
+  const atTop = {}; let run = { k: null, n: 0 }, best = { k: null, n: 0 };
+  ELO.steps.forEach((st, i) => { const r = Object.entries(ELO.hist).map(([k, hs]) => { let p = null; for (const h of hs) if (h.i <= i && h.y === st.y) p = h; return p && { k, r: p.r }; }).filter(Boolean).sort((a, b) => b.r - a.r)[0];
+    if (!r) return; atTop[r.k] = (atTop[r.k] || 0) + 1; run = run.k === r.k ? { k: r.k, n: run.n + 1 } : { k: r.k, n: 1 }; if (run.n > best.n) best = { ...run }; });
+  const most = Object.entries(atTop).sort((a, b) => b[1] - a[1])[0];
+  const when = (p) => `${p.y} week ${p.wk}`, fn = (k) => esc(D.managers[k].first);
+  return `<div class="wiki" style="margin-bottom:12px"><article class="wikimain"><p><b>Laboon</b> is the Buckaroo Football League's all-time rating for its managers, kept since the league's first game in ${D.firstYear}. It is an Elo rating, the system chess uses: everyone starts at 1500, every game moves both managers, and beating a higher-rated manager is worth more than beating a lower-rated one. It is named for Laboon, the giant whale in <i>One Piece</i> who waited fifty years at the entrance to the Grand Line and never forgot a friend: like the whale, the rating remembers every game.</p>
+    <p>Where <button class="mlink" data-go="odds">Luffy</button> forecasts the season ahead, Laboon keeps the record of the seasons behind, so it reads more like a résumé than a prediction. The highest rating ever reached is ${Math.round(hi.r)}, by ${fn(hi.k)} after ${when(hi)}; the lowest is ${Math.round(lo.r)}, by ${fn(lo.k)} after ${when(lo)}.${most ? ` ${fn(most[0])} has spent the most weeks at No. 1 (${most[1]})${best.k ? `, and the longest unbroken run on top is ${best.n} weeks by ${fn(best.k)}` : ""}.` : ""} The biggest gain from a single game is +${Math.round(jump.d)}, ${fn(jump.k)}'s win over ${fn(jump.opp)} in ${when(jump)}.</p></article>
+    <aside class="infobox box ibd-only"><div class="ibhead">🐋 Laboon</div><div class="ibsub">Manager rating</div><table>
+      <tr><th>Kind</th><td>Elo, starting at 1500</td></tr><tr><th>Since</th><td>${D.firstYear}</td></tr><tr><th>Games rated</th><td>${ELO.steps.length ? Object.values(ELO.hist).reduce((n, h) => n + h.length, 0) / 2 | 0 : 0}</td></tr>
+      <tr><th colspan="2" class="ibsec">Records</th></tr><tr><th>Highest</th><td>${Math.round(hi.r)} <span class="muted">${mgrName(hi.k)}, ${hi.y}</span></td></tr><tr><th>Lowest</th><td>${Math.round(lo.r)} <span class="muted">${mgrName(lo.k)}, ${lo.y}</span></td></tr>
+      ${most ? `<tr><th>Most weeks at No. 1</th><td>${mgrName(most[0])} <span class="muted">(${most[1]})</span></td></tr>` : ""}<tr><th>Biggest win</th><td>+${Math.round(jump.d)} <span class="muted">${mgrName(jump.k)}, ${jump.y}</span></td></tr>
+    </table></aside></div>`;
+}
+
 function ratingsView() {
   const rows = Object.keys(ELO.hist).map((k) => { const hs = ELO.hist[k], last = hs[hs.length - 1], peak = hs.reduce((a, b) => (b.r > a.r ? b : a)), low = hs.reduce((a, b) => (b.r < a.r ? b : a));
     return { k, r: last.r, last, peak, low, n: hs.length, cur: last.y === lastYear }; }).sort((a, b) => b.cur - a.cur || b.r - a.r);
@@ -1363,7 +1463,7 @@ function ratingsView() {
   // Biggest single-game swings: upsets the rating didn't see coming
   const chance = (p) => 1 / (1 + 10 ** ((p.oppR - p.pre) / 400));
   const ups = Object.entries(ELO.hist).flatMap(([k, hs]) => hs.map((p) => ({ k, ...p }))).filter((p) => p.won === 1).sort((a, b) => chance(a) - chance(b)).slice(0, 5);
-  return `<div class="vhead"><div><div class="eyebrow">All-Time Ratings</div><h2>Laboon</h2><p>A running rating for every manager since 2023 (an Elo rating, named for the whale who never forgets). Beat a higher-rated manager and you gain more; lose to a lower-rated one and you drop more. Hover over the chart (or tap it on a phone) to see everyone that week. Click a manager to highlight the line.</p></div></div>
+  return `<div class="vhead"><div><div class="eyebrow">All-Time Ratings</div><h2>Laboon</h2></div></div>${laboonIntro()}<div class="vhead" style="margin-top:8px"><div><p class="muted">Hover over the chart (or tap it on a phone) to see everyone that week. Click a manager to highlight the line.</p></div></div>
   <div class="box oddswrap elowrap" style="padding:10px 8px 4px">${eloChart()}<div class="oddstip" hidden></div></div>
   <section style="margin-top:16px"><div class="box scroll"><table class="compact elotable"><thead><tr><th class="n">#</th><th>Manager</th><th class="n">Rating</th><th class="n">Last Game</th><th class="n wide">Peak</th><th class="n wide">Low</th><th class="n wide">Games</th></tr></thead><tbody>${body}</tbody></table></div></section>
   <section><h3>Biggest Upsets</h3><div class="box rec"><ol class="swing">${ups.map((p) => `<li><span>${mbadge(p.k, 1)} <b>${mgrName(p.k)}</b> beat ${mgrName(p.opp)} <span class="muted">· ${p.y} wk ${p.wk}${ELO.steps[p.i].po ? " · playoffs" : ""}</span><small class="ctx sub">${f1(p.pts)}–${f1(p.op)} with a ${Math.round(100 * chance(p))}% chance by rating</small></span><span class="num w">+${Math.round(p.d)}</span></li>`).join("")}</ol></div>
@@ -1586,6 +1686,8 @@ const AW_DEF = {
   marco: "the manager whose Laboon rating climbs the most over the season",
 };
 const awInfo = (k) => { const a = AWARDS.find((x) => x[0] === k); if (a) return { k, e: a[1], nm: a[2], cat: a[3], why: a[4], mgr: false }; const m = MGR_AWARDS.find((x) => x[0] === k); return m && { k, e: m[1], nm: m[2], cat: m[3], why: m[4], mgr: true }; };
+// "the Pirate King" but "The One Piece" (its name already has the article)
+const theAw = (k) => (/^The /.test(awInfo(k).nm) ? awLink(k) : `the ${awLink(k)}`);
 const awLink = (k, label) => `<button class="mlink awl" data-go="aw-${k}">${label ?? awInfo(k).nm}</button>`;
 function awardView() {
   const a = awInfo(state.aw); if (!a) return "";
@@ -1758,12 +1860,13 @@ const count = (n) => ["zero", "one", "two", "three", "four", "five", "six", "sev
 const POS_PLURAL = { QB: "quarterbacks", RB: "running backs", WR: "wide receivers", TE: "tight ends", K: "kickers", "D/ST": "defenses" };
 // "Kaushal P.'s Habibsters" (a leading "The" is dropped: "Randy D.'s fumblers")
 // Team names in a sentence: "the Habibsters", "the fumblers", but "Ben Dover" and "Team Pillbert" as they are
-const teamThe = (nm) => (/^The /.test(nm) ? `the ${esc(nm.slice(4))}` : /s$/.test(nm) ? `the ${esc(nm)}` : esc(nm));
+const teamThe = (nm) => (/^The /.test(nm) ? `the ${esc(nm.slice(4))}` : /s$/.test(nm) && !/'s /.test(nm) ? `the ${esc(nm)}` : esc(nm)); // not "the Ramon's Remains"
 // Managers in prose: first name, then the everyday nickname the stories already use, in turn
 const NICK = { alan: "Philly", ramon: "Brucie", mekhi: "Kai", kaushal: "Habib", jordan: "JMoney", zoe: "Z²" };
 // (a name the team name already contains is skipped: not "Habib's Habibsters")
 const refMaker = () => { const n = {}; return (k, avoid = "") => { const opts = [D.managers[k].first, ...(NICK[k] ? [NICK[k]] : [])].filter((o, j, a) => j === 0 || !avoid.includes(o)), i = (n[k] = (n[k] || 0) + 1) - 1; return esc(opts[i % opts.length]); }; };
-const ownTeamFull = (t, wk, ref) => `${ref ? ref(mgrAt(t, wk || 1), nameAt(t, wk || 1)) : esc(D.managers[mgrAt(t, wk || 1)].first)}'s ${esc(nameAt(t, wk || 1).replace(/^The /, ""))}`;
+// (a team named for its manager stands alone: "Ramon's Remains", not "Ramon's Ramon's Remains")
+const ownTeamFull = (t, wk, ref) => { const k = mgrAt(t, wk || 1), nm = nameAt(t, wk || 1); if (nm.includes(D.managers[k].first)) return esc(nm); return `${ref ? ref(k, nm) : esc(D.managers[k].first)}'s ${esc(nm.replace(/^The /, ""))}`; };
 const seasonRank = (y, p) => {
   const tot = PL.map((q) => ({ q, v: sum(q.weeks.filter((w) => w.y === y && w.fin && w.start), (w) => w.pts) })).filter((x) => x.v > 0);
   const all = [...tot].sort((a, b) => b.v - a.v), pos = all.filter((x) => x.q.pos === p.pos);
@@ -1819,7 +1922,7 @@ function seasonStory(p, y, ref = refMaker()) {
   const team = st.length ? mostAtTeam(st) : ws.length ? ws[ws.length - 1].t : null;
   if (s.done && team) {
     const bowl = has("onepiece");
-    if (team.final === 1) out.push(cap(`${ownTeam(team, s.regWeeks + 1)} went on to win <button class="mlink" data-go="${y}-playoffs">Buckaroo Bowl ${roman(y - D.firstYear + 1)}</button>${bowl ? `, and ${his} ${f1(bowl.a.v)} points in the final made ${him} its ${awLink("onepiece")} winner` : ""}.`));
+    if (team.final === 1) out.push(cap(`${ownTeam(team, s.regWeeks + 1)} went on to win <button class="mlink" data-go="bowl-${y}">Buckaroo Bowl ${roman(y - D.firstYear + 1)}</button>${bowl ? `, and ${his} ${f1(bowl.a.v)} points in the final, the most on the team, won ${him} ${theAw("onepiece")}` : ""}.`));
     else if (team.final === s.teams.length) out.push(cap(`${ownTeam(team, s.regWeeks + 1)} finished last.`));
     else if (team.final) out.push(cap(`${ownTeam(team, s.regWeeks + 1)} finished ${nth(team.final)}.`));
   } else if (!s.done && team) out.push(`The season is still under way.`);
@@ -1842,8 +1945,8 @@ function wikiHtml(p, best) {
     : `${art(posN)} ${posN}${nowTeam || nfl ? ` for the ${esc(nowTeam || nfl)}` : ""}`;
   const grouped = Object.values(aw.reduce((o, a) => { (o[a.k] = o[a.k] || { ...a, ys: [] }).ys.push(a.y); return o; }, {}));
   const SHAME = { ace: "the league's most costly donut", buggy: "the season's biggest bust" };
-  const won = grouped.filter((a) => !SHAME[a.k]).map((a) => `the ${awLink(a.k)} award (${yrs(a.ys)})`);
-  const honors = [...rings.map((r) => `won <button class="mlink" data-go="${r.y}-playoffs">Buckaroo Bowl ${roman(r.n)}</button> with the ${esc(r.team)}`), ...(won.length ? [`took home ${andList(won)}`] : [])];
+  const won = grouped.filter((a) => !SHAME[a.k]).map((a) => `${theAw(a.k)} award (${yrs(a.ys)})`);
+  const honors = [...rings.map((r) => `won <button class="mlink" data-go="bowl-${r.y}">Buckaroo Bowl ${roman(r.n)}</button> with the ${esc(r.team)}`), ...(won.length ? [`took home ${andList(won)}`] : [])];
   const it = p.pos === "D/ST", He = it ? "It" : "He";
   const shame = grouped.filter((a) => SHAME[a.k]);
   const span = p.years.length > 1 && p.years[p.years.length - 1] - p.years[0] === p.years.length - 1 ? `from ${p.years[0]} to ${p.years[p.years.length - 1]}` : `in ${yrs(p.years)}`;
@@ -1865,7 +1968,7 @@ function wikiHtml(p, best) {
     ${row("BFL seasons", yrs(p.years))}
     ${row("Managers", p.mgrs.map((k) => `<span class="ibm">${mbadge(k, 1)} <button class="mlink" data-go="mgr-${k}">${mgrName(k)}</button></span>`).join(""))}
     ${row("Drafted", drafted.join("<br>") || "Undrafted")}
-    ${rings.length || aw.length ? `<tr><th colspan="2" class="ibsec">Honors</th></tr><tr><td colspan="2">${rings.map((r) => `<div class="ibh gold">🏆 <button class="mlink" data-go="${r.y}-playoffs">Buckaroo Bowl ${roman(r.n)}</button> Champion <span class="muted">(${esc(r.team)})</span></div>`).join("")}${grouped.map((a) => `<div class="ibh${SHAME[a.k] ? " l" : ""}">${a.e} ${awLink(a.k)} <span class="muted">${yrs(a.ys)}</span></div>`).join("")}</td></tr>` : ""}
+    ${rings.length || aw.length ? `<tr><th colspan="2" class="ibsec">Honors</th></tr><tr><td colspan="2">${rings.map((r) => `<div class="ibh gold">🏆 <button class="mlink" data-go="bowl-${r.y}">Buckaroo Bowl ${roman(r.n)}</button> Champion <span class="muted">(${esc(r.team)})</span></div>`).join("")}${grouped.map((a) => `<div class="ibh${SHAME[a.k] ? " l" : ""}">${a.e} ${awLink(a.k)} <span class="muted">${yrs(a.ys)}</span></div>`).join("")}</td></tr>` : ""}
     <tr><th colspan="2" class="ibsec">BFL career</th></tr>
     ${row("Starts", p.starts)}
     ${row("Points as a starter", f1(p.ptsS))}
@@ -2165,7 +2268,7 @@ function home() {
 // ---------- News & Social (written by Claude after each week, trade and season; see news.js) ----------
 const ALL_NEWS = (D.news && D.news.articles) || [];
 // Career profiles live on manager pages, not in the news feed (newest per manager)
-const NEWS = ALL_NEWS.filter((a) => !["profile", "history", "rankings", "live"].includes(a.type));
+const NEWS = ALL_NEWS.filter((a) => !["profile", "history", "rankings", "live", "bowl"].includes(a.type));
 // Posts made during games (live.js) live in the feed only
 const LIVE = ALL_NEWS.filter((a) => a.type === "live");
 // The league history (newest), shown in the trophy room
@@ -2387,7 +2490,7 @@ function render() {
   chrome();
   if (mapObj) { mapObj.remove(); mapObj = null; }
   const v = state.view;
-  $("#app").innerHTML = sectionTabs(v) + (v === "season" ? seasonView() : v === "mgr" ? mgrView() : v === "managers" ? managers() : v === "players" ? playersView() : v === "player" ? playerView() : v === "home" ? home() : v === "news" ? newsView() : v === "rankings" ? rankingsView() : v === "article" ? articleView() : v === "social" ? socialView() : v === "odds" ? oddsView() : v === "map" ? mapView() : v === "overrated" ? overratedView() : v === "transactions" ? txView() : v === "h2h" ? h2h() : v === "ratings" ? ratingsView() : v === "records" ? records() : v === "award" ? awardView() : v === "awards" ? awardsView("p") : v === "mgrawards" ? awardsView("m") : trophies());
+  $("#app").innerHTML = sectionTabs(v) + (v === "season" ? seasonView() : v === "mgr" ? mgrView() : v === "managers" ? managers() : v === "players" ? playersView() : v === "player" ? playerView() : v === "home" ? home() : v === "news" ? newsView() : v === "rankings" ? rankingsView() : v === "article" ? articleView() : v === "social" ? socialView() : v === "odds" ? oddsView() : v === "map" ? mapView() : v === "overrated" ? overratedView() : v === "transactions" ? txView() : v === "h2h" ? h2h() : v === "ratings" ? ratingsView() : v === "records" ? records() : v === "award" ? awardView() : v === "game" ? gameView() : v === "awards" ? awardsView("p") : v === "mgrawards" ? awardsView("m") : trophies());
   document.title = "Buckaroo League History";
   if (v === "map") initMap();
   if (v === "season") setTimeout(celebrate, 200);
@@ -2404,7 +2507,7 @@ $("#app").addEventListener("click", (e) => {
     window.scrollTo({ top: card ? card.getBoundingClientRect().top + window.scrollY - (rail ? rail.offsetHeight : 0) - 10 : state.openFrom || 0 });
     return; }
   const gw = e.target.closest("[data-goweek]"); if (gw) { const [y, w] = gw.dataset.goweek.split("|").map(Number); state.week = w; state.open = null; go(`${y}-weekly`); return; }
-  const ay = e.target.closest("[data-awyear]"); if (ay) { state.awYear = +ay.dataset.awyear; render(); return; }
+  const ay = e.target.closest("[data-awyear]"); if (ay) { state.awYear = +ay.dataset.awyear; if (!ay.dataset.go) { render(); return; } } // a link can also pick the year it opens to
   const oy = e.target.closest("[data-oddsyear]"); if (oy) { state.oddsYear = +oy.dataset.oddsyear; state.oddsFocus = null; render(); return; }
   const ok = e.target.closest("[data-oddskey]"); if (ok) { state.oddsKey = ok.dataset.oddskey; render(); return; }
   const ef = e.target.closest("[data-elofocus]"); if (ef) { state.eloFocus = state.eloFocus === ef.dataset.elofocus ? null : ef.dataset.elofocus; render(); return; }
