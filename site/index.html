@@ -1536,7 +1536,7 @@ function awardsView(kind) {
     cards = AWARDS.filter(([k]) => a[k]).map(([k, e, nm, cat, why]) => { const x = a[k];
       return `<div class="box award${k === "ace" || k === "buggy" ? " shame" : k === "king" || k === "onepiece" ? " top" : ""}" title="${esc(why)}"><div class="k">${e} ${awLink(k)} <span class="muted">· ${cat}</span></div><div class="who">${posTag(x.p.pos)}${pn(x.p.n)}</div><small class="muted">${badge(x.t, 1)} ${esc(x.t.name)} · ${mgrName(x.t.mgr)}</small><small>${x.stat}</small>${topFive(x.top5, (r) => `${posTag(r.p.pos)}${pn(r.p.n)}`, (r) => `${esc(r.t.name)} · `)}</div>`; }).join(""); }
   const list = mgr ? MGR_AWARDS : AWARDS;
-  return `<div class="vhead"><div><div class="eyebrow">${s.done ? `Buckaroo Bowl ${roman(y - D.firstYear + 1)} · ${y}` : `${y} · so far`}</div><h2>${mgr ? "Manager" : "Player"} Awards</h2><p>${mgr ? "The things a title doesn't measure, named for the Straw Hats' friends and foes." : "The season's best (and worst) players, named for the Straw Hats and friends."} ${s.done ? "" : "The season isn't over, so these are the leaders so far."}</p></div>${bar}</div>
+  return `<div class="vhead"><div><div class="eyebrow">${s.done ? `Buckaroo Bowl ${roman(y - D.firstYear + 1)} · ${y}` : `${y} · so far`}</div><h2>${mgr ? "Manager" : "Player"} Awards</h2><p>${mgr ? "The things a title doesn't measure, named for the Strawhats' friends and foes." : "The season's best (and worst) players, named for the Strawhats and friends."} ${s.done ? "" : "The season isn't over, so these are the leaders so far."}</p></div>${bar}</div>
   <div class="awgrid">${cards || `<p class="muted">Nothing to award yet.</p>`}</div>
   <section><h3>How They're Decided</h3><div class="box rec"><ol class="swing">${list.map(([k, e, nm, cat, why]) => `<li><span>${e} <b>${awLink(k)}</b> <span class="muted">· ${cat}</span><small class="ctx sub">${esc(why)}</small></span></li>`).join("")}</ol></div>
   <p class="note">${mgr ? "Luck and blunders count regular-season weeks (blunders count playoffs too). Every award has one winner; a tie on a count goes to the bigger margin." : "Points count only in weeks a lineup played a game, playoffs and consolation games included. The team shown is where he scored the most."}</p></section>`;
@@ -1546,16 +1546,16 @@ function awardsView(kind) {
 const AW_NAMED = {
   king: "Named for the title Luffy has chased since the first chapter: King of the Pirates, last held by Gol D. Roger.",
   onepiece: "Named for Gol D. Roger's treasure, the prize waiting at the end of the Grand Line.",
-  nami: "Named for the Straw Hats' navigator. She steers the ship; a quarterback steers the offense.",
-  sanji: "Named for the Straw Hats' cook, who fights only with his legs.",
-  zoro: "Named for the Straw Hats' swordsman, whose famously bad sense of direction makes him an interesting choice for a route runner.",
-  franky: "Named for the Straw Hats' cyborg shipwright, built like a tank.",
-  usopp: "Named for the Straw Hats' sniper, deadly accurate from long range.",
-  jinbe: "Named for the Straw Hats' helmsman, a Fish-Man Karate master and the crew's wall.",
-  robin: "Named for the Straw Hats' archaeologist, who digs up what history buried.",
+  nami: "Named for the Strawhats' navigator. She steers the ship; a quarterback steers the offense.",
+  sanji: "Named for the Strawhats' cook, who fights only with his legs.",
+  zoro: "Named for the Strawhats' swordsman, whose famously bad sense of direction makes him an interesting choice for a route runner.",
+  franky: "Named for the Strawhats' cyborg shipwright, built like a tank.",
+  usopp: "Named for the Strawhats' sniper, deadly accurate from long range.",
+  jinbe: "Named for the Strawhats' helmsman, a Fish-Man Karate master and the crew's wall.",
+  robin: "Named for the Strawhats' archaeologist, who digs up what history buried.",
   sunny: "Named for the Thousand Sunny, the ship Franky built to replace the Going Merry: the upgrade you trade for.",
-  chopper: "Named for the Straw Hats' doctor, who gets people back on their feet.",
-  brook: "Named for the Straw Hats' musician, a skeleton who waited decades on his own, like points left on a bench.",
+  chopper: "Named for the Strawhats' doctor, who gets people back on their feet.",
+  brook: "Named for the Strawhats' musician, a skeleton who waited decades on his own, like points left on a bench.",
   buggy: "Named for Buggy the Clown, who keeps rising in rank without ever quite earning it.",
   ace: "Named for Portgas D. Ace. Around the league, a zero is a donut, and a donut is an Ace.",
   vegapunk: "Named for Dr. Vegapunk, the world's greatest scientist, who plans everything years ahead.",
