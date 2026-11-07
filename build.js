@@ -513,7 +513,25 @@ const locations = exists("locations.json") ? load("locations.json") : null;
 const order = [];
 for (const s of seasons) for (const t of [...s.teams].sort((a, b) => a.id - b.id)) for (const k of [t.mgr, ...(t.eras || []).map((e) => e.mgr)]) if (!order.includes(k)) order.push(k);
 const orderedManagers = Object.fromEntries(order.filter((k) => managers[k]).map((k) => [k, managers[k]]));
-const dataJs = "window.LEAGUE = " + JSON.stringify({ league: "Buckaroo Football League", firstYear: 2023, built: new Date().toISOString(), managers: orderedManagers, seasons, locations, news }) + ";\n";
+// NFL status for everyone who has been on a league roster, from ESPN's newest player pool (it lists inactive
+// players too): "t" on a team (with its abbreviation), "f" free agent, "r" retired (inactive, or gone from the pool).
+// Without a pool file (local builds) there's no status, and player pages fall back to the last team seen.
+const nflStatus = (() => {
+  const y = years[years.length - 1], f = y && path.join(DATA, `players_${y}.json`);
+  if (!f || !fs.existsSync(f)) return null;
+  const pool = new Map(JSON.parse(fs.readFileSync(f, "utf8")).map((p) => [p.fullName, p]));
+  const names = new Set(seasons.flatMap((s) => [...Object.values(s.lineups).flatMap((L) => Object.values(L).flat().map((e) => e.n)), ...s.draft.map((d) => d.n)]));
+  const out = {};
+  for (const n of names) {
+    if (/D\/ST$/.test(n)) continue;
+    const p = pool.get(n);
+    out[n] = !p || p.active === false ? "r" : p.proTeamId ? `t:${PRO[p.proTeamId] || "?"}` : "f";
+  }
+  const c = { t: 0, f: 0, r: 0 }; for (const v of Object.values(out)) c[v[0]]++;
+  console.log(`::notice::NFL status from players_${y}.json (${pool.size} in pool): ${c.t} on a team, ${c.f} free agents, ${c.r} retired or gone; e.g. retired: ${Object.keys(out).filter((n) => out[n] === "r").slice(0, 12).join(", ") || "none"}`);
+  return out;
+})();
+const dataJs = "window.LEAGUE = " + JSON.stringify({ league: "Buckaroo Football League", firstYear: 2023, built: new Date().toISOString(), managers: orderedManagers, seasons, locations, news, nflStatus }) + ";\n";
 fs.mkdirSync(path.join(__dirname, "site"), { recursive: true });
 fs.writeFileSync(path.join(__dirname, "site", "data.js"), dataJs);
 // public/ is the standalone website: site/index.html is a page body, so give it a full document shell

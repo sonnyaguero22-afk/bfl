@@ -1825,18 +1825,28 @@ function seasonStory(p, y, ref = refMaker()) {
 }
 const mostAtTeam = (ws) => { const c = new Map(); for (const w of ws) c.set(w.t, (c.get(w.t) || 0) + w.pts); return [...c.entries()].sort((a, b) => b[1] - a[1])[0][0]; };
 
+// Is he on a league roster right now? (in a lineup, starting or bench, in the newest week of the newest season)
+const lastOnRoster = (p) => { const s = S[lastYear]; if (!s) return false; const wk = Math.max(0, ...Object.keys(s.lineups).map(Number)); return Object.values(s.lineups[wk] || {}).some((L) => L.some((e) => e.n === p.n)); };
 function wikiHtml(p, best) {
   const nfl = NFL_TEAMS[p.pro], rings = ringsOf(p), aw = awardsOf(p);
   const tm = (t, y, wk) => `<b>${esc(nameAt(t, wk || 1))}</b> (${mgrName(mgrAt(t, wk || 1))})`;
   // Lead paragraph
-  const role = p.pos === "D/ST" ? `the ${nfl ? esc(nfl) : esc(p.pro)} defense` : `${/^[aeiou]/.test(POS_NAME[p.pos] || "") ? "an" : "a"} ${POS_NAME[p.pos] || esc(p.pos)}${nfl ? ` for the ${esc(nfl)}` : ""}`;
+  // NFL status from ESPN's current player pool (see build.js): on a team, a free agent, or retired
+  const st = (D.nflStatus || {})[p.n] || "", nowTeam = st.startsWith("t:") ? NFL_TEAMS[st.slice(2)] : null, posN = POS_NAME[p.pos] || esc(p.pos);
+  const art = (w) => (/^[aeiou]/.test(w) ? "an" : "a");
+  const role = p.pos === "D/ST" ? `the ${nfl ? esc(nfl) : esc(p.pro)} defense`
+    : st === "r" ? `a former NFL ${posN}${nfl ? ` who last played for the ${esc(nfl)}` : ""}`
+    : st === "f" ? `a free-agent ${posN}${nfl ? `, last with the ${esc(nfl)}` : ""}`
+    : `${art(posN)} ${posN}${nowTeam || nfl ? ` for the ${esc(nowTeam || nfl)}` : ""}`;
   const grouped = Object.values(aw.reduce((o, a) => { (o[a.k] = o[a.k] || { ...a, ys: [] }).ys.push(a.y); return o; }, {}));
   const SHAME = { ace: "the league's most costly donut", buggy: "the season's biggest bust" };
   const won = grouped.filter((a) => !SHAME[a.k]).map((a) => `the ${awLink(a.k)} award (${yrs(a.ys)})`);
   const honors = [...rings.map((r) => `won <button class="mlink" data-go="${r.y}-playoffs">Buckaroo Bowl ${roman(r.n)}</button> with the ${esc(r.team)}`), ...(won.length ? [`took home ${andList(won)}`] : [])];
   const it = p.pos === "D/ST", He = it ? "It" : "He";
   const shame = grouped.filter((a) => SHAME[a.k]);
-  let lead = `<p><b>${esc(p.n)}</b> is ${role} ${it ? "that" : "who"} has been on a Buckaroo Football League roster ${p.years.length > 1 && p.years[p.years.length - 1] - p.years[0] === p.years.length - 1 ? `from ${p.years[0]} to ${p.years[p.years.length - 1]}` : `in ${yrs(p.years)}`}. ${p.mgrs.length ? `${He} has played for ${andList(p.mgrs.map((k) => `<button class="mlink" data-go="mgr-${k}">${mgrName(k)}</button>`))}${p.starts ? `, scoring ${f1(p.ptsS)} points in ${p.starts} start${p.starts === 1 ? "" : "s"}` : ""}.` : ""}</p>`;
+  const span = p.years.length > 1 && p.years[p.years.length - 1] - p.years[0] === p.years.length - 1 ? `from ${p.years[0]} to ${p.years[p.years.length - 1]}` : `in ${yrs(p.years)}`;
+  const mgrs = andList(p.mgrs.map((k) => `<button class="mlink" data-go="mgr-${k}">${mgrName(k)}</button>`));
+  let lead = `<p><b>${esc(p.n)}</b> is ${role}. ${He} ${lastOnRoster(p) ? "has been" : "was"} on a Buckaroo Football League roster ${span}${p.mgrs.length ? `, playing for ${mgrs}` : ""}${p.starts ? ` and scoring ${f1(p.ptsS)} points in ${p.starts} start${p.starts === 1 ? "" : "s"}` : ""}.</p>`;
   if (honors.length || shame.length) lead += `<p>${honors.length ? `${He} ${andList(honors)}.` : ""}${shame.map((a) => ` ${He} also owns ${a.e} ${awLink(a.k)}, ${SHAME[a.k]}, for ${yrs(a.ys)}.`).join("")}</p>`;
   // BFL career, one section per season, told as prose
   const pageRef = refMaker();
@@ -1849,6 +1859,7 @@ function wikiHtml(p, best) {
   const drafted = p.ev.filter((e) => e.type === "draft").map((e) => `${e.y}: <span title="Round ${e.rd}, pick ${e.rp} (${ordinal(e.o)} overall)">${e.rd}.${String(e.rp).padStart(2, "0")}</span> · ${esc(nameAt(e.t, 1))}`);
   const row = (k, v) => (v ? `<tr><th>${k}</th><td>${v}</td></tr>` : "");
   const info = `<aside class="infobox box"><div class="ibhead">${esc(p.n)}</div><div class="ibsub">${posTag(p.pos)} ${nfl ? esc(nfl) : esc(p.pro)}</div><table>
+    ${row("NFL status", st === "r" ? "Retired" : st === "f" ? "Free agent" : nowTeam ? esc(nowTeam) : "")}
     ${row("BFL seasons", yrs(p.years))}
     ${row("Managers", p.mgrs.map((k) => `<span class="ibm">${mbadge(k, 1)} <button class="mlink" data-go="mgr-${k}">${mgrName(k)}</button></span>`).join(""))}
     ${row("Drafted", drafted.join("<br>") || "Undrafted")}
