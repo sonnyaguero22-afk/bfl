@@ -64,9 +64,13 @@ The decisions and backtests are logged in the "BFL Model Log" Google Doc in Sonn
 - Commit messages: a short summary line, then a few lines on what and why.
 - The site defaults to dark mode with a light toggle; check both when changing colors. Gold marks the Buckaroo Bowl; winners in brackets are outlined in white.
 
-## Next steps (as of late October 2026)
+## Next steps (as of early November 2026)
 
-- After week 8 (the first full trial): review live post quality and cost, and grade the pregame and live win chances against ESPN's.
+- **Apple Sports redesign (preview on branch `claude/relaxed-bohr-gwb4kq`, not on `main`):** dark mode in navy and frosted glass, game sheets (split team colors, big condensed scores, Team Stats bars, a pinned score bar with Stats / Ones to Watch / Lineups tabs), Home's scoreboard as one card with a row per game and a ★ My Team pin (saved in the browser; the page tints to that team's color), and clean standings tables with one cut line. Sonny's feedback: "I like this the most so far," but he's unsure about the star for following teams, and wants to see the blue look in both a dark and a light mode (light mode currently keeps the old style). To do: rethink or drop the My Team star, build an Apple Sports-style light mode, switch the weekly page's unopened game cards to the new rows, then merge to `main` once he approves.
+- Add the BFL Model Log entries for Laboon, the awards and Down the Stretch (needs the Google Docs connector, or Sonny pastes the drafted entry).
+- Rivalry pages right after the season (score pairs on playoff meetings, close games, trades and streaks; Opus article, infobox, every meeting).
+- Refresh `LEAGUE_LORE_II` after week 10 with this season's storylines.
 - Build the Report Card page from `history/` and publish its data as a CSV that a Google Sheet pulls in with `IMPORTDATA`.
 - Weekly self-tuning of the hand-set odds settings, adopting a change only if it wins on seasons it wasn't tuned on.
 - Preseason predictions by the panel, graded during the season (next draft).
+- The "bfl" cloud environment can read the live site (`sonnyaguero22-afk.github.io`), so a session can analyze live data such as rosters and projections (`data.js`).
