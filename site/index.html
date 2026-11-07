@@ -1236,7 +1236,7 @@ function managers() {
 
 // ---------- Manager pages read like a wiki article: infobox, a lead from the numbers, the career profile ----------
 function mgrWiki(k, r) {
-  const first = esc(D.managers[k].first);
+  const ref = refMaker();
   // Team names, run together across seasons: "Ben Dover (2023–2025), The Horse is Hea (2026)"
   const names = []; for (const s of r.seasons) { const t = s.teams.find((x) => x.mgr === k || (x.eras || []).some((e) => e.mgr === k)); const nm = t.eras ? [...new Set(t.eras.filter((e) => e.mgr === k).map((e) => e.name))].join(", then ") : t.name; const last = names[names.length - 1]; if (last && last.nm === nm) last.ys.push(s.year); else names.push({ nm, ys: [s.year] }); }
   // "the Habibsters", "the Dawgs", but "Ben Dover" and "The fumblers" as they are
@@ -1250,8 +1250,8 @@ function mgrWiki(k, r) {
   const aw = mgrAwardsOf(k), grouped = Object.values(aw.reduce((o, a) => { (o[a.key] = o[a.key] || { ...a, ys: [] }).ys.push(a.y); return o; }, {}));
   const bowls = r.titles.map((y) => `<button class="mlink" data-go="${y}-playoffs">Buckaroo Bowl ${roman(y - D.firstYear + 1)}</button> (${y})`);
   // Lead
-  let lead = `<p><b>${mgrName(k)}</b> is a manager in the Buckaroo Football League who has played ${run ? (ys.length === lastYear - D.firstYear + 1 ? `every season since ${ys[0]}` : `from ${ys[0]} to ${ys[ys.length - 1]}`) : `in ${yrs(ys)}`}, as ${andList(teamList)}. ${first} has a career regular-season record of ${r.w}–${r.l}${r.t ? `–${r.t}` : ""} (${pct(r.w, r.l, r.t)}) and averages ${f1(r.ppg)} points a game.</p>`;
-  lead += `<p>${bowls.length ? `${first} won ${andList(bowls)}` : `${first} has not yet won a Buckaroo Bowl`}${r.playoffs ? `${bowls.length ? " in" : ", despite reaching the playoffs"} ${bowls.length ? `${count(r.playoffs)} playoff trip${r.playoffs === 1 ? "" : "s"}` : r.playoffs === 1 ? "once" : r.playoffs === 2 ? "twice" : `${count(r.playoffs)} times`}${r.pw + r.pl ? ` (${r.pw}–${r.pl} in playoff games)` : ""}` : ""}.${now ? ` ${first}'s <button class="mlink" data-go="ratings">Laboon</button> rating stands at ${Math.round(now.r)}${lrank ? `, ${nth(lrank)} in the league` : ""}${peak ? `, with a peak of ${Math.round(peak.r)} in ${peak.y}` : ""}.` : ""}${grouped.length ? ` ${first} has won ${andList(grouped.map((a) => `the ${awLink(a.key)} award (${yrs(a.ys)})`))}.` : ""}</p>`;
+  let lead = `<p><b>${mgrName(k)}</b> is a manager in the Buckaroo Football League who has played ${run ? (ys.length === lastYear - D.firstYear + 1 ? `every season since ${ys[0]}` : `from ${ys[0]} to ${ys[ys.length - 1]}`) : `in ${yrs(ys)}`}, as ${andList(teamList)}. ${ref(k)} has a career regular-season record of ${r.w}–${r.l}${r.t ? `–${r.t}` : ""} (${pct(r.w, r.l, r.t)}) and averages ${f1(r.ppg)} points a game.</p>`;
+  lead += `<p>${bowls.length ? `${ref(k)} won ${andList(bowls)}` : `${ref(k)} has not yet won a Buckaroo Bowl`}${r.playoffs ? `${bowls.length ? " in" : ", despite reaching the playoffs"} ${bowls.length ? `${count(r.playoffs)} playoff trip${r.playoffs === 1 ? "" : "s"}` : r.playoffs === 1 ? "once" : r.playoffs === 2 ? "twice" : `${count(r.playoffs)} times`}${r.pw + r.pl ? ` (${r.pw}–${r.pl} in playoff games)` : ""}` : ""}.${now ? ` ${ref(k)}'s <button class="mlink" data-go="ratings">Laboon</button> rating stands at ${Math.round(now.r)}${lrank ? `, ${nth(lrank)} in the league` : ""}${peak ? `, with a peak of ${Math.round(peak.r)} in ${peak.y}` : ""}.` : ""}${grouped.length ? ` ${ref(k)} has won ${andList(grouped.map((a) => `the ${awLink(a.key)} award (${yrs(a.ys)})`))}.` : ""}</p>`;
   // Current season, from the latest recap's team bio
   const t = S[lastYear] && S[lastYear].teams.find((x) => x.mgr === k), b = t && D.news && D.news.bios[lastYear] && D.news.bios[lastYear][t.id];
   const season = live && b ? `<h3 class="wikisub">${lastYear} Season</h3><p>${esc(b.bio)} <span class="muted">(after week ${b.wk})</span></p>` : "";
@@ -1598,13 +1598,14 @@ function awardView() {
   const the = /^The /.test(a.nm) ? "" : "The ";
   const lead = `<p>${the}<b>${a.e} ${esc(a.nm)}</b> is awarded each Buckaroo Football League season to ${AW_DEF[a.k]}. ${esc(AW_NAMED[a.k] || "")}</p>`;
   // History: the winners in order, as sentences
-  const who = (r) => (a.mgr ? `<button class="mlink" data-go="mgr-${r.w.ks[0]}">${mgrName(r.w.ks[0])}</button>` : `${pn(r.w.p.n)} of ${ownTeamFull(r.w.t, r.s.regWeeks)}`);
+  const ref = refMaker();
+  const who = (r) => (a.mgr ? `<button class="mlink" data-go="mgr-${r.w.ks[0]}">${mgrName(r.w.ks[0])}</button>` : `${pn(r.w.p.n)} of ${ownTeamFull(r.w.t, r.s.regWeeks, ref)}`);
   const why = (r) => { if (a.k === "ace" && r.w.x) { const x = r.w.x; return `${f1(x.w.pts)} on a ${f1(x.w.proj || 0)} projection in week ${x.w.wk}${x.lost ? `, ${aNum(f1(x.margin))} ${f1(x.margin)}-point loss` : ""}${x.flip ? " his projection alone would have won" : ""}`; } return r.w.stat.replace(/\bpts\b/g, "points").replace(/ · .*$/, ""); };
   const short = (r) => (a.mgr ? mgrName(r.w.ks[0]) : esc(r.w.p.n.split(" ").slice(1).join(" ") || r.w.p.n));
   const seen = {}, hist = [...final].reverse().map((r, i) => { const k = whoKey(r), n = (seen[k] = (seen[k] || 0) + 1);
     const yl = `<button class="mlink" data-go="${r.s.year}">${r.s.year}</button>`;
     if (i === 0) return `It was first awarded in ${yl}, to ${who(r)} (${why(r)}).`;
-    if (n > 1) return `In ${yl}, ${short(r)} won it ${n === 2 ? "again" : `for the ${nth(n)} time`}${a.mgr ? "" : `, this time for ${ownTeamFull(r.w.t, r.s.regWeeks)}`} (${why(r)}).`;
+    if (n > 1) return `In ${yl}, ${short(r)} won it ${n === 2 ? "again" : `for the ${nth(n)} time`}${a.mgr ? "" : `, this time for ${ownTeamFull(r.w.t, r.s.regWeeks, ref)}`} (${why(r)}).`;
     return `In ${yl}, it went to ${who(r)} (${why(r)}).`; });
   const now = rows.find((r) => !r.s.done);
   if (now) { const wk = Math.max(0, ...now.s.played.filter((m) => m.wk <= now.s.regWeeks).map((m) => m.wk)); hist.push(`Through week ${wk} of ${now.s.year}, the leader is ${who(now)} (${why(now)}).`); }
@@ -1754,14 +1755,20 @@ const aNum = (x) => (/^(8|11|18)(\D|$)|^8\d/.test(String(x)) ? "an" : "a");
 const count = (n) => ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"][n] || String(n);
 const POS_PLURAL = { QB: "quarterbacks", RB: "running backs", WR: "wide receivers", TE: "tight ends", K: "kickers", "D/ST": "defenses" };
 // "Kaushal P.'s Habibsters" (a leading "The" is dropped: "Randy D.'s fumblers")
-const ownTeamFull = (t, wk) => `${mgrName(mgrAt(t, wk || 1))}'s ${esc(nameAt(t, wk || 1).replace(/^The /, ""))}`;
+// Team names in a sentence: "the Habibsters", "the fumblers", but "Ben Dover" and "Team Pillbert" as they are
+const teamThe = (nm) => (/^The /.test(nm) ? `the ${esc(nm.slice(4))}` : /s$/.test(nm) ? `the ${esc(nm)}` : esc(nm));
+// Managers in prose: first name, then the everyday nickname the stories already use, in turn
+const NICK = { alan: "Philly", ramon: "Brucie", mekhi: "Kai", kaushal: "Habib", jordan: "JMoney", zoe: "Z²" };
+// (a name the team name already contains is skipped: not "Habib's Habibsters")
+const refMaker = () => { const n = {}; return (k, avoid = "") => { const opts = [D.managers[k].first, ...(NICK[k] ? [NICK[k]] : [])].filter((o, j, a) => j === 0 || !avoid.includes(o)), i = (n[k] = (n[k] || 0) + 1) - 1; return esc(opts[i % opts.length]); }; };
+const ownTeamFull = (t, wk, ref) => `${ref ? ref(mgrAt(t, wk || 1), nameAt(t, wk || 1)) : esc(D.managers[mgrAt(t, wk || 1)].first)}'s ${esc(nameAt(t, wk || 1).replace(/^The /, ""))}`;
 const seasonRank = (y, p) => {
   const tot = PL.map((q) => ({ q, v: sum(q.weeks.filter((w) => w.y === y && w.fin && w.start), (w) => w.pts) })).filter((x) => x.v > 0);
   const all = [...tot].sort((a, b) => b.v - a.v), pos = all.filter((x) => x.q.pos === p.pos);
   return { all: all.findIndex((x) => x.q === p) + 1, pos: pos.findIndex((x) => x.q === p) + 1 };
 };
-function seasonStory(p, y) {
-  const named = new Set(), ownTeam = (t, wk) => { const n = esc(nameAt(t, wk || 1).replace(/^The /, "")); if (named.has(t.id)) return `the ${n}`; named.add(t.id); return `${mgrName(mgrAt(t, wk || 1))}'s ${n}`; };
+function seasonStory(p, y, ref = refMaker()) {
+  const named = new Set(), ownTeam = (t, wk) => { if (named.has(t.id)) return teamThe(nameAt(t, wk || 1)); named.add(t.id); return ownTeamFull(t, wk, ref); };
   const cap = (x) => x.replace(/^(<[^>]+>)?(\w)/, (m0, tag, c) => (tag || "") + c.toUpperCase());
   const s = S[y], it = p.pos === "D/ST", He = it ? "It" : "He", he = it ? "it" : "he", him = it ? "it" : "him", his = it ? "its" : "his";
   const ev = p.ev.filter((e) => e.y === y), ws = p.weeks.filter((w) => w.y === y && w.fin), st = ws.filter((w) => w.start);
@@ -1790,7 +1797,7 @@ function seasonStory(p, y) {
     const wk = Math.ceil(e.wk);
     if (e.type === "trade") { const tr = s.trades.find((t) => t.wk === wk && (t.got[e.t.id] || []).some((x) => x.split("|")[0] === p.n));
       const back = tr && e.from ? (tr.got[e.from.id] || []).map((x) => x.split("|")[0]) : [], with_ = tr ? (tr.got[e.t.id] || []).map((x) => x.split("|")[0]).filter((n) => n !== p.n) : [];
-      out.push(`Before week ${wk}, ${e.from ? mgrName(mgrAt(e.from, wk)) : "his team"} traded ${him}${with_.length ? ` and ${andList(with_.map(esc))}` : ""} to ${ownTeam(e.t, wk)}${back.length ? ` for ${andList(back.map(esc))}` : ""}.`); }
+      out.push(`Before week ${wk}, ${e.from ? ref(mgrAt(e.from, wk)) : "his team"} traded ${him}${with_.length ? ` and ${andList(with_.map(esc))}` : ""} to ${ownTeam(e.t, wk)}${back.length ? ` for ${andList(back.map(esc))}` : ""}.`); }
     else if (e.type === "drop") out.push(cap(`${ownTeam(e.t, wk)} released ${him} in week ${wk}.`));
     else if (e.type === "add") out.push(cap(`${ownTeam(e.t, wk)} picked ${him} up in week ${wk}.`));
   }
@@ -1832,7 +1839,8 @@ function wikiHtml(p, best) {
   let lead = `<p><b>${esc(p.n)}</b> is ${role} ${it ? "that" : "who"} has been on a Buckaroo Football League roster ${p.years.length > 1 && p.years[p.years.length - 1] - p.years[0] === p.years.length - 1 ? `from ${p.years[0]} to ${p.years[p.years.length - 1]}` : `in ${yrs(p.years)}`}. ${p.mgrs.length ? `${He} has played for ${andList(p.mgrs.map((k) => `<button class="mlink" data-go="mgr-${k}">${mgrName(k)}</button>`))}${p.starts ? `, scoring ${f1(p.ptsS)} points in ${p.starts} start${p.starts === 1 ? "" : "s"}` : ""}.` : ""}</p>`;
   if (honors.length || shame.length) lead += `<p>${honors.length ? `${He} ${andList(honors)}.` : ""}${shame.map((a) => ` ${He} also owns ${a.e} ${awLink(a.k)}, ${SHAME[a.k]}, for ${yrs(a.ys)}.`).join("")}</p>`;
   // BFL career, one section per season, told as prose
-  const career = [...p.years].map((y) => `<h4><button class="mlink" data-go="${y}">${y}</button>${S[y] && !S[y].done ? ` <span class="muted" style="font-weight:500">(in progress)</span>` : ""}</h4><p>${seasonStory(p, y)}</p>`).join("");
+  const pageRef = refMaker();
+  const career = [...p.years].map((y) => `<h4><button class="mlink" data-go="${y}">${y}</button>${S[y] && !S[y].done ? ` <span class="muted" style="font-weight:500">(in progress)</span>` : ""}</h4><p>${seasonStory(p, y, pageRef)}</p>`).join("");
   // In the news: stories that mention him, newest first, like references
   const refs = ALL_NEWS.filter((a) => a.type !== "live" && a.type !== "profile" && JSON.stringify([a.title, a.dek, a.body]).includes(p.n)).sort((a, b) => b.year - a.year || (b.wk || 0) - (a.wk || 0));
   const news = refs.length ? `<h3 class="wikisub">In the News</h3><ol class="wikirefs">${refs.slice(0, 15).map((a) => `<li><button class="mlink" data-go="news-${a.id}">“${esc(a.title)}”</button> <span class="muted">· ${newsWhen(a)}</span></li>`).join("")}</ol>${refs.length > 15 ? `<p class="note">And ${refs.length - 15} more.</p>` : ""}` : "";
