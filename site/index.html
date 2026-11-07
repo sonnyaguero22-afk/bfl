@@ -460,6 +460,13 @@ table.compact .team { min-width: 0; }
 /* Wiki-style pages: links look like links */
 .wikimain .mlink, .wikimain .plink, .infobox .mlink, .award .k .awl, .swing .awl { color: var(--brass); }
 .infobox .ibh.gold .mlink { color: inherit; }
+.top5 { margin-top: 4px; font-size: 12px; }
+.top5 summary { cursor: pointer; color: var(--muted); font-weight: 600; }
+.top5 ol { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; }
+.top5 li span { display: inline-flex; align-items: center; gap: 2px; }
+.top5 li small { display: block; }
+.top5 li.win span { font-weight: 700; }
+td.ru { font-size: 12.5px; white-space: nowrap; }
 .awsub { margin: 14px 0 8px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
 .award { display: grid; gap: 4px; padding: 12px 14px; min-width: 0; }
 @media (max-width: 520px) { .awgrid { grid-template-columns: 1fr 1fr; gap: 8px; } .award { padding: 10px; } .award .who { font-size: 14px; flex-wrap: wrap; } }
@@ -1377,7 +1384,9 @@ function seasonAwards(s) {
   const rows = PL.map((p) => ({ p, ws: p.weeks.filter((w) => w.y === y && w.fin) })).filter((x) => x.ws.length);
   const stPts = (ws) => sum(ws.filter((w) => w.start), (w) => w.pts);
   const mostAt = (ws) => { const c = {}; for (const w of ws) c[w.t.id] = (c[w.t.id] || 0) + (w.start ? w.pts : 0.001); return s.byId[Object.keys(c).sort((a, b) => c[b] - c[a])[0]]; };
-  const best = (key, list, val, stat) => { const top = list.filter((x) => val(x) != null).sort((a, b) => val(b) - val(a))[0]; if (top && val(top) > 0) out[key] = { p: top.p, t: top.t || mostAt(top.ws), stat: stat(top), x: top, v: val(top) }; };
+  // The winner plus the top five (one entry per player), like MVP voting
+  const best = (key, list, val, stat) => { const seen = new Set(), ranked = list.filter((x) => val(x) != null && val(x) > 0).sort((a, b) => val(b) - val(a)).filter((x) => !seen.has(x.p) && seen.add(x.p)), top = ranked[0];
+    if (top) out[key] = { p: top.p, t: top.t || mostAt(top.ws), stat: stat(top), x: top, v: val(top), top5: ranked.slice(0, 5).map((x) => ({ p: x.p, t: x.t || mostAt(x.ws), stat: stat(x) })) }; };
   best("king", rows, (x) => stPts(x.ws), (x) => `${f1(stPts(x.ws))} pts in ${x.ws.filter((w) => w.start).length} starts`);
   for (const [key, pos] of [["nami", "QB"], ["sanji", "RB"], ["zoro", "WR"], ["franky", "TE"], ["usopp", "K"], ["jinbe", "D/ST"]])
     best(key, rows.filter((x) => x.p.pos === pos), (x) => stPts(x.ws), (x) => `${f1(stPts(x.ws))} pts in ${x.ws.filter((w) => w.start).length} starts`);
@@ -1406,8 +1415,9 @@ function seasonAwards(s) {
   const donuts = rows.filter((x) => x.p.pos !== "D/ST").flatMap((x) => x.ws.filter((w) => w.start && w.pts <= 0).map((w) => { const mp = s.sp2mp?.[w.wk] ?? w.wk, m = s.matchups.find((g) => g.wk === mp && (g.h === w.t.id || g.a === w.t.id));
     const lost = m && m.win !== null && m.win !== w.t.id && m.win !== 0, margin = m ? Math.abs(m.hp - m.ap) : 0;
     return { p: x.p, t: w.t, w, lost, margin, flip: lost && (w.proj || 0) > margin, cost: (lost ? 1000 : 0) + (w.proj || 0) }; }));
-  const ace = donuts.sort((a, b) => b.cost - a.cost)[0];
-  if (ace) out.ace = { p: ace.p, t: ace.t, x: ace, stat: `Week ${ace.w.wk}: ${f1(ace.w.pts)} on a ${f1(ace.w.proj || 0)} projection, ${ace.lost ? `in ${/^8|^1[18]\./.test(f1(ace.margin)) ? "an" : "a"} ${f1(ace.margin)}-point loss${ace.flip ? " (his projection would have won it)" : ""}` : "in a win"} · ${donuts.length} donuts started league-wide` };
+  const seenD = new Set(), aceList = donuts.sort((a, b) => b.cost - a.cost).filter((x) => !seenD.has(x.p) && seenD.add(x.p)), ace = aceList[0];
+  const aceStat = (x) => `Week ${x.w.wk}: ${f1(x.w.pts)} on a ${f1(x.w.proj || 0)} projection, ${x.lost ? `in ${aNum(f1(x.margin))} ${f1(x.margin)}-point loss${x.flip ? " (his projection would have won it)" : ""}` : "in a win"}`;
+  if (ace) out.ace = { p: ace.p, t: ace.t, x: ace, stat: `${aceStat(ace)} · ${donuts.length} donuts started league-wide`, top5: aceList.slice(0, 5).map((x) => ({ p: x.p, t: x.t, stat: aceStat(x) })) };
   return (AW[y] = out);
 }
 const ordinal = (k) => k + (["th", "st", "nd", "rd"][(k % 100 - 20) % 10] || ["th", "st", "nd", "rd"][k % 100] || "th");
@@ -1428,7 +1438,7 @@ function seasonMgrAwards(s) {
   if (MAW[s.year]) return MAW[s.year];
   const y = s.year, out = {}, add = (o, k, v) => { if (k && k !== "nomanager") o[k] = (o[k] || 0) + v; };
   // One winner each: ties on a count go to the bigger tiebreak total (tb)
-  const top = (key, o, stat, tb = {}) => { const k = Object.keys(o).sort((a, b) => o[b] - o[a] || (tb[b] || 0) - (tb[a] || 0))[0]; if (k && o[k] > 0) out[key] = { ks: [k], stat: stat(o[k], k) }; };
+  const top = (key, o, stat, tb = {}) => { const r = Object.keys(o).filter((x) => o[x] > 0).sort((a, b) => o[b] - o[a] || (tb[b] || 0) - (tb[a] || 0)), k = r[0]; if (k) out[key] = { ks: [k], stat: stat(o[k], k), top5: r.slice(0, 5).map((m) => ({ k: m, stat: stat(o[m], m) })) }; };
   const mpOf = (w) => s.sp2mp?.[w.wk] ?? w.wk;
   // Drafted, picked up and traded-for players: points as a starter for that team while they stayed
   const draft = {}, waiver = {}, trade = {};
@@ -1473,6 +1483,8 @@ function seasonMgrAwards(s) {
 }
 const mgrAwardsOf = (k) => D.seasons.filter((s) => s.done).flatMap((s) => { const a = seasonMgrAwards(s); return MGR_AWARDS.filter(([key]) => a[key] && a[key].ks.includes(k)).map(([key, e, nm, cat]) => ({ key, e, nm, cat, y: s.year, stat: a[key].stat })); });
 
+// The top five behind an award, folded away under its card
+const topFive = (list, who, sub = () => "") => (list && list.length > 1 ? `<details class="top5"><summary>Top ${list.length}</summary><ol>${list.map((r, i) => `<li${i ? "" : ' class="win"'}><span>${who(r)}</span><small class="muted">${sub(r)}${r.stat.replace(/ · .*$/, "")}</small></li>`).join("")}</ol></details>` : "");
 function awardsView(kind) {
   const ys = D.seasons.filter((s) => s.done || s.played.length).map((s) => s.year).reverse();
   const y = ys.includes(+state.awYear) ? +state.awYear : ys[0];
@@ -1480,10 +1492,10 @@ function awardsView(kind) {
   const bar = `<div class="weekbar" style="margin:0">${ys.map((yy) => `<button data-awyear="${yy}" aria-current="${yy === y}">${yy}</button>`).join("")}</div>`;
   let cards;
   if (mgr) { const ma = seasonMgrAwards(s);
-    cards = MGR_AWARDS.filter(([k]) => ma[k]).map(([k, e, nm, cat, why]) => `<div class="box award${k === "bellamy" ? " shame" : ""}" title="${esc(why)}"><div class="k">${e} ${awLink(k)} <span class="muted">· ${cat}</span></div><div class="who">${ma[k].ks.map((m) => `${mbadge(m, 1)} <button class="mlink" data-go="mgr-${m}">${mgrName(m)}</button>`).join(" ")}</div><small>${ma[k].stat}</small></div>`).join(""); }
+    cards = MGR_AWARDS.filter(([k]) => ma[k]).map(([k, e, nm, cat, why]) => `<div class="box award${k === "bellamy" ? " shame" : ""}" title="${esc(why)}"><div class="k">${e} ${awLink(k)} <span class="muted">· ${cat}</span></div><div class="who">${ma[k].ks.map((m) => `${mbadge(m, 1)} <button class="mlink" data-go="mgr-${m}">${mgrName(m)}</button>`).join(" ")}</div><small>${ma[k].stat}</small>${topFive(ma[k].top5, (r) => `${mbadge(r.k, 1)} <button class="mlink" data-go="mgr-${r.k}">${mgrName(r.k)}</button>`)}</div>`).join(""); }
   else { const a = seasonAwards(s);
     cards = AWARDS.filter(([k]) => a[k]).map(([k, e, nm, cat, why]) => { const x = a[k];
-      return `<div class="box award${k === "ace" || k === "buggy" ? " shame" : k === "king" || k === "onepiece" ? " top" : ""}" title="${esc(why)}"><div class="k">${e} ${awLink(k)} <span class="muted">· ${cat}</span></div><div class="who">${posTag(x.p.pos)}${pn(x.p.n)}</div><small class="muted">${badge(x.t, 1)} ${esc(x.t.name)} · ${mgrName(x.t.mgr)}</small><small>${x.stat}</small></div>`; }).join(""); }
+      return `<div class="box award${k === "ace" || k === "buggy" ? " shame" : k === "king" || k === "onepiece" ? " top" : ""}" title="${esc(why)}"><div class="k">${e} ${awLink(k)} <span class="muted">· ${cat}</span></div><div class="who">${posTag(x.p.pos)}${pn(x.p.n)}</div><small class="muted">${badge(x.t, 1)} ${esc(x.t.name)} · ${mgrName(x.t.mgr)}</small><small>${x.stat}</small>${topFive(x.top5, (r) => `${posTag(r.p.pos)}${pn(r.p.n)}`, (r) => `${esc(r.t.name)} · `)}</div>`; }).join(""); }
   const list = mgr ? MGR_AWARDS : AWARDS;
   return `<div class="vhead"><div><div class="eyebrow">${s.done ? `Buckaroo Bowl ${roman(y - D.firstYear + 1)} · ${y}` : `${y} · so far`}</div><h2>${mgr ? "Manager" : "Player"} Awards</h2><p>${mgr ? "The things a title doesn't measure, named for the Straw Hats' friends and foes." : "The season's best (and worst) players, named for the Straw Hats and friends."} ${s.done ? "" : "The season isn't over, so these are the leaders so far."}</p></div>${bar}</div>
   <div class="awgrid">${cards || `<p class="muted">Nothing to award yet.</p>`}</div>
@@ -1561,7 +1573,7 @@ function awardView() {
   if (now) { const wk = Math.max(0, ...now.s.played.filter((m) => m.wk <= now.s.regWeeks).map((m) => m.wk)); hist.push(`Through week ${wk} of ${now.s.year}, the leader is ${who(now)} (${why(now)}).`); }
   const history = hist.length ? `<h3 class="wikisub">History</h3><p>${hist.join(" ")}${multi.length ? ` ${andList(multi.map((x) => `${a.mgr ? mgrName(whoKey(x.r)) : esc(x.r.w.p.n)} has won it ${x.n === 2 ? "twice" : `${x.n} times`}`))}, the most of anyone.` : ""}</p>` : "";
   const criteria = `<h3 class="wikisub">Criteria</h3><p>${esc(a.why)}.${a.mgr ? " There is always exactly one winner." : " Points count only in weeks a lineup played a game, playoffs and consolation games included."}</p>`;
-  const table = `<div class="box scroll"><table class="compact"><thead><tr><th>Season</th><th>Winner</th>${a.mgr ? "" : "<th>Team</th>"}<th>Why</th></tr></thead><tbody>${rows.map((r) => `<tr><td><button class="mlink" data-go="${r.s.year}"><b>${r.s.year}</b></button>${r.s.done ? "" : ` <span class="pill live">So far</span>`}</td><td>${link(r)}</td>${a.mgr ? "" : `<td><span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap">${badge(r.w.t, 1)} ${esc(r.w.t.name)} <span class="muted">· <button class="mlink" data-go="mgr-${r.w.t.mgr}">${mgrName(r.w.t.mgr)}</button></span></span></td>`}<td>${r.w.stat}</td></tr>`).join("")}</tbody></table></div>`;
+  const table = `<div class="box scroll"><table class="compact"><thead><tr><th>Season</th><th>Winner</th>${a.mgr ? "" : "<th>Team</th>"}<th>Why</th><th>Runners-up</th></tr></thead><tbody>${rows.map((r) => `<tr><td><button class="mlink" data-go="${r.s.year}"><b>${r.s.year}</b></button>${r.s.done ? "" : ` <span class="pill live">So far</span>`}</td><td>${link(r)}</td>${a.mgr ? "" : `<td><span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap">${badge(r.w.t, 1)} ${esc(r.w.t.name)} <span class="muted">· <button class="mlink" data-go="mgr-${r.w.t.mgr}">${mgrName(r.w.t.mgr)}</button></span></span></td>`}<td>${r.w.stat}</td><td class="ru">${(r.w.top5 || []).slice(1, 4).map((x, i) => `<div><span class="muted">${i + 2}.</span> ${a.mgr ? `<button class="mlink" data-go="mgr-${x.k}">${mgrName(x.k)}</button>` : pn(x.p.n)}</div>`).join("") || "—"}</td></tr>`).join("")}</tbody></table></div>`;
   const others = (a.mgr ? MGR_AWARDS : AWARDS).filter((x) => x[0] !== a.k).map((x) => `${x[1]} ${awLink(x[0])}`).join(" · ");
   const info = `<aside class="infobox box ibd-only"><div class="ibhead">${a.e} ${esc(a.nm)}</div><div class="ibsub">${a.mgr ? "Manager" : "Player"} award</div><table>
     <tr><th>Awarded for</th><td>${esc(a.cat)}</td></tr>
