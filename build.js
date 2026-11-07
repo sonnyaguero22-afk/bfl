@@ -331,11 +331,11 @@ seasons.sort((a, b) => a.year - b.year);
 // NFL status for everyone who has been on a league roster, from ESPN's newest player pool (it lists inactive
 // players too): "t" on a team (with its abbreviation), "f" free agent, "r" retired (inactive, or gone from the pool).
 // Without a pool file (local builds) there's no status, and player pages fall back to the last team seen.
-const nflStatus = (() => {
+const nflStatus = (() => { try {
   const y = years[years.length - 1], f = y && path.join(DATA, `players_${y}.json`);
   if (!f || !fs.existsSync(f)) return null;
   // Matched without suffixes: older seasons say "James Cook", ESPN now says "James Cook III"
-  const base = (n) => n.toLowerCase().replace(/[.']/g, "").replace(/\s+(jr|sr|ii|iii|iv|v)$/, "");
+  const base = (n) => String(n || "").toLowerCase().replace(/[.']/g, "").replace(/\s+(jr|sr|ii|iii|iv|v)$/, "");
   const pool = new Map(JSON.parse(fs.readFileSync(f, "utf8")).map((p) => [base(p.fullName), p]));
   const names = new Set(seasons.flatMap((s) => [...Object.values(s.lineups).flatMap((L) => Object.values(L).flat().map((e) => e.n)), ...s.draft.map((d) => d.n)]));
   const out = {};
@@ -347,6 +347,7 @@ const nflStatus = (() => {
   const c = { t: 0, f: 0, r: 0 }; for (const v of Object.values(out)) c[v[0]]++;
   console.log(`::notice::NFL status from players_${y}.json (${pool.size} in pool): ${c.t} on a team, ${c.f} free agents, ${c.r} retired or gone; e.g. retired: ${Object.keys(out).filter((n) => out[n] === "r").slice(0, 12).join(", ") || "none"}`);
   return out;
+  } catch (e) { console.log(`::warning::NFL status skipped: ${e.message}`); return null; } // never worth failing the build over
 })();
 
 // Hand corrections where ESPN's records are wrong (see data/overrides.json)
