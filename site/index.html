@@ -3,7 +3,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700&display=swap">
 <style>
 /* Layout: frosted top bar with segmented controls; one content column of grouped cards. Dark is the default; light only on an explicit light choice. */
 :root {
@@ -494,6 +494,28 @@ h3.wikisub { border-bottom: 1px solid var(--line); padding-bottom: 6px; margin: 
 .infobox td.ibscore div { display: flex; align-items: center; gap: 6px; padding: 2px 0; } .infobox td.ibscore .num { margin-left: auto; font-weight: 700; }
 .succ { display: flex; justify-content: space-between; gap: 8px; padding: 8px 12px; font-size: 12.5px; }
 .boxpair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; } @media (max-width: 760px) { .boxpair { grid-template-columns: 1fr; } }
+.herobtn { display: block; width: 100%; border: 0; padding: 0; background: none; text-align: center; cursor: pointer; }
+.hero { position: relative; border-radius: 22px; padding: 14px 14px 18px; color: #fff; overflow: hidden;
+  background: radial-gradient(rgba(255,255,255,.05) 1px, transparent 1.2px) 0 0 / 4px 4px, linear-gradient(90deg, hsl(var(--ha) 55% 30%) 0%, hsl(var(--ha) 50% 22%) 42%, hsl(var(--hb) 50% 22%) 58%, hsl(var(--hb) 55% 30%) 100%); }
+.hero .grab { display: block; width: 38px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.35); margin: 0 auto 10px; }
+.hero .hlabel { font-size: 13px; font-weight: 600; color: rgba(255,255,255,.65); margin-bottom: 6px; }
+.hgrid { display: grid; grid-template-columns: 1fr auto 1fr; align-items: start; gap: 8px; }
+.hs { display: grid; justify-items: center; gap: 4px; min-width: 0; }
+.hs .hscore { font-family: "Barlow Condensed", "SF Compact Display", var(--f-display); font-weight: 700; font-size: clamp(54px, 13vw, 84px); line-height: .95; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.hs.lost .hscore { opacity: .4; }
+.hs .badge { width: 40px; height: 40px; font-size: 12px; margin-top: 4px; }
+.hs b { font-size: 16px; line-height: 1.2; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hs small { color: rgba(255,255,255,.65); font-size: 12.5px; }
+.hstat { align-self: center; font-weight: 700; font-size: 15px; padding-top: 18px; white-space: nowrap; } .hstat .live { color: #ff6961; }
+.hline { width: 100%; margin-top: 14px; font-size: 13px; color: #fff; } .hline th { color: rgba(255,255,255,.6); text-align: center; padding: 4px; border: 0; font-size: 12px; }
+.hline td { text-align: center; padding: 6px 4px; border-bottom: 1px solid rgba(255,255,255,.15); } .hline td:first-child { text-align: left; font-weight: 600; }
+.tstats { margin: 12px 0; padding: 14px 16px 6px; }
+.tshead { text-align: center; font-weight: 700; font-size: 16px; margin-bottom: 6px; }
+.tsrow { display: grid; grid-template-columns: auto 1fr auto; align-items: end; column-gap: 8px; padding: 6px 0 10px; }
+.tsn { font-family: "Barlow Condensed", "SF Compact Display", var(--f-display); font-weight: 700; font-size: 30px; line-height: 1; font-variant-numeric: tabular-nums; }
+.tsn.r { text-align: right; }
+.tsl { text-align: center; color: var(--muted); font-size: 14px; padding-bottom: 2px; }
+.tsbar { grid-column: 1 / -1; display: flex; gap: 6px; margin-top: 8px; } .tsbar span { height: 5px; border-radius: 3px; min-width: 4px; }
 .huntcol { display: grid; gap: 8px; }
 .hunt { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
 .hunt small { display: block; font-size: 11.5px; line-height: 1.35; }
@@ -900,6 +922,7 @@ function gameView() {
     ${row("Played", two ? `Weeks ${s.spans(m.wk).join("–")}` : `Week ${s.spans(m.wk)[0]}`)}${row("Seeds", `${win.seed || "—"} vs ${lose.seed || "—"}`)}${row("Winner", `${mgrName(win.mgr)}`)}${row("Margin", f1(Math.abs(m.hp - m.ap)))}${op ? row(`${awInfo("onepiece").e} The One Piece`, pn(op.p.n)) : ""}
   </table>${succession(kind, y)}</aside>`;
   return `<div class="vhead"><div><div class="eyebrow">${kind === "bowl" ? "Championship" : "Consolation"} · ${y}</div><h2>${title}</h2></div><button class="pill" data-go="${y}" style="border:0;cursor:pointer">← ${y} season</button></div>
+  <div class="herowrap">${gameHero(s, m)}</div>${teamStats(s, m)}
   <div class="wiki"><article class="wikimain">${lead}${info.replace('class="infobox box"', 'class="infobox box ibm-only"')}${body}${chart ? `<h3 class="wikisub">Win Chance</h3><div class="wpwrap">${chart}</div>` : ""}<h3 class="wikisub">Box Score</h3><div class="boxpair">${side(win)}${side(lose)}</div></article>${info.replace('class="infobox box"', 'class="infobox box ibd-only"')}</div>`;
 }
 
@@ -1040,6 +1063,34 @@ function celebrate() {
       { duration: 1500 + Math.random() * 1000, easing: "cubic-bezier(.2, .7, .3, 1)", delay: Math.random() * 150 }).onfinish = () => d.remove();
   }
 }
+// ---------- An opened game, Apple Sports style: the two teams' colors, big scores, then stats side by side ----------
+const condensed = `font-family: "Barlow Condensed", "SF Compact Display", var(--f-display); font-variant-numeric: tabular-nums;`;
+function gameHero(s, m) {
+  const ka = mgrAt(s.byId[m.h], m.wk), kb = mgrAt(s.byId[m.a], m.wk), done = m.win !== null && !m.live;
+  const status = m.on ? `<span class="live">● Live</span>` : m.live ? "In Progress" : done ? "Final" : "Upcoming";
+  const rec = asOf(s, Math.min(m.wk, s.regWeeks)), r = (id) => { const x = rec.rows.find((y) => y.t.id === id); return x ? recStr(x) : ""; };
+  const sideH = (id, pts) => { const t = s.byId[id], lost = done && m.win !== id && m.win !== 0;
+    return `<div class="hs${lost ? " lost" : ""}"><div class="hscore">${m.live || done ? f1(pts) : "–"}</div>${badge(t)}<b>${esc(nameAt(t, m.wk))}</b><small>${mgrName(mgrAt(t, m.wk))} · ${r(id)}</small></div>`; };
+  // Two-week games get a line score by NFL week
+  const sps = s.spans(m.wk), wkPts = (id, sp) => sum(((s.lineups[sp] || {})[id] || []).filter((e) => e.slot !== "BN" && e.slot !== "IR"), (e) => e.pts || 0);
+  const line = sps.length > 1 ? `<table class="hline"><tr><th></th>${sps.map((sp) => `<th>Wk ${sp}</th>`).join("")}<th>T</th></tr>${[m.h, m.a].map((id) => `<tr><td>${esc(s.byId[id].abbrev || nameAt(s.byId[id], m.wk))}</td>${sps.map((sp) => `<td>${f1(wkPts(id, sp))}</td>`).join("")}<td><b>${f1(id === m.h ? m.hp : m.ap)}</b></td></tr>`).join("")}</table>` : "";
+  return `<div class="hero" style="--ha:${hue[ka]};--hb:${hue[kb]}"><span class="grab"></span><div class="hlabel">${roundName(s, m) || `Week ${m.wk}`} · ${s.year}</div>
+    <div class="hgrid">${sideH(m.h, m.hp)}<div class="hstat">${status}</div>${sideH(m.a, m.ap)}</div>${line}</div>`;
+}
+// Points by position, bench and against projection, both sides on one bar like Apple's team stats
+function teamStats(s, m) {
+  const sps = s.spans(m.wk), ka = mgrAt(s.byId[m.h], m.wk), kb = mgrAt(s.byId[m.a], m.wk);
+  const L = (id) => sps.flatMap((sp) => (s.lineups[sp] || {})[id] || []);
+  const st = (id) => L(id).filter((e) => e.slot !== "BN" && e.slot !== "IR"), bn = (id) => L(id).filter((e) => e.slot === "BN");
+  if (!st(m.h).length && !st(m.a).length) return "";
+  const rows = [["QB", "Quarterbacks"], ["RB", "Running Backs"], ["WR", "Receivers"], ["TE", "Tight Ends"], ["K", "Kicker"], ["D/ST", "Defense"]].map(([pos, lab]) => [lab, sum(st(m.h).filter((e) => e.pos === pos), (e) => e.pts || 0), sum(st(m.a).filter((e) => e.pos === pos), (e) => e.pts || 0)]);
+  rows.push(["Bench", sum(bn(m.h), (e) => e.pts || 0), sum(bn(m.a), (e) => e.pts || 0)]);
+  const proj = (id) => sum(st(id), (e) => e.proj || 0);
+  if (proj(m.h) || proj(m.a)) rows.push(["Projected", proj(m.h), proj(m.a)]);
+  const bar = (a, b) => { const x = Math.max(0, a), y = Math.max(0, b), t = x + y || 1; return `<div class="tsbar"><span style="flex:${x / t};background:hsl(${hue[ka]} 62% 58%)"></span><span style="flex:${y / t};background:hsl(${hue[kb]} 62% 58%)"></span></div>`; };
+  return `<div class="box tstats"><div class="tshead">Team Stats</div>${rows.map(([lab, a, b]) => `<div class="tsrow"><b class="tsn">${f1(a)}</b><span class="tsl">${lab}</span><b class="tsn r">${f1(b)}</b>${bar(a, b)}</div>`).join("")}</div>`;
+}
+
 function weekly(s) {
   const wk = state.week && s.weeks.includes(state.week) ? state.week : (s.done ? s.weeks[0] : s.curWeek);
   state.week = wk;
@@ -1059,8 +1110,8 @@ function weekly(s) {
       return `<br><span class="odds">${upset ? `<span class="pill gold">Upset</span> ` : ""}Was ${winPct(p)} to win</span>`; };
     const side = (id, p) => { const t = s.byId[id]; const lost = m.win !== null && m.win !== id && m.win !== 0; return `<div class="side${lost ? " lost" : ""}"><span class="team">${badge(t)}<span><b${champ === id ? ` data-champ="${s.year}"` : ""}>${champ === id ? "🏆 " : ""}${esc(nameAt(t, m.wk))}</b><small>${mgrName(mgrAt(t, m.wk))}${kickedAt(t, m.wk) ? "*" : ""} · ${recLabel(id)}${winLabel(id)}</small></span></span><span class="pts">${f2(p)}</span></div>`; };
     const margin = Math.abs(m.hp - m.ap);
-    return `<div class="box game${open ? " open" : ""}${bowl ? " bowlgame" : ""}" data-tier="${bowl ? "bowl" : m.tier || ""}">${bowl ? `<div class="bowlhead"><span>🏆 ${roundName(s, m)}</span><small>${champ ? `${esc(s.byId[champ].name)} are champions` : "The championship"} · ${s.year}</small></div>` : ""}<button data-open="${key}" aria-expanded="${open}">${side(m.h, m.hp)}${side(m.a, m.ap)}
-      <div class="gmeta"><span>${m.on ? `<span class="pill live">● Live</span>` : m.live ? `<span class="pill">In Progress</span>` : roundName(s, m) && !bowl ? `<span class="pill${m.tier === "WINNERS_BRACKET" ? " gold" : ""}">${roundName(s, m)}</span>` : m.win !== null ? `Margin ${f2(margin)}` : ""}</span><span>${open ? "Hide Lineups ▲" : "Show Lineups ▼"}</span></div></button>
+    return `<div class="box game${open ? " open" : ""}${bowl ? " bowlgame" : ""}" data-tier="${bowl ? "bowl" : m.tier || ""}">${bowl ? `<div class="bowlhead"><span>🏆 ${roundName(s, m)}</span><small>${champ ? `${esc(s.byId[champ].name)} are champions` : "The championship"} · ${s.year}</small></div>` : ""}${open ? `<button data-open="${key}" aria-expanded="true" class="herobtn" title="Close">${gameHero(s, m)}</button>${teamStats(s, m)}` : `<button data-open="${key}" aria-expanded="${open}">${side(m.h, m.hp)}${side(m.a, m.ap)}
+      <div class="gmeta"><span>${m.on ? `<span class="pill live">● Live</span>` : m.live ? `<span class="pill">In Progress</span>` : roundName(s, m) && !bowl ? `<span class="pill${m.tier === "WINNERS_BRACKET" ? " gold" : ""}">${roundName(s, m)}</span>` : m.win !== null ? `Margin ${f2(margin)}` : ""}</span><span>${open ? "Hide Lineups ▲" : "Show Lineups ▼"}</span></div></button>`}
       ${open ? `${watchHtml(s, m)}${((c) => (c ? `<div class="wpwrap">${c}</div>` : ""))(wpChart(s, m))}<div class="lineups"><div>${lineupCol(s, wk, m.h)}</div><div>${lineupCol(s, wk, m.a)}</div></div>` : ""}</div>`;
   }).join("");
   const byes = s.byes.filter((b) => b.wk === wk).map((b) => `<span class="pill">${esc(s.byId[b.h].name)} has a bye</span>`).join(" ");
