@@ -717,8 +717,9 @@ function mgrStats(k) {
 const badge = (t, sm) => `<span class="badge${sm ? " sm" : ""}" style="--h:${hue[t.mgr]}${gray(t.mgr)}" aria-hidden="true">${esc((t.abbrev || D.managers[t.mgr].first).slice(0, 4))}</span>`;
 // Manager squares show initials like the map pins (Sonny A. → SA, Zoe → Z²), so Randy D. and Ramon A. no longer both read "RA"
 const mbadge = (k, sm, txt) => `<span class="badge${sm ? " sm" : ""}" style="--h:${hue[k]}${gray(k)}" aria-hidden="true">${esc(txt || initials(k))}</span>`;
-// First and last initials ("Sonny A." → SA); Zoe is Z²
-const initials = (k) => k === "zoe" ? "Z²" : D.managers[k].name.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+// First and last initials ("Sonny A." → SA), except the league's own nicknames: Zoe is Z², Jordan is J$
+const NICK_BADGE = { zoe: "Z²", jordan: "J$" };
+const initials = (k) => NICK_BADGE[k] || D.managers[k].name.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 const teamCell = (t, sub) => `<button class="mlink team" data-go="mgr-${t.mgr}">${badge(t)}<span><b>${esc(t.name)}</b><small>${esc(sub ?? (t.eras ? eraLine(t) : D.managers[t.mgr].name))}</small></span></button>`;
 const mgrName = (k) => esc(D.managers[k].name);
 const posTag = (p) => p ? `<span class="posdot" style="--pc:${posVar(p)}">${esc(p)}</span>` : "";
