@@ -563,11 +563,11 @@ h3.wikisub { border-bottom: 1px solid var(--line); padding-bottom: 6px; margin: 
 .sbgame.bowlgame .bowlhead { padding: 0 0 6px; font-size: 12px; }
 h3.subhead { margin: 0 0 10px; font-size: 15px; color: var(--muted); }
 .confetti { position: absolute; width: 7px; height: 11px; border-radius: 2px; pointer-events: none; z-index: 60; }
-.owlist { margin: 12px 0; padding: 12px 14px 4px; }
-.owhead { margin-bottom: 4px; } .owhead small { color: var(--muted); margin-left: 4px; }
-.owrow { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; padding: 7px 0; border-top: 1px solid var(--line); font-size: 13.5px; line-height: 1.35; }
-.owrow .wline, .owrow .wstat { display: block; font-size: 12px; } .owrow .wline { color: var(--muted); }
-.owkey { font-size: 12px; color: var(--muted); margin: 4px 0 8px; }
+.watch { padding: 12px 14px; display: grid; gap: 8px; }
+.watch .k { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.watch .k .mlink { font-size: inherit; }
+.wrow { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; font-size: 13.5px; line-height: 1.35; }
+.owbox { margin: 12px 0; padding: 0; }
 .wname, .wname .plink, .pl.watchp .nm > .plink, .pl.watchp .nm > b { color: var(--gold); font-weight: 700; }
 .inj, .wstat b.inj { color: var(--loss); }
 .wstat { color: var(--muted); } .wstat b { color: var(--ink); } .wstat.hit, .wstat.hit b { color: var(--win); } .wstat.miss, .wstat.miss b { color: var(--loss); }
@@ -1164,9 +1164,8 @@ function gameBar(s, m) {
 }
 function gameTabBody(s, m, wk) {
   const t = state.gameTab || "stats";
-  if (t === "lineups") { const gw = gameWatch(s, m);
-    const key = gw ? `<div class="box owlist"><div class="owhead"><b>Ones to Watch</b> <small>presented by ${owLink("baratie", "the Baratie")} ${OW.baratie[0]}</small></div>${gw.watch.map((x) => `<div class="owrow">${badge(s.byId[x.id], 1)}<span><b class="wname">${pn(x.n)}</b> <small class="muted">${esc(x.pos)} · ${esc(x.pro)}</small>${watchLine(s, m, x, gw)}</span></div>`).join("")}<p class="owkey">${OW.gear5[0]} ${owLink("gear5")} = his top 20% · ${OW.buggyd[0]} ${owLink("buggyd")} = his bottom 20%${gw.final ? " · picked at kickoff" : ""}</p></div>` : "";
-    return `${key}<div class="box lineups">${["h", "a"].map((k) => `<div>${lineupCol(s, wk, m[k], m)}</div>`).join("")}</div>`; }
+  if (t === "lineups") { const w = watchHtml(s, m);
+    return `${w ? `<div class="box owbox">${w}</div>` : ""}<div class="box lineups">${["h", "a"].map((k) => `<div>${lineupCol(s, wk, m[k], m)}</div>`).join("")}</div>`; }
   const c = wpChart(s, m);
   return `${c ? `<div class="wpwrap">${c}</div>` : ""}${teamStats(s, m)}`; // the graph first: it's what you want during a live game
 }
@@ -1277,7 +1276,8 @@ function gameWatch(s, m) {
   const saved = !m.live && (s.pregame || {})[`${m.wk}-${m.h}-${m.a}`];
   const watch = saved ? saved.watch : m.live ? m.watch : null;
   if (!watch || !watch.length) return null;
-  return { watch, stacks: (saved ? saved.stacks : m.stacks) || [], locked: !!saved || !!m.watchLocked, final: !m.live };
+  // One pick per team, whatever the data holds
+  return { watch: watch.filter((x, i) => watch.findIndex((y) => y.id === x.id) === i), stacks: (saved ? saved.stacks : m.stacks) || [], locked: !!saved || !!m.watchLocked, final: !m.live };
 }
 // How a pick is doing: his points across the game's NFL weeks, whether he started, Gear 5 or Buggy'd
 function watchNow(s, m, x, final) {
@@ -1294,19 +1294,23 @@ function watchLog() {
   for (const s of D.seasons) for (const k in s.pregame || {}) {
     const [wk, h, a] = k.split("-").map(Number), m = s.matchups.find((y) => y.wk === wk && y.h === h && y.a === a);
     if (!m || m.live || m.win === null) continue;
-    for (const x of s.pregame[k].watch) { const n = watchNow(s, m, x, true); if (n.started) out.push({ s, m, x, ...n }); }
+    for (const x of gameWatch(s, m).watch) { const n = watchNow(s, m, x, true); if (n.started) out.push({ s, m, x, ...n }); }
   }
   return out.sort((p, q) => q.s.year - p.s.year || q.m.wk - p.m.wk);
 }
-// The lines under a gold name in the lineups: what his game means, then how it's going
+// One pick's row: what his game means for his team, then (once it's locked at kickoff) how it's going
 function watchLine(s, m, x, gw) {
   const who = esc(mgrName(mgrAt(s.byId[x.id], m.wk))), st = gw.stacks.find((k) => k.id === x.id && (k.qb === x.n || k.rec === x.n));
-  const marks = x.boomAt != null ? `${x.boomAt}+ → ${who} wins ${x.boom}% · under ${x.bustAt} → ${x.bust}%` : `Booms → ${who} wins ${x.boom}% · busts → ${x.bust}%`;
+  const marks = x.boomAt != null ? `If he scores <b>${x.boomAt}+</b>, ${who} wins <b>${x.boom}%</b> · under <b>${x.bustAt}</b>, <b>${x.bust}%</b>` : `If he has a Gear 5, ${who} wins <b>${x.boom}%</b> · Buggy'd, <b>${x.bust}%</b>`;
   let now = "";
   if (gw.locked) { const n = watchNow(s, m, x, gw.final), hurt = n.inj ? ` · <b class="inj">${injTag(n.inj)}</b>` : "";
-    now = n.gone ? "Off the roster" : !n.started ? "Benched" : n.g === "pre" ? `Yet to play${hurt}` : `<b>${f1(n.pts)}</b> pts${n.g === "on" ? " · In play" : n.g === "done" ? " · Final" : ""}${n.gear5 ? ` · ${OW.gear5[0]} Gear 5` : n.buggyd ? ` · ${OW.buggyd[0]} Buggy'd` : ""}${hurt}`;
-    now = `<small class="wstat${n.gear5 ? " hit" : n.buggyd ? " miss" : ""}">${now}</small>`; }
-  return `<small class="wline">${marks}${st ? ` · stack with ${esc(st.qb === x.n ? st.rec : st.qb)}` : ""}</small>${now}`;
+    now = n.gone ? "Off the Roster" : !n.started ? "Benched" : n.g === "pre" ? `Yet to Play${hurt}` : `<b>${f1(n.pts)}</b> pts${n.g === "on" ? " · In Play" : n.g === "done" ? " · Final" : ""}${n.gear5 ? ` · ${OW.gear5[0]} Gear 5` : n.buggyd ? ` · ${OW.buggyd[0]} Buggy'd` : ""}${hurt}`;
+    now = `<br><small class="wstat${n.gear5 ? " hit" : n.buggyd ? " miss" : ""}">${now}</small>`; }
+  return `<div class="wrow">${badge(s.byId[x.id], 1)}<span><b class="wname">${pn(x.n)}</b> <small class="muted">${esc(x.pos)} · ${esc(x.pro)}${x.proj != null ? ` · proj ${f1(x.proj)}` : ""}</small><br><small>${marks}${st ? ` · <span class="pill">Stack: ${esc(st.qb === x.n ? st.rec : st.qb)}</span>` : ""}</small>${now}</span></div>`;
+}
+function watchHtml(s, m) {
+  const gw = gameWatch(s, m); if (!gw) return "";
+  return `<div class="watch"><div class="k" title="The players whose games swing this matchup most, one per team. The point lines are each player's top-20% and bottom-20% outcomes, from his projection, his position and his own history.">Ones to Watch <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500">· presented by ${owLink("baratie", "the Baratie")} ${OW.baratie[0]} · ${gw.final ? "picked at kickoff, graded · " : gw.locked ? "picked at kickoff · " : ""}${owLink("gear5")} = his top 20%, ${owLink("buggyd")} = his bottom 20%</span></div>${gw.watch.map((x) => watchLine(s, m, x, gw)).join("")}</div>`;
 }
 // Chance the home team wins (0-1). Live games use ESPN's live projected finals, with less
 // uncertainty the less there is left to play; otherwise team strength going into the week.
