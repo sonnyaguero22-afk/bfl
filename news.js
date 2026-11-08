@@ -67,17 +67,22 @@ const PANEL = [
 ];
 // Saved stories of a type for a season, oldest first
 const saved = (type, year) => (fs.existsSync(NEWS) ? fs.readdirSync(NEWS).filter((f) => f.startsWith(`${type}-${year}-`)).map((f) => JSON.parse(fs.readFileSync(path.join(NEWS, f), "utf8"))).sort((a, b) => a.wk - b.wk) : []);
-// Each panelist's season record on picks so far, and how last week's picks went
+// Each panelist's season record on picks so far, how last week's picks went, and their berry bankroll: ฿100M a
+// season, lean ฿5M, confident ฿10M, lock ฿25M, paid at Luffy's pregame odds (the same rules as the site)
+const STAKE = { lean: 5e6, confident: 10e6, lock: 25e6 }, BANKROLL = 100e6;
+const berries = (v) => `${v < 0 ? "-" : ""}฿${Math.round(Math.abs(v) / 1e6)}M`;
 function panelRecords(s, before) {
-  const rec = Object.fromEntries(PANEL.map((p) => [p.name, { w: 0, l: 0, locks_w: 0, locks_l: 0, last_week: [] }]));
+  const rec = Object.fromEntries(PANEL.map((p) => [p.name, { w: 0, l: 0, locks_w: 0, locks_l: 0, last_week: [], b: BANKROLL }]));
   for (const pv of saved("preview", s.year).filter((a) => a.wk < before)) for (const g of pv.picks || []) {
     const m = s.matchups.find((x) => x.wk === pv.wk && [x.h, x.a].includes(g.h) && [x.h, x.a].includes(g.a));
     if (!m || m.win === null || m.live) continue;
     for (const p of g.panel) { const r = rec[p.panelist]; if (!r) continue; const ok = p.id === m.win;
       r[ok ? "w" : "l"]++; if (p.confidence === "lock") r[ok ? "locks_w" : "locks_l"]++;
+      const hp = pregameWin(s, m), pr = Math.min(0.95, Math.max(0.05, hp == null ? 0.5 : p.id === m.h ? hp : 1 - hp)), stake = STAKE[p.confidence] || STAKE.lean;
+      r.b += ok ? (stake * (1 - pr)) / pr : -stake;
       if (pv.wk === before - 1) r.last_week.push(`${ok ? "hit" : "missed"} on ${p.pick}${p.confidence === "lock" ? " (lock)" : ""}`); }
   }
-  return Object.fromEntries(Object.entries(rec).map(([k, r]) => [k, { record: `${r.w}-${r.l}`, locks: `${r.locks_w}-${r.locks_l}`, last_week: r.last_week.length ? r.last_week : undefined }]));
+  return Object.fromEntries(Object.entries(rec).map(([k, r]) => [k, { record: `${r.w}-${r.l}`, locks: `${r.locks_w}-${r.locks_l}`, berries: `${berries(r.b)} (started the season with ${berries(BANKROLL)})`, last_week: r.last_week.length ? r.last_week : undefined }]));
 }
 // All-time head-to-head between two managers, before a given week of a season
 function h2hBefore(a, b, year, wk) {
@@ -495,6 +500,7 @@ Rules:
 - Never mention where anyone lives, works, studies, or serves beyond what the lore says.
 - The league's win-chance model (the win chances, the Bounty Board and odds in the facts) is nicknamed Luffy, after the One Piece captain. Always call it Luffy, never "the model", as a name everyone already knows, not a bit to explain. Panelists and fans can have feelings about Luffy (Nina trusts him, Sal holds grudges when Luffy burns him), but don't give Luffy quotes or One Piece jokes in every story.
 - The facts' ones_to_watch are the Bounty Board: the player on each team whose game swings the matchup most, named for One Piece's wanted posters. Call it the Bounty Board (a player is "on the board"), never Ones to Watch. On the site it is "presented by the Baratie" (Sanji's floating restaurant, a joke sponsor; mention it rarely, never as a real sponsorship). A pick who reaches his top line went Gear 5; one who finishes under his bottom line got Seastoned. Always use Gear 5 and Seastoned for these, never boom, bust, big game or dud.
+- Money in the league's world is berries (฿), One Piece's currency. The panel bets berries on its picks (berries in season_picks; a lock risks the most, and backing an underdog pays more). It's a running bit for Sal Benedetto in particular, rich or broke, but keep it to a line now and then, not every story.
 - Social posts come from fictional accounts only: made-up fans, team fan clubs, pundits, and "insiders". Never write as, or tag, real NFL players, journalists, or celebrities.
 - Most social posts come from fans and pundits. Add 1 to 3 posts from the league's verified accounts, written the way real clubs and reporters post, like the news feed in Football Manager:
   - kind "league": Buckaroo Football League (@BuckarooFL), neutral and official: results, milestones, standings.

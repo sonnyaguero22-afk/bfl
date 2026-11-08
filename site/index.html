@@ -196,6 +196,7 @@ ul.txl { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 2px;
 .mgr .top b { font-family: var(--f-display); font-weight: 400; font-size: 20px; display: block; line-height: 1.1; }
 .mgr .nums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
 .mgr .nums div { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+.mgr .treas { font-size: 13px; font-weight: 600; margin-top: 4px; }
 .mgr .nums div b { display: block; font-family: var(--f-mono); font-size: 16px; color: var(--ink); letter-spacing: 0; text-transform: none; }
 .rings { color: var(--brass); font-size: 13px; font-weight: 700; min-height: 1.2em; }
 
@@ -1300,6 +1301,41 @@ function watchLog() {
   }
   return out.sort((p, q) => q.s.year - p.s.year || q.m.wk - p.m.wk);
 }
+// ---------- Berries (฿), One Piece's money: player bounties, the panel's bankrolls, manager treasuries ----------
+const berry = (v, short) => { const a = Math.abs(v), sg = v < 0 ? "−" : "";
+  if (!short) return `${sg}฿${Math.round(a).toLocaleString("en-US")}`;
+  return a >= 1e9 ? `${sg}฿${parseFloat((a / 1e9).toFixed(a >= 1e10 ? 0 : 2))}B` : a >= 1e6 ? `${sg}฿${Math.round(a / 1e6)}M` : `${sg}฿${Math.round(a / 1e3)}K`; };
+// A bounty never goes down, like a wanted poster: ฿10M for every time on the board, more for every Gear 5 (how far
+// past his line, times how much his game swung the matchup)
+const BOUNTY = { posted: 10e6, gear5: 50e6, perPt: 5e6 };
+const bountyGain = (r) => BOUNTY.posted + (r.gear5 ? (BOUNTY.gear5 + BOUNTY.perPt * Math.max(0, r.pts - r.x.boomAt)) * Math.min(2, Math.max(0.5, (r.x.boom - r.x.bust) / 40)) : 0);
+let WLOG = null; const wlog = () => WLOG || (WLOG = watchLog());
+const bountyOf = (name, year) => Math.round(sum(wlog().filter((r) => sameName(r.x.n, name) && (!year || r.s.year === year)), bountyGain) / 1e6) * 1e6;
+// The panel bets berries on its picks: ฿100M each season; lean ฿5M, confident ฿10M, lock ฿25M, paid at Luffy's
+// pregame odds (a winning bet on a 25% underdog pays 3 to 1, on a 75% favorite 1 to 3)
+const STAKE = { lean: 5e6, confident: 10e6, lock: 25e6 }, BANKROLL = 100e6;
+const betResult = (pr, ok, stake) => (ok ? (stake * (1 - pr)) / pr : -stake);
+// Manager treasuries, every season since 2023: ฿10M a regular-season win (฿5M a tie), ฿5M for the week's top score,
+// ฿50M a playoff win, ฿500M for the Buckaroo Bowl (the One Piece itself), ฿5M when his Bounty Board pick goes Gear 5,
+// and a ฿25M fine for losing the Bum Bowl
+const TREASURE = { win: 10e6, tie: 5e6, top: 5e6, playoff: 50e6, bowl: 500e6, gear5: 5e6, bum: -25e6 };
+let TREAS = null;
+function treasuries() {
+  if (TREAS) return TREAS;
+  const T = {}, add = (k, y, v, why) => { const t = (T[k] = T[k] || { total: 0, by: {}, why: {} }); t.total += v; t.by[y] = (t.by[y] || 0) + v; t.why[why] = (t.why[why] || 0) + v; };
+  for (const s of D.seasons) {
+    const bum = bumGame(s), top = {};
+    for (const m of s.played) { const po = m.tier && m.tier !== "NONE";
+      for (const [id, p, op] of [[m.h, m.hp, m.ap], [m.a, m.ap, m.hp]]) { const k = mgrAt(s.byId[id], m.wk);
+        if (!po) { if (m.win === id) add(k, s.year, TREASURE.win, "Wins"); else if (m.win === 0) add(k, s.year, TREASURE.tie, "Wins");
+          if (s.spans(m.wk).length === 1 && (!top[m.wk] || p > top[m.wk].p)) top[m.wk] = { p, k }; }
+        else if (m.tier === "WINNERS_BRACKET" && m.win === id) add(k, s.year, isBowl(s, m) ? TREASURE.bowl : TREASURE.playoff, isBowl(s, m) ? "Buckaroo Bowl" : "Playoff wins");
+        if (bum === m && m.win !== id) add(k, s.year, TREASURE.bum, "Bum Bowl fine"); } }
+    for (const wk in top) add(top[wk].k, s.year, TREASURE.top, "Top scores");
+  }
+  for (const r of wlog()) if (r.gear5) add(mgrAt(r.s.byId[r.x.id], r.m.wk), r.s.year, TREASURE.gear5, "Gear 5s");
+  return (TREAS = T);
+}
 // One pick's row: what his game means for his team, then (once it's locked at kickoff) how it's going
 function watchLine(s, m, x, gw) {
   const who = esc(mgrName(mgrAt(s.byId[x.id], m.wk))), st = gw.stacks.find((k) => k.id === x.id && (k.qb === x.n || k.rec === x.n));
@@ -1496,7 +1532,8 @@ function managers() {
   return `<div class="vhead"><div><div class="eyebrow">All-Time</div><h2>Managers</h2><p>Career regular-season numbers across every loaded season.</p></div></div>
   <div class="mgrs">${rows.map((r) => `<button class="box mgr" data-go="mgr-${r.k}"><div class="top">${mbadge(r.k)}<span><b>${mgrName(r.k)}</b><small class="muted">${r.seasons.length} season${r.seasons.length === 1 ? "" : "s"} · now “${esc(r.seasons[r.seasons.length - 1].teams.find((t) => t.mgr === r.k).name)}”</small></span></div>
     <div class="nums"><div>Record<b>${r.w}-${r.l}${r.t ? "-" + r.t : ""}${hasKick(r.k) ? "*" : ""}</b></div><div>Win %<b>${pct(r.w, r.l, r.t)}</b></div><div>Pts/Gm<b>${f1(r.ppg)}</b></div></div>
-    <div class="rings">${r.titles.length ? "🏆".repeat(r.titles.length) + " " + r.titles.join(", ") : `<span class="muted" style="font-weight:400">No titles yet</span>`}</div></button>`).join("")}</div>`;
+    <div class="rings">${r.titles.length ? "🏆".repeat(r.titles.length) + " " + r.titles.join(", ") : `<span class="muted" style="font-weight:400">No titles yet</span>`}</div><div class="treas">💰 ${berry((treasuries()[r.k] || { total: 0 }).total, 1)} <span class="muted">treasury</span></div></button>`).join("")}</div>
+  <p class="note">💰 Treasury, in berries since ${D.firstYear}: ${berry(TREASURE.win, 1)} a regular-season win, ${berry(TREASURE.top, 1)} for the week's top score, ${berry(TREASURE.playoff, 1)} a playoff win, ${berry(TREASURE.bowl, 1)} for winning the Buckaroo Bowl (the One Piece itself), ${berry(TREASURE.gear5, 1)} when his ${owLink("bounty", "Bounty Board")} pick goes Gear 5, and a ${berry(-TREASURE.bum, 1)} fine for losing the Bum Bowl.</p>`;
 }
 
 // ---------- Manager pages read like a wiki article: infobox, a lead from the numbers, the career profile ----------
@@ -1534,6 +1571,7 @@ function mgrWiki(k, r) {
     ${row("Playoffs", r.playoffs ? `${r.playoffs} appearance${r.playoffs === 1 ? "" : "s"}${r.pw + r.pl ? ` · ${r.pw}–${r.pl}` : ""}` : "None yet")}
     ${row("Points per game", f1(r.ppg))}
     ${row("Laboon", now ? `${Math.round(now.r)}${lrank ? ` <span class="muted">(${nth(lrank)})</span>` : ""}` : "")}
+    ${((t) => (t ? row("Treasury", `💰 <b>${berry(t.total)}</b><br><small class="muted">${Object.entries(t.why).sort((a, b) => b[1] - a[1]).map(([w, v]) => `${w} ${berry(v, 1)}`).join(" · ")}</small>`) : ""))(treasuries()[k])}
     ${bowls.length || grouped.length ? `<tr><th colspan="2" class="ibsec">Honors</th></tr><tr><td colspan="2">${r.titles.map((y) => `<div class="ibh gold">🏆 <button class="mlink" data-go="bowl-${y}">Buckaroo Bowl ${roman(y - D.firstYear + 1)}</button> Champion</div>`).join("")}${grouped.map((a) => `<div class="ibh${a.key === "bellamy" ? " l" : ""}">${a.e} ${awLink(a.key)} <span class="muted">${yrs(a.ys)}</span></div>`).join("")}</td></tr>` : ""}
   </table></aside>`;
   return `<div class="wiki"><article class="wikimain">${lead}${info.replace('class="infobox box"', 'class="infobox box ibm-only"')}${season}${career}${awards}</article>${info.replace('class="infobox box"', 'class="infobox box ibd-only"')}</div>`;
@@ -1948,10 +1986,10 @@ function owView() {
     ${best ? `<tr><th>${k === "gear5" ? "Biggest" : "Worst"}</th><td>${esc(best.x.n)} <span class="muted">(${f1(best.pts)}, ${best.s.year} wk ${best.m.wk})</span></td></tr>` : ""}
   </table></aside>`;
   const wanted = () => { const by = {};
-    for (const r of all.filter(inY)) { const w = (by[r.x.n] = by[r.x.n] || { x: r.x, n: 0, g5: 0, sst: 0, mgrs: [] }); w.n++; if (r.gear5) w.g5++; if (r.seastone) w.sst++;
+    for (const r of all.filter(inY)) { const w = (by[r.x.n] = by[r.x.n] || { x: r.x, n: 0, g5: 0, sst: 0, b: 0, mgrs: [] }); w.n++; w.b += bountyGain(r); if (r.gear5) w.g5++; if (r.seastone) w.sst++;
       const k = mgrAt(r.s.byId[r.x.id], r.m.wk); if (!w.mgrs.includes(k)) w.mgrs.push(k); } // by manager: a team is a new object each season
-    const rows = Object.values(by).sort((p, q) => q.n - p.n || q.g5 - p.g5 || p.sst - q.sst).slice(0, 15);
-    return `<h3 class="wikisub">Most Wanted</h3>${rows.length ? `<div class="box scroll"><table class="compact mwtab"><thead><tr><th class="n">#</th><th>Player</th><th class="n">Picks</th><th class="n">${OW.gear5[0]}</th><th class="n">${OW.seastone[0]}</th></tr></thead><tbody>${rows.map((w, i) => `<tr><td class="n muted">${i + 1}</td><td><span style="white-space:nowrap">${posTag(w.x.pos)}${pn(w.x.n)}</span><br><small class="muted" style="display:inline-flex;gap:4px;align-items:center;margin-top:3px">for ${w.mgrs.map((k) => mbadge(k, 1)).join("")}</small></td><td class="n"><b>${w.n}</b></td><td class="n">${w.g5 || "—"}</td><td class="n">${w.sst || "—"}</td></tr>`).join("")}</tbody></table></div>` : `<p class="muted">Nobody yet.</p>`}`; };
+    const rows = Object.values(by).sort((p, q) => q.b - p.b || q.n - p.n).slice(0, 15);
+    return `<h3 class="wikisub">Most Wanted</h3><p>Every player on the board carries a bounty in berries, and like a real wanted poster it only goes up: ${berry(BOUNTY.posted, 1)} each time he's posted, and for every Gear 5 another ${berry(BOUNTY.gear5, 1)} plus ${berry(BOUNTY.perPt, 1)} for each point past his line, scaled by how much his game swung the matchup. Getting Seastoned costs nothing; it just doesn't help.</p>${rows.length ? `<div class="box scroll"><table class="compact mwtab"><thead><tr><th class="n">#</th><th>Player</th><th class="n">Bounty</th><th class="n">Picks</th><th class="n">${OW.gear5[0]}</th><th class="n">${OW.seastone[0]}</th></tr></thead><tbody>${rows.map((w, i) => `<tr><td class="n muted">${i + 1}</td><td><span style="white-space:nowrap">${posTag(w.x.pos)}${pn(w.x.n)}</span><br><small class="muted" style="display:inline-flex;gap:4px;align-items:center;margin-top:3px">for ${w.mgrs.map((k) => mbadge(k, 1)).join("")}</small></td><td class="n" style="white-space:nowrap"><b>${berry(Math.round(w.b / 1e6) * 1e6, 1)}</b></td><td class="n">${w.n}</td><td class="n">${w.g5 || "—"}</td><td class="n">${w.sst || "—"}</td></tr>`).join("")}</tbody></table></div>` : `<p class="muted">Nobody yet.</p>`}`; };
   // Gear 5 and Seastoned: one season in full, or all-time's ten biggest
   const pickList = () => { if (Y) return `<h3 class="wikisub">Every ${esc(nm)} in ${Y}</h3>${tbl(mine.filter(inY))}`;
     const far = (r) => (k === "gear5" ? r.pts - r.x.boomAt : r.x.bustAt - r.pts);
@@ -2205,6 +2243,7 @@ function wikiHtml(p, best) {
     ${row("BFL seasons", yrs(p.years))}
     ${row("Managers", p.mgrs.map((k) => `<span class="ibm">${mbadge(k, 1)} <button class="mlink" data-go="mgr-${k}">${mgrName(k)}</button></span>`).join(""))}
     ${row("Drafted", drafted.join("<br>") || "Undrafted")}
+    ${((b) => (b ? row("Bounty", `<b>${berry(b)}</b> <button class="mlink" data-go="ow-bounty">📜</button>`) : ""))(bountyOf(p.n))}
     ${rings.length || aw.length ? `<tr><th colspan="2" class="ibsec">Honors</th></tr><tr><td colspan="2">${rings.map((r) => `<div class="ibh gold">🏆 <button class="mlink" data-go="bowl-${r.y}">Buckaroo Bowl ${roman(r.n)}</button> Champion <span class="muted">(${esc(r.team)})</span></div>`).join("")}${grouped.map((a) => `<div class="ibh${SHAME[a.k] ? " l" : ""}">${a.e} ${awLink(a.k)} <span class="muted">${yrs(a.ys)}</span></div>`).join("")}</td></tr>` : ""}
     <tr><th colspan="2" class="ibsec">BFL career</th></tr>
     ${row("Starts", p.starts)}
@@ -2581,7 +2620,8 @@ function panelRecord(year, upToWk) {
   for (const pv of NEWS.filter((x) => x.type === "preview" && x.year === year && x.wk <= upToWk)) for (const g of pv.picks || []) {
     const m = (S[year] || { matchups: [] }).matchups.find((x) => x.wk === pv.wk && x.h === g.h && x.a === g.a);
     if (!m || m.win === null || m.live) continue;
-    for (const p of g.panel) { const x = (r[p.panelist] = r[p.panelist] || { w: 0, l: 0, lw: 0, ll: 0 }); const ok = p.id === m.win; x[ok ? "w" : "l"]++; if (p.confidence === "lock") x[ok ? "lw" : "ll"]++; }
+    for (const p of g.panel) { const x = (r[p.panelist] = r[p.panelist] || { w: 0, l: 0, lw: 0, ll: 0, b: BANKROLL }); const ok = p.id === m.win; x[ok ? "w" : "l"]++; if (p.confidence === "lock") x[ok ? "lw" : "ll"]++;
+      const pr = Math.min(0.95, Math.max(0.05, teamWin(S[year], m, p.id) ?? 0.5)); x.b += betResult(pr, ok, STAKE[p.confidence] || STAKE.lean); }
   }
   return r;
 }
@@ -2592,7 +2632,7 @@ function picksHtml(a) {
     return `<div class="box pgame"><div class="k">${esc(g.game)}${fin ? ` <span class="muted">· Final: ${esc(s.byId[m.win].name)} won</span>` : ""}</div>${g.panel.map((p) => { const t = s && s.byId[p.id], hit = fin ? (p.id === m.win ? " hit" : " miss") : "";
       return `<div class="ppick${hit}"><span class="avatar" style="--h:${avatarHue(p.panelist)}" aria-hidden="true">${esc(p.panelist.replace("Dr. ", "")[0])}</span><div><div class="phead"><b>${esc(p.panelist)}</b> <span class="pill gold">${CONF[p.confidence] || ""}</span> ${t ? badge(t, 1) : ""} <b>${esc(p.pick)}</b>${hit ? ` <span class="pill${hit === " hit" ? "" : " live"}">${hit === " hit" ? "✓" : "✗"}</span>` : ""}</div><p>${esc(p.take)}</p></div></div>`; }).join("")}</div>`; }).join("");
   const rec = panelRecord(a.year, a.wk), names = [...new Set(a.picks.flatMap((g) => g.panel.map((p) => p.panelist)))];
-  const table = Object.keys(rec).length ? `<div class="box scroll"><table><thead><tr><th>Panelist</th><th class="n">Picks</th><th class="n">Locks</th></tr></thead><tbody>${names.map((n) => { const x = rec[n] || { w: 0, l: 0, lw: 0, ll: 0 }; return `<tr><td><b>${esc(n)}</b></td><td class="n">${x.w}-${x.l}</td><td class="n">${x.lw}-${x.ll}</td></tr>`; }).join("")}</tbody></table></div>` : "";
+  const table = Object.keys(rec).length ? `<div class="box scroll"><table><thead><tr><th>Panelist</th><th class="n">Picks</th><th class="n">Locks</th><th class="n" title="Each starts the season with ${berry(BANKROLL, 1)} and bets on every pick (lean ${berry(STAKE.lean, 1)}, confident ${berry(STAKE.confident, 1)}, lock ${berry(STAKE.lock, 1)}) at Luffy's pregame odds">Berries</th></tr></thead><tbody>${[...names].sort((p, q) => (rec[q] || { b: BANKROLL }).b - (rec[p] || { b: BANKROLL }).b).map((n) => { const x = rec[n] || { w: 0, l: 0, lw: 0, ll: 0, b: BANKROLL }, d = x.b - BANKROLL; return `<tr><td><b>${esc(n)}</b></td><td class="n">${x.w}-${x.l}</td><td class="n">${x.lw}-${x.ll}</td><td class="n" style="white-space:nowrap"><b>${berry(x.b, 1)}</b>${Math.abs(d) >= 1e6 ? ` <span class="${d > 0 ? "w" : "l"}">${d > 0 ? "+" : ""}${berry(d, 1)}</span>` : ""}</td></tr>`; }).join("")}</tbody></table></div><p class="note">Berries: each panelist starts the season with ${berry(BANKROLL, 1)} and bets every pick (lean ${berry(STAKE.lean, 1)}, confident ${berry(STAKE.confident, 1)}, lock ${berry(STAKE.lock, 1)}), paid at Luffy's pregame odds, so backing an underdog pays more.</p>` : "";
   return `<section><h3>The Panel's Picks</h3><div class="pgrid">${games}</div>${table ? `<h3>Panel Standings, ${a.year}</h3>${table}` : ""}</section>`;
 }
 // Power Rankings tab: one release per finished week (Tuesday mornings), any week selectable
