@@ -397,6 +397,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-08T14:58:07.548Z"
+  },
+  {
+   "author": "Web Slinger Weekly",
+   "handle": "@WebSlingerWeekly",
+   "text": "Bijan punches it in and Zoe is up twenty-one before Saquon or Nico have even kicked off. Not a bad way to start a rookie season Sunday.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T16:37:25.412Z"
+  },
+  {
+   "author": "Ghostu-Spider SZN",
+   "handle": "@GhostuSpiderSZN",
+   "text": "Bijan Robinson finds the end zone and we're on the board with a big lead. Plenty more to come from this lineup, Spider fam.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Ghostu-Spider SZN",
+   "about": "game",
+   "at": "2026-11-08T16:37:25.412Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Bijan's touchdown puts Zoe up twenty-one to nothing, but Luffy still has her at only 35% against No Banner only HULK. Brucie has McCaffrey, Allen, Walker and Kelce all yet to play, so that lead is less comfortable than it looks.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T16:38:25.412Z"
   }
  ],
  "batches": [
@@ -409,6 +439,7 @@
   "2026-11-06T03:43:30.401Z",
   "2026-11-08T06:28:53.440Z",
   "2026-11-08T14:43:41.136Z",
-  "2026-11-08T14:58:07.548Z"
+  "2026-11-08T14:58:07.548Z",
+  "2026-11-08T16:38:25.412Z"
  ]
 }
