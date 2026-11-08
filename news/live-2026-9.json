@@ -277,6 +277,46 @@
    "team": "The Horse is Hea",
    "about": "move",
    "at": "2026-11-06T03:43:30.401Z"
+  },
+  {
+   "author": "Windy City Fumble",
+   "handle": "@WindyCityFumble",
+   "text": "Randy dropped Tre Tucker and picked up Rome Odunze, and I've watched this man refuse to trade for two years. Now he's out here moving Bears fans' hearts around on the wire. I'm going to need a minute.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-08T06:10:46.253Z"
+  },
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "Randy swaps Tre Tucker for Rome Odunze off waivers. Odunze has had the better recent stretch by a good margin, and he's a straight upgrade for The fumblers' receiver room.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-08T06:22:46.253Z"
+  },
+  {
+   "author": "Dawgs Kennel",
+   "handle": "@DawgsKennel",
+   "text": "Randy cutting Tre Tucker after two decent weeks and grabbing Odunze is a lot of effort for a guy who's already up nineteen on us with nobody of ours played yet. Kai, please start playing.",
+   "heat": 2,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-08T06:28:53.440Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Odunze for Tucker is the right call on pure scoring. Luffy still has The fumblers at only 10% against Dawgs, because Mekhi has a full lineup left to play and Randy has most of his roster still to go.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-08T06:28:53.440Z"
   }
  ],
  "batches": [
@@ -286,6 +326,7 @@
   "2026-11-05T03:43:08.776Z",
   "2026-11-06T01:31:33.767Z",
   "2026-11-06T02:30:46.973Z",
-  "2026-11-06T03:43:30.401Z"
+  "2026-11-06T03:43:30.401Z",
+  "2026-11-08T06:28:53.440Z"
  ]
 }
