@@ -747,6 +747,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-08T22:18:20.169Z"
+  },
+  {
+   "author": "Horse Hive",
+   "handle": "@HorseHiveBFL",
+   "text": "Mahomes finishing and Parker Washington's score are in the books, Smith-Njigba, Kittle and the Texans D are still on the field, and Bucky and the kicker are still to come. Down thirty is a lot, but this feels a lot better than it did an hour ago.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T22:39:34.115Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "The Horse is Hea jumped from 59% to 85% even though they trail Jordan by about thirty. Bucky Irving and Will Reichard are still to play, and Luffy sees that as plenty of runway.",
+   "heat": 4,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T22:42:34.115Z"
+  },
+  {
+   "author": "Sal Benedetto",
+   "handle": "@SalBetsBig",
+   "text": "Sonny is down thirty and Luffy says 85%?! JMoney's whole offense is finished, Burrow is done, and I'm taking Sonny and the Horse as a LOCK!",
+   "heat": 7,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T22:45:34.115Z"
+  },
+  {
+   "author": "The Horse is Hea",
+   "handle": "@TheHorseisHea",
+   "text": "Mahomes is done for the day, Parker Washington is done, and the Texans D, Kittle, Smith-Njigba, Jeanty, Bucky and Reichard are all still in this one. Plenty of football left.",
+   "heat": 2,
+   "kind": "team",
+   "team": "The Horse is Hea",
+   "about": "game",
+   "at": "2026-11-08T22:47:34.115Z"
   }
  ],
  "batches": [
@@ -769,6 +809,7 @@
   "2026-11-08T20:29:34.413Z",
   "2026-11-08T20:58:13.902Z",
   "2026-11-08T21:41:15.235Z",
-  "2026-11-08T22:24:20.169Z"
+  "2026-11-08T22:24:20.169Z",
+  "2026-11-08T22:48:34.115Z"
  ]
 }
