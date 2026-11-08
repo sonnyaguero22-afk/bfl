@@ -427,6 +427,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-08T16:38:25.412Z"
+  },
+  {
+   "author": "Windy City Fumble",
+   "handle": "@WindyCityFumble",
+   "text": "Tee Higgins finally gets in the end zone and I can breathe for a second. Randy's up thirteen with Loveland and Diggs still to play, so I'm not celebrating yet.",
+   "heat": 2,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T16:44:01.979Z"
+  },
+  {
+   "author": "Burrow Belt Brigade",
+   "handle": "@BurrowBeltBrigade",
+   "text": "Burrow throws another touchdown and clears the line everybody had on him. JMoney's up thirty-three with Wilson and Rachaad still to play. Chicken dinner energy.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T16:49:01.979Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Burrow cleared his 27-point line, so Gear 5 for the Bounty Board. Luffy had that line at a 41% win chance for Jordan, and The Horse is Hea still sits at 81% because Sonny has seven starters yet to play.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T16:51:01.979Z"
   }
  ],
  "batches": [
@@ -440,6 +470,7 @@
   "2026-11-08T06:28:53.440Z",
   "2026-11-08T14:43:41.136Z",
   "2026-11-08T14:58:07.548Z",
-  "2026-11-08T16:38:25.412Z"
+  "2026-11-08T16:38:25.412Z",
+  "2026-11-08T16:53:01.979Z"
  ]
 }

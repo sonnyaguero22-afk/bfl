@@ -1,0 +1,67 @@
+{
+ "id": "final-2026-9",
+ "type": "final",
+ "year": 2026,
+ "wk": 9,
+ "created": "2026-11-08T16:52:58.137Z",
+ "title": "Sunday Final Word: Zoe Gets a Boost, Randy's Hole Gets Deeper, and Sonny Swaps Quarterbacks",
+ "dek": "The inactives are in, the lineups are mostly locked, and Luffy has moved on three of four games before the 1pm kickoffs.",
+ "body": [
+  "Biggest mover of the morning is Ghostu-Spider SZN, who went from 20% to 34% after Zoe swapped Blake Corum in for A.J. Brown and Bijan Robinson already banked 22.1 in the early window. Ramon did plenty of shuffling on the other side: Christian McCaffrey, Chris Olave and Travis Kelce are in for Zay Flowers, Rhamondre Stevenson and T.J. Hockenson. No Banner only HULK has zero points on the board and is still the favorite, but Luffy is a lot less sure about it than he was Thursday.",
+  "The fumblers are in real trouble. Randy leads 36.86 to 23.2 on the strength of Tee Higgins (17.7) and Trevor Lawrence (13.58), but Luffy dropped him from 22% to 8% anyway. Mekhi has Ja'Marr Chase at 24.2 already and slotted Amon-Ra St. Brown in for Kyren Williams, so Dawgs have the better players left to go. Randy did add Rome Odunze and drop Tre Tucker, which is the most movement he's shown on a roster in weeks.",
+  "Elsewhere, The Horse is Hea went to 81% after Sonny picked up Patrick Mahomes and started him over C.J. Stroud. Jordan's side has a head start at 46.32 behind Joe Burrow's 28.42, but Parker Washington's 13.1 is all Sonny has so far. Habibsters lead Team Pillbert 28.2 to 0 after Chase Brown, Drake London and the Jaguars D/ST all showed up, yet Luffy slipped Habib from 42% to 39% anyway after he swapped Dak Prescott in for Drake Maye. Nobody has an unfilled spot, so no one is giving away free points."
+ ],
+ "social": [
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "Inactives are in. Zoe has Corum in for A.J. Brown, Ramon has overhauled his flex spots, and Sonny starts Mahomes over Stroud. All lineups are full, so nobody is leaving points on the table going into the 1pm games.",
+   "when": 4,
+   "heat": 2,
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Luffy has The fumblers at 8% despite a 36.86 to 23.2 lead. Ja'Marr Chase is already at 24.2 and Amon-Ra St. Brown is still to play. Dawgs stays my pick.",
+   "when": 10,
+   "heat": 3,
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Sal Benedetto",
+   "handle": "@SalBetsBig",
+   "text": "Z Squared at 34% and I'm still not backing her. HULK is a LOCK. Brucie rebuilt half his lineup and I would still bet my whole house on it.",
+   "when": 18,
+   "heat": 4,
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Fumble Recovery Unit",
+   "handle": "@FumblersForever",
+   "text": "Randy led by 13 and Luffy says 8%. Just let us enjoy it for two more hours. We added Odunze, we are fine. We are not fine.",
+   "when": 25,
+   "heat": 3,
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Cheesehead Spider",
+   "handle": "@ZSquaredSZN",
+   "text": "Bijan 22.1 and 34%? Bundle up, Hulk. We are coming for you.",
+   "when": 40,
+   "heat": 2,
+   "kind": "fan",
+   "team": ""
+  }
+ ],
+ "teams": [],
+ "model": "claude-sonnet-5-5",
+ "usage": {
+  "input": 4,
+  "output": 1312
+ }
+}
