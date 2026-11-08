@@ -707,6 +707,46 @@
    "team": "Habibsters",
    "about": "game",
    "at": "2026-11-08T21:40:15.235Z"
+  },
+  {
+   "author": "Pillbert Pulse",
+   "handle": "@PillbertPulse",
+   "text": "Purdy hits another one in the end zone and Philly is chipping away at it. Down twenty-three with Jefferson and Burden still to play, nobody on the other side should be getting comfortable.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T22:21:20.169Z"
+  },
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "Worth noting for the Habibsters-Team Pillbert game: Purdy's touchdown pass was Alan's third in a row from the 49ers' side of things, and Jefferson and Burden are both still waiting to kick off. Kaushal's group is done except for the kicker.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T22:22:20.169Z"
+  },
+  {
+   "author": "Zoey's Corner",
+   "handle": "@ZoeyCorner",
+   "text": "McCaffrey catches a touchdown for Brucie and I've stopped checking the scoreboard. Cheering for Nico Collins out of pure stubbornness at this point.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T22:19:20.169Z"
+  },
+  {
+   "author": "Sal Benedetto",
+   "handle": "@SalBetsBig",
+   "text": "McCaffrey scores AGAIN and Brucie still has Josh Allen and Swift sitting there! That's a LOCK for the Hulk and I'm not apologizing to Zoe's team!",
+   "heat": 5,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T22:18:20.169Z"
   }
  ],
  "batches": [
@@ -728,6 +768,7 @@
   "2026-11-08T19:46:16.981Z",
   "2026-11-08T20:29:34.413Z",
   "2026-11-08T20:58:13.902Z",
-  "2026-11-08T21:41:15.235Z"
+  "2026-11-08T21:41:15.235Z",
+  "2026-11-08T22:24:20.169Z"
  ]
 }
