@@ -3,7 +3,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700&display=swap">
 <style>
 /* Layout: frosted top bar with segmented controls; one content column of grouped cards. Dark is the default; light only on an explicit light choice. */
 :root {
@@ -132,7 +132,7 @@ a.mlink:hover b, button.mlink:hover b, button.mlink:hover { text-decoration: und
 .weekbar button.po { border-color: var(--brass); }
 .games { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
 .game { padding: 0; overflow: hidden; }
-.game.open { grid-column: 1 / -1; }
+.game.open { grid-column: 1 / -1; overflow: visible; } /* visible, so the score bar can stay pinned while you scroll */
 .game > button { display: block; width: 100%; background: none; border: 0; padding: 12px 14px; cursor: pointer; text-align: left; }
 .game > button:hover { background: var(--sunk); }
 .side { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 4px 0; }
@@ -494,6 +494,59 @@ h3.wikisub { border-bottom: 1px solid var(--line); padding-bottom: 6px; margin: 
 .infobox td.ibscore div { display: flex; align-items: center; gap: 6px; padding: 2px 0; } .infobox td.ibscore .num { margin-left: auto; font-weight: 700; }
 .succ { display: flex; justify-content: space-between; gap: 8px; padding: 8px 12px; font-size: 12.5px; }
 .boxpair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; } @media (max-width: 760px) { .boxpair { grid-template-columns: 1fr; } }
+.herobtn { display: block; width: 100%; border: 0; padding: 0; background: none; text-align: center; cursor: pointer; }
+.hero { position: relative; border-radius: 22px; padding: 14px 14px 18px; color: #fff; overflow: hidden;
+  background: radial-gradient(rgba(255,255,255,.05) 1px, transparent 1.2px) 0 0 / 4px 4px, linear-gradient(90deg, hsl(var(--ha) 55% 30%) 0%, hsl(var(--ha) 50% 22%) 42%, hsl(var(--hb) 50% 22%) 58%, hsl(var(--hb) 55% 30%) 100%); }
+.hero .grab { display: block; width: 38px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.35); margin: 0 auto 10px; }
+.hero .hlabel { font-size: 13px; font-weight: 600; color: rgba(255,255,255,.65); margin-bottom: 6px; }
+.hgrid { display: grid; grid-template-columns: 1fr auto 1fr; align-items: start; gap: 8px; }
+.hs { display: grid; justify-items: center; gap: 4px; min-width: 0; }
+.hs .hscore { font-family: "Barlow Condensed", "SF Compact Display", var(--f-display); font-weight: 700; font-size: clamp(54px, 13vw, 84px); line-height: .95; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.hs.lost .hscore { opacity: .4; }
+.hs .badge { width: 40px; height: 40px; font-size: 12px; margin-top: 4px; }
+.hs b { font-size: 16px; line-height: 1.2; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hs small { color: rgba(255,255,255,.65); font-size: 12.5px; }
+.hstat { align-self: center; font-weight: 700; font-size: 15px; padding-top: 18px; white-space: nowrap; } .hstat .live { color: #ff6961; }
+.hline { width: 100%; margin-top: 14px; font-size: 13px; color: #fff; } .hline th { color: rgba(255,255,255,.6); text-align: center; padding: 4px; border: 0; font-size: 12px; }
+.hline td { text-align: center; padding: 6px 4px; border-bottom: 1px solid rgba(255,255,255,.15); } .hline td:first-child { text-align: left; font-weight: 600; }
+.tstats { margin: 12px 0; padding: 14px 16px 6px; }
+.tshead { text-align: center; font-weight: 700; font-size: 16px; margin-bottom: 6px; }
+.tsrow { display: grid; grid-template-columns: auto 1fr auto; align-items: end; column-gap: 8px; padding: 6px 0 10px; }
+.tsn { font-family: "Barlow Condensed", "SF Compact Display", var(--f-display); font-weight: 700; font-size: 30px; line-height: 1; font-variant-numeric: tabular-nums; }
+.tsn.r { text-align: right; }
+.tsl { text-align: center; color: var(--muted); font-size: 14px; padding-bottom: 2px; }
+.tsbar { grid-column: 1 / -1; display: flex; gap: 6px; margin-top: 8px; } .tsbar span { height: 5px; border-radius: 3px; min-width: 4px; }
+
+/* Home score list */
+.slist { padding: 4px 0; margin: 0 auto 28px; max-width: 760px; } /* rows wider than this push the scores too far apart */
+.slhead { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 14px 16px 6px; font-weight: 700; font-size: 15px; }
+.followbtn { border: 0; border-radius: 999px; padding: 4px 12px; font-size: 13px; font-weight: 600; background: var(--sunk); color: var(--ink); cursor: pointer; }
+.follow { display: flex; flex-wrap: wrap; gap: 6px 4px; padding: 4px 12px 12px; }
+.follow button { display: grid; justify-items: center; gap: 3px; width: 56px; border: 0; background: none; padding: 4px 0; border-radius: 12px; cursor: pointer; }
+.follow button small { font-size: 11px; color: var(--muted); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.follow button[aria-pressed="true"] { background: var(--sunk); } .follow button[aria-pressed="true"] small { color: var(--ink); font-weight: 600; }
+.srow { display: grid; grid-template-columns: minmax(0, 1fr) 104px minmax(92px, auto) 104px minmax(0, 1fr); align-items: center; gap: 6px; padding: 12px 14px; border-top: 1px solid var(--line); cursor: pointer; }
+.srow:hover { background: var(--edge); } .srow.cur { background: var(--sunk); }
+.srow.bowl { box-shadow: inset 3px 0 0 var(--gold); }
+.srteam { display: grid; justify-items: center; gap: 4px; min-width: 0; position: relative; }
+.srteam small { color: var(--muted); font-size: 11.5px; line-height: 1.3; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+.srteam .badge { width: 36px; height: 36px; }
+.srpts { text-align: center; font-family: "Barlow Condensed", "SF Compact Display", var(--f-display); font-weight: 700; font-size: clamp(32px, 8vw, 44px); line-height: 1; font-variant-numeric: tabular-nums; }
+.srpts.dim { opacity: .38; }
+.srmid { display: grid; justify-items: center; text-align: center; gap: 2px; } .srmid b { font-size: 14px; } .srmid small { color: var(--muted); font-size: 11.5px; } .srmid .srlive { color: #ff6961; }
+.ball { font-size: 11px; opacity: .8; text-align: center; }
+@media (max-width: 420px) { .srow { padding: 12px 8px; gap: 3px; grid-template-columns: minmax(0, 1fr) 72px minmax(74px, auto) 72px minmax(0, 1fr); } .srteam .badge { width: 30px; height: 30px; } }
+/* Open game: pinned compact score bar with capsule tabs */
+.gbar { position: sticky; top: 62px; z-index: 4; margin: 10px 0 4px; border-radius: 18px; padding: 8px 10px 10px; color: #fff; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  background: linear-gradient(90deg, hsl(var(--ha) 50% 24%), hsl(var(--hb) 50% 24%)); box-shadow: 0 8px 22px rgba(0,0,0,.45); }
+.gmini { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 13px; } .gmini b { font-family: "Barlow Condensed", var(--f-display); font-size: 26px; font-variant-numeric: tabular-nums; }
+.gmini span { color: rgba(255,255,255,.75); font-weight: 600; min-width: 74px; text-align: center; } .gmini .badge { flex: none; width: 26px !important; height: 26px; min-width: 0; font-size: 9px; }
+.gtabs { display: flex; justify-content: center; gap: 4px; margin-top: 6px; } .gtabs button { border: 0; background: none; color: #fff; font-weight: 600; font-size: 14px; padding: 6px 14px; border-radius: 999px; cursor: pointer; }
+.gtabs button[aria-current="true"] { background: #fff; color: #111; }
+/* Standings: one clean table, a single cut line */
+:root:not([data-theme="light"]) table.homestand td, :root:not([data-theme="light"]) table.stand td { border-bottom: 0; padding-top: 13px; padding-bottom: 13px; }
+:root:not([data-theme="light"]) table.homestand tr.cut td, :root:not([data-theme="light"]) table.stand tr.cut td { border-bottom: 1px solid rgba(255,255,255,.35); }
+:root:not([data-theme="light"]) table.homestand th, :root:not([data-theme="light"]) table.stand th { border-bottom: 0; }
 .huntcol { display: grid; gap: 8px; }
 .hunt { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
 .hunt small { display: block; font-size: 11.5px; line-height: 1.35; }
@@ -538,6 +591,73 @@ h3.subhead { margin: 0 0 10px; font-size: 15px; color: var(--muted); }
   main > * { animation: rise .35s ease-out both; }
   @keyframes rise { from { transform: translateY(6px); } to { transform: none; } }
 }
+
+/* ---------- Dark mode, Apple Sports style: near-black, frosted glass cards, capsule switchers ---------- */
+:root:not([data-theme="light"]) {
+  --bg: #000000;                     /* the solid behind the iPhone status bar; the page itself is a gradient */
+  --surface: rgba(255, 255, 255, 0.065);
+  --sunk: rgba(255, 255, 255, 0.09);
+  --line: rgba(255, 255, 255, 0.09);
+  --edge: rgba(255, 255, 255, 0.13);
+  --bar: rgba(18, 18, 20, 0.6);
+  --seg: rgba(255, 255, 255, 0.24);
+  --muted: #98989f;
+  --brass: #0a84ff; --brass-soft: rgba(10, 132, 255, 0.18);
+  --heat-lo: #1c1c1e;
+  --solid: #1c1c1e;                  /* for things that must not be see-through (tooltips, popovers) */
+}
+/* Near-black like Apple Sports; the only color is a glow at the top in your followed team's color (--glow, set by tint()) */
+:root:not([data-theme="light"]) body { background: radial-gradient(130% 45% at 50% -8%, var(--glow, #26262b) 0%, transparent 70%), linear-gradient(180deg, #111113 0%, #060607 45%, #000 100%) fixed; }
+:root:not([data-theme="light"]) header.mast { background: transparent; }
+:root:not([data-theme="light"]) .brand h1 { font-weight: 800; letter-spacing: -0.035em; }
+:root:not([data-theme="light"]) .vhead h2 { font-weight: 800; letter-spacing: -0.035em; }
+/* Glass cards */
+:root:not([data-theme="light"]) .box, :root:not([data-theme="light"]) .infobox { background: var(--surface); border: 0; box-shadow: inset 0 0 0 1px var(--edge); border-radius: 24px; -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%); }
+:root:not([data-theme="light"]) .box.scroll { border-radius: 20px; }
+:root:not([data-theme="light"]) .bteam, :root:not([data-theme="light"]) .finals, :root:not([data-theme="light"]) .bchamp { border-radius: 16px; }
+/* Capsule switchers: a glass track, the chosen option a lighter pill */
+:root:not([data-theme="light"]) nav.top, :root:not([data-theme="light"]) .tabs { background: rgba(255, 255, 255, 0.08); box-shadow: inset 0 0 0 1px var(--edge); border-radius: 999px; padding: 4px; }
+:root:not([data-theme="light"]) nav.top button, :root:not([data-theme="light"]) .tabs button { border-radius: 999px; color: #e8edf8; }
+:root:not([data-theme="light"]) nav.top button[aria-current="true"], :root:not([data-theme="light"]) .tabs button[aria-current="true"] { background: var(--seg); box-shadow: 0 1px 4px rgba(0, 0, 0, .25); color: #fff; }
+:root:not([data-theme="light"]) .weekbar button { background: rgba(255, 255, 255, 0.08); box-shadow: inset 0 0 0 1px var(--edge); }
+:root:not([data-theme="light"]) .weekbar button[aria-current="true"] { background: rgba(255, 255, 255, 0.9); color: #000; }
+/* Quiet column headers, roomy rows */
+:root:not([data-theme="light"]) th { color: rgba(235, 235, 245, 0.5); font-weight: 500; font-size: 13px; }
+:root:not([data-theme="light"]) td { padding-top: 12px; padding-bottom: 12px; }
+/* Things that need a solid backing or dark text */
+:root:not([data-theme="light"]) .badge, :root:not([data-theme="light"]) .posdot, :root:not([data-theme="light"]) .avatar { color: #111; }
+:root:not([data-theme="light"]) .oddstip { background: var(--solid); }
+:root:not([data-theme="light"]) .rail { background: rgba(14, 14, 16, 0.55); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-bottom-color: var(--line); }
+:root:not([data-theme="light"]) .yr[aria-current="true"] { background: var(--seg); color: #fff; box-shadow: inset 0 0 0 1px var(--edge); }
+:root:not([data-theme="light"]) .pill { background: rgba(255, 255, 255, 0.1); }
+
+/* ---------- Light mode, Apple Sports style: pale sky gradient, white cards that float on soft shadows, gray capsule tracks ---------- */
+:root[data-theme="light"] {
+  --bg: #eef2f9; --surface: #ffffff; --sunk: #eef0f5; --line: rgba(10, 26, 61, 0.07); --edge: rgba(10, 26, 61, 0.05);
+  --bar: rgba(238, 242, 249, 0.72); --seg: #ffffff; --muted: #6b7489; --ink: #0b1220;
+}
+:root[data-theme="light"] body { background: radial-gradient(120% 55% at 50% -12%, hsl(var(--tint, 215) 85% 86%) 0%, hsl(var(--tint, 215) 85% 86% / 0) 60%), linear-gradient(180deg, hsl(var(--tint, 215) 45% 95%) 0%, #f4f6fa 45%, #f6f7fa 100%) fixed; }
+:root[data-theme="light"] header.mast { background: transparent; }
+:root[data-theme="light"] .brand h1, :root[data-theme="light"] .vhead h2 { font-weight: 800; letter-spacing: -0.035em; }
+:root[data-theme="light"] .box, :root[data-theme="light"] .infobox { background: var(--surface); border: 0; border-radius: 24px; box-shadow: 0 1px 2px rgba(10, 26, 61, .05), 0 6px 20px rgba(10, 26, 61, .06); }
+:root[data-theme="light"] .box.scroll { border-radius: 20px; }
+:root[data-theme="light"] .bteam, :root[data-theme="light"] .finals, :root[data-theme="light"] .bchamp { border-radius: 16px; }
+:root[data-theme="light"] nav.top, :root[data-theme="light"] .tabs { background: rgba(10, 26, 61, 0.07); border: 0; box-shadow: none; border-radius: 999px; padding: 4px; }
+:root[data-theme="light"] nav.top button, :root[data-theme="light"] .tabs button { border-radius: 999px; color: #1c2436; }
+:root[data-theme="light"] nav.top button[aria-current="true"], :root[data-theme="light"] .tabs button[aria-current="true"] { background: #fff; color: #0b1220; box-shadow: 0 1px 3px rgba(10, 26, 61, .14); }
+:root[data-theme="light"] .weekbar button { background: rgba(10, 26, 61, 0.06); border: 0; box-shadow: none; }
+:root[data-theme="light"] .weekbar button[aria-current="true"] { background: #0b1220; color: #fff; }
+:root[data-theme="light"] th { color: #8790a3; font-weight: 500; font-size: 13px; }
+:root[data-theme="light"] td { padding-top: 12px; padding-bottom: 12px; }
+:root[data-theme="light"] table.homestand td, :root[data-theme="light"] table.stand td, :root[data-theme="light"] table.homestand th, :root[data-theme="light"] table.stand th { border-bottom: 0; }
+:root[data-theme="light"] table.homestand tr.cut td, :root[data-theme="light"] table.stand tr.cut td { border-bottom: 1px solid rgba(10, 26, 61, .22); }
+:root[data-theme="light"] .rail { background: rgba(238, 242, 249, 0.7); -webkit-backdrop-filter: blur(20px) saturate(160%); backdrop-filter: blur(20px) saturate(160%); border-bottom-color: var(--line); }
+:root[data-theme="light"] .yr[aria-current="true"] { background: #0b1220; color: #fff; }
+:root[data-theme="light"] .pill { background: rgba(10, 26, 61, 0.06); }
+/* The game sheet keeps its team colors in light mode too, just brighter, like Apple's light game cards */
+:root[data-theme="light"] .hero { background: radial-gradient(rgba(255,255,255,.06) 1px, transparent 1.2px) 0 0 / 4px 4px, linear-gradient(90deg, hsl(var(--ha) 60% 42%) 0%, hsl(var(--ha) 55% 34%) 42%, hsl(var(--hb) 55% 34%) 58%, hsl(var(--hb) 60% 42%) 100%); }
+:root[data-theme="light"] .gbar { background: linear-gradient(90deg, hsl(var(--ha) 55% 36%), hsl(var(--hb) 55% 36%)); box-shadow: 0 8px 22px rgba(10, 26, 61, .18); }
+:root[data-theme="light"] .srmid .srlive { color: #e0352b; }
 </style>
 
 <header class="mast">
@@ -862,6 +982,7 @@ function gameView() {
     ${row("Played", two ? `Weeks ${s.spans(m.wk).join("–")}` : `Week ${s.spans(m.wk)[0]}`)}${row("Seeds", `${win.seed || "—"} vs ${lose.seed || "—"}`)}${row("Winner", `${mgrName(win.mgr)}`)}${row("Margin", f1(Math.abs(m.hp - m.ap)))}${op ? row(`${awInfo("onepiece").e} The One Piece`, pn(op.p.n)) : ""}
   </table>${succession(kind, y)}</aside>`;
   return `<div class="vhead"><div><div class="eyebrow">${kind === "bowl" ? "Championship" : "Consolation"} · ${y}</div><h2>${title}</h2></div><button class="pill" data-go="${y}" style="border:0;cursor:pointer">← ${y} season</button></div>
+  <div class="herowrap">${gameHero(s, m)}</div>${teamStats(s, m)}
   <div class="wiki"><article class="wikimain">${lead}${info.replace('class="infobox box"', 'class="infobox box ibm-only"')}${body}${chart ? `<h3 class="wikisub">Win Chance</h3><div class="wpwrap">${chart}</div>` : ""}<h3 class="wikisub">Box Score</h3><div class="boxpair">${side(win)}${side(lose)}</div></article>${info.replace('class="infobox box"', 'class="infobox box ibd-only"')}</div>`;
 }
 
@@ -950,7 +1071,7 @@ function standings(s) {
     <td class="n"><b>${recStr(x)}</b></td><td class="n">${f2(x.pf)}</td><td class="n">${f2(x.pa)}</td>
     <td class="n">${x.apW}-${x.apL}</td><td class="n ${x.luck > 0.4 ? "w" : x.luck < -0.4 ? "l" : ""}">${x.luck >= 0 ? "+" : ""}${f1(x.luck)}</td>
     <td class="n">${x.high}</td><td class="n">${x.streak ? `<span class="pill ${x.streak[0] === "W" ? "w" : x.streak[0] === "L" ? "l" : ""}">${x.streak}</span>` : ""}</td><td class="n">${x.adds}</td><td class="n">${x.trades}</td></tr>`).join("");
-  const table = `<section><div class="box scroll"><table><thead><tr><th class="n">#</th><th>Team</th><th class="n">Record</th><th class="n">PF</th><th class="n">PA</th><th class="n" title="Record if you played every team every week">All-Play</th><th class="n" title="Actual wins minus all-play expected wins">Luck</th><th class="n" title="Weeks as the league's top scorer">Top Wk</th><th class="n">Streak</th><th class="n">Adds</th><th class="n">Trades</th></tr></thead><tbody>${body}</tbody></table></div>
+  const table = `<section><div class="box scroll"><table class="stand"><thead><tr><th class="n">#</th><th>Team</th><th class="n">Record</th><th class="n">PF</th><th class="n">PA</th><th class="n" title="Record if you played every team every week">All-Play</th><th class="n" title="Actual wins minus all-play expected wins">Luck</th><th class="n" title="Weeks as the league's top scorer">Top Wk</th><th class="n">Streak</th><th class="n">Adds</th><th class="n">Trades</th></tr></thead><tbody>${body}</tbody></table></div>
     <p class="note">${isFinal && s.done ? `Final regular-season standings; the dashed line marks the ${s.playoffTeams}-team playoff cut. Where everyone finished after the playoffs is on the Playoffs tab.` : `Regular season through week ${lim}. Dashed line marks the ${s.playoffTeams}-team playoff cut.`} All-play is your record if you'd played every other team every week; luck is real wins minus that expectation.</p></section>`;
   const wks = Object.keys(s.weekScores).map(Number).filter((w) => w <= lim).sort((a, b) => a - b);
   const all = sides.map((x) => x.p); const lo = Math.min(...all), hi = Math.max(...all);
@@ -1002,36 +1123,68 @@ function celebrate() {
       { duration: 1500 + Math.random() * 1000, easing: "cubic-bezier(.2, .7, .3, 1)", delay: Math.random() * 150 }).onfinish = () => d.remove();
   }
 }
+// ---------- An opened game, Apple Sports style: the two teams' colors, big scores, then stats side by side ----------
+const condensed = `font-family: "Barlow Condensed", "SF Compact Display", var(--f-display); font-variant-numeric: tabular-nums;`;
+function gameHero(s, m) {
+  const ka = mgrAt(s.byId[m.h], m.wk), kb = mgrAt(s.byId[m.a], m.wk), done = m.win !== null && !m.live;
+  const status = m.on ? `<span class="live">● Live</span>` : m.live ? "In Progress" : done ? "Final" : "Upcoming";
+  const rec = asOf(s, Math.min(m.wk, s.regWeeks)), r = (id) => { const x = rec.rows.find((y) => y.t.id === id); return x ? recStr(x) : ""; };
+  const sideH = (id, pts) => { const t = s.byId[id], lost = done && m.win !== id && m.win !== 0;
+    return `<div class="hs${lost ? " lost" : ""}"><div class="hscore">${m.live || done ? f1(pts) : "–"}</div>${badge(t)}<b>${esc(nameAt(t, m.wk))}</b><small>${mgrName(mgrAt(t, m.wk))} · ${r(id)}</small></div>`; };
+  // Two-week games get a line score by NFL week
+  const sps = s.spans(m.wk), wkPts = (id, sp) => sum(((s.lineups[sp] || {})[id] || []).filter((e) => e.slot !== "BN" && e.slot !== "IR"), (e) => e.pts || 0);
+  const line = sps.length > 1 ? `<table class="hline"><tr><th></th>${sps.map((sp) => `<th>Wk ${sp}</th>`).join("")}<th>T</th></tr>${[m.h, m.a].map((id) => `<tr><td>${esc(s.byId[id].abbrev || nameAt(s.byId[id], m.wk))}</td>${sps.map((sp) => `<td>${f1(wkPts(id, sp))}</td>`).join("")}<td><b>${f1(id === m.h ? m.hp : m.ap)}</b></td></tr>`).join("")}</table>` : "";
+  return `<div class="hero" style="--ha:${hue[ka]};--hb:${hue[kb]}"><span class="grab"></span><div class="hlabel">${roundName(s, m) || `Week ${m.wk}`} · ${s.year}</div>
+    <div class="hgrid">${sideH(m.h, m.hp)}<div class="hstat">${status}</div>${sideH(m.a, m.ap)}</div>${line}</div>`;
+}
+// Points by position, bench and against projection, both sides on one bar like Apple's team stats
+function teamStats(s, m) {
+  const sps = s.spans(m.wk), ka = mgrAt(s.byId[m.h], m.wk), kb = mgrAt(s.byId[m.a], m.wk);
+  const L = (id) => sps.flatMap((sp) => (s.lineups[sp] || {})[id] || []);
+  const st = (id) => L(id).filter((e) => e.slot !== "BN" && e.slot !== "IR"), bn = (id) => L(id).filter((e) => e.slot === "BN");
+  if (!st(m.h).length && !st(m.a).length) return "";
+  const rows = [["QB", "Quarterbacks"], ["RB", "Running Backs"], ["WR", "Receivers"], ["TE", "Tight Ends"], ["K", "Kicker"], ["D/ST", "Defense"]].map(([pos, lab]) => [lab, sum(st(m.h).filter((e) => e.pos === pos), (e) => e.pts || 0), sum(st(m.a).filter((e) => e.pos === pos), (e) => e.pts || 0)]);
+  rows.push(["Bench", sum(bn(m.h), (e) => e.pts || 0), sum(bn(m.a), (e) => e.pts || 0)]);
+  const proj = (id) => sum(st(id), (e) => e.proj || 0);
+  if (proj(m.h) || proj(m.a)) rows.push(["Projected", proj(m.h), proj(m.a)]);
+  const bar = (a, b) => { const x = Math.max(0, a), y = Math.max(0, b), t = x + y; if (!t) return `<div class="tsbar"><span style="flex:1;background:var(--line)"></span></div>`; return `<div class="tsbar"><span style="flex:${x / t};background:hsl(${hue[ka]} 62% 58%)"></span><span style="flex:${y / t};background:hsl(${hue[kb]} 62% 58%)"></span></div>`; };
+  return `<div class="box tstats"><div class="tshead">Team Stats</div>${rows.map(([lab, a, b]) => `<div class="tsrow"><b class="tsn">${f1(a)}</b><span class="tsl">${lab}</span><b class="tsn r">${f1(b)}</b>${bar(a, b)}</div>`).join("")}</div>`;
+}
+
+// The pinned bar under an open game's header: mini score and the section tabs
+function gameBar(s, m) {
+  const t = state.gameTab || "stats", sc = (id) => (m.live || m.win !== null ? f1(id === m.h ? m.hp : m.ap) : "–");
+  const tabs = [["stats", "Stats"], ["watch", "Ones to Watch"], ["lineups", "Lineups"]];
+  return `<div class="gbar" style="--ha:${hue[mgrAt(s.byId[m.h], m.wk)]};--hb:${hue[mgrAt(s.byId[m.a], m.wk)]}"><div class="gmini">${badge(s.byId[m.h], 1)}<b>${sc(m.h)}</b><span>${m.on ? "Live" : m.live ? "In Progress" : m.win !== null ? "Final" : "Upcoming"}</span><b>${sc(m.a)}</b>${badge(s.byId[m.a], 1)}</div>
+    <div class="gtabs">${tabs.map(([k, l]) => `<button data-gtab="${k}" aria-current="${t === k}">${l}</button>`).join("")}</div></div>`;
+}
+function gameTabBody(s, m, wk) {
+  const t = state.gameTab || "stats";
+  if (t === "watch") return watchHtml(s, m) || `<p class="muted" style="padding:12px 4px">No Ones to Watch for this game.</p>`;
+  if (t === "lineups") return `<div class="lineups"><div>${lineupCol(s, wk, m.h)}</div><div>${lineupCol(s, wk, m.a)}</div></div>`;
+  const c = wpChart(s, m);
+  return `${teamStats(s, m)}${c ? `<div class="wpwrap">${c}</div>` : ""}`;
+}
+// The page takes on your team's color, like Apple Sports does with My Teams
+function tint() { const k = myTeam(), st = document.documentElement.style;
+  if (k && hue[k] != null) { st.setProperty("--tint", hue[k]); st.setProperty("--glow", `hsl(${hue[k]} 55% 26%)`); } else { st.removeProperty("--tint"); st.removeProperty("--glow"); } }
+
 function weekly(s) {
   const wk = state.week && s.weeks.includes(state.week) ? state.week : (s.done ? s.weeks[0] : s.curWeek);
   state.week = wk;
   const bar = `<div class="weekbar" aria-label="Week">${s.weeks.map((w) => `<button data-week="${w}" class="${w > s.regWeeks ? "po" : ""}" aria-current="${w === wk}">${w === bowlWeek(s) ? "🏆 Bowl" : w > s.regWeeks ? (w === bowlWeek(s) - 1 ? "Semifinals" : "Playoffs R" + (w - s.regWeeks)) : "Wk " + w}</button>`).join("")}</div>`;
   const ms = s.matchups.filter((m) => m.wk === wk);
   // Record as it stood after this week's game (or going into it, if it's still live)
-  const recNow = Object.fromEntries(asOf(s, wk).rows.map((x) => [x.t.id, x]));
-  const recLabel = (id) => { const x = recNow[id]; const po = wk > s.regWeeks;
-    return `${recStr(x)}${po ? " reg. season" : ms.some((m) => m.live) ? " going in" : ""}${!po && x.streak ? ` · <span class="${x.streak[0] === "W" ? "w" : x.streak[0] === "L" ? "l" : ""}">${x.streak}</span>` : ""}`; };
-  const cards = ms.map((m, i) => {
-    const bowl = isBowl(s, m), champ = bowl && m.win !== null && m.win !== 0 ? m.win : null;
-    const key = `${wk}-${m.h}`, open = state.open === key;
-    const winLabel = (id) => { const p = teamWin(s, m, id); if (p == null) return "";
-      // The favorite gets Luffy's meat bone (the model's nickname, after One Piece) until the result is certain
-      if (m.win === null) return `<br><span class="odds">${m.on ? "Live win chance" : "Win chance"} <b>${winPct(p)}${luffyPick(s, m, id) ? ` <span title="Luffy's pick">🍖</span>` : ""}</b>${toGo(m, id)}</span>`;
-      const upset = m.win === id && p < 0.35;
-      return `<br><span class="odds">${upset ? `<span class="pill gold">Upset</span> ` : ""}Was ${winPct(p)} to win</span>`; };
-    const side = (id, p) => { const t = s.byId[id]; const lost = m.win !== null && m.win !== id && m.win !== 0; return `<div class="side${lost ? " lost" : ""}"><span class="team">${badge(t)}<span><b${champ === id ? ` data-champ="${s.year}"` : ""}>${champ === id ? "🏆 " : ""}${esc(nameAt(t, m.wk))}</b><small>${mgrName(mgrAt(t, m.wk))}${kickedAt(t, m.wk) ? "*" : ""} · ${recLabel(id)}${winLabel(id)}</small></span></span><span class="pts">${f2(p)}</span></div>`; };
-    const margin = Math.abs(m.hp - m.ap);
-    return `<div class="box game${open ? " open" : ""}${bowl ? " bowlgame" : ""}" data-tier="${bowl ? "bowl" : m.tier || ""}">${bowl ? `<div class="bowlhead"><span>🏆 ${roundName(s, m)}</span><small>${champ ? `${esc(s.byId[champ].name)} are champions` : "The championship"} · ${s.year}</small></div>` : ""}<button data-open="${key}" aria-expanded="${open}">${side(m.h, m.hp)}${side(m.a, m.ap)}
-      <div class="gmeta"><span>${m.on ? `<span class="pill live">● Live</span>` : m.live ? `<span class="pill">In Progress</span>` : roundName(s, m) && !bowl ? `<span class="pill${m.tier === "WINNERS_BRACKET" ? " gold" : ""}">${roundName(s, m)}</span>` : m.win !== null ? `Margin ${f2(margin)}` : ""}</span><span>${open ? "Hide Lineups ▲" : "Show Lineups ▼"}</span></div></button>
-      ${open ? `${watchHtml(s, m)}${((c) => (c ? `<div class="wpwrap">${c}</div>` : ""))(wpChart(s, m))}<div class="lineups"><div>${lineupCol(s, wk, m.h)}</div><div>${lineupCol(s, wk, m.a)}</div></div>` : ""}</div>`;
-  }).join("");
+  const rec = Object.fromEntries(asOf(s, wk).rows.map((x) => [x.t.id, x]));
+  // The open game gets its full sheet above the score list; every game stays a row in the list
+  const om = ms.find((m) => state.open === `${wk}-${m.h}`);
+  const sheet = om ? (() => { const m = om, bowl = isBowl(s, m), champ = bowl && m.win !== null && m.win !== 0 ? m.win : null;
+    return `<div class="box game open${bowl ? " bowlgame" : ""}">${bowl ? `<div class="bowlhead"><span>🏆 ${roundName(s, m)}</span><small>${champ ? `${esc(s.byId[champ].name)} are champions` : "The championship"} · ${s.year}</small></div>` : ""}<button data-open="${wk}-${m.h}" aria-expanded="true" class="herobtn" title="Close">${gameHero(s, m)}</button>${gameBar(s, m)}${gameTabBody(s, m, wk)}</div>`; })() : "";
   const byes = s.byes.filter((b) => b.wk === wk).map((b) => `<span class="pill">${esc(s.byId[b.h].name)} has a bye</span>`).join(" ");
-  // Championship week: the Bowl on its own at the top, everything else under its own heading
-  const html = cards.split(/(?=<div class="box game)/);
-  const bowlCard = html.filter((c) => c.includes('data-tier="bowl"')).join(""), rest = html.filter((c) => !c.includes('data-tier="bowl"')).join("");
-  const grid = bowlCard ? `<div class="bowlwrap">${bowlCard}</div>${rest ? `<h3 class="subhead">${ms.some((m) => m.tier === "WINNERS_CONSOLATION_LADDER") ? "3rd Place and Consolation" : "Consolation"}</h3><div class="games">${rest}</div>` : ""}` : `<div class="games">${cards}</div>`;
+  const title = wk > s.regWeeks ? (wk === bowlWeek(s) ? "Championship Week" : roundName(s, ms[0] || {}) || "Playoffs") : `Week ${wk}`;
+  const grid = sheet + scoreList(s, wk, ms, rec, (m) => `data-open="${wk}-${m.h}"${state.open === `${wk}-${m.h}` ? ' aria-current="true"' : ""}`, title);
   const luffy = ms.some((m) => luffyPick(s, m, m.h) || luffyPick(s, m, m.a));
-  return bar + `${grid}${byes ? `<p class="note">${byes}</p>` : ""}${luffy ? `<p class="note">🍖 Luffy's Pick</p>` : ""}<p class="note">Click a game to see both starting lineups and the bench.${ms.some((m) => kickedAt(s.byId[m.h], wk) || kickedAt(s.byId[m.a], wk)) ? " * Kicked for inactivity: the team played on without its manager, and the game still counts on his record." : ""}${!s.done ? " Scores for the week in progress are a snapshot from when the data was last pulled." : ""}</p>`;
+  return bar + `${grid}${byes ? `<p class="note">${byes}</p>` : ""}${luffy ? `<p class="note">🍖 Luffy's Pick</p>` : ""}<p class="note">Tap a game for its stats, Ones to Watch and both lineups.${ms.some((m) => kickedAt(s.byId[m.h], wk) || kickedAt(s.byId[m.a], wk)) ? " * Kicked for inactivity: the team played on without its manager, and the game still counts on his record." : ""}${!s.done ? " Scores for the week in progress are a snapshot from when the data was last pulled." : ""}</p>`;
 }
 
 function draft(s) {
@@ -2190,6 +2343,31 @@ function txRows() {
 }
 
 // ---------- Home: the latest week first, like a sports front page ----------
+// ---------- Scores, Apple Sports style: one card, a row per game (logo · score · status · score · logo) ----------
+// Following a team (saved in the browser) pins its game first and tints the page; picked from one strip, not a star on every row
+const myTeam = () => { try { return localStorage.getItem("bfl-my") || ""; } catch (e) { return ""; } };
+function scoreRow(s, wk, m, rec, attr) {
+  const ka = mgrAt(s.byId[m.h], m.wk), kb = mgrAt(s.byId[m.a], m.wk), done = m.win !== null && !m.live;
+  const lead = m.hp === m.ap ? 0 : m.hp > m.ap ? m.h : m.a;
+  const dim = (id) => (done ? m.win !== id && m.win !== 0 : m.live && lead && lead !== id);
+  const champ = done && isBowl(s, m) && m.win ? m.win : null;
+  const team = (id, k) => `<span class="srteam">${badge(s.byId[id], 1)}<small>${champ === id ? "🏆 " : ""}${esc(D.managers[k] ? D.managers[k].first : "")}${kickedAt(s.byId[id], m.wk) ? "*" : ""}${rec[id] ? `<br>${recStr(rec[id])}` : ""}</small></span>`;
+  const fav = teamWin(s, m, m.h), favId = fav == null ? null : fav >= 0.5 ? m.h : m.a, favP = fav == null ? null : Math.max(fav, 1 - fav);
+  const status = m.on ? `<b class="srlive">● Live</b>` : m.live ? `<b>In Progress</b>` : done ? `<b>Final</b>` : `<b>${roundName(s, m) || `Week ${wk}`}</b>`;
+  const bone = favId && !done && luffyPick(s, m, favId) ? ` <span title="Luffy's pick">🍖</span>` : "";
+  const sub = done ? (fav != null && m.win !== favId && m.win !== 0 ? `<span style="color:var(--gold);font-weight:700">Upset</span>` : roundName(s, m) || "") : favId ? `${esc(s.byId[favId].abbrev || "")} ${winPct(favP)}${bone}${m.live ? ` · ${(m.hleft || 0) + (m.aleft || 0)} to go` : ""}` : "";
+  return `<div class="srow${isBowl(s, m) ? " bowl" : ""}${attr.includes("aria-current") ? " cur" : ""}" ${attr} role="button" tabindex="0">${team(m.h, ka)}<span class="srpts${dim(m.h) ? " dim" : ""}">${m.live || done ? f1(m.hp) : "–"}</span><span class="srmid">${status}<small>${sub}</small></span><span class="srpts${dim(m.a) ? " dim" : ""}">${m.live || done ? f1(m.ap) : "–"}</span>${team(m.a, kb)}</div>`;
+}
+// rowAttr(m) gives each row its click target; the followed team's game goes first, then the Bowl
+function scoreList(s, wk, games, rec, rowAttr, title) {
+  const mine = myTeam(), isMine = (m) => [m.h, m.a].some((id) => mgrAt(s.byId[id], m.wk) === mine);
+  const my = games.filter(isMine), rest = games.filter((m) => !isMine(m)).sort((a, b) => isBowl(s, b) - isBowl(s, a));
+  const keys = [...new Set(Object.values(s.byId).map((t) => mgrAt(t, wk)))].filter((k) => D.managers[k]); // every team, not just this week's games
+  const picker = state.picking ? `<div class="follow">${keys.map((k) => `<button data-follow="${k}" aria-pressed="${mine === k}" title="${mine === k ? "Stop following" : "Follow"} ${esc(D.managers[k].first)}">${mbadge(k)}<small>${esc(D.managers[k].first)}</small></button>`).join("")}</div>` : "";
+  const head = `<div class="slhead"><span>${my.length ? esc(D.managers[mine].first) + "'s Game" : title}</span><button class="followbtn" data-picking aria-expanded="${!!state.picking}">${mine ? "Following" : "Follow"} ${state.picking ? "▴" : "▾"}</button></div>${picker}`;
+  return `<div class="box slist">${head}${my.map((m) => scoreRow(s, wk, m, rec, rowAttr(m))).join("")}${my.length ? `<div class="slhead">${title}</div>` : ""}${rest.map((m) => scoreRow(s, wk, m, rec, rowAttr(m))).join("")}</div>`;
+}
+
 function home() {
   const s = S[lastYear] || D.seasons[D.seasons.length - 1];
   const n = s.year - D.firstYear + 1;
@@ -2205,9 +2383,7 @@ function home() {
   const when = built.toLocaleString(undefined, { weekday: "short", hour: "numeric", minute: "2-digit" });
 
   // Scoreboard
-  const sbSide = (m, id, p) => { const t = s.byId[id], lost = m.win !== null && m.win !== id && m.win !== 0, lead = m.live && p > (id === m.h ? m.ap : m.hp);
-    return `<div class="sbrow${lost ? " lost" : ""}">${badge(t, 1)}<span class="sbname">${esc(t.name)}<small>${rec[id] ? recStr(rec[id]) : ""}${m.win === null && teamWin(s, m, id) != null ? ` · ${winPct(teamWin(s, m, id))} to win` : ""}${toGo(m, id)}</small></span><span class="sbpts${lead ? " lead" : ""}">${f1(p)}</span></div>`; };
-  const scoreCards = [...games].sort((a, b) => isBowl(s, b) - isBowl(s, a)).map((m) => `<button class="box sbgame${isBowl(s, m) ? " bowlgame" : ""}" data-goweek="${s.year}|${wk}">${isBowl(s, m) ? `<div class="bowlhead"><span>🏆 ${roundName(s, m)}</span></div>` : ""}<div class="sbtop"><span>${m.on ? `<span class="pill live">● Live</span>` : m.live ? `<span class="pill">In Progress</span>` : m.win !== null ? `<span class="pill">Final</span>` : `<span class="pill">Upcoming</span>`}</span><span class="muted">${m.tier && m.tier !== "NONE" ? (m.tier === "WINNERS_BRACKET" ? "Playoffs" : "Consolation") : ""}</span></div>${sbSide(m, m.h, m.hp)}${sbSide(m, m.a, m.ap)}${wpChart(s, m, true)}</button>`).join("");
+  const scoreCards = scoreList(s, wk, games, rec, (m) => `data-opengame="${s.year}|${wk}|${m.h}"`, wk > s.regWeeks ? roundName(s, games[0] || {}) || wkName : `Week ${wk}`);
 
   // Standings snapshot with odds
   const rows = asOf(s, null).rows;
@@ -2245,7 +2421,7 @@ function home() {
 
   return `<div class="vhead"><div><div class="eyebrow">Buckaroo Bowl ${roman(n)} · ${s.year}</div><h2>${wkName}${anyLive ? ` <span class="pill live" style="vertical-align:middle">● Live</span>` : ""}</h2><p>Scores as of ${when}. ${anyLive ? "Live scores refresh about every 15 minutes during games." : ""}</p></div>
     <button class="morebtn" data-goweek="${s.year}|${wk}">All Lineups →</button></div>
-  <div class="scoreboard">${scoreCards}</div>
+  ${scoreCards}
   ${NEWS.length ? `<section style="margin:0 0 28px"><div class="vhead" style="margin-bottom:12px"><h3 style="margin:0">Top Stories</h3><button class="morebtn" data-go="news">All News →</button></div><div class="topstories">${newsCard(NEWS[0], true)}<div class="newslist">${NEWS.slice(1, 3).map((a) => newsCard(a)).join("")}</div></div></section>` : ""}
   <div class="homegrid">
     <div class="homemain">
@@ -2496,6 +2672,8 @@ function render() {
   if (v === "season") setTimeout(celebrate, 200);
   const cur = $(".yr[aria-current=true]"); if (cur) cur.scrollIntoView({ block: "nearest", inline: "nearest" });
 }
+// Score rows are divs with role="button", so Enter and Space open them too
+$("#app").addEventListener("keydown", (e) => { if ((e.key === "Enter" || e.key === " ") && e.target.matches(".srow")) { e.preventDefault(); e.target.click(); } });
 $("#app").addEventListener("click", (e) => {
   const w = e.target.closest("[data-week]"); if (w) { state.week = +w.dataset.week; state.open = null; render(); return; }
   const mb = e.target.closest("[data-more]"); if (mb) { const open = mb.closest(".rec").classList.toggle("open"); mb.setAttribute("aria-expanded", open); mb.textContent = open ? "Show Top 10" : "Show Top " + (mb.closest(".rec").querySelectorAll("li").length + 1); return; }
@@ -2507,6 +2685,10 @@ $("#app").addEventListener("click", (e) => {
     window.scrollTo({ top: card ? card.getBoundingClientRect().top + window.scrollY - (rail ? rail.offsetHeight : 0) - 10 : state.openFrom || 0 });
     return; }
   const gw = e.target.closest("[data-goweek]"); if (gw) { const [y, w] = gw.dataset.goweek.split("|").map(Number); state.week = w; state.open = null; go(`${y}-weekly`); return; }
+  const fl = e.target.closest("[data-follow]"); if (fl) { try { const k = fl.dataset.follow; localStorage.setItem("bfl-my", myTeam() === k ? "" : k); } catch (x) {} state.picking = false; tint(); render(); return; }
+  if (e.target.closest("[data-picking]")) { state.picking = !state.picking; render(); return; }
+  const og = e.target.closest("[data-opengame]"); if (og) { const [y, w, h] = og.dataset.opengame.split("|").map(Number); state.week = w; state.open = `${w}-${h}`; state.gameTab = "stats"; go(`${y}-weekly`); return; }
+  const gt = e.target.closest("[data-gtab]"); if (gt) { state.gameTab = gt.dataset.gtab; render(); return; }
   const ay = e.target.closest("[data-awyear]"); if (ay) { state.awYear = +ay.dataset.awyear; if (!ay.dataset.go) { render(); return; } } // a link can also pick the year it opens to
   const oy = e.target.closest("[data-oddsyear]"); if (oy) { state.oddsYear = +oy.dataset.oddsyear; state.oddsFocus = null; render(); return; }
   const ok = e.target.closest("[data-oddskey]"); if (ok) { state.oddsKey = ok.dataset.oddskey; render(); return; }
@@ -2589,6 +2771,6 @@ $("#app").addEventListener("input", (e) => {
 window.addEventListener("popstate", (e) => { parseHash(); render(); window.scrollTo({ top: (e.state && e.state.scroll) || 0 }); });
 // A hash typed or pasted by hand (no history state of ours)
 window.addEventListener("hashchange", () => { if (!history.state) { parseHash(); render(); } });
-parseHash(); render();
+tint(); parseHash(); render();
 })();
 </script>
