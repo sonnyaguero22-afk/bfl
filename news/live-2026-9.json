@@ -597,6 +597,46 @@
    "team": "Habibsters",
    "about": "game",
    "at": "2026-11-08T19:45:16.981Z"
+  },
+  {
+   "author": "Habib Hive",
+   "handle": "@HabibHive",
+   "text": "Puka walks into the end zone and Habib is up over sixty. Philly would need Jefferson and Purdy to both go absolutely nuclear just to make this interesting.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T20:18:34.413Z"
+  },
+  {
+   "author": "Hulk Smash Report",
+   "handle": "@HulkSmashReport",
+   "text": "Kenneth Walker runs it in and Brucie's whole Sunday just got a lot more comfortable. Zoe needs a miracle from Nico Collins and Tucker Kraft.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T20:22:34.413Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Kenneth Walker cleared his line on the Bounty Board, and that line was worth a 91% win chance for No Banner only HULK. Gear 5, and Ghostu-Spider SZN is now at 0% per Luffy.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T20:25:34.413Z"
+  },
+  {
+   "author": "Fumbler Faithful",
+   "handle": "@FumblerFaithful",
+   "text": "Jonah Coleman punches one in for Randy and we're still behind Kai by two. Colston Loveland and the Bears defense have to carry this home, which feels like a lot to ask.",
+   "heat": 2,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T20:28:34.413Z"
   }
  ],
  "batches": [
@@ -615,6 +655,7 @@
   "2026-11-08T18:04:35.839Z",
   "2026-11-08T18:33:01.204Z",
   "2026-11-08T19:17:16.457Z",
-  "2026-11-08T19:46:16.981Z"
+  "2026-11-08T19:46:16.981Z",
+  "2026-11-08T20:29:34.413Z"
  ]
 }
