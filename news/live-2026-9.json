@@ -357,6 +357,46 @@
    "team": "Dawgs",
    "about": "game",
    "at": "2026-11-08T14:42:41.136Z"
+  },
+  {
+   "author": "Dawgs Kennel",
+   "handle": "@DawgsKennelFan",
+   "text": "Chase just walked into the end zone and Kai's got the lead. Four hundredths of a point, and I'm already refreshing the app like it owes me money.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T14:55:07.548Z"
+  },
+  {
+   "author": "Windy City Fumble",
+   "handle": "@WindyCityFumble",
+   "text": "Tee Higgins is sitting on zero, Chase scores, and we're behind by four hundredths of a point. Randy has a whole second wave of players to play, but I'm going to be sick anyway.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T14:56:07.548Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Burrow's touchdown pass gives Jordan the lead, but Luffy still has The Horse is Hea at 90% because Sonny has Smith-Njigba, Mahomes and a lot of roster still to play.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T14:57:07.548Z"
+  },
+  {
+   "author": "Horse Stable Hank",
+   "handle": "@StableHank",
+   "text": "Burrow throws a touchdown for Jordan and we're down three. Fine, whatever. Sonny has eight guys left, I'm choosing to be calm.",
+   "heat": 2,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T14:58:07.548Z"
   }
  ],
  "batches": [
@@ -368,6 +408,7 @@
   "2026-11-06T02:30:46.973Z",
   "2026-11-06T03:43:30.401Z",
   "2026-11-08T06:28:53.440Z",
-  "2026-11-08T14:43:41.136Z"
+  "2026-11-08T14:43:41.136Z",
+  "2026-11-08T14:58:07.548Z"
  ]
 }
