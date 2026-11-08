@@ -1315,10 +1315,11 @@ const bountyOf = (name, year) => Math.round(sum(wlog().filter((r) => sameName(r.
 // pregame odds (a winning bet on a 25% underdog pays 3 to 1, on a 75% favorite 1 to 3)
 const STAKE = { lean: 5e6, confident: 10e6, lock: 25e6 }, BANKROLL = 100e6;
 const betResult = (pr, ok, stake) => (ok ? (stake * (1 - pr)) / pr : -stake);
-// Manager treasuries, every season since 2023: ฿10M a regular-season win (฿5M a tie), ฿5M for the week's top score,
-// ฿50M a playoff win, ฿500M for the Buckaroo Bowl (the One Piece itself), ฿5M when his Bounty Board pick goes Gear 5,
-// and a ฿25M fine for losing the Bum Bowl
-const TREASURE = { win: 10e6, tie: 5e6, top: 5e6, playoff: 50e6, bowl: 500e6, gear5: 5e6, bum: -25e6 };
+// Manager treasuries, every season since 2023: ฿10M a regular-season win (฿5M a tie, a ฿2M hit for a loss), ฿5M for
+// Manager of the Week (the week's top score), ฿50M a playoff win, ฿300M for the Buckaroo Bowl (the One Piece itself),
+// ฿25M a manager award, ฿10M when his player wins a player award, ฿5M when his Bounty Board pick goes Gear 5, and a
+// ฿25M fine for losing the Bum Bowl
+const TREASURE = { win: 10e6, tie: 5e6, loss: -2e6, top: 5e6, playoff: 50e6, bowl: 300e6, mgrAward: 25e6, plyAward: 10e6, gear5: 5e6, bum: -25e6 };
 let TREAS = null;
 function treasuries() {
   if (TREAS) return TREAS;
@@ -1327,11 +1328,14 @@ function treasuries() {
     const bum = bumGame(s), top = {};
     for (const m of s.played) { const po = m.tier && m.tier !== "NONE";
       for (const [id, p, op] of [[m.h, m.hp, m.ap], [m.a, m.ap, m.hp]]) { const k = mgrAt(s.byId[id], m.wk);
-        if (!po) { if (m.win === id) add(k, s.year, TREASURE.win, "Wins"); else if (m.win === 0) add(k, s.year, TREASURE.tie, "Wins");
+        if (!po) { if (m.win === id) add(k, s.year, TREASURE.win, "Wins"); else if (m.win === 0) add(k, s.year, TREASURE.tie, "Wins"); else add(k, s.year, TREASURE.loss, "Losses");
           if (s.spans(m.wk).length === 1 && (!top[m.wk] || p > top[m.wk].p)) top[m.wk] = { p, k }; }
         else if (m.tier === "WINNERS_BRACKET" && m.win === id) add(k, s.year, isBowl(s, m) ? TREASURE.bowl : TREASURE.playoff, isBowl(s, m) ? "Buckaroo Bowl" : "Playoff wins");
         if (bum === m && m.win !== id) add(k, s.year, TREASURE.bum, "Bum Bowl fine"); } }
-    for (const wk in top) add(top[wk].k, s.year, TREASURE.top, "Top scores");
+    for (const wk in top) add(top[wk].k, s.year, TREASURE.top, "Manager of the Week");
+    // Awards pay once a season is over
+    if (s.done) { for (const w of Object.values(seasonMgrAwards(s))) if (w && w.ks) add(w.ks[0], s.year, TREASURE.mgrAward, "Manager awards");
+      for (const w of Object.values(seasonAwards(s))) if (w && w.t) add(mgrAt(w.t, s.regWeeks), s.year, TREASURE.plyAward, "Player awards"); }
   }
   for (const r of wlog()) if (r.gear5) add(mgrAt(r.s.byId[r.x.id], r.m.wk), r.s.year, TREASURE.gear5, "Gear 5s");
   return (TREAS = T);
@@ -1533,7 +1537,7 @@ function managers() {
   <div class="mgrs">${rows.map((r) => `<button class="box mgr" data-go="mgr-${r.k}"><div class="top">${mbadge(r.k)}<span><b>${mgrName(r.k)}</b><small class="muted">${r.seasons.length} season${r.seasons.length === 1 ? "" : "s"} · now “${esc(r.seasons[r.seasons.length - 1].teams.find((t) => t.mgr === r.k).name)}”</small></span></div>
     <div class="nums"><div>Record<b>${r.w}-${r.l}${r.t ? "-" + r.t : ""}${hasKick(r.k) ? "*" : ""}</b></div><div>Win %<b>${pct(r.w, r.l, r.t)}</b></div><div>Pts/Gm<b>${f1(r.ppg)}</b></div></div>
     <div class="rings">${r.titles.length ? "🏆".repeat(r.titles.length) + " " + r.titles.join(", ") : `<span class="muted" style="font-weight:400">No titles yet</span>`}</div><div class="treas">💰 ${berry((treasuries()[r.k] || { total: 0 }).total, 1)} <span class="muted">treasury</span></div></button>`).join("")}</div>
-  <p class="note">💰 Treasury, in berries since ${D.firstYear}: ${berry(TREASURE.win, 1)} a regular-season win, ${berry(TREASURE.top, 1)} for the week's top score, ${berry(TREASURE.playoff, 1)} a playoff win, ${berry(TREASURE.bowl, 1)} for winning the Buckaroo Bowl (the One Piece itself), ${berry(TREASURE.gear5, 1)} when his ${owLink("bounty", "Bounty Board")} pick goes Gear 5, and a ${berry(-TREASURE.bum, 1)} fine for losing the Bum Bowl.</p>`;
+  <p class="note">💰 Treasury, in berries since ${D.firstYear}: ${berry(TREASURE.win, 1)} a regular-season win (a ${berry(-TREASURE.loss, 1)} hit for a loss), ${berry(TREASURE.top, 1)} for Manager of the Week (the week's top score), ${berry(TREASURE.playoff, 1)} a playoff win, ${berry(TREASURE.bowl, 1)} for winning the Buckaroo Bowl (the One Piece itself), ${berry(TREASURE.mgrAward, 1)} for each ${awLink("vegapunk", "manager award")}, ${berry(TREASURE.plyAward, 1)} when one of his players wins a ${awLink("king", "player award")}, ${berry(TREASURE.gear5, 1)} when his ${owLink("bounty", "Bounty Board")} pick goes Gear 5, and a ${berry(-TREASURE.bum, 1)} fine for losing the Bum Bowl. Awards pay when a season ends.</p>`;
 }
 
 // ---------- Manager pages read like a wiki article: infobox, a lead from the numbers, the career profile ----------
