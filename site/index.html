@@ -490,7 +490,7 @@ h3.wikisub { border-bottom: 1px solid var(--line); padding-bottom: 6px; margin: 
 .infobox .ibm { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; }
 .infobox .ibh { margin: 2px 0; } .infobox .ibh.gold { color: var(--gold); font-weight: 600; } .infobox .ibh.l { color: var(--loss); }
 .ibm-only { display: none; }
-@media (max-width: 860px) { .wiki { grid-template-columns: 1fr; } .ibd-only { display: none; } .ibm-only { display: block; margin: 4px 0 8px; } }
+@media (max-width: 860px) { .wiki { grid-template-columns: minmax(0, 1fr); } .ibd-only { display: none; } .ibm-only { display: block; margin: 4px 0 8px; } }
 .infobox td.ibscore div { display: flex; align-items: center; gap: 6px; padding: 2px 0; } .infobox td.ibscore .num { margin-left: auto; font-weight: 700; }
 .succ { display: flex; justify-content: space-between; gap: 8px; padding: 8px 12px; font-size: 12.5px; }
 .boxpair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; } @media (max-width: 760px) { .boxpair { grid-template-columns: 1fr; } }
@@ -563,12 +563,13 @@ h3.wikisub { border-bottom: 1px solid var(--line); padding-bottom: 6px; margin: 
 .sbgame.bowlgame .bowlhead { padding: 0 0 6px; font-size: 12px; }
 h3.subhead { margin: 0 0 10px; font-size: 15px; color: var(--muted); }
 .confetti { position: absolute; width: 7px; height: 11px; border-radius: 2px; pointer-events: none; z-index: 60; }
-.watch { padding: 10px 14px 12px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
+.pl .nm .wline, .pl .nm .wstat { display: block; white-space: normal; font-size: 11.5px; line-height: 1.35; }
+.pl .nm .wline { color: var(--muted); margin-top: 1px; }
+.pl.watchp { padding: 5px 0; }
+.owkey { font-size: 12.5px; color: var(--muted); margin: 12px 4px 10px; line-height: 1.5; }
 .wname, .wname .plink, .pl.watchp .nm > .plink, .pl.watchp .nm > b { color: var(--gold); font-weight: 700; }
 .inj, .wstat b.inj { color: var(--loss); }
 .wstat { color: var(--muted); } .wstat b { color: var(--ink); } .wstat.hit, .wstat.hit b { color: var(--win); } .wstat.miss, .wstat.miss b { color: var(--loss); }
-.watch .k { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-.wrow { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; font-size: 13.5px; line-height: 1.35; }
 .buzz { display: flex; gap: 14px; align-items: center; font-size: 12px; color: var(--muted); margin: 2px 0 4px; }
 .buzz .pill { padding: 0 6px; font-size: 10px; }
 .sectiontabs { margin: 0 0 18px; }
@@ -868,6 +869,7 @@ function parseHash() {
   else if ((m = h.match(/^mgr-(\w+)$/)) && D.managers[m[1]]) { state.view = "mgr"; state.mgr = m[1]; }
   else if ((m = h.match(/^p-([a-z0-9-]+)$/)) && (P[m[1]] || P[slug(m[1].replace(/-/g, " "))])) { state.view = "player"; state.pk = P[m[1]] ? m[1] : slug(m[1].replace(/-/g, " ")); } // old links with a suffix ("james-cook-iii") still work
   else if ((m = h.match(/^aw-([a-z]+)$/)) && awInfo(m[1])) { state.view = "award"; state.aw = m[1]; }
+  else if ((m = h.match(/^ow-([a-z0-9]+)$/)) && OW[m[1]]) { state.view = "ow"; state.ow = m[1]; }
   else if ((m = h.match(/^(bowl|bum)-(\d{4})$/)) && S[+m[2]] && S[+m[2]].done) { state.view = "game"; state.gameKind = m[1]; state.year = +m[2]; }
   else if ((m = h.match(/^news-([a-z0-9-]+)$/)) && NEWS.some((a) => a.id === m[1])) { state.view = "article"; state.newsId = m[1]; }
   else if (["home", "news", "rankings", "social", "trophies", "managers", "map", "players", "overrated", "transactions", "odds", "h2h", "ratings", "awards", "mgrawards", "records"].includes(h)) state.view = h;
@@ -890,7 +892,7 @@ const SECTIONS = {
   awards: [["awards", "Players"], ["mgrawards", "Managers"]],
   trophies: [["trophies", "Buckaroo Bowls"], ["records", "Record Book"]],
 };
-const groupOf = (v) => (v === "game" ? "trophies" : v === "award" ? "awards" : v === "mgr" ? "managers" : v === "player" ? "players" : v === "article" ? "news" : Object.keys(SECTIONS).find((g) => SECTIONS[g].some(([k]) => k === v)) || v);
+const groupOf = (v) => (v === "game" ? "trophies" : v === "award" || v === "ow" ? "awards" : v === "mgr" ? "managers" : v === "player" ? "players" : v === "article" ? "news" : Object.keys(SECTIONS).find((g) => SECTIONS[g].some(([k]) => k === v)) || v);
 // The section tabs for the page's group, shown above its content
 const sectionTabs = (v) => { const g = groupOf(v), list = SECTIONS[g]; if (!list || !list.some(([k]) => k === v)) return "";
   return `<div class="tabs sectiontabs" role="tablist">${list.map(([k, l]) => `<button data-go="${k}" aria-current="${v === k}">${l}</button>`).join("")}</div>`; };
@@ -1084,20 +1086,21 @@ function standings(s) {
 }
 
 const SLOTS = ["QB", "RB", "WR", "TE", "FLEX", "D/ST", "K", "BN", "IR"];
-function lineupCol(s, wk, id) {
+function lineupCol(s, wk, id, m) {
   const sps = s.spans(wk);
-  if (sps.length === 1) return `<b>${esc(s.byId[id].name)}</b>` + lineupWeek(s, sps[0], id);
-  return `<b>${esc(s.byId[id].name)}</b>` + sps.map((sp) => `<div class="bnhead" style="border:0;margin-top:10px"><span>NFL week ${sp}</span></div>${lineupWeek(s, sp, id)}`).join("");
+  if (sps.length === 1) return `<b>${esc(s.byId[id].name)}</b>` + lineupWeek(s, sps[0], id, m);
+  return `<b>${esc(s.byId[id].name)}</b>` + sps.map((sp, i) => `<div class="bnhead" style="border:0;margin-top:10px"><span>NFL week ${sp}</span></div>${lineupWeek(s, sp, id, m, i === sps.length - 1)}`).join("");
 }
-function lineupWeek(s, wk, id) {
+// m: the game, so its Ones to Watch show in gold with their lines (on the game's last NFL week only, for two-week games)
+function lineupWeek(s, wk, id, m, lastWk = true) {
   const L = (s.lineups[wk] || {})[id];
   if (!L) return `<div class="muted">No lineup data for this week.</div>`;
   const sorted = [...L].sort((a, b) => SLOTS.indexOf(a.slot) - SLOTS.indexOf(b.slot) || b.pts - a.pts);
   const start = sorted.filter((p) => p.slot !== "BN" && p.slot !== "IR"), bench = sorted.filter((p) => p.slot === "BN" || p.slot === "IR");
-  // This game's Ones to Watch stand out in the lineup
-  const gm = s.matchups.find((m) => m.watch && (m.h === id || m.a === id) && s.spans(m.wk).includes(+wk));
-  const watched = new Set(gm ? gm.watch.filter((x) => x.id === id).map((x) => x.n) : []);
-  const row = (p) => `<div class="pl${p.slot === "BN" || p.slot === "IR" ? " bn" : ""}${watched.has(p.n) ? " watchp" : ""}"><span class="slot">${esc(p.slot)}</span><span class="nm">${pn(p.n)} <small>${esc(p.pos)} · ${esc(p.pro)}${p.st ? ` · <b>${p.st === "bye" ? "BYE" : "OUT"}</b>` : p.inj ? ` · <b class="inj">${injTag(p.inj)}</b>` : ""}</small></span><span class="p">${f1(p.pts)}</span></div>`;
+  // This game's Ones to Watch stand out in gold, with what their games mean
+  const gw = m && gameWatch(s, m), picks = new Map(gw ? gw.watch.filter((x) => x.id === id).map((x) => [x.n, x]) : []);
+  const row = (p) => { const x = picks.get(p.n);
+    return `<div class="pl${p.slot === "BN" || p.slot === "IR" ? " bn" : ""}${x ? " watchp" : ""}"><span class="slot">${esc(p.slot)}</span><span class="nm">${pn(p.n)} <small>${esc(p.pos)} · ${esc(p.pro)}${p.st ? ` · <b>${p.st === "bye" ? "BYE" : "OUT"}</b>` : p.inj ? ` · <b class="inj">${injTag(p.inj)}</b>` : ""}</small>${x && lastWk ? watchLine(s, m, x, gw) : ""}</span><span class="p">${f1(p.pts)}</span></div>`; };
   const bpts = bench.filter((p) => p.slot === "BN").reduce((a, p) => a + p.pts, 0);
   return `${start.map(row).join("")}<div class="bnhead"><span>Bench</span><span class="num">${f1(bpts)} pts left on bench</span></div>${bench.map(row).join("")}`;
 }
@@ -1154,14 +1157,15 @@ function teamStats(s, m) {
 // The pinned bar under an open game's header: mini score and the section tabs
 function gameBar(s, m) {
   const t = state.gameTab || "stats", sc = (id) => (m.live || m.win !== null ? f1(id === m.h ? m.hp : m.ap) : "–");
-  const tabs = [["stats", "Stats"], ["watch", "Ones to Watch"], ["lineups", "Lineups"]];
+  const tabs = [["stats", "Stats"], ["lineups", "Lineups"]];
   return `<div class="gbar" style="--ha:${hue[mgrAt(s.byId[m.h], m.wk)]};--hb:${hue[mgrAt(s.byId[m.a], m.wk)]}"><div class="gmini">${badge(s.byId[m.h], 1)}<b>${sc(m.h)}</b><span>${m.on ? "Live" : m.live ? "In Progress" : m.win !== null ? "Final" : "Upcoming"}</span><b>${sc(m.a)}</b>${badge(s.byId[m.a], 1)}</div>
     <div class="gtabs">${tabs.map(([k, l]) => `<button data-gtab="${k}" aria-current="${t === k}">${l}</button>`).join("")}</div></div>`;
 }
 function gameTabBody(s, m, wk) {
   const t = state.gameTab || "stats";
-  if (t === "watch") return watchHtml(s, m) || `<p class="muted" style="padding:12px 4px">No Ones to Watch for this game.</p>`;
-  if (t === "lineups") return `<div class="lineups"><div>${lineupCol(s, wk, m.h)}</div><div>${lineupCol(s, wk, m.a)}</div></div>`;
+  if (t === "lineups") { const gw = gameWatch(s, m);
+    const key = gw ? `<p class="owkey"><b class="wname">Gold</b>: Ones to Watch, presented by ${owLink("baratie", "the Baratie")} ${OW.baratie[0]}${gw.final ? " · picked at kickoff" : ""} · ${OW.gear5[0]} ${owLink("gear5")} = his top 20% · ${OW.buggyd[0]} ${owLink("buggyd")} = his bottom 20%</p>` : "";
+    return `${key}<div class="box lineups">${["h", "a"].map((k) => `<div>${lineupCol(s, wk, m[k], m)}</div>`).join("")}</div>`; }
   const c = wpChart(s, m);
   return `${c ? `<div class="wpwrap">${c}</div>` : ""}${teamStats(s, m)}`; // the graph first: it's what you want during a live game
 }
@@ -1262,27 +1266,46 @@ const pct1 = (v) => (v >= 99.95 ? "100%" : v > 0 && v < 0.5 ? "<1%" : `${Math.ro
 const erf = (x) => { const t = 1 / (1 + 0.3275911 * Math.abs(x)); const y = 1 - ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x); return x >= 0 ? y : -y; };
 const Phi = (z) => 0.5 * (1 + erf(z / Math.SQRT2));
 // Ones to Watch: the players still to play whose game swings this matchup most, from the player sim
-function watchHtml(s, m) {
-  // Finished games show the picks frozen at kickoff, graded against their lines
+// ---------- Ones to Watch, presented by the Baratie (a joke sponsor, after Sanji's floating restaurant) ----------
+// The players whose games swing a matchup most, gold in the lineups. A Gear 5 is a game at or over his top-20% line
+// (Luffy's peak form; the model is Luffy), a Buggy'd one under his bottom-20% line once his game is over.
+const OW = { baratie: ["🍖", "The Baratie"], gear5: ["🔥", "Gear 5"], buggyd: ["🤡", "Buggy'd"] };
+const owLink = (k, label) => `<button class="mlink awl" data-go="ow-${k}">${label ?? OW[k][1]}</button>`;
+// This game's picks: live ones while it's on, the ones frozen at kickoff once it's over
+function gameWatch(s, m) {
   const saved = !m.live && (s.pregame || {})[`${m.wk}-${m.h}-${m.a}`];
-  if (saved) m = { ...m, watch: saved.watch, stacks: saved.stacks || [], watchLocked: true };
-  if ((!m.live && !saved) || !m.watch || !m.watch.length) return "";
-  const final = !m.live;
-  const who = (id) => mgrName(mgrAt(s.byId[id], m.wk));
-  const stack = (x) => (m.stacks || []).find((k) => k.id === x.id && (k.qb === x.n || k.rec === x.n));
-  // Once the game is under way they stay the ones picked at kickoff; each shows how he's doing against his lines
-  const now = (x) => {
-    if (!m.watchLocked) return "";
-    const ps = s.spans(m.wk).map((sp) => ((s.lineups[sp] || {})[x.id] || []).find((q) => q.n === x.n)).filter(Boolean);
-    const p = ps.length ? { ...ps[ps.length - 1], pts: sum(ps, (q) => q.pts || 0), g: final ? "done" : ps[ps.length - 1].g, slot: ps.some((q) => q.slot !== "BN" && q.slot !== "IR") ? "ST" : "BN" } : null;
-    if (!p || p.slot === "BN" || p.slot === "IR") return `<br><small class="wstat">${p ? "Benched" : "Off the Roster"}</small>`;
-    const hurt = p.inj ? ` · <b class="inj">${injTag(p.inj)}</b>` : "";
-    if (p.g === "pre") return `<br><small class="wstat">Yet to Play${hurt}</small>`;
-    const hit = x.boomAt != null && p.pts >= x.boomAt, dud = p.g === "done" && x.bustAt != null && p.pts < x.bustAt;
-    return `<br><small class="wstat${hit ? " hit" : dud ? " miss" : ""}"><b>${f1(p.pts)}</b> pts${p.g === "on" ? " · In Play" : p.g === "done" ? " · Final" : ""}${hit ? " · 🔥 Big Game" : dud ? " · 🗑️ Dud" : ""}${hurt}</small>`;
-  };
-  return `<div class="watch"><div class="k" title="The players whose games swing this matchup most. The point lines are each player's top-20% and bottom-20% outcomes, from his projection, his position and his own history.">Ones to Watch <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500">· ${final ? "picked at kickoff, graded · " : m.watchLocked ? "picked at kickoff · " : ""}big game = his top 20%, dud = his bottom 20%</span></div>${m.watch.map((x) => { const st = stack(x);
-    return `<div class="wrow">${badge(s.byId[x.id], 1)}<span><b class="wname">${pn(x.n)}</b> <small class="muted">${esc(x.pos)} · ${esc(x.pro)}${x.proj != null ? ` · proj ${f1(x.proj)}` : ""}</small><br><small>${x.boomAt != null ? `If he scores <b>${x.boomAt}+</b>, ${esc(who(x.id))} wins <b>${x.boom}%</b> · under <b>${x.bustAt}</b>, <b>${x.bust}%</b>` : `If he booms, ${esc(who(x.id))} wins <b>${x.boom}%</b> · if he busts, <b>${x.bust}%</b>`}${st ? ` · <span class="pill">Stack: ${esc(st.qb === x.n ? st.rec : st.qb)}</span>` : ""}</small>${now(x)}</span></div>`; }).join("")}</div>`;
+  const watch = saved ? saved.watch : m.live ? m.watch : null;
+  if (!watch || !watch.length) return null;
+  return { watch, stacks: (saved ? saved.stacks : m.stacks) || [], locked: !!saved || !!m.watchLocked, final: !m.live };
+}
+// How a pick is doing: his points across the game's NFL weeks, whether he started, Gear 5 or Buggy'd
+function watchNow(s, m, x, final) {
+  const ps = s.spans(m.wk).map((sp) => ((s.lineups[sp] || {})[x.id] || []).find((q) => q.n === x.n)).filter(Boolean);
+  if (!ps.length) return { gone: true };
+  const last = ps[ps.length - 1], pts = sum(ps, (q) => q.pts || 0), g = final ? "done" : last.g;
+  const started = ps.some((q) => q.slot !== "BN" && q.slot !== "IR");
+  const gear5 = started && x.boomAt != null && g !== "pre" && pts >= x.boomAt, buggyd = started && g === "done" && x.bustAt != null && pts < x.bustAt;
+  return { pts, g, inj: last.inj, started, gear5, buggyd };
+}
+// Every graded pick from finished games, for the wiki pages
+function watchLog() {
+  const out = [];
+  for (const s of D.seasons) for (const k in s.pregame || {}) {
+    const [wk, h, a] = k.split("-").map(Number), m = s.matchups.find((y) => y.wk === wk && y.h === h && y.a === a);
+    if (!m || m.live || m.win === null) continue;
+    for (const x of s.pregame[k].watch) { const n = watchNow(s, m, x, true); if (n.started) out.push({ s, m, x, ...n }); }
+  }
+  return out.sort((p, q) => q.s.year - p.s.year || q.m.wk - p.m.wk);
+}
+// The lines under a gold name in the lineups: what his game means, then how it's going
+function watchLine(s, m, x, gw) {
+  const who = esc(mgrName(mgrAt(s.byId[x.id], m.wk))), st = gw.stacks.find((k) => k.id === x.id && (k.qb === x.n || k.rec === x.n));
+  const marks = x.boomAt != null ? `${x.boomAt}+ → ${who} wins ${x.boom}% · under ${x.bustAt} → ${x.bust}%` : `Booms → ${who} wins ${x.boom}% · busts → ${x.bust}%`;
+  let now = "";
+  if (gw.locked) { const n = watchNow(s, m, x, gw.final), hurt = n.inj ? ` · <b class="inj">${injTag(n.inj)}</b>` : "";
+    now = n.gone ? "Off the roster" : !n.started ? "Benched" : n.g === "pre" ? `Yet to play${hurt}` : `<b>${f1(n.pts)}</b> pts${n.g === "on" ? " · In play" : n.g === "done" ? " · Final" : ""}${n.gear5 ? ` · ${OW.gear5[0]} Gear 5` : n.buggyd ? ` · ${OW.buggyd[0]} Buggy'd` : ""}${hurt}`;
+    now = `<small class="wstat${n.gear5 ? " hit" : n.buggyd ? " miss" : ""}">${now}</small>`; }
+  return `<small class="wline">${marks}${st ? ` · stack with ${esc(st.qb === x.n ? st.rec : st.qb)}` : ""}</small>${now}`;
 }
 // Chance the home team wins (0-1). Live games use ESPN's live projected finals, with less
 // uncertainty the less there is left to play; otherwise team strength going into the week.
@@ -1792,7 +1815,7 @@ function awardsView(kind) {
   return `<div class="vhead"><div><div class="eyebrow">${s.done ? `Buckaroo Bowl ${roman(y - D.firstYear + 1)} · ${y}` : `${y} · so far`}</div><h2>${mgr ? "Manager" : "Player"} Awards</h2><p>${mgr ? "The things a title doesn't measure, named for the Strawhats' friends and foes." : "The season's best (and worst) players, named for the Strawhats and friends."} ${s.done ? "" : "The season isn't over, so these are the leaders so far."}</p></div>${bar}</div>
   <div class="awgrid">${cards || `<p class="muted">Nothing to award yet.</p>`}</div>
   <section><h3>How They're Decided</h3><div class="box rec"><ol class="swing">${list.map(([k, e, nm, cat, why]) => `<li><span>${e} <b>${awLink(k)}</b> <span class="muted">· ${cat}</span><small class="ctx sub">${esc(why)}</small></span></li>`).join("")}</ol></div>
-  <p class="note">${mgr ? "Luck and blunders count regular-season weeks (blunders count playoffs too). Every award has one winner; a tie on a count goes to the bigger margin." : "Points count only in weeks a lineup played a game, playoffs and consolation games included. The team shown is where he scored the most."}</p></section>`;
+  <p class="note">${mgr ? "Luck and blunders count regular-season weeks (blunders count playoffs too). Every award has one winner; a tie on a count goes to the bigger margin." : "Points count only in weeks a lineup played a game, playoffs and consolation games included. The team shown is where he scored the most."}</p>${mgr ? "" : `<p class="note">Every game's Ones to Watch, presented by ${owLink("baratie", "the Baratie")} ${OW.baratie[0]}, are graded too: ${OW.gear5[0]} ${owLink("gear5")} and ${OW.buggyd[0]} ${owLink("buggyd")}.</p>`}</section>`;
 }
 
 // ---------- Award pages: one wiki-style article per award, with every winner ----------
@@ -1879,6 +1902,40 @@ function awardView() {
   </table></aside>`;
   return `<div class="vhead"><div><div class="eyebrow">${a.mgr ? "Manager" : "Player"} Award</div><h2>${a.e} ${esc(a.nm)}</h2></div><button class="pill" data-go="${a.mgr ? "mgrawards" : "awards"}" style="border:0;cursor:pointer">← All ${a.mgr ? "manager" : "player"} awards</button></div>
   <div class="wiki"><article class="wikimain">${lead}${info.replace("ibd-only", "ibm-only")}${history}<h3 class="wikisub">Winners</h3>${table}${criteria}<h3 class="wikisub">See Also</h3><p>${others}</p></article>${info}</div>`;
+}
+
+// Wiki pages for the Baratie (the joke sponsor of Ones to Watch), Gear 5 and Buggy'd
+function owView() {
+  const k = state.ow, [e, nm] = OW[k], log = watchLog();
+  const g5 = log.filter((r) => r.gear5), bg = log.filter((r) => r.buggyd), mine = k === "gear5" ? g5 : k === "buggyd" ? bg : [];
+  const pc = (a) => (log.length ? `${Math.round((100 * a.length) / log.length)}%` : "—");
+  const first = log.length ? log[log.length - 1] : null;
+  const gm = (r) => `<button class="mlink" data-go="${r.s.year}-weekly">${r.s.year} wk ${r.m.wk}</button>`;
+  const opp = (r) => esc(r.s.byId[r.x.id === r.m.h ? r.m.a : r.m.h].name);
+  const won = (r) => r.m.win === r.x.id;
+  const lede = {
+    baratie: `<p><b>The Baratie</b> ${e} is the floating restaurant in the East Blue run by Red-Leg Zeff, where Sanji cooked before he joined the Straw Hats. On this site it "presents" the <b>Ones to Watch</b>, the players whose games swing a matchup the most. The sponsorship is a joke: the Baratie is fictional, and the league has no sponsors. It was picked because Luffy, the model's nickname, never turns down a meal, and his meat bone 🍖 already marks the model's picks.</p>`,
+    gear5: `<p>A <b>Gear 5</b> ${e} is a One to Watch who scores at or above his top-20% line: the kind of game he has about one week in five. It is named for Luffy's Gear 5, the awakened form in which he fights at his most ridiculous and most powerful, and the model that picks the Ones to Watch is nicknamed Luffy. A Gear 5 counts once he passes the line, even mid-game. Its opposite is ${owLink("buggyd")}.</p>`,
+    buggyd: `<p>A One to Watch gets <b>Buggy'd</b> ${e} when his game ends under his bottom-20% line. It is named for Buggy the Clown, who keeps ending up somewhere he has no business being; he also names ${awLink("buggy")}, the award for the season's biggest bust. A Buggy'd only counts once his game is over, so a slow first half is not one yet. Its opposite is the ${owLink("gear5")}.</p>`,
+  }[k];
+  const how = `<h3 class="wikisub">How Ones to Watch Are Picked</h3><p>Before each game, the player simulation runs the matchup thousands of times. For each starter it compares his team's win chance in the runs where he has a big game (his top 20%) with the runs where he has a bad one (his bottom 20%), and the starters with the biggest gap become the game's Ones to Watch. Their lines come from his projection, his position and his own history. The picks are frozen at kickoff, shown in gold in the game's Lineups with both lines and his team's win chance on either side of them, and graded once the game is over. Benched picks are not graded.</p>`;
+  const tbl = (rows) => rows.length ? `<div class="box scroll"><table class="compact"><thead><tr><th>Game</th><th>Player</th><th>Team</th><th class="n">Pts</th><th class="n">Line</th><th>Result</th></tr></thead><tbody>${rows.map((r) => `<tr><td>${gm(r)}</td><td>${posTag(r.x.pos)}${pn(r.x.n)}</td><td><span style="display:inline-flex;align-items:center;gap:6px">${badge(r.s.byId[r.x.id], 1)} ${esc(D.managers[mgrAt(r.s.byId[r.x.id], r.m.wk)].first)}</span></td><td class="n"><b>${f1(r.pts)}</b></td><td class="n muted">${k === "buggyd" || (k === "baratie" && r.buggyd) ? `&lt; ${r.x.bustAt}` : `${r.x.boomAt}+`}</td><td>${k === "baratie" ? (r.gear5 ? `${OW.gear5[0]} Gear 5` : r.buggyd ? `${OW.buggyd[0]} Buggy'd` : "—") + " · " : ""}${won(r) ? `<span class="w">Won</span>` : `<span class="l">Lost</span>`} vs ${opp(r)}</td></tr>`).join("")}</tbody></table></div>` : `<p class="muted">None yet. Ones to Watch have been saved at kickoff since the 2026 season; the first graded games will show up here.</p>`;
+  // How much a pick's game decides the matchup: teams with a Gear 5 win, teams that get Buggy'd lose
+  const rate = (a) => (a.length ? `${a.filter(won).length} of ${a.length} (${Math.round((100 * a.filter(won).length) / a.length)}%)` : "none yet");
+  const record = `<h3 class="wikisub">Record</h3><p>${log.length ? `Since ${first.s.year}, ${log.length} Ones to Watch have been graded: ${g5.length} Gear 5${g5.length === 1 ? "" : "s"} (${pc(g5)}) and ${bg.length} Buggy'd (${pc(bg)}). Teams whose pick hit Gear 5 won ${rate(g5)}; teams whose pick got Buggy'd won ${rate(bg)}.` : "No graded games yet."}</p>`;
+  const best = k === "gear5" ? [...g5].sort((p, q) => q.pts - q.x.boomAt - (p.pts - p.x.boomAt))[0] : k === "buggyd" ? [...bg].sort((p, q) => p.pts - p.x.bustAt - (q.pts - q.x.bustAt))[0] : null;
+  const info = `<aside class="infobox box ibd-only"><div class="ibhead">${e} ${esc(nm)}</div><div class="ibsub">${k === "baratie" ? "Presenting sponsor (fictional)" : "Ones to Watch result"}</div><table>
+    ${k === "baratie" ? `<tr><th>Owner</th><td>Red-Leg Zeff</td></tr><tr><th>Famous cook</th><td>Sanji</td></tr><tr><th>Presents</th><td>Ones to Watch</td></tr>` : `<tr><th>Line</th><td>${k === "gear5" ? "His top 20%" : "His bottom 20%"}</td></tr><tr><th>Counts</th><td>${k === "gear5" ? "As soon as he passes it" : "Once his game is over"}</td></tr>`}
+    <tr><th>Since</th><td>${first ? first.s.year : "2026"}</td></tr>
+    <tr><th>Picks graded</th><td>${log.length}</td></tr>
+    <tr><th>${OW.gear5[0]} Gear 5s</th><td>${g5.length}</td></tr>
+    <tr><th>${OW.buggyd[0]} Buggy'd</th><td>${bg.length}</td></tr>
+    ${best ? `<tr><th>${k === "gear5" ? "Biggest" : "Worst"}</th><td>${esc(best.x.n)} <span class="muted">(${f1(best.pts)}, ${best.s.year} wk ${best.m.wk})</span></td></tr>` : ""}
+  </table></aside>`;
+  const list = k === "baratie" ? `<h3 class="wikisub">Latest Ones to Watch</h3>${tbl(log.slice(0, 20))}` : `<h3 class="wikisub">Every ${esc(nm)}</h3>${tbl(mine)}`;
+  const also = Object.keys(OW).filter((x) => x !== k).map((x) => `${OW[x][0]} ${owLink(x)}`).concat(["buggy", "sanji"].map((x) => `${awInfo(x).e} ${awLink(x)}`)).join(" · ");
+  return `<div class="vhead"><div><div class="eyebrow">${k === "baratie" ? "Sponsor" : "Ones to Watch"}</div><h2>${e} ${esc(nm)}</h2></div><button class="pill" data-go="awards" style="border:0;cursor:pointer">← Awards</button></div>
+  <div class="wiki"><article class="wikimain">${lede}${info.replace("ibd-only", "ibm-only")}${record}${k === "baratie" ? how : ""}${list}${k !== "baratie" ? how : ""}<h3 class="wikisub">See Also</h3><p>${also}</p></article>${info}</div>`;
 }
 
 function records() {
@@ -2666,7 +2723,7 @@ function render() {
   chrome();
   if (mapObj) { mapObj.remove(); mapObj = null; }
   const v = state.view;
-  $("#app").innerHTML = sectionTabs(v) + (v === "season" ? seasonView() : v === "mgr" ? mgrView() : v === "managers" ? managers() : v === "players" ? playersView() : v === "player" ? playerView() : v === "home" ? home() : v === "news" ? newsView() : v === "rankings" ? rankingsView() : v === "article" ? articleView() : v === "social" ? socialView() : v === "odds" ? oddsView() : v === "map" ? mapView() : v === "overrated" ? overratedView() : v === "transactions" ? txView() : v === "h2h" ? h2h() : v === "ratings" ? ratingsView() : v === "records" ? records() : v === "award" ? awardView() : v === "game" ? gameView() : v === "awards" ? awardsView("p") : v === "mgrawards" ? awardsView("m") : trophies());
+  $("#app").innerHTML = sectionTabs(v) + (v === "season" ? seasonView() : v === "mgr" ? mgrView() : v === "managers" ? managers() : v === "players" ? playersView() : v === "player" ? playerView() : v === "home" ? home() : v === "news" ? newsView() : v === "rankings" ? rankingsView() : v === "article" ? articleView() : v === "social" ? socialView() : v === "odds" ? oddsView() : v === "map" ? mapView() : v === "overrated" ? overratedView() : v === "transactions" ? txView() : v === "h2h" ? h2h() : v === "ratings" ? ratingsView() : v === "records" ? records() : v === "award" ? awardView() : v === "ow" ? owView() : v === "game" ? gameView() : v === "awards" ? awardsView("p") : v === "mgrawards" ? awardsView("m") : trophies());
   document.title = "Buckaroo League History";
   if (v === "map") initMap();
   if (v === "season") setTimeout(celebrate, 200);
