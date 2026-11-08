@@ -563,10 +563,11 @@ h3.wikisub { border-bottom: 1px solid var(--line); padding-bottom: 6px; margin: 
 .sbgame.bowlgame .bowlhead { padding: 0 0 6px; font-size: 12px; }
 h3.subhead { margin: 0 0 10px; font-size: 15px; color: var(--muted); }
 .confetti { position: absolute; width: 7px; height: 11px; border-radius: 2px; pointer-events: none; z-index: 60; }
-.pl .nm .wline, .pl .nm .wstat { display: block; white-space: normal; font-size: 11.5px; line-height: 1.35; }
-.pl .nm .wline { color: var(--muted); margin-top: 1px; }
-.pl.watchp { padding: 5px 0; }
-.owkey { font-size: 12.5px; color: var(--muted); margin: 12px 4px 10px; line-height: 1.5; }
+.owlist { margin: 12px 0; padding: 12px 14px 4px; }
+.owhead { margin-bottom: 4px; } .owhead small { color: var(--muted); margin-left: 4px; }
+.owrow { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; padding: 7px 0; border-top: 1px solid var(--line); font-size: 13.5px; line-height: 1.35; }
+.owrow .wline, .owrow .wstat { display: block; font-size: 12px; } .owrow .wline { color: var(--muted); }
+.owkey { font-size: 12px; color: var(--muted); margin: 4px 0 8px; }
 .wname, .wname .plink, .pl.watchp .nm > .plink, .pl.watchp .nm > b { color: var(--gold); font-weight: 700; }
 .inj, .wstat b.inj { color: var(--loss); }
 .wstat { color: var(--muted); } .wstat b { color: var(--ink); } .wstat.hit, .wstat.hit b { color: var(--win); } .wstat.miss, .wstat.miss b { color: var(--loss); }
@@ -1089,18 +1090,18 @@ const SLOTS = ["QB", "RB", "WR", "TE", "FLEX", "D/ST", "K", "BN", "IR"];
 function lineupCol(s, wk, id, m) {
   const sps = s.spans(wk);
   if (sps.length === 1) return `<b>${esc(s.byId[id].name)}</b>` + lineupWeek(s, sps[0], id, m);
-  return `<b>${esc(s.byId[id].name)}</b>` + sps.map((sp, i) => `<div class="bnhead" style="border:0;margin-top:10px"><span>NFL week ${sp}</span></div>${lineupWeek(s, sp, id, m, i === sps.length - 1)}`).join("");
+  return `<b>${esc(s.byId[id].name)}</b>` + sps.map((sp) => `<div class="bnhead" style="border:0;margin-top:10px"><span>NFL week ${sp}</span></div>${lineupWeek(s, sp, id, m)}`).join("");
 }
-// m: the game, so its Ones to Watch show in gold with their lines (on the game's last NFL week only, for two-week games)
-function lineupWeek(s, wk, id, m, lastWk = true) {
+// m: the game, so its Ones to Watch show in gold (their lines are listed above the lineups)
+function lineupWeek(s, wk, id, m) {
   const L = (s.lineups[wk] || {})[id];
   if (!L) return `<div class="muted">No lineup data for this week.</div>`;
   const sorted = [...L].sort((a, b) => SLOTS.indexOf(a.slot) - SLOTS.indexOf(b.slot) || b.pts - a.pts);
   const start = sorted.filter((p) => p.slot !== "BN" && p.slot !== "IR"), bench = sorted.filter((p) => p.slot === "BN" || p.slot === "IR");
-  // This game's Ones to Watch stand out in gold, with what their games mean
+  // This game's Ones to Watch stand out in gold
   const gw = m && gameWatch(s, m), picks = new Map(gw ? gw.watch.filter((x) => x.id === id).map((x) => [x.n, x]) : []);
   const row = (p) => { const x = picks.get(p.n);
-    return `<div class="pl${p.slot === "BN" || p.slot === "IR" ? " bn" : ""}${x ? " watchp" : ""}"><span class="slot">${esc(p.slot)}</span><span class="nm">${pn(p.n)} <small>${esc(p.pos)} · ${esc(p.pro)}${p.st ? ` · <b>${p.st === "bye" ? "BYE" : "OUT"}</b>` : p.inj ? ` · <b class="inj">${injTag(p.inj)}</b>` : ""}</small>${x && lastWk ? watchLine(s, m, x, gw) : ""}</span><span class="p">${f1(p.pts)}</span></div>`; };
+    return `<div class="pl${p.slot === "BN" || p.slot === "IR" ? " bn" : ""}${x ? " watchp" : ""}"><span class="slot">${esc(p.slot)}</span><span class="nm">${pn(p.n)} <small>${esc(p.pos)} · ${esc(p.pro)}${p.st ? ` · <b>${p.st === "bye" ? "BYE" : "OUT"}</b>` : p.inj ? ` · <b class="inj">${injTag(p.inj)}</b>` : ""}</small></span><span class="p">${f1(p.pts)}</span></div>`; };
   const bpts = bench.filter((p) => p.slot === "BN").reduce((a, p) => a + p.pts, 0);
   return `${start.map(row).join("")}<div class="bnhead"><span>Bench</span><span class="num">${f1(bpts)} pts left on bench</span></div>${bench.map(row).join("")}`;
 }
@@ -1164,7 +1165,7 @@ function gameBar(s, m) {
 function gameTabBody(s, m, wk) {
   const t = state.gameTab || "stats";
   if (t === "lineups") { const gw = gameWatch(s, m);
-    const key = gw ? `<p class="owkey"><b class="wname">Gold</b>: Ones to Watch, presented by ${owLink("baratie", "the Baratie")} ${OW.baratie[0]}${gw.final ? " · picked at kickoff" : ""} · ${OW.gear5[0]} ${owLink("gear5")} = his top 20% · ${OW.buggyd[0]} ${owLink("buggyd")} = his bottom 20%</p>` : "";
+    const key = gw ? `<div class="box owlist"><div class="owhead"><b>Ones to Watch</b> <small>presented by ${owLink("baratie", "the Baratie")} ${OW.baratie[0]}</small></div>${gw.watch.map((x) => `<div class="owrow">${badge(s.byId[x.id], 1)}<span><b class="wname">${pn(x.n)}</b> <small class="muted">${esc(x.pos)} · ${esc(x.pro)}</small>${watchLine(s, m, x, gw)}</span></div>`).join("")}<p class="owkey">${OW.gear5[0]} ${owLink("gear5")} = his top 20% · ${OW.buggyd[0]} ${owLink("buggyd")} = his bottom 20%${gw.final ? " · picked at kickoff" : ""}</p></div>` : "";
     return `${key}<div class="box lineups">${["h", "a"].map((k) => `<div>${lineupCol(s, wk, m[k], m)}</div>`).join("")}</div>`; }
   const c = wpChart(s, m);
   return `${c ? `<div class="wpwrap">${c}</div>` : ""}${teamStats(s, m)}`; // the graph first: it's what you want during a live game
