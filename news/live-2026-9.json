@@ -557,6 +557,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-08T19:16:16.457Z"
+  },
+  {
+   "author": "Habib Hive",
+   "handle": "@HabibHive",
+   "text": "CeeDee finally gets in the end zone and Dak is the one who threw it. Habib is up sixty with Puka still going, so I'm allowed to enjoy this for exactly one drive.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T19:37:16.981Z"
+  },
+  {
+   "author": "Philly's Pain Index",
+   "handle": "@PhillyPainIndex",
+   "text": "Dak to CeeDee and my guy is down sixty with Jefferson and Purdy still waiting on kickoff. I'm not saying it's over, I'm saying check the lineup card for miracles.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T19:40:16.981Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Dak and CeeDee connecting moves Habibsters from 40% to 79% against Team Pillbert, and Luffy has earned that jump. Philly still has Purdy, Burden, Jefferson and the Seahawks defense to play.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T19:43:16.981Z"
+  },
+  {
+   "author": "Habibsters",
+   "handle": "@Habibsters",
+   "text": "CeeDee Lamb scores and Dak Prescott throws it. Habibsters lead Team Pillbert by sixty, and Puka Nacua is still on the field.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Habibsters",
+   "about": "game",
+   "at": "2026-11-08T19:45:16.981Z"
   }
  ],
  "batches": [
@@ -574,6 +614,7 @@
   "2026-11-08T16:53:01.979Z",
   "2026-11-08T18:04:35.839Z",
   "2026-11-08T18:33:01.204Z",
-  "2026-11-08T19:17:16.457Z"
+  "2026-11-08T19:17:16.457Z",
+  "2026-11-08T19:46:16.981Z"
  ]
 }
