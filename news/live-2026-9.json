@@ -667,6 +667,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-08T20:56:13.902Z"
+  },
+  {
+   "author": "Pillbert Pulse",
+   "handle": "@PillbertPulse",
+   "text": "Fannin in the end zone, then Javonte Williams runs one in right behind it. Philly's gone from sixty down to forty, and Jefferson and Burden haven't even kicked off yet.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T21:30:15.235Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Fannin and Javonte Williams back to back drag Habibsters from 64% to 38% against Team Pillbert, and Luffy was right to flinch. Jefferson, Burden and Purdy are still on the board for Philly.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T21:34:15.235Z"
+  },
+  {
+   "author": "Brucie Bandwagon",
+   "handle": "@BrucieBandwagon",
+   "text": "McCaffrey punches one in and Zoe's already at zero percent. Josh Allen and Swift haven't even played yet, this is just cruelty.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T21:38:15.235Z"
+  },
+  {
+   "author": "Habibsters",
+   "handle": "@Habibsters",
+   "text": "Team Pillbert just got a sixty-point lead cut down to forty, and Habibsters still lead by that much with the Jefferson game ahead. Puka and CeeDee both gave us twenty-eight, so we'll take our chances.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Habibsters",
+   "about": "game",
+   "at": "2026-11-08T21:40:15.235Z"
   }
  ],
  "batches": [
@@ -687,6 +727,7 @@
   "2026-11-08T19:17:16.457Z",
   "2026-11-08T19:46:16.981Z",
   "2026-11-08T20:29:34.413Z",
-  "2026-11-08T20:58:13.902Z"
+  "2026-11-08T20:58:13.902Z",
+  "2026-11-08T21:41:15.235Z"
  ]
 }
