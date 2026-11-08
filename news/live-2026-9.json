@@ -457,6 +457,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-08T16:51:01.979Z"
+  },
+  {
+   "author": "Mile High Mayhem",
+   "handle": "@MileHighMayhem",
+   "text": "The Broncos defense already has ten and hasn't even kicked off? Zoe, I do not know what the app is doing, but I'm not going to question it.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T17:55:35.839Z"
+  },
+  {
+   "author": "Hulk Smash Report",
+   "handle": "@HulkSmashReport",
+   "text": "Rams defense is up to ten for Brucie and it's still going. Down twenty-three, that's the kind of start that makes a lead feel a lot smaller.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T17:59:35.839Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Both Zoe and Brucie got ten from their defenses, so the gap is still twenty-three and Luffy still has Ghostu-Spider SZN at 30%. Ramon has McCaffrey, Allen and Swift left to play.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T18:02:35.839Z"
   }
  ],
  "batches": [
@@ -471,6 +501,7 @@
   "2026-11-08T14:43:41.136Z",
   "2026-11-08T14:58:07.548Z",
   "2026-11-08T16:38:25.412Z",
-  "2026-11-08T16:53:01.979Z"
+  "2026-11-08T16:53:01.979Z",
+  "2026-11-08T18:04:35.839Z"
  ]
 }
