@@ -493,7 +493,11 @@ h3.wikisub { border-bottom: 1px solid var(--line); padding-bottom: 6px; margin: 
 .ibm-only { display: none; }
 @media (max-width: 860px) { .wiki { grid-template-columns: minmax(0, 1fr); } .ibd-only { display: none; } .ibm-only { display: block; margin: 4px 0 8px; } }
 .infobox td.ibscore div { display: flex; align-items: center; gap: 6px; padding: 2px 0; } .infobox td.ibscore .num { margin-left: auto; font-weight: 700; }
-.succ { display: flex; justify-content: space-between; gap: 8px; padding: 8px 12px; font-size: 12.5px; }
+.succ { display: flex; justify-content: space-between; gap: 8px; padding: 8px 12px; font-size: 12.5px; border-top: 1px solid var(--line); }
+/* Infobox rows: the label and value line up (the redesign's roomier table cells only padded the value), and the last
+   row has no line under either cell; the prev/next footer brings its own */
+aside.infobox.box th, aside.infobox.box td { padding-top: 8px; padding-bottom: 8px; }
+.infobox tr:last-child th { border-bottom: 0; }
 .boxpair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; } @media (max-width: 760px) { .boxpair { grid-template-columns: 1fr; } }
 .herobtn { display: block; width: 100%; border: 0; padding: 0; background: none; text-align: center; cursor: pointer; }
 .hero { position: relative; border-radius: 22px; padding: 14px 14px 18px; color: #fff; overflow: hidden;
