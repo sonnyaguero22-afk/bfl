@@ -592,21 +592,22 @@ h3.subhead { margin: 0 0 10px; font-size: 15px; color: var(--muted); }
   @keyframes rise { from { transform: translateY(6px); } to { transform: none; } }
 }
 
-/* ---------- Dark mode, Apple Sports style: deep navy gradient, frosted glass cards, capsule switchers ---------- */
+/* ---------- Dark mode, Apple Sports style: near-black, frosted glass cards, capsule switchers ---------- */
 :root:not([data-theme="light"]) {
-  --bg: #0a1a3d;                     /* the solid behind the iPhone status bar; the page itself is a gradient */
+  --bg: #000000;                     /* the solid behind the iPhone status bar; the page itself is a gradient */
   --surface: rgba(255, 255, 255, 0.065);
   --sunk: rgba(255, 255, 255, 0.09);
   --line: rgba(255, 255, 255, 0.09);
   --edge: rgba(255, 255, 255, 0.13);
-  --bar: rgba(9, 22, 52, 0.62);
+  --bar: rgba(18, 18, 20, 0.6);
   --seg: rgba(255, 255, 255, 0.24);
-  --muted: #8f9cb8;
-  --brass: #4aa3ff; --brass-soft: rgba(74, 163, 255, 0.18);
-  --heat-lo: #10224a;
-  --solid: #12274f;                  /* for things that must not be see-through (tooltips, popovers) */
+  --muted: #98989f;
+  --brass: #0a84ff; --brass-soft: rgba(10, 132, 255, 0.18);
+  --heat-lo: #1c1c1e;
+  --solid: #1c1c1e;                  /* for things that must not be see-through (tooltips, popovers) */
 }
-:root:not([data-theme="light"]) body { background: radial-gradient(120% 60% at 50% -10%, hsl(var(--tint, 220) 60% 33%) 0%, hsl(var(--tint, 220) 60% 33% / 0) 60%), linear-gradient(180deg, hsl(var(--tint, 220) 65% 18%) 0%, hsl(var(--tint, 220) 70% 13%) 40%, hsl(var(--tint, 220) 75% 9%) 100%) fixed; }
+/* Near-black like Apple Sports; the only color is a glow at the top in your followed team's color (--glow, set by tint()) */
+:root:not([data-theme="light"]) body { background: radial-gradient(130% 45% at 50% -8%, var(--glow, #26262b) 0%, transparent 70%), linear-gradient(180deg, #111113 0%, #060607 45%, #000 100%) fixed; }
 :root:not([data-theme="light"]) header.mast { background: transparent; }
 :root:not([data-theme="light"]) .brand h1 { font-weight: 800; letter-spacing: -0.035em; }
 :root:not([data-theme="light"]) .vhead h2 { font-weight: 800; letter-spacing: -0.035em; }
@@ -619,14 +620,14 @@ h3.subhead { margin: 0 0 10px; font-size: 15px; color: var(--muted); }
 :root:not([data-theme="light"]) nav.top button, :root:not([data-theme="light"]) .tabs button { border-radius: 999px; color: #e8edf8; }
 :root:not([data-theme="light"]) nav.top button[aria-current="true"], :root:not([data-theme="light"]) .tabs button[aria-current="true"] { background: var(--seg); box-shadow: 0 1px 4px rgba(0, 0, 0, .25); color: #fff; }
 :root:not([data-theme="light"]) .weekbar button { background: rgba(255, 255, 255, 0.08); box-shadow: inset 0 0 0 1px var(--edge); }
-:root:not([data-theme="light"]) .weekbar button[aria-current="true"] { background: rgba(255, 255, 255, 0.9); color: #0a1a3d; }
+:root:not([data-theme="light"]) .weekbar button[aria-current="true"] { background: rgba(255, 255, 255, 0.9); color: #000; }
 /* Quiet column headers, roomy rows */
-:root:not([data-theme="light"]) th { color: rgba(220, 230, 255, 0.5); font-weight: 500; font-size: 13px; }
+:root:not([data-theme="light"]) th { color: rgba(235, 235, 245, 0.5); font-weight: 500; font-size: 13px; }
 :root:not([data-theme="light"]) td { padding-top: 12px; padding-bottom: 12px; }
 /* Things that need a solid backing or dark text */
-:root:not([data-theme="light"]) .badge, :root:not([data-theme="light"]) .posdot, :root:not([data-theme="light"]) .avatar { color: #0a1a3d; }
+:root:not([data-theme="light"]) .badge, :root:not([data-theme="light"]) .posdot, :root:not([data-theme="light"]) .avatar { color: #111; }
 :root:not([data-theme="light"]) .oddstip { background: var(--solid); }
-:root:not([data-theme="light"]) .rail { background: rgba(9, 22, 52, 0.35); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-bottom-color: var(--line); } /* no saturation boost: it turned the bar bright blue */
+:root:not([data-theme="light"]) .rail { background: rgba(14, 14, 16, 0.55); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-bottom-color: var(--line); }
 :root:not([data-theme="light"]) .yr[aria-current="true"] { background: var(--seg); color: #fff; box-shadow: inset 0 0 0 1px var(--edge); }
 :root:not([data-theme="light"]) .pill { background: rgba(255, 255, 255, 0.1); }
 
@@ -1165,7 +1166,8 @@ function gameTabBody(s, m, wk) {
   return `${teamStats(s, m)}${c ? `<div class="wpwrap">${c}</div>` : ""}`;
 }
 // The page takes on your team's color, like Apple Sports does with My Teams
-function tint() { const k = myTeam(); document.documentElement.style.setProperty("--tint", k && hue[k] != null ? hue[k] : 220); }
+function tint() { const k = myTeam(), st = document.documentElement.style;
+  if (k && hue[k] != null) { st.setProperty("--tint", hue[k]); st.setProperty("--glow", `hsl(${hue[k]} 55% 26%)`); } else { st.removeProperty("--tint"); st.removeProperty("--glow"); } }
 
 function weekly(s) {
   const wk = state.week && s.weeks.includes(state.week) ? state.week : (s.done ? s.weeks[0] : s.curWeek);
