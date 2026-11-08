@@ -1,6 +1,6 @@
 // Live social posts during games. Each update compares this week's scores, win chances and
 // players' points with the last update (history/livestate_<year>.json), and when something
-// happened (a touchdown, a big play, a turnover, an injury, a lead change, a big swing, a One to Watch's Gear 5 or Buggy'd game, a
+// happened (a touchdown, a big play, a turnover, an injury, a lead change, a big swing, a One to Watch's Gear 5 or Seastoned game, a
 // final), and when anyone picks up or drops a player (waivers or free agency, any day of the week),
 // asks Claude for a few posts reacting to it, saved to news/live-<year>-<week>.json.
 // At most 2 batches (calls) an hour and 20 a day.
@@ -58,7 +58,7 @@ const now = {
   moves: cur.moves.map((m) => `${m.date}|${m.tm}`),
   // Each starter's injury designation, to catch a player getting hurt mid-game or ruled out before his game
   inj: Object.fromEntries(games.flatMap((m) => [m.h, m.a]).flatMap((id) => starters(id).filter((p) => p.inj).map((p) => [`${id}|${p.n}`, p.inj]))),
-  // Starters whose NFL game is over, so a One to Watch's Buggy'd is told once, when his game ends
+  // Starters whose NFL game is over, so a One to Watch's Seastoned is told once, when his game ends
   done: Object.fromEntries(games.flatMap((m) => [m.h, m.a]).flatMap((id) => starters(id).filter((p) => p.g === "done").map((p) => [`${id}|${p.n}`, 1]))),
   at: Date.now(),
 };
@@ -93,7 +93,7 @@ if (before && before.wk === W) {
       else if (d.to && p.pos !== "D/ST") events.push(`TURNOVER: ${p.n} (${p.pos}, ${p.pro}) ${what}, ${p.pts} now${status}, for ${team(id)} (${label})`);
       const x = (m.watch || []).find((w) => w.n === p.n && w.id === id);
       if (x && was < x.boomAt && p.pts >= x.boomAt) events.push(`GEAR 5: One to Watch ${p.n} cleared his ${x.boomAt}-point line for ${team(id)}; that line was worth a ${x.boom}% win chance (${label})`);
-      if (x && p.g === "done" && before.done && !before.done[k] && p.pts < x.bustAt) events.push(`BUGGY'D: One to Watch ${p.n}'s game is over and he finished with ${p.pts}, under his ${x.bustAt}-point line, for ${team(id)}; under that line his team's win chance was ${x.bust}% (${label})`);
+      if (x && p.g === "done" && before.done && !before.done[k] && p.pts < x.bustAt) events.push(`SEASTONED: One to Watch ${p.n}'s game is over and he finished with ${p.pts}, under his ${x.bustAt}-point line, for ${team(id)}; under that line his team's win chance was ${x.bust}% (${label})`);
       if (Math.abs(gain) >= 1 || tag(d)) list.push([id === m.h ? 0 : 1, p.n, gain, tag(d)]);
       // Injuries: hurt during his game (any new designation), or ruled out before it while still in the lineup.
       // Saves from before injuries were kept count every designation as already seen.
