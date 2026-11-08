@@ -517,6 +517,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-08T18:31:01.204Z"
+  },
+  {
+   "author": "Hulk Smash Report",
+   "handle": "@HulkSmashReport",
+   "text": "Kenneth Walker catches a touchdown and Brucie is suddenly right on Zoe's heels, with McCaffrey and Josh Allen still to come. That lead of hers is looking pretty thin.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T19:04:16.457Z"
+  },
+  {
+   "author": "Horse Hive",
+   "handle": "@HorseHiveSonny",
+   "text": "Mahomes finally throws a touchdown and Sonny is still down thirty-six. I'll take it, but Jaxon, Jeanty and Kittle all have to show up now.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T19:08:16.457Z"
+  },
+  {
+   "author": "Sal Benedetto",
+   "handle": "@SalBetsBig",
+   "text": "Puka coughs it up for Habib and I am NOT surprised, Rams have burned me before. Philly is down thirty-seven and he's still a LOCK to make me nervous.",
+   "heat": 5,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T19:12:16.457Z"
+  },
+  {
+   "author": "Dawg Pound Dan",
+   "handle": "@DawgPoundDan",
+   "text": "Jayden Daniels turns it over and Kai is just sitting there with Chase's big day carrying the whole household. Randy, please don't start believing.",
+   "heat": 2,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T19:16:16.457Z"
   }
  ],
  "batches": [
@@ -533,6 +573,7 @@
   "2026-11-08T16:38:25.412Z",
   "2026-11-08T16:53:01.979Z",
   "2026-11-08T18:04:35.839Z",
-  "2026-11-08T18:33:01.204Z"
+  "2026-11-08T18:33:01.204Z",
+  "2026-11-08T19:17:16.457Z"
  ]
 }
