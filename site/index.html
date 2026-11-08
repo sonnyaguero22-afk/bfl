@@ -568,6 +568,8 @@ h3.subhead { margin: 0 0 10px; font-size: 15px; color: var(--muted); }
 .watch .k .mlink { font-size: inherit; }
 .wrow { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; font-size: 13.5px; line-height: 1.35; }
 .owbox { margin: 12px 0; padding: 0; }
+@media (max-width: 420px) { .mwtab th:first-child, .mwtab td:first-child { display: none; } .mwtab th, .mwtab td { padding-left: 6px; padding-right: 6px; } .mwtab td:nth-child(2), .mwtab th:nth-child(2) { padding-left: 12px; } }
+@media (max-width: 380px) { .mwtab td:nth-child(2) > span { white-space: normal !important; } }
 .wname, .wname .plink, .pl.watchp .nm > .plink, .pl.watchp .nm > b { color: var(--gold); font-weight: 700; }
 .inj, .wstat b.inj { color: var(--loss); }
 .wstat { color: var(--muted); } .wstat b { color: var(--ink); } .wstat.hit, .wstat.hit b { color: var(--win); } .wstat.miss, .wstat.miss b { color: var(--loss); }
@@ -1294,7 +1296,7 @@ function watchLog() {
   for (const s of D.seasons) for (const k in s.pregame || {}) {
     const [wk, h, a] = k.split("-").map(Number), m = s.matchups.find((y) => y.wk === wk && y.h === h && y.a === a);
     if (!m || m.live || m.win === null) continue;
-    for (const x of gameWatch(s, m).watch) { const n = watchNow(s, m, x, true); if (n.started) out.push({ s, m, x, ...n }); }
+    for (const x of gameWatch(s, m).watch) out.push({ s, m, x, ...watchNow(s, m, x, true) }); // benched picks are on the board but not graded
   }
   return out.sort((p, q) => q.s.year - p.s.year || q.m.wk - p.m.wk);
 }
@@ -1911,7 +1913,10 @@ function awardView() {
 
 // Wiki pages for the Bounty Board (Ones to Watch in the code), its joke sponsor the Baratie, Gear 5 and Seastoned
 function owView() {
-  const k = state.ow, [e, nm] = OW[k], log = watchLog();
+  const k = state.ow, [e, nm] = OW[k], all = watchLog(), log = all.filter((r) => r.started);
+  // Season picker: All-time or one season (the lists and leaderboard follow it; the record and infobox are all-time)
+  const ys = [...new Set(all.map((r) => r.s.year))], Y = ys.includes(+state.owYear) ? +state.owYear : null, inY = (r) => !Y || r.s.year === Y;
+  const picker = ys.length ? `<div class="weekbar" style="margin:4px 0 12px">${[null, ...ys].map((y) => `<button data-owyear="${y || "all"}" aria-current="${y === Y}">${y || "All-time"}</button>`).join("")}</div>` : "";
   const g5 = log.filter((r) => r.gear5), sst = log.filter((r) => r.seastone), mine = k === "gear5" ? g5 : k === "seastone" ? sst : [];
   const pc = (a) => (log.length ? `${Math.round((100 * a.length) / log.length)}%` : "—");
   const first = log.length ? log[log.length - 1] : null;
@@ -1942,7 +1947,16 @@ function owView() {
     <tr><th>${OW.seastone[0]} Seastoned</th><td>${sst.length}</td></tr>
     ${best ? `<tr><th>${k === "gear5" ? "Biggest" : "Worst"}</th><td>${esc(best.x.n)} <span class="muted">(${f1(best.pts)}, ${best.s.year} wk ${best.m.wk})</span></td></tr>` : ""}
   </table></aside>`;
-  const body = k === "bounty" ? `${record}${how}<h3 class="wikisub">Latest on the Board</h3>${tbl(log.slice(0, 20))}` : k === "baratie" ? record : `${record}<h3 class="wikisub">Every ${esc(nm)}</h3>${tbl(mine)}${how}`;
+  const wanted = () => { const by = {};
+    for (const r of all.filter(inY)) { const w = (by[r.x.n] = by[r.x.n] || { x: r.x, n: 0, g5: 0, sst: 0, w: 0, l: 0, mgrs: [] }); w.n++; if (r.gear5) w.g5++; if (r.seastone) w.sst++;
+      if (r.m.win === r.x.id) w.w++; else if (r.m.win) w.l++; const k = mgrAt(r.s.byId[r.x.id], r.m.wk); if (!w.mgrs.includes(k)) w.mgrs.push(k); } // by manager: a team is a new object each season
+    const rows = Object.values(by).sort((p, q) => q.n - p.n || q.g5 - p.g5 || p.sst - q.sst).slice(0, 15);
+    return `<h3 class="wikisub">Most Wanted</h3>${rows.length ? `<div class="box scroll"><table class="compact mwtab"><thead><tr><th class="n">#</th><th>Player</th><th class="n">Picks</th><th class="n">${OW.gear5[0]}</th><th class="n">${OW.seastone[0]}</th><th class="n" title="His team's record when he was on the board">Team</th></tr></thead><tbody>${rows.map((w, i) => `<tr><td class="n muted">${i + 1}</td><td><span style="white-space:nowrap">${posTag(w.x.pos)}${pn(w.x.n)}</span><br><small class="muted" style="display:inline-flex;gap:4px;align-items:center;margin-top:3px">for ${w.mgrs.map((k) => mbadge(k, 1)).join("")}</small></td><td class="n"><b>${w.n}</b></td><td class="n">${w.g5 || "—"}</td><td class="n">${w.sst || "—"}</td><td class="n" style="white-space:nowrap">${w.w}-${w.l}</td></tr>`).join("")}</tbody></table></div>` : `<p class="muted">Nobody yet.</p>`}`; };
+  // Gear 5 and Seastoned: one season in full, or all-time's ten biggest
+  const pickList = () => { if (Y) return `<h3 class="wikisub">Every ${esc(nm)} in ${Y}</h3>${tbl(mine.filter(inY))}`;
+    const far = (r) => (k === "gear5" ? r.pts - r.x.boomAt : r.x.bustAt - r.pts);
+    return `<h3 class="wikisub">${k === "gear5" ? "Biggest" : "Worst"} ${esc(nm)}s Ever</h3>${tbl([...mine].sort((p, q) => far(q) - far(p)).slice(0, 10))}`; };
+  const body = k === "bounty" ? `${record}${how}${picker}${wanted()}<h3 class="wikisub">Latest on the Board${Y ? ` in ${Y}` : ""}</h3>${tbl(log.filter(inY).slice(0, 20))}` : k === "baratie" ? record : `${record}${picker}${pickList()}${how}`;
   const also = Object.keys(OW).filter((x) => x !== k).map((x) => `${OW[x][0]} ${owLink(x)}`).concat(["buggy", "sanji"].map((x) => `${awInfo(x).e} ${awLink(x)}`)).join(" · ");
   return `<div class="vhead"><div><div class="eyebrow">${{ bounty: "Luffy's Picks", baratie: "Sponsor" }[k] || "The Bounty Board"}</div><h2>${e} ${esc(nm)}</h2></div><button class="pill" data-go="awards" style="border:0;cursor:pointer">← Awards</button></div>
   <div class="wiki"><article class="wikimain">${lede}${info.replace("ibd-only", "ibm-only")}${body}<h3 class="wikisub">See Also</h3><p>${also}</p></article>${info}</div>`;
@@ -2759,6 +2773,7 @@ $("#app").addEventListener("click", (e) => {
   if (e.target.closest("[data-picking]")) { state.picking = !state.picking; render(); return; }
   const og = e.target.closest("[data-opengame]"); if (og) { const [y, w, h] = og.dataset.opengame.split("|").map(Number); state.week = w; state.open = `${w}-${h}`; state.gameTab = "stats"; go(`${y}-weekly`); return; }
   const gt = e.target.closest("[data-gtab]"); if (gt) { state.gameTab = gt.dataset.gtab; render(); return; }
+  const owy = e.target.closest("[data-owyear]"); if (owy) { state.owYear = owy.dataset.owyear === "all" ? null : +owy.dataset.owyear; render(); return; }
   const ay = e.target.closest("[data-awyear]"); if (ay) { state.awYear = +ay.dataset.awyear; if (!ay.dataset.go) { render(); return; } } // a link can also pick the year it opens to
   const oy = e.target.closest("[data-oddsyear]"); if (oy) { state.oddsYear = +oy.dataset.oddsyear; state.oddsFocus = null; render(); return; }
   const ok = e.target.closest("[data-oddskey]"); if (ok) { state.oddsKey = ok.dataset.oddskey; render(); return; }
