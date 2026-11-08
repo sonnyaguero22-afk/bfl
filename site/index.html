@@ -1163,7 +1163,7 @@ function gameTabBody(s, m, wk) {
   if (t === "watch") return watchHtml(s, m) || `<p class="muted" style="padding:12px 4px">No Ones to Watch for this game.</p>`;
   if (t === "lineups") return `<div class="lineups"><div>${lineupCol(s, wk, m.h)}</div><div>${lineupCol(s, wk, m.a)}</div></div>`;
   const c = wpChart(s, m);
-  return `${teamStats(s, m)}${c ? `<div class="wpwrap">${c}</div>` : ""}`;
+  return `${c ? `<div class="wpwrap">${c}</div>` : ""}${teamStats(s, m)}`; // the graph first: it's what you want during a live game
 }
 // The page takes on your team's color, like Apple Sports does with My Teams
 function tint() { const k = myTeam(), st = document.documentElement.style;
