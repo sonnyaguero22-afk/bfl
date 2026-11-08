@@ -1269,7 +1269,7 @@ const Phi = (z) => 0.5 * (1 + erf(z / Math.SQRT2));
 // ---------- The Bounty Board (Ones to Watch in the code), presented by the Baratie (a joke sponsor, after Sanji's floating restaurant) ----------
 // The players whose games swing a matchup most, gold in the lineups. A Gear 5 is a game at or over his top-20% line
 // (Luffy's peak form; the model is Luffy), a Seastoned one under his bottom-20% line once his game is over.
-const OW = { bounty: ["📜", "The Bounty Board"], baratie: ["🍖", "The Baratie"], gear5: ["🔥", "Gear 5"], seastone: ["🪨", "Seastoned"] };
+const OW = { bounty: ["📜", "The Bounty Board"], baratie: ["🍽️", "The Baratie"], gear5: ["🔥", "Gear 5"], seastone: ["🪨", "Seastoned"] };
 const owLink = (k, label) => `<button class="mlink awl" data-go="ow-${k}">${label ?? OW[k][1]}</button>`;
 // This game's picks: live ones while it's on, the ones frozen at kickoff once it's over
 function gameWatch(s, m) {
@@ -1921,7 +1921,7 @@ function owView() {
   const board = owLink("bounty", "the Bounty Board");
   const lede = {
     bounty: `<p><b>The Bounty Board</b> ${e}, presented by ${owLink("baratie", "the Baratie")}, names the player on each team whose game swings the matchup the most: one per team, two per game. It is named for One Piece's wanted posters, where the dangerous pirates are the ones with a bounty on their heads. Luffy, the league's win-chance model, picks them before kickoff and sets two lines for each: reach his top line and he goes ${owLink("gear5")}; finish under his bottom line and he gets ${owLink("seastone")}. In the code and the earliest stories they were called the Ones to Watch.</p>`,
-    baratie: `<p><b>The Baratie</b> ${e} is the floating restaurant in the East Blue run by Red-Leg Zeff, where Sanji cooked before he joined the Straw Hats. On this site it "presents" ${board}, the players whose games swing a matchup the most. The sponsorship is a joke: the Baratie is fictional, and the league has no sponsors. It was picked because Luffy, the model's nickname, never turns down a meal, and his meat bone 🍖 already marks the model's picks.</p>`,
+    baratie: `<p><b>The Baratie</b> ${e} is the floating restaurant in the East Blue run by Red-Leg Zeff, where Sanji cooked before he joined the Straw Hats. On this site it "presents" ${board}, the players whose games swing a matchup the most. The sponsorship is a joke: the Baratie is fictional, and the league has no sponsors. It was picked because Luffy, the model's nickname, never turns down a meal. The Baratie's mark is a plate 🍽️; the meat bone 🍖 stays Luffy's own, marking the model's picks.</p>`,
     gear5: `<p>A <b>Gear 5</b> ${e} is a player on ${board} who scores at or above his top-20% line: the kind of game he has about one week in five. It is named for Luffy's Gear 5, the awakened form in which he fights at his most ridiculous and most powerful, and the model that fills the board is nicknamed Luffy. A Gear 5 counts once he passes the line, even mid-game. Its opposite is ${owLink("seastone", "getting Seastoned")}.</p>`,
     seastone: `<p>A player on ${board} gets <b>Seastoned</b> ${e} when his game ends under his bottom-20% line. It is named for seastone, the sea-born rock that cancels a Devil Fruit user's powers and leaves him weak and helpless: a player whose powers switched off for a week. It is the opposite of a ${owLink("gear5")}, Luffy at full power. It only counts once his game is over, so a slow first half is not one yet. For a whole season of falling short, see ${awLink("buggy")}.</p>`,
   }[k];
