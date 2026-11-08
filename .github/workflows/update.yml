@@ -86,8 +86,9 @@ jobs:
           for d in archive history news; do if [ -d "$d" ]; then git add "$d"; fi; done
           if ! git diff --cached --quiet; then
             git commit -m "Update league history"
-            git pull --rebase -X theirs origin main # on a clash, this run's newer history wins
-            git push
+            # On a clash, this run's newer history wins; a push landing at the same moment just means try again
+            ok=; for i in 1 2 3 4; do if git pull --rebase -X theirs origin main && git push; then ok=1; break; fi; sleep $((i * 5)); done
+            [ -n "$ok" ]
           fi
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
@@ -108,8 +109,14 @@ jobs:
           node-version: 20
       - id: next
         run: node check-games.js next
+      # Every run starts the next, so a push or a manual run would start a second chain beside the first; after the
+      # wait, only the newest run carries on, and the extra chains die out
       - if: steps.next.outputs.wait != '0'
-        run: sleep ${{ steps.next.outputs.wait }} && gh workflow run update.yml --ref main -f chained=true
+        run: |
+          sleep ${{ steps.next.outputs.wait }}
+          newer=$(gh run list --workflow update.yml --limit 30 --json databaseId --jq '[.[] | select(.databaseId > ${{ github.run_id }})] | length')
+          if [ "$newer" != "0" ]; then echo "::notice::$newer newer run(s) carry the chain; not starting another"; exit 0; fi
+          gh workflow run update.yml --ref main -f chained=true
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
