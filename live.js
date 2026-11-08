@@ -1,6 +1,6 @@
 // Live social posts during games. Each update compares this week's scores, win chances and
 // players' points with the last update (history/livestate_<year>.json), and when something
-// happened (a touchdown, a big play, a turnover, an injury, a lead change, a big swing, a One to Watch's Gear 5 or Seastoned game, a
+// happened (a touchdown, a big play, a turnover, an injury, a lead change, a big swing, a Bounty Board pick's Gear 5 or Seastoned game, a
 // final), and when anyone picks up or drops a player (waivers or free agency, any day of the week),
 // asks Claude for a few posts reacting to it, saved to news/live-<year>-<week>.json.
 // At most 2 batches (calls) an hour and 20 a day.
@@ -58,7 +58,7 @@ const now = {
   moves: cur.moves.map((m) => `${m.date}|${m.tm}`),
   // Each starter's injury designation, to catch a player getting hurt mid-game or ruled out before his game
   inj: Object.fromEntries(games.flatMap((m) => [m.h, m.a]).flatMap((id) => starters(id).filter((p) => p.inj).map((p) => [`${id}|${p.n}`, p.inj]))),
-  // Starters whose NFL game is over, so a One to Watch's Seastoned is told once, when his game ends
+  // Starters whose NFL game is over, so a Bounty Board pick's Seastoned is told once, when his game ends
   done: Object.fromEntries(games.flatMap((m) => [m.h, m.a]).flatMap((id) => starters(id).filter((p) => p.g === "done").map((p) => [`${id}|${p.n}`, 1]))),
   at: Date.now(),
 };
@@ -92,8 +92,8 @@ if (before && before.wk === W) {
       else if (gain >= BIG_PLAY) events.push(`BIG PLAY: ${p.n} (${p.pos}, ${p.pro})${what ? ` ${what},` : ""} +${gain} since the last update, ${p.pts} now${status}, for ${team(id)} (${label})`);
       else if (d.to && p.pos !== "D/ST") events.push(`TURNOVER: ${p.n} (${p.pos}, ${p.pro}) ${what}, ${p.pts} now${status}, for ${team(id)} (${label})`);
       const x = (m.watch || []).find((w) => w.n === p.n && w.id === id);
-      if (x && was < x.boomAt && p.pts >= x.boomAt) events.push(`GEAR 5: One to Watch ${p.n} cleared his ${x.boomAt}-point line for ${team(id)}; that line was worth a ${x.boom}% win chance (${label})`);
-      if (x && p.g === "done" && before.done && !before.done[k] && p.pts < x.bustAt) events.push(`SEASTONED: One to Watch ${p.n}'s game is over and he finished with ${p.pts}, under his ${x.bustAt}-point line, for ${team(id)}; under that line his team's win chance was ${x.bust}% (${label})`);
+      if (x && was < x.boomAt && p.pts >= x.boomAt) events.push(`GEAR 5: Bounty Board pick ${p.n} cleared his ${x.boomAt}-point line for ${team(id)}; that line was worth a ${x.boom}% win chance (${label})`);
+      if (x && p.g === "done" && before.done && !before.done[k] && p.pts < x.bustAt) events.push(`SEASTONED: Bounty Board pick ${p.n}'s game is over and he finished with ${p.pts}, under his ${x.bustAt}-point line, for ${team(id)}; under that line his team's win chance was ${x.bust}% (${label})`);
       if (Math.abs(gain) >= 1 || tag(d)) list.push([id === m.h ? 0 : 1, p.n, gain, tag(d)]);
       // Injuries: hurt during his game (any new designation), or ruled out before it while still in the lineup.
       // Saves from before injuries were kept count every designation as already seen.
@@ -128,8 +128,8 @@ if (before && before.moves) {
     events.push(e); moveAt[e] = m.date;
   }
 }
-// Most important first, and at most 10 per update: finals, lead changes, touchdowns, injuries, swings, Ones to Watch, the biggest plays, turnovers, then moves
-const ORDER = ["FINAL", "LEAD CHANGE", "TOUCHDOWN", "INJURY", "SWING", "ONE TO WATCH", "BIG PLAY", "TURNOVER", "MOVE"];
+// Most important first, and at most 10 per update: finals, lead changes, touchdowns, injuries, swings, the Bounty Board's Gear 5s and Seastoneds, the biggest plays, turnovers, then moves
+const ORDER = ["FINAL", "LEAD CHANGE", "TOUCHDOWN", "INJURY", "SWING", "GEAR 5", "SEASTONED", "BIG PLAY", "TURNOVER", "MOVE"];
 const gain = (e) => +((e.match(/\+([\d.]+)/) || [])[1] || 0);
 events.sort((a, b) => ORDER.findIndex((k) => a.startsWith(k)) - ORDER.findIndex((k) => b.startsWith(k)) || gain(b) - gain(a)).splice(10);
 if (!events.length) { console.log(before && before.wk === W ? "Nothing new since the last update." : "First snapshot saved."); save(); process.exit(0); }

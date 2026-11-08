@@ -1092,13 +1092,13 @@ function lineupCol(s, wk, id, m) {
   if (sps.length === 1) return `<b>${esc(s.byId[id].name)}</b>` + lineupWeek(s, sps[0], id, m);
   return `<b>${esc(s.byId[id].name)}</b>` + sps.map((sp) => `<div class="bnhead" style="border:0;margin-top:10px"><span>NFL week ${sp}</span></div>${lineupWeek(s, sp, id, m)}`).join("");
 }
-// m: the game, so its Ones to Watch show in gold (their lines are listed above the lineups)
+// m: the game, so its Bounty Board picks show in gold (their lines are listed above the lineups)
 function lineupWeek(s, wk, id, m) {
   const L = (s.lineups[wk] || {})[id];
   if (!L) return `<div class="muted">No lineup data for this week.</div>`;
   const sorted = [...L].sort((a, b) => SLOTS.indexOf(a.slot) - SLOTS.indexOf(b.slot) || b.pts - a.pts);
   const start = sorted.filter((p) => p.slot !== "BN" && p.slot !== "IR"), bench = sorted.filter((p) => p.slot === "BN" || p.slot === "IR");
-  // This game's Ones to Watch stand out in gold
+  // This game's Bounty Board picks stand out in gold
   const gw = m && gameWatch(s, m), picks = new Map(gw ? gw.watch.filter((x) => x.id === id).map((x) => [x.n, x]) : []);
   const row = (p) => { const x = picks.get(p.n);
     return `<div class="pl${p.slot === "BN" || p.slot === "IR" ? " bn" : ""}${x ? " watchp" : ""}"><span class="slot">${esc(p.slot)}</span><span class="nm">${pn(p.n)} <small>${esc(p.pos)} · ${esc(p.pro)}${p.st ? ` · <b>${p.st === "bye" ? "BYE" : "OUT"}</b>` : p.inj ? ` · <b class="inj">${injTag(p.inj)}</b>` : ""}</small></span><span class="p">${f1(p.pts)}</span></div>`; };
@@ -1188,7 +1188,7 @@ function weekly(s) {
   const title = wk > s.regWeeks ? (wk === bowlWeek(s) ? "Championship Week" : roundName(s, ms[0] || {}) || "Playoffs") : `Week ${wk}`;
   const grid = sheet + scoreList(s, wk, ms, rec, (m) => `data-open="${wk}-${m.h}"${state.open === `${wk}-${m.h}` ? ' aria-current="true"' : ""}`, title);
   const luffy = ms.some((m) => luffyPick(s, m, m.h) || luffyPick(s, m, m.a));
-  return bar + `${grid}${byes ? `<p class="note">${byes}</p>` : ""}${luffy ? `<p class="note">🍖 Luffy's Pick</p>` : ""}<p class="note">Tap a game for its stats, Ones to Watch and both lineups.${ms.some((m) => kickedAt(s.byId[m.h], wk) || kickedAt(s.byId[m.a], wk)) ? " * Kicked for inactivity: the team played on without its manager, and the game still counts on his record." : ""}${!s.done ? " Scores for the week in progress are a snapshot from when the data was last pulled." : ""}</p>`;
+  return bar + `${grid}${byes ? `<p class="note">${byes}</p>` : ""}${luffy ? `<p class="note">🍖 Luffy's Pick</p>` : ""}<p class="note">Tap a game for its stats, the Bounty Board and both lineups.${ms.some((m) => kickedAt(s.byId[m.h], wk) || kickedAt(s.byId[m.a], wk)) ? " * Kicked for inactivity: the team played on without its manager, and the game still counts on his record." : ""}${!s.done ? " Scores for the week in progress are a snapshot from when the data was last pulled." : ""}</p>`;
 }
 
 function draft(s) {
@@ -1266,10 +1266,10 @@ const pct1 = (v) => (v >= 99.95 ? "100%" : v > 0 && v < 0.5 ? "<1%" : `${Math.ro
 const erf = (x) => { const t = 1 / (1 + 0.3275911 * Math.abs(x)); const y = 1 - ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x); return x >= 0 ? y : -y; };
 const Phi = (z) => 0.5 * (1 + erf(z / Math.SQRT2));
 // Ones to Watch: the players still to play whose game swings this matchup most, from the player sim
-// ---------- Ones to Watch, presented by the Baratie (a joke sponsor, after Sanji's floating restaurant) ----------
+// ---------- The Bounty Board (Ones to Watch in the code), presented by the Baratie (a joke sponsor, after Sanji's floating restaurant) ----------
 // The players whose games swing a matchup most, gold in the lineups. A Gear 5 is a game at or over his top-20% line
 // (Luffy's peak form; the model is Luffy), a Seastoned one under his bottom-20% line once his game is over.
-const OW = { baratie: ["🍖", "The Baratie"], gear5: ["🔥", "Gear 5"], seastone: ["🪨", "Seastoned"] };
+const OW = { bounty: ["📜", "The Bounty Board"], baratie: ["🍖", "The Baratie"], gear5: ["🔥", "Gear 5"], seastone: ["🪨", "Seastoned"] };
 const owLink = (k, label) => `<button class="mlink awl" data-go="ow-${k}">${label ?? OW[k][1]}</button>`;
 // This game's picks: live ones while it's on, the ones frozen at kickoff once it's over
 function gameWatch(s, m) {
@@ -1310,7 +1310,7 @@ function watchLine(s, m, x, gw) {
 }
 function watchHtml(s, m) {
   const gw = gameWatch(s, m); if (!gw) return "";
-  return `<div class="watch"><div class="k" title="The players whose games swing this matchup most, one per team. The point lines are each player's top-20% and bottom-20% outcomes, from his projection, his position and his own history.">Ones to Watch <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500">· presented by ${owLink("baratie", "the Baratie")} ${OW.baratie[0]} · ${gw.final ? "picked at kickoff, graded · " : gw.locked ? "picked at kickoff · " : ""}${owLink("gear5")} = his top 20%, ${owLink("seastone")} = his bottom 20%</span></div>${gw.watch.map((x) => watchLine(s, m, x, gw)).join("")}</div>`;
+  return `<div class="watch"><div class="k" title="The players whose games swing this matchup most, one per team. The point lines are each player's top-20% and bottom-20% outcomes, from his projection, his position and his own history.">${owLink("bounty", "The Bounty Board")} <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500">· presented by ${owLink("baratie", "the Baratie")} ${OW.baratie[0]} · ${gw.final ? "picked at kickoff, graded · " : gw.locked ? "picked at kickoff · " : ""}${owLink("gear5")} = his top 20%, ${owLink("seastone")} = his bottom 20%</span></div>${gw.watch.map((x) => watchLine(s, m, x, gw)).join("")}</div>`;
 }
 // Chance the home team wins (0-1). Live games use ESPN's live projected finals, with less
 // uncertainty the less there is left to play; otherwise team strength going into the week.
@@ -1820,7 +1820,7 @@ function awardsView(kind) {
   return `<div class="vhead"><div><div class="eyebrow">${s.done ? `Buckaroo Bowl ${roman(y - D.firstYear + 1)} · ${y}` : `${y} · so far`}</div><h2>${mgr ? "Manager" : "Player"} Awards</h2><p>${mgr ? "The things a title doesn't measure, named for the Strawhats' friends and foes." : "The season's best (and worst) players, named for the Strawhats and friends."} ${s.done ? "" : "The season isn't over, so these are the leaders so far."}</p></div>${bar}</div>
   <div class="awgrid">${cards || `<p class="muted">Nothing to award yet.</p>`}</div>
   <section><h3>How They're Decided</h3><div class="box rec"><ol class="swing">${list.map(([k, e, nm, cat, why]) => `<li><span>${e} <b>${awLink(k)}</b> <span class="muted">· ${cat}</span><small class="ctx sub">${esc(why)}</small></span></li>`).join("")}</ol></div>
-  <p class="note">${mgr ? "Luck and blunders count regular-season weeks (blunders count playoffs too). Every award has one winner; a tie on a count goes to the bigger margin." : "Points count only in weeks a lineup played a game, playoffs and consolation games included. The team shown is where he scored the most."}</p>${mgr ? "" : `<p class="note">Every game's Ones to Watch, presented by ${owLink("baratie", "the Baratie")} ${OW.baratie[0]}, are graded too: ${OW.gear5[0]} ${owLink("gear5")} and ${OW.seastone[0]} ${owLink("seastone")}.</p>`}</section>`;
+  <p class="note">${mgr ? "Luck and blunders count regular-season weeks (blunders count playoffs too). Every award has one winner; a tie on a count goes to the bigger margin." : "Points count only in weeks a lineup played a game, playoffs and consolation games included. The team shown is where he scored the most."}</p>${mgr ? "" : `<p class="note">Every game's ${OW.bounty[0]} ${owLink("bounty", "Bounty Board")}, presented by ${owLink("baratie", "the Baratie")} ${OW.baratie[0]}, is graded too: ${OW.gear5[0]} ${owLink("gear5")} and ${OW.seastone[0]} ${owLink("seastone")}.</p>`}</section>`;
 }
 
 // ---------- Award pages: one wiki-style article per award, with every winner ----------
@@ -1909,38 +1909,43 @@ function awardView() {
   <div class="wiki"><article class="wikimain">${lead}${info.replace("ibd-only", "ibm-only")}${history}<h3 class="wikisub">Winners</h3>${table}${criteria}<h3 class="wikisub">See Also</h3><p>${others}</p></article>${info}</div>`;
 }
 
-// Wiki pages for the Baratie (the joke sponsor of Ones to Watch), Gear 5 and Seastoned
+// Wiki pages for the Bounty Board (Ones to Watch in the code), its joke sponsor the Baratie, Gear 5 and Seastoned
 function owView() {
   const k = state.ow, [e, nm] = OW[k], log = watchLog();
-  const g5 = log.filter((r) => r.gear5), bg = log.filter((r) => r.seastone), mine = k === "gear5" ? g5 : k === "seastone" ? bg : [];
+  const g5 = log.filter((r) => r.gear5), sst = log.filter((r) => r.seastone), mine = k === "gear5" ? g5 : k === "seastone" ? sst : [];
   const pc = (a) => (log.length ? `${Math.round((100 * a.length) / log.length)}%` : "—");
   const first = log.length ? log[log.length - 1] : null;
   const gm = (r) => `<button class="mlink" data-go="${r.s.year}-weekly">${r.s.year} wk ${r.m.wk}</button>`;
   const opp = (r) => esc(r.s.byId[r.x.id === r.m.h ? r.m.a : r.m.h].name);
   const won = (r) => r.m.win === r.x.id;
+  const board = owLink("bounty", "the Bounty Board");
   const lede = {
-    baratie: `<p><b>The Baratie</b> ${e} is the floating restaurant in the East Blue run by Red-Leg Zeff, where Sanji cooked before he joined the Straw Hats. On this site it "presents" the <b>Ones to Watch</b>, the players whose games swing a matchup the most. The sponsorship is a joke: the Baratie is fictional, and the league has no sponsors. It was picked because Luffy, the model's nickname, never turns down a meal, and his meat bone 🍖 already marks the model's picks.</p>`,
-    gear5: `<p>A <b>Gear 5</b> ${e} is a One to Watch who scores at or above his top-20% line: the kind of game he has about one week in five. It is named for Luffy's Gear 5, the awakened form in which he fights at his most ridiculous and most powerful, and the model that picks the Ones to Watch is nicknamed Luffy. A Gear 5 counts once he passes the line, even mid-game. Its opposite is ${owLink("seastone")}.</p>`,
-    seastone: `<p>A One to Watch gets <b>Seastoned</b> ${e} when his game ends under his bottom-20% line. It is named for seastone, the sea-born rock that cancels a Devil Fruit user's powers and leaves him weak and helpless: a player whose powers switched off for a week. It is the opposite of the ${owLink("gear5")}, Luffy at full power. It only counts once his game is over, so a slow first half is not one yet. For a whole season of falling short, see ${awLink("buggy")}.</p>`,
+    bounty: `<p><b>The Bounty Board</b> ${e}, presented by ${owLink("baratie", "the Baratie")}, names the player on each team whose game swings the matchup the most: one per team, two per game. It is named for One Piece's wanted posters, where the dangerous pirates are the ones with a bounty on their heads. Luffy, the league's win-chance model, picks them before kickoff and sets two lines for each: reach his top line and he goes ${owLink("gear5")}; finish under his bottom line and he gets ${owLink("seastone")}. In the code and the earliest stories they were called the Ones to Watch.</p>`,
+    baratie: `<p><b>The Baratie</b> ${e} is the floating restaurant in the East Blue run by Red-Leg Zeff, where Sanji cooked before he joined the Straw Hats. On this site it "presents" ${board}, the players whose games swing a matchup the most. The sponsorship is a joke: the Baratie is fictional, and the league has no sponsors. It was picked because Luffy, the model's nickname, never turns down a meal, and his meat bone 🍖 already marks the model's picks.</p>`,
+    gear5: `<p>A <b>Gear 5</b> ${e} is a player on ${board} who scores at or above his top-20% line: the kind of game he has about one week in five. It is named for Luffy's Gear 5, the awakened form in which he fights at his most ridiculous and most powerful, and the model that fills the board is nicknamed Luffy. A Gear 5 counts once he passes the line, even mid-game. Its opposite is ${owLink("seastone", "getting Seastoned")}.</p>`,
+    seastone: `<p>A player on ${board} gets <b>Seastoned</b> ${e} when his game ends under his bottom-20% line. It is named for seastone, the sea-born rock that cancels a Devil Fruit user's powers and leaves him weak and helpless: a player whose powers switched off for a week. It is the opposite of a ${owLink("gear5")}, Luffy at full power. It only counts once his game is over, so a slow first half is not one yet. For a whole season of falling short, see ${awLink("buggy")}.</p>`,
   }[k];
-  const how = `<h3 class="wikisub">How Ones to Watch Are Picked</h3><p>Before each game, the player simulation runs the matchup thousands of times. For each starter it compares his team's win chance in the runs where he has a big game (his top 20%) with the runs where he has a bad one (his bottom 20%), and the starters with the biggest gap become the game's Ones to Watch. Their lines come from his projection, his position and his own history. The picks are frozen at kickoff, shown in gold in the game's Lineups with both lines and his team's win chance on either side of them, and graded once the game is over. Benched picks are not graded.</p>`;
-  const tbl = (rows) => rows.length ? `<div class="box scroll"><table class="compact"><thead><tr><th>Game</th><th>Player</th><th>Team</th><th class="n">Pts</th><th class="n">Line</th><th>Result</th></tr></thead><tbody>${rows.map((r) => `<tr><td>${gm(r)}</td><td>${posTag(r.x.pos)}${pn(r.x.n)}</td><td><span style="display:inline-flex;align-items:center;gap:6px">${badge(r.s.byId[r.x.id], 1)} ${esc(D.managers[mgrAt(r.s.byId[r.x.id], r.m.wk)].first)}</span></td><td class="n"><b>${f1(r.pts)}</b></td><td class="n muted">${k === "seastone" || (k === "baratie" && r.seastone) ? `&lt; ${r.x.bustAt}` : `${r.x.boomAt}+`}</td><td>${k === "baratie" ? (r.gear5 ? `${OW.gear5[0]} Gear 5` : r.seastone ? `${OW.seastone[0]} Seastoned` : "—") + " · " : ""}${won(r) ? `<span class="w">Won</span>` : `<span class="l">Lost</span>`} vs ${opp(r)}</td></tr>`).join("")}</tbody></table></div>` : `<p class="muted">None yet. Ones to Watch have been saved at kickoff since the 2026 season; the first graded games will show up here.</p>`;
+  const how = `<h3 class="wikisub">How the Board Is Picked</h3><p>Before each game, the player simulation runs the matchup thousands of times. For each starter it compares his team's win chance in the runs where he has a big game (his top 20%) with the runs where he has a bad one (his bottom 20%), and on each team the starter with the biggest gap makes the board. His lines come from his projection, his position and his own history. The board is frozen at kickoff, shown at the top of the game's Lineups with both lines and his team's win chance on either side of them (his name is gold in the lineup), and graded once the game is over. Benched picks are not graded.</p>`;
+  const tbl = (rows) => rows.length ? `<div class="box scroll"><table class="compact"><thead><tr><th>Game</th><th>Player</th><th>Team</th><th class="n">Pts</th><th class="n">Line</th><th>Result</th></tr></thead><tbody>${rows.map((r) => `<tr><td>${gm(r)}</td><td>${posTag(r.x.pos)}${pn(r.x.n)}</td><td><span style="display:inline-flex;align-items:center;gap:6px">${badge(r.s.byId[r.x.id], 1)} ${esc(D.managers[mgrAt(r.s.byId[r.x.id], r.m.wk)].first)}</span></td><td class="n"><b>${f1(r.pts)}</b></td><td class="n muted">${k === "seastone" || (k === "bounty" && r.seastone) ? `&lt; ${r.x.bustAt}` : `${r.x.boomAt}+`}</td><td>${k === "bounty" && (r.gear5 || r.seastone) ? `${r.gear5 ? `${OW.gear5[0]} Gear 5` : `${OW.seastone[0]} Seastoned`} · ` : ""}${won(r) ? `<span class="w">Won</span>` : `<span class="l">Lost</span>`} vs ${opp(r)}</td></tr>`).join("")}</tbody></table></div>` : `<p class="muted">None yet. The board has been saved at kickoff since the 2026 season; the first graded games will show up here.</p>`;
   // How much a pick's game decides the matchup: teams with a Gear 5 win, teams that get Seastoned lose
   const rate = (a) => (a.length ? `${a.filter(won).length} of ${a.length} (${Math.round((100 * a.filter(won).length) / a.length)}%)` : "none yet");
-  const record = `<h3 class="wikisub">Record</h3><p>${log.length ? `Since ${first.s.year}, ${log.length} Ones to Watch have been graded: ${g5.length} Gear 5${g5.length === 1 ? "" : "s"} (${pc(g5)}) and ${bg.length} Seastoned (${pc(bg)}). Teams whose pick hit Gear 5 won ${rate(g5)}; teams whose pick got Seastoned won ${rate(bg)}.` : "No graded games yet."}</p>`;
-  const best = k === "gear5" ? [...g5].sort((p, q) => q.pts - q.x.boomAt - (p.pts - p.x.boomAt))[0] : k === "seastone" ? [...bg].sort((p, q) => p.pts - p.x.bustAt - (q.pts - q.x.bustAt))[0] : null;
-  const info = `<aside class="infobox box ibd-only"><div class="ibhead">${e} ${esc(nm)}</div><div class="ibsub">${k === "baratie" ? "Presenting sponsor (fictional)" : "Ones to Watch result"}</div><table>
-    ${k === "baratie" ? `<tr><th>Owner</th><td>Red-Leg Zeff</td></tr><tr><th>Famous cook</th><td>Sanji</td></tr><tr><th>Presents</th><td>Ones to Watch</td></tr>` : `<tr><th>Line</th><td>${k === "gear5" ? "His top 20%" : "His bottom 20%"}</td></tr><tr><th>Counts</th><td>${k === "gear5" ? "As soon as he passes it" : "Once his game is over"}</td></tr>`}
+  const record = `<h3 class="wikisub">Record</h3><p>${log.length ? `Since ${first.s.year}, ${log.length} picks on the board have been graded: ${g5.length} Gear 5${g5.length === 1 ? "" : "s"} (${pc(g5)}) and ${sst.length} Seastoned (${pc(sst)}). Teams whose pick hit Gear 5 won ${rate(g5)}; teams whose pick got Seastoned won ${rate(sst)}.` : "No graded games yet."}</p>`;
+  const best = k === "gear5" ? [...g5].sort((p, q) => q.pts - q.x.boomAt - (p.pts - p.x.boomAt))[0] : k === "seastone" ? [...sst].sort((p, q) => p.pts - p.x.bustAt - (q.pts - q.x.bustAt))[0] : null;
+  const top = { bounty: `<tr><th>Presented by</th><td>The Baratie</td></tr><tr><th>Picked by</th><td>Luffy</td></tr><tr><th>Picks</th><td>One per team</td></tr>`,
+    baratie: `<tr><th>Owner</th><td>Red-Leg Zeff</td></tr><tr><th>Famous cook</th><td>Sanji</td></tr><tr><th>Presents</th><td>The Bounty Board</td></tr>`,
+    gear5: `<tr><th>Line</th><td>His top 20%</td></tr><tr><th>Counts</th><td>As soon as he passes it</td></tr>`,
+    seastone: `<tr><th>Line</th><td>His bottom 20%</td></tr><tr><th>Counts</th><td>Once his game is over</td></tr>` }[k];
+  const info = `<aside class="infobox box ibd-only"><div class="ibhead">${e} ${esc(nm)}</div><div class="ibsub">${{ bounty: "Luffy's picks", baratie: "Presenting sponsor (fictional)" }[k] || "Bounty Board result"}</div><table>${top}
     <tr><th>Since</th><td>${first ? first.s.year : "2026"}</td></tr>
     <tr><th>Picks graded</th><td>${log.length}</td></tr>
     <tr><th>${OW.gear5[0]} Gear 5s</th><td>${g5.length}</td></tr>
-    <tr><th>${OW.seastone[0]} Seastoned</th><td>${bg.length}</td></tr>
+    <tr><th>${OW.seastone[0]} Seastoned</th><td>${sst.length}</td></tr>
     ${best ? `<tr><th>${k === "gear5" ? "Biggest" : "Worst"}</th><td>${esc(best.x.n)} <span class="muted">(${f1(best.pts)}, ${best.s.year} wk ${best.m.wk})</span></td></tr>` : ""}
   </table></aside>`;
-  const list = k === "baratie" ? `<h3 class="wikisub">Latest Ones to Watch</h3>${tbl(log.slice(0, 20))}` : `<h3 class="wikisub">Every ${esc(nm)}</h3>${tbl(mine)}`;
+  const body = k === "bounty" ? `${record}${how}<h3 class="wikisub">Latest on the Board</h3>${tbl(log.slice(0, 20))}` : k === "baratie" ? record : `${record}<h3 class="wikisub">Every ${esc(nm)}</h3>${tbl(mine)}${how}`;
   const also = Object.keys(OW).filter((x) => x !== k).map((x) => `${OW[x][0]} ${owLink(x)}`).concat(["buggy", "sanji"].map((x) => `${awInfo(x).e} ${awLink(x)}`)).join(" · ");
-  return `<div class="vhead"><div><div class="eyebrow">${k === "baratie" ? "Sponsor" : "Ones to Watch"}</div><h2>${e} ${esc(nm)}</h2></div><button class="pill" data-go="awards" style="border:0;cursor:pointer">← Awards</button></div>
-  <div class="wiki"><article class="wikimain">${lede}${info.replace("ibd-only", "ibm-only")}${record}${k === "baratie" ? how : ""}${list}${k !== "baratie" ? how : ""}<h3 class="wikisub">See Also</h3><p>${also}</p></article>${info}</div>`;
+  return `<div class="vhead"><div><div class="eyebrow">${{ bounty: "Luffy's Picks", baratie: "Sponsor" }[k] || "The Bounty Board"}</div><h2>${e} ${esc(nm)}</h2></div><button class="pill" data-go="awards" style="border:0;cursor:pointer">← Awards</button></div>
+  <div class="wiki"><article class="wikimain">${lede}${info.replace("ibd-only", "ibm-only")}${body}<h3 class="wikisub">See Also</h3><p>${also}</p></article>${info}</div>`;
 }
 
 function records() {
@@ -2131,8 +2136,11 @@ function seasonStory(p, y, ref = refMaker()) {
   if (has("buggy")) out.push(`Drafted ${ordinal(has("buggy").a.x.pk)} overall but ${ordinal(has("buggy").a.x.r)} in points, ${he} was named the season's ${awLink("buggy")}, its biggest bust.`);
   // Ones to Watch
   const picks = Object.entries(s.pregame || {}).flatMap(([k, v]) => v.watch.filter((x) => sameName(x.n, p.n)).map((x) => { const wk = +k.split("-")[0], e = s.spans(wk).map((sp) => ((s.lineups[sp] || {})[x.id] || []).find((q) => q.n === x.n)).filter(Boolean), pts = sum(e, (q) => q.pts || 0);
-    return { big: x.boomAt != null && pts >= x.boomAt, done: s.matchups.some((m) => m.wk === wk && m.win !== null && !m.live) }; }));
-  if (picks.length) { const big = picks.filter((x) => x.big).length; out.push(`Luffy named ${him} a One to Watch ${picks.length === 1 ? "once" : `${picks.length} times`}${big ? `, and ${he} delivered a big game ${big === 1 ? (picks.length === 1 ? "that time" : "once") : `${big} times`}` : ""}.`); }
+    const done = s.matchups.some((m) => m.wk === wk && m.win !== null && !m.live);
+    return { big: x.boomAt != null && pts >= x.boomAt, sunk: done && x.bustAt != null && pts < x.bustAt && e.some((q) => q.slot !== "BN" && q.slot !== "IR") }; }));
+  if (picks.length) { const n = picks.length, times = (k) => (k === 1 ? (n === 1 ? "that time" : "once") : `${k} times`), big = picks.filter((x) => x.big).length, sunk = picks.filter((x) => x.sunk).length;
+    const how = [big && `went ${owLink("gear5")} ${times(big)}`, sunk && `got ${owLink("seastone")} ${times(sunk)}`].filter(Boolean);
+    out.push(`Luffy put ${him} on ${owLink("bounty", "the Bounty Board")} ${n === 1 ? "once" : `${n} times`}${how.length ? `, and ${he} ${how.join(" and ")}` : ""}.`); }
   // How his team finished
   const team = st.length ? mostAtTeam(st) : ws.length ? ws[ws.length - 1].t : null;
   if (s.done && team) {
