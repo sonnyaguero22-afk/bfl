@@ -637,6 +637,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-08T20:28:34.413Z"
+  },
+  {
+   "author": "Z Squared Watch",
+   "handle": "@ZSquaredSZN",
+   "text": "Tetairoa McMillan finally finds the end zone for Zoe. Nice, but she's still down seventeen with Nico Collins and Tucker Kraft left, so it's a long shot.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T20:47:13.902Z"
+  },
+  {
+   "author": "Habib Hive",
+   "handle": "@HabibHive",
+   "text": "CeeDee fumbles and I'm sitting here up sixty-three, feeling nothing. Habib could afford to lose a few of these.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T20:52:13.902Z"
+  },
+  {
+   "author": "Sal Benedetto",
+   "handle": "@SalBetsBig",
+   "text": "Jonathan Taylor puts it on the turf and Kai's lead is down to a LOCK for Randy! Fumblers are 8% in my book and Luffy can fight me.",
+   "heat": 6,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-08T20:56:13.902Z"
   }
  ],
  "batches": [
@@ -656,6 +686,7 @@
   "2026-11-08T18:33:01.204Z",
   "2026-11-08T19:17:16.457Z",
   "2026-11-08T19:46:16.981Z",
-  "2026-11-08T20:29:34.413Z"
+  "2026-11-08T20:29:34.413Z",
+  "2026-11-08T20:58:13.902Z"
  ]
 }
