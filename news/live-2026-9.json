@@ -847,6 +847,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-09T01:25:41.087Z"
+  },
+  {
+   "author": "Pillbert Pulse",
+   "handle": "@PillbertPulse",
+   "text": "Luther Burden just caught a touchdown and Philly is down thirteen with Jefferson still waiting. I told myself I was leaving the couch an hour ago and I lied.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-09T01:42:22.445Z"
+  },
+  {
+   "author": "Habib Hive",
+   "handle": "@HabibHive",
+   "text": "Burden scores and Habibsters drop from 61 to 14 in one play. Everyone on my team is done and I can only sit here and watch Jefferson.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-09T01:45:22.445Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Burden's touchdown moves Habibsters from 61% to 14% against Team Pillbert. Luffy sees Jefferson as the one piece left, and Alan only trails by about thirteen.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-09T01:47:22.445Z"
+  },
+  {
+   "author": "Sal Benedetto",
+   "handle": "@SalBetsBig",
+   "text": "Alan with Burden and Jefferson against Habib's finished roster? Philly is a LOCK and Luffy can keep his 14%, I've been burned by that guy before!",
+   "heat": 6,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-09T01:50:22.445Z"
   }
  ],
  "batches": [
@@ -872,6 +912,7 @@
   "2026-11-08T22:24:20.169Z",
   "2026-11-08T22:48:34.115Z",
   "2026-11-08T23:31:42.151Z",
-  "2026-11-09T01:26:41.087Z"
+  "2026-11-09T01:26:41.087Z",
+  "2026-11-09T01:55:22.445Z"
  ]
 }
