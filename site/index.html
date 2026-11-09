@@ -2110,13 +2110,13 @@ function records() {
 
 // ---------- Players ----------
 // Buckaroo Bowl rings: 3+ starts for the champion that season or a start in one of its playoff games; kickers and
-// defenses only for starting in the Bowl itself, so streamers and one-week fill-ins don't collect them
+// defenses for starting the Bowl or half the regular season (the team's own), so streamers don't collect them
 let RINGS = null;
 const ringsOf = (p) => {
   if (!RINGS) { RINGS = {}; for (const s of D.seasons.filter((x) => x.done)) { const c = s.teams.find((t) => t.final === 1); if (!c) continue;
     const bowl = s.spans(bowlWeek(s)), po = s.matchups.filter((m) => m.tier === "WINNERS_BRACKET" && (m.h === c.id || m.a === c.id)).flatMap((m) => s.spans(m.wk));
     for (const q of PL) { const st = q.weeks.filter((w) => w.y === s.year && w.t.id === c.id && w.start);
-      const ok = q.pos === "K" || q.pos === "D/ST" ? st.some((w) => bowl.includes(w.wk)) : st.length >= 3 || st.some((w) => po.includes(w.wk));
+      const ok = q.pos === "K" || q.pos === "D/ST" ? st.some((w) => bowl.includes(w.wk)) || st.filter((w) => w.wk <= s.regWeeks).length >= Math.ceil(s.regWeeks / 2) : st.length >= 3 || st.some((w) => po.includes(w.wk));
       if (ok) (RINGS[q.k] = RINGS[q.k] || []).push({ y: s.year, n: s.year - D.firstYear + 1, mgr: c.mgr, team: c.name }); } } }
   return RINGS[p.k] || [];
 };
