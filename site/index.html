@@ -593,6 +593,7 @@ h3.subhead { margin: 0 0 10px; font-size: 15px; color: var(--muted); }
 .lt-supernova .ltrank, .ltr.supernova { color: #5aa9ff; } .lt-warlord .ltrank, .ltr.warlord { color: #b58cff; } .lt-emperor .ltrank, .ltr.emperor { color: var(--gold); }
 .lt-joyboy .ltrank, .ltr.joyboy { background: linear-gradient(90deg, #ff6b6b, #ffd60a, #4cd964, #5aa9ff, #b58cff); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .ltr { font-weight: 700; }
+.infobox th.ibhof { border-top: 2px solid var(--gold); } .infobox th.ibhof .mlink { color: inherit; text-decoration: underline; text-decoration-color: var(--gold); }
 .ltplaque.lt-supernova { box-shadow: inset 0 0 0 1px rgba(90, 169, 255, .35); } .ltplaque.lt-warlord { box-shadow: inset 0 0 0 1px rgba(181, 140, 255, .45); }
 .ltplaque.lt-emperor { box-shadow: inset 0 0 0 2px var(--gold); } .ltplaque.lt-joyboy { box-shadow: inset 0 0 0 2px #fff, 0 0 18px rgba(255, 214, 10, .35); }
 .ltplaque ul { margin: 10px 0 8px; padding-left: 18px; font-size: 13.5px; line-height: 1.5; } .ltstat { font-size: 12.5px; }
@@ -1604,7 +1605,8 @@ function mgrWiki(k, r) {
     ${row("Points per game", f1(r.ppg))}
     ${row("Laboon", now ? `${Math.round(now.r)}${lrank ? ` <span class="muted">(${nth(lrank)})</span>` : ""}` : "")}
     ${((t) => (t ? row("Treasury", `💰 <b>${berry(t.total)}</b><br><small class="muted">${Object.entries(t.why).sort((a, b) => b[1] - a[1]).map(([w, v]) => `${w} ${berry(v, 1)}`).join(" · ")}</small>`) : ""))(treasuries()[k])}
-    ${bowls.length || grouped.length || ltOf(`m-${k}`) ? `<tr><th colspan="2" class="ibsec">Honors</th></tr><tr><td colspan="2">${ltHonor(`m-${k}`)}${r.titles.map((y) => `<div class="ibh gold">🏆 <button class="mlink" data-go="bowl-${y}">Buckaroo Bowl ${roman(y - D.firstYear + 1)}</button> Champion</div>`).join("")}${grouped.map((a) => `<div class="ibh${a.key === "bellamy" ? " l" : ""}">${a.e} ${awLink(a.key)} <span class="muted">${yrs(a.ys)}</span></div>`).join("")}</td></tr>` : ""}
+    ${bowls.length || grouped.length ? `<tr><th colspan="2" class="ibsec">Honors</th></tr><tr><td colspan="2">${r.titles.map((y) => `<div class="ibh gold">🏆 <button class="mlink" data-go="bowl-${y}">Buckaroo Bowl ${roman(y - D.firstYear + 1)}</button> Champion</div>`).join("")}${grouped.map((a) => `<div class="ibh${a.key === "bellamy" ? " l" : ""}">${a.e} ${awLink(a.key)} <span class="muted">${yrs(a.ys)}</span></div>`).join("")}</td></tr>` : ""}
+    ${ltBlock(`m-${k}`)}
   </table></aside>`;
   return `<div class="wiki"><article class="wikimain">${lead}${info.replace('class="infobox box"', 'class="infobox box ibm-only"')}${season}${career}${awards}</article>${info.replace('class="infobox box"', 'class="infobox box ibd-only"')}</div>`;
 }
@@ -2149,7 +2151,8 @@ const ltOf = (key) => laughTale().find((x) => x.key === key);
 // Ranks by how many times he's earned his way in: spread out so it takes years to climb
 const LT_RANK = [[7, "Joy Boy", "joyboy"], [4, "Emperor", "emperor"], [2, "Warlord", "warlord"], [1, "Supernova", "supernova"]];
 const ltRank = (x) => LT_RANK.find(([n]) => x.why.length >= n);
-const ltHonor = (key) => { const x = ltOf(key); return x ? `<div class="ibh gold">🏝️ <button class="mlink" data-go="laughtale">Laugh Tale</button> ${ltRank(x)[1]} <span class="muted">(${x.y <= LT.founded ? "Founding class" : `Class of ${x.y}`})</span></div>` : ""; };
+// Like Wikipedia's "Member of the ... Hall of Fame" block: its own section at the foot of the infobox
+const ltBlock = (key) => { const x = ltOf(key); return x ? `<tr><th colspan="2" class="ibsec ibhof">🏝️ Member of <button class="mlink" data-go="laughtale">Laugh Tale</button></th></tr><tr><th>Rank</th><td><b class="ltr ${ltRank(x)[2]}">${ltRank(x)[1]}</b></td></tr><tr><th>Inducted</th><td>${x.y <= LT.founded ? `Founding class <span class="muted">(${D.firstYear}–${LT.founded})</span>` : `Class of ${x.y}`}</td></tr>` : ""; };
 function laughTaleView() {
   const all = laughTale(), classes = {};
   for (const x of [...all].sort((a, b) => b.why.length - a.why.length)) (classes[x.y <= LT.founded ? "founding" : x.y] = classes[x.y <= LT.founded ? "founding" : x.y] || []).push(x);
@@ -2326,7 +2329,7 @@ function wikiHtml(p, best) {
     ${row("Managers", p.mgrs.map((k) => `<span class="ibm">${mbadge(k, 1)} <button class="mlink" data-go="mgr-${k}">${mgrName(k)}</button></span>`).join(""))}
     ${row("Drafted", drafted.join("<br>") || "Undrafted")}
     ${((b) => (b ? row("Bounty", `<b>${berry(b)}</b> <button class="mlink" data-go="ow-bounty">📜</button>`) : ""))(bountyOf(p.n))}
-    ${rings.length || aw.length || ltOf(`p-${p.k}`) ? `<tr><th colspan="2" class="ibsec">Honors</th></tr><tr><td colspan="2">${ltHonor(`p-${p.k}`)}${rings.map((r) => `<div class="ibh gold">🏆 <button class="mlink" data-go="bowl-${r.y}">Buckaroo Bowl ${roman(r.n)}</button> Champion <span class="muted">(${esc(r.team)})</span></div>`).join("")}${grouped.map((a) => `<div class="ibh${SHAME[a.k] ? " l" : ""}">${a.e} ${awLink(a.k)} <span class="muted">${yrs(a.ys)}</span></div>`).join("")}</td></tr>` : ""}
+    ${rings.length || aw.length ? `<tr><th colspan="2" class="ibsec">Honors</th></tr><tr><td colspan="2">${rings.map((r) => `<div class="ibh gold">🏆 <button class="mlink" data-go="bowl-${r.y}">Buckaroo Bowl ${roman(r.n)}</button> Champion <span class="muted">(${esc(r.team)})</span></div>`).join("")}${grouped.map((a) => `<div class="ibh${SHAME[a.k] ? " l" : ""}">${a.e} ${awLink(a.k)} <span class="muted">${yrs(a.ys)}</span></div>`).join("")}</td></tr>` : ""}
     <tr><th colspan="2" class="ibsec">BFL career</th></tr>
     ${row("Starts", p.starts)}
     ${row("Points as a starter", f1(p.ptsS))}
@@ -2334,6 +2337,7 @@ function wikiHtml(p, best) {
     ${row("Best game", best ? `${f1(best.pts)} <span class="muted">(${best.y} wk ${best.wk})</span>` : "")}
     ${row("Bench points", p.benched ? `${f1(p.ptsB)} <span class="muted">(${p.benched} wks)</span>` : "")}
     ${row("Moves", `${p.drafts} drafted · ${p.adds} pickup${p.adds === 1 ? "" : "s"} · ${p.drops} drop${p.drops === 1 ? "" : "s"} · ${p.trades} trade${p.trades === 1 ? "" : "s"}`)}
+    ${ltBlock(`p-${p.k}`)}
   </table></aside>`;
   return `<div class="wiki"><article class="wikimain">${lead}${info.replace('class="infobox box"', 'class="infobox box ibm-only"')}<h3 class="wikisub">BFL Career</h3>${career}${news}</article>${info.replace('class="infobox box"', 'class="infobox box ibd-only"')}</div>`;
 }
