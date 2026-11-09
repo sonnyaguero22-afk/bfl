@@ -887,6 +887,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-09T01:50:22.445Z"
+  },
+  {
+   "author": "Horse Hea Heads",
+   "handle": "@HeaHerd_Tom",
+   "text": "Bucky Irving punches it in and I finally unclench my jaw. Down six to JMoney a minute ago, now we're feeling pretty good.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-09T03:08:20.876Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Irving's touchdown sends The Horse is Hea from 71% to 95% against Counting or not Counting GV, per Luffy. Sonny only needs Reichard's kicker to stay out of the way.",
+   "heat": 4,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-09T03:11:20.876Z"
+  },
+  {
+   "author": "The Horse is Hea",
+   "handle": "@TheHorseisHea",
+   "text": "Bucky Irving finds the end zone and we take the lead. Worst to first is still on.",
+   "heat": 2,
+   "kind": "team",
+   "team": "The Horse is Hea",
+   "about": "game",
+   "at": "2026-11-09T03:13:20.876Z"
+  },
+  {
+   "author": "JMoney Watch",
+   "handle": "@GVBandLot",
+   "text": "Every other starter on Jordan's team is finished and he's down six because Bucky Irving just scored. I'd like to speak to whoever approved that.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-09T03:15:20.876Z"
   }
  ],
  "batches": [
@@ -913,6 +953,7 @@
   "2026-11-08T22:48:34.115Z",
   "2026-11-08T23:31:42.151Z",
   "2026-11-09T01:26:41.087Z",
-  "2026-11-09T01:55:22.445Z"
+  "2026-11-09T01:55:22.445Z",
+  "2026-11-09T03:17:20.876Z"
  ]
 }
