@@ -589,6 +589,12 @@ h3.subhead { margin: 0 0 10px; font-size: 15px; color: var(--muted); }
 .ltplaque { padding: 14px 16px; box-shadow: inset 0 0 0 1px var(--gold-soft), 0 0 0 0 transparent; }
 .lthead { display: flex; align-items: center; gap: 10px; } .lthead b { display: block; font-size: 16px; } .lthead small { display: block; }
 .ltpos .pos, .ltpos span { font-size: 12px; }
+.ltplaque { position: relative; } .ltrank { position: absolute; top: 12px; right: 14px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.lt-supernova .ltrank, .ltr.supernova { color: #5aa9ff; } .lt-warlord .ltrank, .ltr.warlord { color: #b58cff; } .lt-emperor .ltrank, .ltr.emperor { color: var(--gold); }
+.lt-joyboy .ltrank, .ltr.joyboy { background: linear-gradient(90deg, #ff6b6b, #ffd60a, #4cd964, #5aa9ff, #b58cff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.ltr { font-weight: 700; }
+.ltplaque.lt-supernova { box-shadow: inset 0 0 0 1px rgba(90, 169, 255, .35); } .ltplaque.lt-warlord { box-shadow: inset 0 0 0 1px rgba(181, 140, 255, .45); }
+.ltplaque.lt-emperor { box-shadow: inset 0 0 0 2px var(--gold); } .ltplaque.lt-joyboy { box-shadow: inset 0 0 0 2px #fff, 0 0 18px rgba(255, 214, 10, .35); }
 .ltplaque ul { margin: 10px 0 8px; padding-left: 18px; font-size: 13.5px; line-height: 1.5; } .ltstat { font-size: 12.5px; }
 @media (max-width: 420px) { .mwtab th:first-child, .mwtab td:first-child { display: none; } .mwtab th, .mwtab td { padding-left: 6px; padding-right: 6px; } .mwtab td:nth-child(2), .mwtab th:nth-child(2) { padding-left: 12px; } }
 @media (max-width: 380px) { .mwtab td:nth-child(2) > span { white-space: normal !important; } }
@@ -2103,11 +2109,12 @@ function records() {
 }
 
 // ---------- Players ----------
-// Buckaroo Bowl rings, like real life: started at least one game for the champion that season
+// Buckaroo Bowl rings: 3+ starts for the champion that season, or a start in the Bowl he won (one-week fill-ins don't count)
 let RINGS = null;
 const ringsOf = (p) => {
-  if (!RINGS) { RINGS = {}; for (const s of D.seasons.filter((x) => x.done)) { const c = s.teams.find((t) => t.final === 1); if (!c) continue;
-    for (const q of PL) if (q.weeks.some((w) => w.y === s.year && w.t.id === c.id && w.start)) (RINGS[q.k] = RINGS[q.k] || []).push({ y: s.year, n: s.year - D.firstYear + 1, mgr: c.mgr, team: c.name }); } }
+  if (!RINGS) { RINGS = {}; for (const s of D.seasons.filter((x) => x.done)) { const c = s.teams.find((t) => t.final === 1); if (!c) continue; const sps = s.spans(bowlWeek(s));
+    for (const q of PL) { const st = q.weeks.filter((w) => w.y === s.year && w.t.id === c.id && w.start);
+      if (st.length >= 3 || st.some((w) => sps.includes(w.wk))) (RINGS[q.k] = RINGS[q.k] || []).push({ y: s.year, n: s.year - D.firstYear + 1, mgr: c.mgr, team: c.name }); } } }
   return RINGS[p.k] || [];
 };
 // ---------- Laugh Tale, the Hall of Fame: the final island only the greatest reach. Automatic, permanent, decided when
@@ -2124,30 +2131,35 @@ function laughTale() {
     const c = s.teams.find((t) => t.final === 1), y = s.year;
     if (c) { const k = mgrAt(c, 99); add(`m-${k}`, "m", k, y, `won ${gameLink("bowl", y, bowlName(y))}`); }
     // A career treasury crossing ฿2B
-    for (const [k, t] of Object.entries(treasuries())) { const was = tre[k] || 0; tre[k] = was + (t.by[y] || 0); if (was < LT.treasury && tre[k] >= LT.treasury) add(`m-${k}`, "m", k, y, `passed a ${berry(LT.treasury, 1)} career treasury`); }
+    for (const [k, t] of Object.entries(treasuries())) { const was = tre[k] || 0; tre[k] = was + (t.by[y] || 0);
+      for (let b = LT.treasury; b <= tre[k]; b += LT.treasury) if (was < b) add(`m-${k}`, "m", k, y, `passed a ${berry(b, 1)} career treasury`); }
     const a = seasonAwards(s);
     for (const k of ["king", "onepiece"]) if (a[k] && a[k].p) add(`p-${a[k].p.k}`, "p", a[k].p, y, `${awInfo(k).e} ${awLink(k, k === "king" ? "Pirate King" : "The One Piece")}, ${y}`);
-    for (const k of POS) if (a[k] && a[k].p) { const n = (posN[a[k].p.k + k] = (posN[a[k].p.k + k] || 0) + 1); if (n === LT.posAward) add(`p-${a[k].p.k}`, "p", a[k].p, y, `${awInfo(k).e} ${awLink(k)} for the ${nth(n)} time, ${y}`); }
+    for (const k of POS) if (a[k] && a[k].p) { const n = (posN[a[k].p.k + k] = (posN[a[k].p.k + k] || 0) + 1); if (n % LT.posAward === 0) add(`p-${a[k].p.k}`, "p", a[k].p, y, `${awInfo(k).e} ${awLink(k)} for the ${nth(n)} time, ${y}`); }
     if (c) { const sps = s.spans(bowlWeek(s));
-      for (const q of PL) if (q.weeks.some((w) => w.y === y && w.t.id === c.id && w.start && sps.includes(w.wk))) { const n = (champN[q.k] = (champN[q.k] || 0) + 1); if (n === LT.champStarts) add(`p-${q.k}`, "p", q, y, `started in his ${nth(n)} winning Buckaroo Bowl, ${gameLink("bowl", y, bowlName(y))}`); } }
+      for (const q of PL) if (q.weeks.some((w) => w.y === y && w.t.id === c.id && w.start && sps.includes(w.wk))) { const n = (champN[q.k] = (champN[q.k] || 0) + 1); if (n % LT.champStarts === 0) add(`p-${q.k}`, "p", q, y, `started in his ${nth(n)} winning Buckaroo Bowl, ${gameLink("bowl", y, bowlName(y))}`); } }
     for (const q of PL) { const was = cum[q.k] || 0; cum[q.k] = was + sum(q.weeks.filter((w) => w.y === y && w.start), (w) => w.pts || 0);
-      if (was < LT.points && cum[q.k] >= LT.points) add(`p-${q.k}`, "p", q, y, `passed ${LT.points.toLocaleString("en-US")} career points as a starter, ${y}`); }
+      for (let b = LT.points; b <= cum[q.k]; b += LT.points) if (was < b) add(`p-${q.k}`, "p", q, y, `passed ${b.toLocaleString("en-US")} career points as a starter, ${y}`); }
   }
   return (LTC = Object.values(I).sort((a, b) => a.y - b.y || (a.kind === "m" ? -1 : 1) - (b.kind === "m" ? -1 : 1)));
 }
 const ltOf = (key) => laughTale().find((x) => x.key === key);
-const ltRow = (key) => { const x = ltOf(key); return x ? `<tr><th>Laugh Tale</th><td>🏝️ <button class="mlink" data-go="laughtale">${x.y <= LT.founded ? "Founding class" : `Class of ${x.y}`}</button></td></tr>` : ""; };
+// Ranks by how many times he's earned his way in: spread out so it takes years to climb
+const LT_RANK = [[7, "Joy Boy", "joyboy"], [4, "Emperor", "emperor"], [2, "Warlord", "warlord"], [1, "Supernova", "supernova"]];
+const ltRank = (x) => LT_RANK.find(([n]) => x.why.length >= n);
+const ltRow = (key) => { const x = ltOf(key); return x ? `<tr><th>Laugh Tale</th><td>🏝️ <button class="mlink" data-go="laughtale">${ltRank(x)[1]}</button> <span class="muted">· ${x.y <= LT.founded ? "Founding class" : `Class of ${x.y}`}</span></td></tr>` : ""; };
 function laughTaleView() {
   const all = laughTale(), classes = {};
-  for (const x of all) (classes[x.y <= LT.founded ? "founding" : x.y] = classes[x.y <= LT.founded ? "founding" : x.y] || []).push(x);
+  for (const x of [...all].sort((a, b) => b.why.length - a.why.length)) (classes[x.y <= LT.founded ? "founding" : x.y] = classes[x.y <= LT.founded ? "founding" : x.y] || []).push(x);
   const plaque = (x) => { const m = x.kind === "m", k = x.who;
     const head = m ? `${mbadge(k)}<div><b><button class="mlink" data-go="mgr-${k}">${mgrName(k)}</button></b><small class="muted">Manager</small></div>`
       : `<span class="ltpos">${posTag(x.who.pos)}</span><div><b>${pn(x.who.n)}</b><small class="muted">${cap1(esc(POS_NAME[x.who.pos] || x.who.pos))}</small></div>`;
     const st = m ? (() => { const r = mgrStats(k), t = treasuries()[k]; return `${r.titles.length} title${r.titles.length === 1 ? "" : "s"} · ${r.w}–${r.l} · 💰 ${berry(t ? t.total : 0, 1)}`; })()
       : `${f1(x.who.ptsS)} pts as a starter · ${ringsOf(x.who).length} ring${ringsOf(x.who).length === 1 ? "" : "s"}`;
-    return `<div class="box ltplaque"><div class="lthead">${head}</div><ul>${x.why.map((w) => `<li>${cap1(w.why)}</li>`).join("")}</ul><div class="muted ltstat">${st}</div></div>`; };
+    const [, rk, rc] = ltRank(x);
+    return `<div class="box ltplaque lt-${rc}"><div class="ltrank">${rk}</div><div class="lthead">${head}</div><ul>${x.why.map((w) => `<li>${cap1(w.why)}</li>`).join("")}</ul><div class="muted ltstat">${st}</div></div>`; };
   const order = Object.keys(classes).sort((a, b) => (b === "founding" ? -1 : a === "founding" ? 1 : b - a));
-  const crit = `<div class="box ltcrit"><b>How you get in</b><p>Automatically, when a season ends, and for good. <b>Managers:</b> win a Buckaroo Bowl, or build a ${berry(LT.treasury, 1)} career ${`<button class="mlink" data-go="managers">treasury</button>`}. <b>Players:</b> ${awLink("king", "Pirate King")} (the season's MVP), ${awLink("onepiece", "The One Piece")} (the Bowl MVP), ${LT.champStarts} championship starts (started in a Bowl his team won), the same position award ${LT.posAward} times, or ${LT.points.toLocaleString("en-US")} career points as a starter. A career ${owLink("bounty", "bounty")} past ฿1B joins the list once bounties have a full season behind them.</p></div>`;
+  const crit = `<div class="box ltcrit"><b>How you get in</b><p>Automatically, when a season ends, and for good. <b>Managers:</b> win a Buckaroo Bowl, or build a ${berry(LT.treasury, 1)} career ${`<button class="mlink" data-go="managers">treasury</button>`}. <b>Players:</b> ${awLink("king", "Pirate King")} (the season's MVP), ${awLink("onepiece", "The One Piece")} (the Bowl MVP), ${LT.champStarts} championship starts (started in a Bowl his team won), the same position award ${LT.posAward} times, or ${LT.points.toLocaleString("en-US")} career points as a starter. A career ${owLink("bounty", "bounty")} past ฿1B joins the list once bounties have a full season behind them.</p><p><b>Ranks</b> climb with every way in, counted each time: each title, Pirate King and One Piece, and every milestone (each third win of the same position award, every ${LT.champStarts} championship starts, every ${LT.points.toLocaleString("en-US")} points, every ${berry(LT.treasury, 1)}). <span class="ltr supernova">Supernova</span> 1 · <span class="ltr warlord">Warlord</span> 2–3 · <span class="ltr emperor">Emperor</span> 4–6 · <span class="ltr joyboy">Joy Boy</span> 7 or more.</p></div>`;
   return `<div class="vhead"><div><div class="eyebrow">Hall of Fame</div><h2>🏝️ Laugh Tale</h2><p>The final island, where only the greatest pirates ever arrive. The managers and players who shaped the Buckaroo Football League's history.</p></div></div>
   ${crit}${order.map((c) => `<h3 class="subhead">${c === "founding" ? `Founding Class <span class="muted" style="font-weight:500">· ${D.firstYear}–${LT.founded}</span>` : `Class of ${c}`}</h3><div class="ltgrid">${classes[c].map(plaque).join("")}</div>`).join("") || `<p class="muted">Nobody yet.</p>`}`;
 }
