@@ -957,6 +957,46 @@
    "team": "The fumblers",
    "about": "game",
    "at": "2026-11-09T03:45:16.801Z"
+  },
+  {
+   "author": "Burden Fumble Truther",
+   "handle": "@FumbleTruther19",
+   "text": "Luther Burden coughs it up in the middle of Alan's comeback and I'm sitting here eating cereal like it's a holiday. Habib is still hanging on by his fingernails.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-09T04:20:27.201Z"
+  },
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "Burden's fumble matters. Habibsters lead Team Pillbert by about eight with only Justin Jefferson left to play, and Alan needs him to do the heavy lifting now.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-09T04:22:27.201Z"
+  },
+  {
+   "author": "Horse Hea Heads",
+   "handle": "@HorseHeaHeads",
+   "text": "Irving's touchdown gives Sonny a lead over JMoney with Reichard's kick still to come. I will now be pacing around my kitchen until it's official.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-09T04:26:27.201Z"
+  },
+  {
+   "author": "The Horse is Hea",
+   "handle": "@TheHorseisHea",
+   "text": "Bucky Irving gets into the end zone and we're on top. Up next is Reichard's kick, then we can all exhale.",
+   "heat": 2,
+   "kind": "team",
+   "team": "The Horse is Hea",
+   "about": "game",
+   "at": "2026-11-09T04:28:27.201Z"
   }
  ],
  "batches": [
@@ -985,6 +1025,7 @@
   "2026-11-09T01:26:41.087Z",
   "2026-11-09T01:55:22.445Z",
   "2026-11-09T03:17:20.876Z",
-  "2026-11-09T03:46:16.801Z"
+  "2026-11-09T03:46:16.801Z",
+  "2026-11-09T04:29:27.201Z"
  ]
 }
