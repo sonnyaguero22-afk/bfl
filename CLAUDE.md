@@ -37,7 +37,7 @@ Story types in `news.js`, each dated in-world by `when.js`:
 | review, history, profile | when a season ends | season review, the league history (History tab), manager profiles |
 | live | during games and on roster moves | `live.js`, shown only in the social feed; reacts to touchdowns, turnovers and big plays, and knows which starters' games are over |
 
-Writing rules live in `news.js` (`SYSTEM`): use only the facts given; running jokes and labels are rare; first names and everyday nicknames mixed naturally; Zoe's nickname is always written Z² (also enforced in `build.js`). The panel (all fictional, never real people): Dana Whitfield (insider), Marcus Pell (columnist), Sal Benedetto (gambler), Dr. Nina Kessler (analytics). Social posts have kinds (fan, pundit, reporter, team, league), a heat score that drives likes and virality, and a time; a post appears only once its time has passed.
+Writing rules live in `news.js` (`SYSTEM`): use only the facts given; running jokes and labels are rare; first names and everyday nicknames mixed naturally; Zoe's nickname is always written Z² (also enforced in `build.js`). The panel (all fictional, never real people): Dana Whitfield (insider), Marcus Pell (columnist), Sal Benedetto (gambler), Dr. Nina Kessler (analytics). Social posts have kinds (fan, pundit, reporter, team, league), a heat score that drives likes and virality (how inflammatory or funny, not how important: official accounts stay 1 to 3 and never go viral, trolls and hot takes from fans run up to 10; `buzz` in `site/index.html` weights heat far above account size), and a time; a post appears only once its time has passed.
 
 ## Models
 

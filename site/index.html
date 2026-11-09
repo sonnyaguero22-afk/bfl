@@ -2596,11 +2596,13 @@ const posted = (p) => !p.at || new Date(p.at).getTime() <= Date.now();
 // posts get a stable stand-in) and who posted it, growing over the hours after it went up
 const seed = (str) => { let x = 2166136261; for (const c of str) x = Math.imul(x ^ c.charCodeAt(0), 16777619) >>> 0; return x / 4294967296; };
 const REACH = { league: 400, team: 220, reporter: 300, pundit: 90, fan: 18 };
+// Heat, not follower count, decides what blows up: a big account only adds a little, official accounts (league, teams,
+// reporters) do steady numbers but never go viral, and it's the trolls and hot takes at 8+ that take off
 function buzz(p) {
   const r = seed(p.handle + p.text), r2 = seed(p.text + p.handle);
-  const heat = p.heat || (r2 < 0.06 ? 8 : 1 + Math.floor(r2 * 5));
-  let full = (REACH[p.kind] || 18) * (heat * heat) / 4 * (0.4 + 1.2 * r);
-  if (heat >= 8) full *= 3 + 7 * r2; // the occasional post that takes off
+  const heat = Math.min(p.heat || (r2 < 0.06 ? 8 : 1 + Math.floor(r2 * 5)), OFFICIAL[p.kind] ? 3 : 10);
+  let full = (30 + 0.1 * (REACH[p.kind] || 18)) * (heat * heat) / 4 * (0.4 + 1.2 * r);
+  if (heat >= 8) full *= 6 + 14 * r2; // the occasional post that takes off
   const age = p.at ? Math.max(0, (Date.now() - new Date(p.at).getTime()) / 3600e3) : 48;
   const likes = Math.round(full * (1 - Math.exp(-age / (heat >= 8 ? 4 : 1.5))));
   return { likes, reposts: Math.round(likes * (0.08 + 0.1 * r2)), replies: Math.round(likes * (heat >= 7 ? 0.25 : 0.06) * (0.5 + r)), viral: likes >= 3000 };
