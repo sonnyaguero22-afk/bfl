@@ -1602,10 +1602,9 @@ function mgrWiki(k, r) {
     ${row("Regular season", `${r.w}–${r.l}${r.t ? `–${r.t}` : ""} <span class="muted">(${pct(r.w, r.l, r.t)})</span>`)}
     ${row("Playoffs", r.playoffs ? `${r.playoffs} appearance${r.playoffs === 1 ? "" : "s"}${r.pw + r.pl ? ` · ${r.pw}–${r.pl}` : ""}` : "None yet")}
     ${row("Points per game", f1(r.ppg))}
-    ${ltRow(`m-${k}`)}
     ${row("Laboon", now ? `${Math.round(now.r)}${lrank ? ` <span class="muted">(${nth(lrank)})</span>` : ""}` : "")}
     ${((t) => (t ? row("Treasury", `💰 <b>${berry(t.total)}</b><br><small class="muted">${Object.entries(t.why).sort((a, b) => b[1] - a[1]).map(([w, v]) => `${w} ${berry(v, 1)}`).join(" · ")}</small>`) : ""))(treasuries()[k])}
-    ${bowls.length || grouped.length ? `<tr><th colspan="2" class="ibsec">Honors</th></tr><tr><td colspan="2">${r.titles.map((y) => `<div class="ibh gold">🏆 <button class="mlink" data-go="bowl-${y}">Buckaroo Bowl ${roman(y - D.firstYear + 1)}</button> Champion</div>`).join("")}${grouped.map((a) => `<div class="ibh${a.key === "bellamy" ? " l" : ""}">${a.e} ${awLink(a.key)} <span class="muted">${yrs(a.ys)}</span></div>`).join("")}</td></tr>` : ""}
+    ${bowls.length || grouped.length || ltOf(`m-${k}`) ? `<tr><th colspan="2" class="ibsec">Honors</th></tr><tr><td colspan="2">${ltHonor(`m-${k}`)}${r.titles.map((y) => `<div class="ibh gold">🏆 <button class="mlink" data-go="bowl-${y}">Buckaroo Bowl ${roman(y - D.firstYear + 1)}</button> Champion</div>`).join("")}${grouped.map((a) => `<div class="ibh${a.key === "bellamy" ? " l" : ""}">${a.e} ${awLink(a.key)} <span class="muted">${yrs(a.ys)}</span></div>`).join("")}</td></tr>` : ""}
   </table></aside>`;
   return `<div class="wiki"><article class="wikimain">${lead}${info.replace('class="infobox box"', 'class="infobox box ibm-only"')}${season}${career}${awards}</article>${info.replace('class="infobox box"', 'class="infobox box ibd-only"')}</div>`;
 }
@@ -2150,7 +2149,7 @@ const ltOf = (key) => laughTale().find((x) => x.key === key);
 // Ranks by how many times he's earned his way in: spread out so it takes years to climb
 const LT_RANK = [[7, "Joy Boy", "joyboy"], [4, "Emperor", "emperor"], [2, "Warlord", "warlord"], [1, "Supernova", "supernova"]];
 const ltRank = (x) => LT_RANK.find(([n]) => x.why.length >= n);
-const ltRow = (key) => { const x = ltOf(key); return x ? `<tr><th>Laugh Tale</th><td>🏝️ <button class="mlink" data-go="laughtale">${ltRank(x)[1]}</button> <span class="muted">· ${x.y <= LT.founded ? "Founding class" : `Class of ${x.y}`}</span></td></tr>` : ""; };
+const ltHonor = (key) => { const x = ltOf(key); return x ? `<div class="ibh gold">🏝️ <button class="mlink" data-go="laughtale">Laugh Tale</button> ${ltRank(x)[1]} <span class="muted">(${x.y <= LT.founded ? "Founding class" : `Class of ${x.y}`})</span></div>` : ""; };
 function laughTaleView() {
   const all = laughTale(), classes = {};
   for (const x of [...all].sort((a, b) => b.why.length - a.why.length)) (classes[x.y <= LT.founded ? "founding" : x.y] = classes[x.y <= LT.founded ? "founding" : x.y] || []).push(x);
@@ -2326,9 +2325,8 @@ function wikiHtml(p, best) {
     ${row("BFL seasons", yrs(p.years))}
     ${row("Managers", p.mgrs.map((k) => `<span class="ibm">${mbadge(k, 1)} <button class="mlink" data-go="mgr-${k}">${mgrName(k)}</button></span>`).join(""))}
     ${row("Drafted", drafted.join("<br>") || "Undrafted")}
-    ${ltRow(`p-${p.k}`)}
     ${((b) => (b ? row("Bounty", `<b>${berry(b)}</b> <button class="mlink" data-go="ow-bounty">📜</button>`) : ""))(bountyOf(p.n))}
-    ${rings.length || aw.length ? `<tr><th colspan="2" class="ibsec">Honors</th></tr><tr><td colspan="2">${rings.map((r) => `<div class="ibh gold">🏆 <button class="mlink" data-go="bowl-${r.y}">Buckaroo Bowl ${roman(r.n)}</button> Champion <span class="muted">(${esc(r.team)})</span></div>`).join("")}${grouped.map((a) => `<div class="ibh${SHAME[a.k] ? " l" : ""}">${a.e} ${awLink(a.k)} <span class="muted">${yrs(a.ys)}</span></div>`).join("")}</td></tr>` : ""}
+    ${rings.length || aw.length || ltOf(`p-${p.k}`) ? `<tr><th colspan="2" class="ibsec">Honors</th></tr><tr><td colspan="2">${ltHonor(`p-${p.k}`)}${rings.map((r) => `<div class="ibh gold">🏆 <button class="mlink" data-go="bowl-${r.y}">Buckaroo Bowl ${roman(r.n)}</button> Champion <span class="muted">(${esc(r.team)})</span></div>`).join("")}${grouped.map((a) => `<div class="ibh${SHAME[a.k] ? " l" : ""}">${a.e} ${awLink(a.k)} <span class="muted">${yrs(a.ys)}</span></div>`).join("")}</td></tr>` : ""}
     <tr><th colspan="2" class="ibsec">BFL career</th></tr>
     ${row("Starts", p.starts)}
     ${row("Points as a starter", f1(p.ptsS))}
