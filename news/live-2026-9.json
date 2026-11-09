@@ -817,6 +817,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-08T23:31:42.151Z"
+  },
+  {
+   "author": "Fumbler Faithful",
+   "handle": "@FumblerFaithful",
+   "text": "Bears D/ST just made a play and Randy has ten points out of them already. Still down four to Mekhi with Loveland on the field too, so I'm gripping the arm of the couch.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-09T01:17:41.087Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Bears D/ST jumping to ten keeps The fumblers close, but Luffy still has them at 14% against Dawgs. Mekhi still has Cook and Bass to come, and that's the real problem for Randy.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-09T01:21:41.087Z"
+  },
+  {
+   "author": "Dawg Pound Dispatch",
+   "handle": "@DawgPoundDispatch",
+   "text": "Bears D/ST popping off is annoying, but Mekhi has James Cook and Tyler Bass left and Randy has Loveland and the defense. I'll take the lead and sit very still.",
+   "heat": 2,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-09T01:25:41.087Z"
   }
  ],
  "batches": [
@@ -841,6 +871,7 @@
   "2026-11-08T21:41:15.235Z",
   "2026-11-08T22:24:20.169Z",
   "2026-11-08T22:48:34.115Z",
-  "2026-11-08T23:31:42.151Z"
+  "2026-11-08T23:31:42.151Z",
+  "2026-11-09T01:26:41.087Z"
  ]
 }
