@@ -927,6 +927,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-09T03:15:20.876Z"
+  },
+  {
+   "author": "Bears Den Bobby",
+   "handle": "@BearsDenBobby",
+   "text": "Bears defense takes one to the house and The fumblers go from trailing to leading. Randy finally got something out of the one unit he'd never trade.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-09T03:44:16.801Z"
+  },
+  {
+   "author": "Dawg Pound Dispatch",
+   "handle": "@DawgPoundDispatch",
+   "text": "Bears defense scores and we're behind by three. Cook and Bass are left and I'm not breathing until one of them does something.",
+   "heat": 2,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-09T03:45:16.801Z"
+  },
+  {
+   "author": "The fumblers",
+   "handle": "@Thefumblers",
+   "text": "Bears D/ST just scored a touchdown and we have the lead. Loveland is still playing, so keep the sweat going.",
+   "heat": 2,
+   "kind": "team",
+   "team": "The fumblers",
+   "about": "game",
+   "at": "2026-11-09T03:45:16.801Z"
   }
  ],
  "batches": [
@@ -954,6 +984,7 @@
   "2026-11-08T23:31:42.151Z",
   "2026-11-09T01:26:41.087Z",
   "2026-11-09T01:55:22.445Z",
-  "2026-11-09T03:17:20.876Z"
+  "2026-11-09T03:17:20.876Z",
+  "2026-11-09T03:46:16.801Z"
  ]
 }
