@@ -384,6 +384,17 @@ table.compact .team { min-width: 0; }
 .artbody p { font-size: 17px; line-height: 1.65; margin: 0 0 16px; }
 .feed { display: grid; gap: 14px; }
 .post { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 10px; }
+.pava, .plink { border: 0; background: none; padding: 0; cursor: pointer; text-align: left; color: inherit; font: inherit; }
+.pava { align-self: start; line-height: 0; }
+.plink:hover b { text-decoration: underline; }
+.profile { padding: 18px; } .prtop { display: flex; align-items: center; gap: 14px; } .prtop .avatar, .prtop .badge { width: 64px; height: 64px; font-size: 22px; flex: none; }
+.prtop h2 { margin: 0; font-size: 22px; letter-spacing: -0.02em; } .prbio { margin: 12px 0 8px; }
+.prextra { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13.5px; margin-bottom: 10px; } .prextra span { display: inline-flex; align-items: center; gap: 6px; }
+.prnums { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; color: var(--muted); } .prnums b { color: var(--ink); }
+.pinned { font-size: 12px; margin-bottom: -4px; }
+.wtfbox { padding: 12px 14px 6px; margin-bottom: 14px; } .wtfbox .k { font-weight: 700; margin-bottom: 4px; }
+.wtf { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 10px; align-items: center; width: 100%; border: 0; background: none; padding: 5px 0; line-height: 1.25; border-top: 1px solid var(--line); cursor: pointer; text-align: left; color: inherit; font: inherit; }
+.wtf small { display: block; } .wtf .avatar, .wtf .badge { width: 30px; height: 30px; }
 .post.take { grid-template-columns: minmax(0, 1fr); }
 .history { padding: 20px 22px; margin: 0 0 24px; }
 .pgrid { display: grid; gap: 12px; margin-bottom: 18px; }
@@ -591,7 +602,7 @@ h3.subhead { margin: 0 0 10px; font-size: 15px; color: var(--muted); }
 .pbody p { margin: 2px 0 4px; font-size: 14.5px; line-height: 1.45; }
 .postsrc { font-size: 12px; color: var(--muted); }
 .postsrc:hover { color: var(--brass); }
-.socialfeed { max-width: 640px; }
+.socialfeed, .profile, .wtfbox { max-width: 640px; }
 .socialfeed .post + .post { border-top: 1px solid var(--line); padding-top: 14px; }
 .bio { max-width: 640px; font-size: 14.5px; margin: 8px 0 0; }
 @media (max-width: 860px) { .newsgrid, .topstories { grid-template-columns: 1fr; } }
@@ -877,6 +888,7 @@ function parseHash() {
   else if ((m = h.match(/^mgr-(\w+)$/)) && D.managers[m[1]]) { state.view = "mgr"; state.mgr = m[1]; }
   else if ((m = h.match(/^p-([a-z0-9-]+)$/)) && (P[m[1]] || P[slug(m[1].replace(/-/g, " "))])) { state.view = "player"; state.pk = P[m[1]] ? m[1] : slug(m[1].replace(/-/g, " ")); } // old links with a suffix ("james-cook-iii") still work
   else if ((m = h.match(/^aw-([a-z]+)$/)) && awInfo(m[1])) { state.view = "award"; state.aw = m[1]; }
+  else if ((m = h.match(/^u-([a-z0-9_]+)$/))) { state.view = "user"; state.user = m[1]; }
   else if ((m = h.match(/^ow-([a-z0-9]+)$/)) && OW[m[1] === "buggyd" ? "seastone" : m[1]]) { state.view = "ow"; state.ow = m[1] === "buggyd" ? "seastone" : m[1]; } // Seastoned was briefly Buggy'd
   else if ((m = h.match(/^(bowl|bum)-(\d{4})$/)) && S[+m[2]] && S[+m[2]].done) { state.view = "game"; state.gameKind = m[1]; state.year = +m[2]; }
   else if ((m = h.match(/^news-([a-z0-9-]+)$/)) && NEWS.some((a) => a.id === m[1])) { state.view = "article"; state.newsId = m[1]; }
@@ -900,7 +912,7 @@ const SECTIONS = {
   awards: [["awards", "Players"], ["mgrawards", "Managers"]],
   trophies: [["trophies", "Buckaroo Bowls"], ["records", "Record Book"]],
 };
-const groupOf = (v) => (v === "game" ? "trophies" : v === "award" || v === "ow" ? "awards" : v === "mgr" ? "managers" : v === "player" ? "players" : v === "article" ? "news" : Object.keys(SECTIONS).find((g) => SECTIONS[g].some(([k]) => k === v)) || v);
+const groupOf = (v) => (v === "game" ? "trophies" : v === "award" || v === "ow" ? "awards" : v === "mgr" ? "managers" : v === "player" ? "players" : v === "article" || v === "user" ? "news" : Object.keys(SECTIONS).find((g) => SECTIONS[g].some(([k]) => k === v)) || v);
 // The section tabs for the page's group, shown above its content
 const sectionTabs = (v) => { const g = groupOf(v), list = SECTIONS[g]; if (!list || !list.some(([k]) => k === v)) return "";
   return `<div class="tabs sectiontabs" role="tablist">${list.map(([k, l]) => `<button data-go="${k}" aria-current="${v === k}">${l}</button>`).join("")}</div>`; };
@@ -2610,11 +2622,65 @@ function buzz(p) {
 const kfmt = (n) => (n >= 1e6 ? (n / 1e6).toFixed(1).replace(/\.0$/, "") + "M" : n >= 1e4 ? Math.round(n / 1e3) + "K" : n >= 1e3 ? (n / 1e3).toFixed(1).replace(/\.0$/, "") + "K" : String(n));
 // The LIVE tag: only on game posts from the last few hours, while NFL games are being played
 const liveNow = (a, p) => p.about !== "move" && S[a.year] && S[a.year].on && p.at && Date.now() - new Date(p.at).getTime() < 3 * 3600e3;
-const postHtml = (p, a, src = a) => { const tm = postTeam(p, src); return `<div class="post">${tm ? badge(tm) : `<span class="avatar" style="--h:${avatarHue(p.handle)}" aria-hidden="true">${esc((p.author.match(/[A-Za-z0-9]/) || ["?"])[0].toUpperCase())}</span>`}<div class="pbody"><div class="phead"><b>${esc(p.author)}</b>${OFFICIAL[p.kind] ? ` <span class="tick" title="Verified">✓</span>` : ""} <span class="muted">${esc(p.handle.startsWith("@") ? p.handle : "@" + p.handle)}</span>${OFFICIAL[p.kind] ? ` <span class="pill gold">${OFFICIAL[p.kind]}</span>` : ""}${p.at ? ` <span class="muted">· ${stamp(p.at)}</span>` : ""}</div><p>${esc(p.text)}</p>${(() => { const b = buzz(p); return `<div class="buzz">${b.viral ? `<span class="pill gold">🔥 Viral</span>` : ""}<span>💬 ${kfmt(b.replies)}</span><span>🔁 ${kfmt(b.reposts)}</span><span>♥ ${kfmt(b.likes)}</span></div>`; })()}${a ? a.type === "live" ? `<button class="mlink postsrc" data-go="${a.year}-weekly">${liveNow(a, p) ? `<span class="pill live" style="padding:0 6px;font-size:10px">LIVE</span> ` : ""}Week ${a.wk} · ${p.about === "move" ? "Roster moves" : "Game day"}</button>` : `<button class="mlink postsrc" data-go="news-${a.id}">${newsWhen(a)} · ${esc(a.title)}</button>` : ""}</div></div>`; };
+const postHtml = (p, a, src = a) => { const tm = postTeam(p, src), u = `data-go="u-${hkey(p.handle)}"`; return `<div class="post"><button class="pava" ${u} aria-label="${esc(p.author)}'s profile">${tm ? badge(tm) : `<span class="avatar" style="--h:${avatarHue(p.handle)}" aria-hidden="true">${esc((p.author.match(/[A-Za-z0-9]/) || ["?"])[0].toUpperCase())}</span>`}</button><div class="pbody"><div class="phead"><button class="plink" ${u}><b>${esc(p.author)}</b>${OFFICIAL[p.kind] ? ` <span class="tick" title="Verified">✓</span>` : ""} <span class="muted">${esc(p.handle.startsWith("@") ? p.handle : "@" + p.handle)}</span></button>${OFFICIAL[p.kind] ? ` <span class="pill gold">${OFFICIAL[p.kind]}</span>` : ""}${p.at ? ` <span class="muted">· ${stamp(p.at)}</span>` : ""}</div><p>${esc(p.text)}</p>${(() => { const b = buzz(p); return `<div class="buzz">${b.viral ? `<span class="pill gold">🔥 Viral</span>` : ""}<span>💬 ${kfmt(b.replies)}</span><span>🔁 ${kfmt(b.reposts)}</span><span>♥ ${kfmt(b.likes)}</span></div>`; })()}${a ? a.type === "live" ? `<button class="mlink postsrc" data-go="${a.year}-weekly">${liveNow(a, p) ? `<span class="pill live" style="padding:0 6px;font-size:10px">LIVE</span> ` : ""}Week ${a.wk} · ${p.about === "move" ? "Roster moves" : "Game day"}</button>` : `<button class="mlink postsrc" data-go="news-${a.id}">${newsWhen(a)} · ${esc(a.title)}</button>` : ""}</div></div>`; };
 const allPosts = () => [...NEWS, ...LIVE].flatMap((a) => (a.social || []).filter(posted).map((p) => ({ p, a }))).sort((x, y) => (y.p.at || "").localeCompare(x.p.at || ""));
 const newsEmpty = `<div class="box lockcard"><h3>No Stories Yet</h3><p>League news is written automatically after every finished week, every trade and every season. Stories start appearing with the first update after the news writer is switched on.</p></div>`;
 const aiNote = `<p class="note">Written by Claude, an AI, from the league's data. It can get things wrong; the scores and stats elsewhere on the site are the source of truth.</p>`;
 // News and Social share one header with a News | Social switch
+// ---------- Social profiles: tap a name or @ in the feed. Everything comes from the posts already written ----------
+const hkey = (h) => String(h).replace(/^@/, "").toLowerCase().replace(/[^a-z0-9_]/g, "");
+// Followers start from the kind of account (a seeded size, so each one differs) and grow with every like it's earned
+const BASE_FOLLOW = { league: 48000, team: 9000, reporter: 26000, pundit: 11000, fan: 120 };
+let ACCTS = null;
+function accounts() {
+  if (ACCTS) return ACCTS;
+  const A = {};
+  for (const x of [...allPosts()].reverse()) { const k = hkey(x.p.handle); if (!k) continue;
+    const u = (A[k] = A[k] || { k, posts: [], likes: 0, week: 0, kinds: {} }); u.author = x.p.author; u.handle = x.p.handle.startsWith("@") ? x.p.handle : "@" + x.p.handle;
+    u.kinds[x.p.kind] = (u.kinds[x.p.kind] || 0) + 1; u.posts.push(x); const l = buzz(x.p).likes; u.likes += l;
+    if (x.p.at && Date.now() - new Date(x.p.at).getTime() < 7 * 86400e3) u.week += l;
+    const tm = postTeam(x.p, x.a); if (tm) u.team = { t: tm, y: x.a.year }; }
+  for (const u of Object.values(A)) { u.kind = Object.entries(u.kinds).sort((a, b) => b[1] - a[1])[0][0]; u.posts.reverse();
+    const r = seed(u.k + "followers"); u.followers = Math.round((BASE_FOLLOW[u.kind] || 120) * (0.6 + 0.8 * r) + 3 * u.likes); u.gained = 3 * u.week;
+    u.following = Math.round((OFFICIAL[u.kind] ? 40 : 150) + (OFFICIAL[u.kind] ? 260 : 900) * seed(u.k + "following")); }
+  return (ACCTS = A);
+}
+// A fan's team: the one his posts name most, when one clearly does (team names and their managers' first names)
+function fanOf(u) {
+  const y = Math.max(...u.posts.map((x) => x.a.year)), s = S[y]; if (!s) return null;
+  const n = {}; for (const x of u.posts) { const tx = x.p.text.toLowerCase();
+    for (const t of s.teams) { const k = mgrAt(t, s.curWeek || s.regWeeks), first = D.managers[k] ? D.managers[k].first.toLowerCase() : "";
+      if (tx.includes(t.name.toLowerCase()) || (first.length > 2 && new RegExp(`\\b${first}\\b`).test(tx))) n[t.id] = (n[t.id] || 0) + 1; } }
+  const top = Object.entries(n).sort((a, b) => b[1] - a[1]), tot = sum(top, (e) => e[1]);
+  return top.length && top[0][1] >= 2 && top[0][1] >= 0.6 * tot ? s.byId[top[0][0]] : null;
+}
+const PANEL_BIO = { "Dana Whitfield": "League insider. If it's happening in the BFL, I heard it first.", "Marcus Pell": "Columnist. Long takes on short benches.", "Sal Benedetto": "I bet on everything. Ask me about my locks.", "Dr. Nina Kessler": "Analytics. In Luffy we trust (mostly)." };
+function userView() {
+  const u = accounts()[state.user];
+  if (!u) return `<div class="vhead"><div><div class="eyebrow">Social</div><h2>Account not found</h2></div></div><p><button class="mlink" data-go="social">← Back to Social</button></p>`;
+  const tm = u.team && u.team.t, fan = u.kind === "fan" || u.kind === "pundit" ? fanOf(u) : null, panel = PANEL_BIO[u.author];
+  const bio = panel || (u.kind === "league" ? "The official account of the Buckaroo Football League. Est. 2023." : tm ? `The official account of ${esc(tm.name)}.` : u.kind === "reporter" ? "Covering the Buckaroo Football League." : u.kind === "pundit" ? "Fantasy football opinions, free of charge and worth it." : fan ? `${esc(fan.name)} fan. Opinions are my own and correct.` : "Fantasy football fan. Here for the takes.");
+  const ava = tm ? badge(tm) : `<span class="avatar" style="--h:${avatarHue(u.handle)}" aria-hidden="true">${esc((u.author.match(/[A-Za-z0-9]/) || ["?"])[0].toUpperCase())}</span>`;
+  // Extras by kind: a team's season, a panelist's picks and berries
+  const extra = [];
+  if (tm) { const s = S[u.team.y], k = mgrAt(tm, s.curWeek || s.regWeeks), tr = (treasuries()[k] || { by: {} }).by[s.year];
+    extra.push(`<button class="mlink" data-go="mgr-${k}">${mbadge(k, 1)} ${mgrName(k)}</button>`, `${s.year}: <b>${tm.w}–${tm.l}${tm.t ? `–${tm.t}` : ""}</b>`); if (tr) extra.push(`💰 ${berry(tr, 1)} this season`); }
+  if (panel) { const y = Math.max(...NEWS.filter((a) => a.type === "preview").map((a) => a.year), 0), r = panelRecord(y, 99)[u.author];
+    if (r) extra.push(`${y} picks <b>${r.w}-${r.l}</b>`, `locks <b>${r.lw}-${r.ll}</b>`, `<b>${berry(r.b, 1)}</b> bankroll`); }
+  if (fan) extra.push(`Fan of ${badge(fan, 1)} <b>${esc(fan.name)}</b>`);
+  const top = [...u.posts].sort((x, y) => buzz(y.p).likes - buzz(x.p).likes)[0];
+  return `<div class="profile box"><div class="prtop">${ava}<div><h2>${esc(u.author)}${OFFICIAL[u.kind] ? ` <span class="tick" title="Verified">✓</span>` : ""}</h2><div class="muted">${esc(u.handle)}${OFFICIAL[u.kind] ? ` · <span class="pill gold">${OFFICIAL[u.kind]}</span>` : ""}</div></div></div>
+    <p class="prbio">${bio}</p>${extra.length ? `<div class="prextra">${extra.map((x) => `<span>${x}</span>`).join("")}</div>` : ""}
+    <div class="prnums"><span><b>${kfmt(u.followers)}</b> Followers</span><span><b>${kfmt(u.following)}</b> Following</span><span><b>${u.posts.length}</b> Post${u.posts.length === 1 ? "" : "s"}</span>${u.gained >= 50 ? `<span class="w">+${kfmt(u.gained)} this week</span>` : ""}</div></div>
+    <p style="margin:12px 0"><button class="mlink" data-go="social">← Social</button></p>
+    <div class="box rec socialfeed"><div class="feed">${top && u.posts.length > 1 ? `<div class="pinned muted">📌 Most liked</div>${postHtml(top.p, top.a)}` : ""}${u.posts.filter((x) => x !== top || u.posts.length === 1).map((x) => postHtml(x.p, x.a)).join("")}</div></div>${aiNote}`;
+}
+// Who to Follow: the biggest accounts, official ones and the fans who've earned it
+function whoToFollow() {
+  const list = Object.values(accounts()).sort((a, b) => b.followers - a.followers), fans = list.filter((u) => !OFFICIAL[u.kind]).slice(0, 3), off = list.filter((u) => OFFICIAL[u.kind]).slice(0, 2);
+  const row = (u) => `<button class="wtf" data-go="u-${u.k}">${u.team ? badge(u.team.t, 1) : `<span class="avatar" style="--h:${avatarHue(u.handle)}" aria-hidden="true">${esc((u.author.match(/[A-Za-z0-9]/) || ["?"])[0].toUpperCase())}</span>`}<span><b>${esc(u.author)}</b>${OFFICIAL[u.kind] ? ` <span class="tick">✓</span>` : ""}<small class="muted">${esc(u.handle)}</small></span><span class="muted">${kfmt(u.followers)}</span></button>`;
+  return off.length + fans.length ? `<div class="box wtfbox"><div class="k">Who to Follow</div>${[...off, ...fans].map(row).join("")}</div>` : "";
+}
 const newsHead = (which) => `<div class="vhead"><div><div class="eyebrow">Around the League</div><h2>News</h2><p>${which === "news" ? "Stories from the league's AI beat writer after every week, trade and season." : "What the (made-up) fans, pundits and insiders are saying. Tap a post's source to read the story behind it."}</p></div></div>`;
 function newsView() {
   const head = newsHead("news");
@@ -2693,7 +2759,7 @@ function socialView() {
   // Trending: the most-liked posts from the last two days
   const posts = hot ? allPosts().filter((x) => !x.p.at || Date.now() - new Date(x.p.at).getTime() < 48 * 3600e3).sort((x, y) => buzz(y.p).likes - buzz(x.p).likes).slice(0, 40) : allPosts();
   const sort = `<div class="weekbar" style="margin:0 0 14px"><button data-feedsort="latest" aria-current="${!hot}">Latest</button><button data-feedsort="trending" aria-current="${hot}">🔥 Trending</button></div>`;
-  return `${newsHead("social")}${sort}
+  return `${newsHead("social")}${posts.length ? whoToFollow() : ""}${sort}
     ${posts.length ? `<div class="box rec socialfeed"><div class="feed">${posts.map((x) => postHtml(x.p, x.a)).join("")}</div></div>${aiNote}` : newsEmpty}`;
 }
 
@@ -2800,7 +2866,7 @@ function render() {
   chrome();
   if (mapObj) { mapObj.remove(); mapObj = null; }
   const v = state.view;
-  $("#app").innerHTML = sectionTabs(v) + (v === "season" ? seasonView() : v === "mgr" ? mgrView() : v === "managers" ? managers() : v === "players" ? playersView() : v === "player" ? playerView() : v === "home" ? home() : v === "news" ? newsView() : v === "rankings" ? rankingsView() : v === "article" ? articleView() : v === "social" ? socialView() : v === "odds" ? oddsView() : v === "map" ? mapView() : v === "overrated" ? overratedView() : v === "transactions" ? txView() : v === "h2h" ? h2h() : v === "ratings" ? ratingsView() : v === "records" ? records() : v === "award" ? awardView() : v === "ow" ? owView() : v === "game" ? gameView() : v === "awards" ? awardsView("p") : v === "mgrawards" ? awardsView("m") : trophies());
+  $("#app").innerHTML = sectionTabs(v) + (v === "season" ? seasonView() : v === "mgr" ? mgrView() : v === "managers" ? managers() : v === "players" ? playersView() : v === "player" ? playerView() : v === "home" ? home() : v === "news" ? newsView() : v === "rankings" ? rankingsView() : v === "article" ? articleView() : v === "social" ? socialView() : v === "odds" ? oddsView() : v === "map" ? mapView() : v === "overrated" ? overratedView() : v === "transactions" ? txView() : v === "h2h" ? h2h() : v === "ratings" ? ratingsView() : v === "records" ? records() : v === "award" ? awardView() : v === "ow" ? owView() : v === "user" ? userView() : v === "game" ? gameView() : v === "awards" ? awardsView("p") : v === "mgrawards" ? awardsView("m") : trophies());
   document.title = "Buckaroo League History";
   if (v === "map") initMap();
   if (v === "season") setTimeout(celebrate, 200);
