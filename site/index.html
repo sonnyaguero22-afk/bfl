@@ -584,6 +584,12 @@ h3.subhead { margin: 0 0 10px; font-size: 15px; color: var(--muted); }
 .watch .k .mlink { font-size: inherit; }
 .wrow { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; font-size: 13.5px; line-height: 1.35; }
 .owbox { margin: 12px 0; padding: 0; }
+.ltcrit { padding: 14px 16px; margin-bottom: 18px; } .ltcrit p { margin: 6px 0 0; font-size: 14px; line-height: 1.55; }
+.ltgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; margin-bottom: 22px; }
+.ltplaque { padding: 14px 16px; box-shadow: inset 0 0 0 1px var(--gold-soft), 0 0 0 0 transparent; }
+.lthead { display: flex; align-items: center; gap: 10px; } .lthead b { display: block; font-size: 16px; } .lthead small { display: block; }
+.ltpos .pos, .ltpos span { font-size: 12px; }
+.ltplaque ul { margin: 10px 0 8px; padding-left: 18px; font-size: 13.5px; line-height: 1.5; } .ltstat { font-size: 12.5px; }
 @media (max-width: 420px) { .mwtab th:first-child, .mwtab td:first-child { display: none; } .mwtab th, .mwtab td { padding-left: 6px; padding-right: 6px; } .mwtab td:nth-child(2), .mwtab th:nth-child(2) { padding-left: 12px; } }
 @media (max-width: 380px) { .mwtab td:nth-child(2) > span { white-space: normal !important; } }
 .wname, .wname .plink, .pl.watchp .nm > .plink, .pl.watchp .nm > b { color: var(--gold); font-weight: 700; }
@@ -892,7 +898,7 @@ function parseHash() {
   else if ((m = h.match(/^ow-([a-z0-9]+)$/)) && OW[m[1] === "buggyd" ? "seastone" : m[1]]) { state.view = "ow"; state.ow = m[1] === "buggyd" ? "seastone" : m[1]; } // Seastoned was briefly Buggy'd
   else if ((m = h.match(/^(bowl|bum)-(\d{4})$/)) && S[+m[2]] && S[+m[2]].done) { state.view = "game"; state.gameKind = m[1]; state.year = +m[2]; }
   else if ((m = h.match(/^news-([a-z0-9-]+)$/)) && NEWS.some((a) => a.id === m[1])) { state.view = "article"; state.newsId = m[1]; }
-  else if (["home", "news", "rankings", "social", "trophies", "managers", "map", "players", "overrated", "transactions", "odds", "h2h", "ratings", "awards", "mgrawards", "records"].includes(h)) state.view = h;
+  else if (["home", "news", "rankings", "social", "trophies", "managers", "map", "players", "overrated", "transactions", "odds", "h2h", "ratings", "awards", "mgrawards", "records", "laughtale"].includes(h)) state.view = h;
   else state.view = "home"; // no or unknown hash: the home page
 }
 // Each page gets its own history entry so the browser's back button returns to it,
@@ -910,7 +916,7 @@ const SECTIONS = {
   managers: [["managers", "Managers"], ["ratings", "Laboon"], ["h2h", "Head-to-Head"], ["map", "Map"]],
   players: [["players", "Players"], ["overrated", "Overrated"], ["transactions", "Transactions"]],
   awards: [["awards", "Players"], ["mgrawards", "Managers"]],
-  trophies: [["trophies", "Buckaroo Bowls"], ["records", "Record Book"]],
+  trophies: [["trophies", "Buckaroo Bowls"], ["laughtale", "Laugh Tale"], ["records", "Record Book"]],
 };
 const groupOf = (v) => (v === "game" ? "trophies" : v === "award" || v === "ow" ? "awards" : v === "mgr" ? "managers" : v === "player" ? "players" : v === "article" || v === "user" ? "news" : Object.keys(SECTIONS).find((g) => SECTIONS[g].some(([k]) => k === v)) || v);
 // The section tabs for the page's group, shown above its content
@@ -1590,6 +1596,7 @@ function mgrWiki(k, r) {
     ${row("Regular season", `${r.w}–${r.l}${r.t ? `–${r.t}` : ""} <span class="muted">(${pct(r.w, r.l, r.t)})</span>`)}
     ${row("Playoffs", r.playoffs ? `${r.playoffs} appearance${r.playoffs === 1 ? "" : "s"}${r.pw + r.pl ? ` · ${r.pw}–${r.pl}` : ""}` : "None yet")}
     ${row("Points per game", f1(r.ppg))}
+    ${ltRow(`m-${k}`)}
     ${row("Laboon", now ? `${Math.round(now.r)}${lrank ? ` <span class="muted">(${nth(lrank)})</span>` : ""}` : "")}
     ${((t) => (t ? row("Treasury", `💰 <b>${berry(t.total)}</b><br><small class="muted">${Object.entries(t.why).sort((a, b) => b[1] - a[1]).map(([w, v]) => `${w} ${berry(v, 1)}`).join(" · ")}</small>`) : ""))(treasuries()[k])}
     ${bowls.length || grouped.length ? `<tr><th colspan="2" class="ibsec">Honors</th></tr><tr><td colspan="2">${r.titles.map((y) => `<div class="ibh gold">🏆 <button class="mlink" data-go="bowl-${y}">Buckaroo Bowl ${roman(y - D.firstYear + 1)}</button> Champion</div>`).join("")}${grouped.map((a) => `<div class="ibh${a.key === "bellamy" ? " l" : ""}">${a.e} ${awLink(a.key)} <span class="muted">${yrs(a.ys)}</span></div>`).join("")}</td></tr>` : ""}
@@ -2096,13 +2103,54 @@ function records() {
 }
 
 // ---------- Players ----------
-// Buckaroo Bowl rings: on the champion's roster (starting or bench) for the Bowl
+// Buckaroo Bowl rings, like real life: started at least one game for the champion that season
 let RINGS = null;
 const ringsOf = (p) => {
-  if (!RINGS) { RINGS = {}; for (const s of D.seasons.filter((x) => x.done)) { const c = s.teams.find((t) => t.final === 1); if (!c) continue; const sps = s.spans(bowlWeek(s));
-    for (const q of PL) if (q.weeks.some((w) => w.y === s.year && w.t.id === c.id && sps.includes(w.wk))) (RINGS[q.k] = RINGS[q.k] || []).push({ y: s.year, n: s.year - D.firstYear + 1, mgr: c.mgr, team: c.name }); } }
+  if (!RINGS) { RINGS = {}; for (const s of D.seasons.filter((x) => x.done)) { const c = s.teams.find((t) => t.final === 1); if (!c) continue;
+    for (const q of PL) if (q.weeks.some((w) => w.y === s.year && w.t.id === c.id && w.start)) (RINGS[q.k] = RINGS[q.k] || []).push({ y: s.year, n: s.year - D.firstYear + 1, mgr: c.mgr, team: c.name }); } }
   return RINGS[p.k] || [];
 };
+// ---------- Laugh Tale, the Hall of Fame: the final island only the greatest reach. Automatic, permanent, decided when
+// each season ends. Managers: a Buckaroo Bowl title or a ฿2B career treasury. Players: Pirate King, The One Piece, three
+// championship starts (started in a Bowl his team won), the same position award three times, or 2,000 career points as a starter
+const LT = { treasury: 2e9, points: 2000, champStarts: 3, posAward: 3, founded: 2025 };
+let LTC = null;
+function laughTale() {
+  if (LTC) return LTC;
+  const I = {}, add = (key, kind, who, y, why) => { const x = (I[key] = I[key] || { key, kind, who, y, why: [] }); x.y = Math.min(x.y, y); x.why.push({ y, why }); };
+  const done = D.seasons.filter((s) => s.done), POS = ["nami", "sanji", "zoro", "franky", "usopp", "jinbe"], posN = {}, champN = {}, cum = {};
+  let tre = {};
+  for (const s of done) {
+    const c = s.teams.find((t) => t.final === 1), y = s.year;
+    if (c) { const k = mgrAt(c, 99); add(`m-${k}`, "m", k, y, `won ${gameLink("bowl", y, bowlName(y))}`); }
+    // A career treasury crossing ฿2B
+    for (const [k, t] of Object.entries(treasuries())) { const was = tre[k] || 0; tre[k] = was + (t.by[y] || 0); if (was < LT.treasury && tre[k] >= LT.treasury) add(`m-${k}`, "m", k, y, `passed a ${berry(LT.treasury, 1)} career treasury`); }
+    const a = seasonAwards(s);
+    for (const k of ["king", "onepiece"]) if (a[k] && a[k].p) add(`p-${a[k].p.k}`, "p", a[k].p, y, `${awInfo(k).e} ${awLink(k, k === "king" ? "Pirate King" : "The One Piece")}, ${y}`);
+    for (const k of POS) if (a[k] && a[k].p) { const n = (posN[a[k].p.k + k] = (posN[a[k].p.k + k] || 0) + 1); if (n === LT.posAward) add(`p-${a[k].p.k}`, "p", a[k].p, y, `${awInfo(k).e} ${awLink(k)} for the ${nth(n)} time, ${y}`); }
+    if (c) { const sps = s.spans(bowlWeek(s));
+      for (const q of PL) if (q.weeks.some((w) => w.y === y && w.t.id === c.id && w.start && sps.includes(w.wk))) { const n = (champN[q.k] = (champN[q.k] || 0) + 1); if (n === LT.champStarts) add(`p-${q.k}`, "p", q, y, `started in his ${nth(n)} winning Buckaroo Bowl, ${gameLink("bowl", y, bowlName(y))}`); } }
+    for (const q of PL) { const was = cum[q.k] || 0; cum[q.k] = was + sum(q.weeks.filter((w) => w.y === y && w.start), (w) => w.pts || 0);
+      if (was < LT.points && cum[q.k] >= LT.points) add(`p-${q.k}`, "p", q, y, `passed ${LT.points.toLocaleString("en-US")} career points as a starter, ${y}`); }
+  }
+  return (LTC = Object.values(I).sort((a, b) => a.y - b.y || (a.kind === "m" ? -1 : 1) - (b.kind === "m" ? -1 : 1)));
+}
+const ltOf = (key) => laughTale().find((x) => x.key === key);
+const ltRow = (key) => { const x = ltOf(key); return x ? `<tr><th>Laugh Tale</th><td>🏝️ <button class="mlink" data-go="laughtale">${x.y <= LT.founded ? "Founding class" : `Class of ${x.y}`}</button></td></tr>` : ""; };
+function laughTaleView() {
+  const all = laughTale(), classes = {};
+  for (const x of all) (classes[x.y <= LT.founded ? "founding" : x.y] = classes[x.y <= LT.founded ? "founding" : x.y] || []).push(x);
+  const plaque = (x) => { const m = x.kind === "m", k = x.who;
+    const head = m ? `${mbadge(k)}<div><b><button class="mlink" data-go="mgr-${k}">${mgrName(k)}</button></b><small class="muted">Manager</small></div>`
+      : `<span class="ltpos">${posTag(x.who.pos)}</span><div><b>${pn(x.who.n)}</b><small class="muted">${cap1(esc(POS_NAME[x.who.pos] || x.who.pos))}</small></div>`;
+    const st = m ? (() => { const r = mgrStats(k), t = treasuries()[k]; return `${r.titles.length} title${r.titles.length === 1 ? "" : "s"} · ${r.w}–${r.l} · 💰 ${berry(t ? t.total : 0, 1)}`; })()
+      : `${f1(x.who.ptsS)} pts as a starter · ${ringsOf(x.who).length} ring${ringsOf(x.who).length === 1 ? "" : "s"}`;
+    return `<div class="box ltplaque"><div class="lthead">${head}</div><ul>${x.why.map((w) => `<li>${cap1(w.why)}</li>`).join("")}</ul><div class="muted ltstat">${st}</div></div>`; };
+  const order = Object.keys(classes).sort((a, b) => (b === "founding" ? -1 : a === "founding" ? 1 : b - a));
+  const crit = `<div class="box ltcrit"><b>How you get in</b><p>Automatically, when a season ends, and for good. <b>Managers:</b> win a Buckaroo Bowl, or build a ${berry(LT.treasury, 1)} career ${`<button class="mlink" data-go="managers">treasury</button>`}. <b>Players:</b> ${awLink("king", "Pirate King")} (the season's MVP), ${awLink("onepiece", "The One Piece")} (the Bowl MVP), ${LT.champStarts} championship starts (started in a Bowl his team won), the same position award ${LT.posAward} times, or ${LT.points.toLocaleString("en-US")} career points as a starter. A career ${owLink("bounty", "bounty")} past ฿1B joins the list once bounties have a full season behind them.</p></div>`;
+  return `<div class="vhead"><div><div class="eyebrow">Hall of Fame</div><h2>🏝️ Laugh Tale</h2><p>The final island, where only the greatest pirates ever arrive. The managers and players who shaped the Buckaroo Football League's history.</p></div></div>
+  ${crit}${order.map((c) => `<h3 class="subhead">${c === "founding" ? `Founding Class <span class="muted" style="font-weight:500">· ${D.firstYear}–${LT.founded}</span>` : `Class of ${c}`}</h3><div class="ltgrid">${classes[c].map(plaque).join("")}</div>`).join("") || `<p class="muted">Nobody yet.</p>`}`;
+}
 const pWho = (p) => `${posTag(p.pos)}${pn(p.n)}`;
 const firsts = (ks) => ks.map((k) => esc(D.managers[k].first)).join(", ");
 function topMgr(p, f) { const c = {}; for (const w of p.weeks.filter(f)) c[w.mgr] = (c[w.mgr] || 0) + 1; const k = Object.keys(c).sort((a, b) => c[b] - c[a])[0]; return k ? D.managers[k].first : "—"; }
@@ -2263,6 +2311,7 @@ function wikiHtml(p, best) {
     ${row("BFL seasons", yrs(p.years))}
     ${row("Managers", p.mgrs.map((k) => `<span class="ibm">${mbadge(k, 1)} <button class="mlink" data-go="mgr-${k}">${mgrName(k)}</button></span>`).join(""))}
     ${row("Drafted", drafted.join("<br>") || "Undrafted")}
+    ${ltRow(`p-${p.k}`)}
     ${((b) => (b ? row("Bounty", `<b>${berry(b)}</b> <button class="mlink" data-go="ow-bounty">📜</button>`) : ""))(bountyOf(p.n))}
     ${rings.length || aw.length ? `<tr><th colspan="2" class="ibsec">Honors</th></tr><tr><td colspan="2">${rings.map((r) => `<div class="ibh gold">🏆 <button class="mlink" data-go="bowl-${r.y}">Buckaroo Bowl ${roman(r.n)}</button> Champion <span class="muted">(${esc(r.team)})</span></div>`).join("")}${grouped.map((a) => `<div class="ibh${SHAME[a.k] ? " l" : ""}">${a.e} ${awLink(a.k)} <span class="muted">${yrs(a.ys)}</span></div>`).join("")}</td></tr>` : ""}
     <tr><th colspan="2" class="ibsec">BFL career</th></tr>
@@ -2866,7 +2915,7 @@ function render() {
   chrome();
   if (mapObj) { mapObj.remove(); mapObj = null; }
   const v = state.view;
-  $("#app").innerHTML = sectionTabs(v) + (v === "season" ? seasonView() : v === "mgr" ? mgrView() : v === "managers" ? managers() : v === "players" ? playersView() : v === "player" ? playerView() : v === "home" ? home() : v === "news" ? newsView() : v === "rankings" ? rankingsView() : v === "article" ? articleView() : v === "social" ? socialView() : v === "odds" ? oddsView() : v === "map" ? mapView() : v === "overrated" ? overratedView() : v === "transactions" ? txView() : v === "h2h" ? h2h() : v === "ratings" ? ratingsView() : v === "records" ? records() : v === "award" ? awardView() : v === "ow" ? owView() : v === "user" ? userView() : v === "game" ? gameView() : v === "awards" ? awardsView("p") : v === "mgrawards" ? awardsView("m") : trophies());
+  $("#app").innerHTML = sectionTabs(v) + (v === "season" ? seasonView() : v === "mgr" ? mgrView() : v === "managers" ? managers() : v === "players" ? playersView() : v === "player" ? playerView() : v === "home" ? home() : v === "news" ? newsView() : v === "rankings" ? rankingsView() : v === "article" ? articleView() : v === "social" ? socialView() : v === "odds" ? oddsView() : v === "map" ? mapView() : v === "overrated" ? overratedView() : v === "transactions" ? txView() : v === "h2h" ? h2h() : v === "ratings" ? ratingsView() : v === "records" ? records() : v === "award" ? awardView() : v === "ow" ? owView() : v === "user" ? userView() : v === "laughtale" ? laughTaleView() : v === "game" ? gameView() : v === "awards" ? awardsView("p") : v === "mgrawards" ? awardsView("m") : trophies());
   document.title = "Buckaroo League History";
   if (v === "map") initMap();
   if (v === "season") setTimeout(celebrate, 200);
