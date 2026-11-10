@@ -1334,7 +1334,7 @@ function watchLog() {
   }
   return out.sort((p, q) => q.s.year - p.s.year || q.m.wk - p.m.wk);
 }
-// ---------- Berries (฿), One Piece's money: player bounties, the panel's bankrolls, manager treasuries ----------
+// ---------- Berries (฿), One Piece's money: player bounties, the panel's bankrolls, manager bounties (TREASURE; shown as their bounty) ----------
 const berry = (v, short) => { const a = Math.abs(v), sg = v < 0 ? "−" : "";
   if (!short) return `${sg}฿${Math.round(a).toLocaleString("en-US")}`;
   return a >= 1e9 ? `${sg}฿${parseFloat((a / 1e9).toFixed(a >= 1e10 ? 0 : 2))}B` : a >= 1e6 ? `${sg}฿${Math.round(a / 1e6)}M` : `${sg}฿${Math.round(a / 1e3)}K`; };
@@ -1572,8 +1572,8 @@ function managers() {
   return `<div class="vhead"><div><div class="eyebrow">All-Time</div><h2>Managers</h2><p>Career regular-season numbers across every loaded season.</p></div></div>
   <div class="mgrs">${rows.map((r) => `<button class="box mgr" data-go="mgr-${r.k}"><div class="top">${mbadge(r.k)}<span><b>${mgrName(r.k)}</b><small class="muted">${r.seasons.length} season${r.seasons.length === 1 ? "" : "s"} · now “${esc(r.seasons[r.seasons.length - 1].teams.find((t) => t.mgr === r.k).name)}”</small></span></div>
     <div class="nums"><div>Record<b>${r.w}-${r.l}${r.t ? "-" + r.t : ""}${hasKick(r.k) ? "*" : ""}</b></div><div>Win %<b>${pct(r.w, r.l, r.t)}</b></div><div>Pts/Gm<b>${f1(r.ppg)}</b></div></div>
-    <div class="rings">${r.titles.length ? "🏆".repeat(r.titles.length) + " " + r.titles.join(", ") : `<span class="muted" style="font-weight:400">No titles yet</span>`}</div><div class="treas">💰 ${berry((treasuries()[r.k] || { total: 0 }).total, 1)} <span class="muted">treasury</span></div></button>`).join("")}</div>
-  <p class="note">💰 Treasury, in berries since ${D.firstYear}: ${berry(TREASURE.win, 1)} a regular-season win (a ${berry(-TREASURE.loss, 1)} hit for a loss), ${berry(TREASURE.top, 1)} for Manager of the Week (the week's top score), ${berry(TREASURE.playoff, 1)} a playoff win, ${berry(TREASURE.bowl, 1)} for winning the Buckaroo Bowl (the One Piece itself), ${berry(TREASURE.mgrAward, 1)} for each ${awLink("vegapunk", "manager award")}, ${berry(TREASURE.plyAward, 1)} when one of his players wins a ${awLink("king", "player award")}, ${berry(TREASURE.gear5, 1)} when his ${owLink("bounty", "Bounty Board")} pick goes Gear 5, and a ${berry(-TREASURE.bum, 1)} fine for losing the Bum Bowl. Awards pay when a season ends.</p>`;
+    <div class="rings">${r.titles.length ? "🏆".repeat(r.titles.length) + " " + r.titles.join(", ") : `<span class="muted" style="font-weight:400">No titles yet</span>`}</div><div class="treas">💰 ${berry((treasuries()[r.k] || { total: 0 }).total, 1)} <span class="muted">bounty</span></div></button>`).join("")}</div>
+  <p class="note">💰 Bounty, in berries since ${D.firstYear}: ${berry(TREASURE.win, 1)} a regular-season win (a ${berry(-TREASURE.loss, 1)} hit for a loss), ${berry(TREASURE.top, 1)} for Manager of the Week (the week's top score), ${berry(TREASURE.playoff, 1)} a playoff win, ${berry(TREASURE.bowl, 1)} for winning the Buckaroo Bowl (the One Piece itself), ${berry(TREASURE.mgrAward, 1)} for each ${awLink("vegapunk", "manager award")}, ${berry(TREASURE.plyAward, 1)} when one of his players wins a ${awLink("king", "player award")}, ${berry(TREASURE.gear5, 1)} when his ${owLink("bounty", "Bounty Board")} pick goes Gear 5, and a ${berry(-TREASURE.bum, 1)} fine for losing the Bum Bowl. Awards pay when a season ends.</p>`;
 }
 
 // ---------- Manager pages read like a wiki article: infobox, a lead from the numbers, the career profile ----------
@@ -1611,7 +1611,7 @@ function mgrWiki(k, r) {
     ${row("Playoffs", r.playoffs ? `${r.playoffs} appearance${r.playoffs === 1 ? "" : "s"}${r.pw + r.pl ? ` · ${r.pw}–${r.pl}` : ""}` : "None yet")}
     ${row("Points per game", f1(r.ppg))}
     ${row("Laboon", now ? `${Math.round(now.r)}${lrank ? ` <span class="muted">(${nth(lrank)})</span>` : ""}` : "")}
-    ${((t) => (t ? row("Treasury", `💰 <b>${berry(t.total)}</b><br><small class="muted">${Object.entries(t.why).sort((a, b) => b[1] - a[1]).map(([w, v]) => `${w} ${berry(v, 1)}`).join(" · ")}</small>`) : ""))(treasuries()[k])}
+    ${((t) => (t ? row("Bounty", `💰 <b>${berry(t.total)}</b><br><small class="muted">${Object.entries(t.why).sort((a, b) => b[1] - a[1]).map(([w, v]) => `${w} ${berry(v, 1)}`).join(" · ")}</small>`) : ""))(treasuries()[k])}
     ${bowls.length || grouped.length ? `<tr><th colspan="2" class="ibsec">Honors</th></tr><tr><td colspan="2">${r.titles.map((y) => `<div class="ibh gold">🏆 <button class="mlink" data-go="bowl-${y}">Buckaroo Bowl ${roman(y - D.firstYear + 1)}</button> Champion</div>`).join("")}${grouped.map((a) => `<div class="ibh${a.key === "bellamy" ? " l" : ""}">${a.e} ${awLink(a.key)} <span class="muted">${yrs(a.ys)}</span></div>`).join("")}</td></tr>` : ""}
     ${ltBlock(`m-${k}`)}
   </table></aside>`;
@@ -2129,7 +2129,7 @@ const ringsOf = (p) => {
   return RINGS[p.k] || [];
 };
 // ---------- Laugh Tale, the Hall of Fame: the final island only the greatest reach. Automatic, permanent, decided when
-// each season ends. Managers: a Buckaroo Bowl title or a ฿2B career treasury. Players: Pirate King, The One Piece, three
+// each season ends. Managers: a Buckaroo Bowl title or a ฿2B career bounty. Players: Pirate King, The One Piece, three
 // championship starts (started in a Bowl his team won), the same position award three times, or 2,000 career points as a starter
 const LT = { treasury: 2e9, points: 2000, champStarts: 3, posAward: 3, founded: 2025 };
 let LTC = null;
@@ -2145,7 +2145,7 @@ function laughTale() {
     if (c) { const k = mgrAt(c, 99); add(`m-${k}`, "m", k, y, "bowl", "🏆 Buckaroo Bowl", "bowl"); }
     // A career treasury crossing ฿2B (and every ฿2B after)
     for (const [k, t] of Object.entries(treasuries())) { const was = tre[k] || 0; tre[k] = was + (t.by[y] || 0);
-      for (let b = LT.treasury; b <= tre[k]; b += LT.treasury) if (was < b) add(`m-${k}`, "m", k, y, "treasury", `💰 ${berry(LT.treasury, 1)}+ career treasury`); }
+      for (let b = LT.treasury; b <= tre[k]; b += LT.treasury) if (was < b) add(`m-${k}`, "m", k, y, "treasury", `💰 ${berry(LT.treasury, 1)}+ career bounty`); }
     const a = seasonAwards(s);
     for (const k of ["king", "onepiece"]) if (a[k] && a[k].p) add(`p-${a[k].p.k}`, "p", a[k].p, y, k, `${awInfo(k).e} ${awLink(k, k === "king" ? "Pirate King" : "The One Piece")}`);
     for (const k of POS) if (a[k] && a[k].p) { const ys = (posY[a[k].p.k + k] = posY[a[k].p.k + k] || []); ys.push(y); if (ys.length % LT.posAward === 0) add(`p-${a[k].p.k}`, "p", a[k].p, y, k, `${awInfo(k).e} ${awLink(k)}`); }
@@ -2185,7 +2185,7 @@ function ltClassFacts(c) {
     inductees: ltMembers(c).map((x) => { const ways = Object.values(x.g).map((g) => plain(ltLine(g)));
       if (x.kind === "m") { const r = mgrStats(x.who), t = treasuries()[x.who];
         return { name: plain(mgrName(x.who)), type: "manager", rank: ltRank(x)[1], ways_in: ways, titles: r.titles.map((y) => `Buckaroo Bowl ${roman(y - D.firstYear + 1)} (${y})`),
-          regular_season_record: `${r.w}-${r.l}${r.t ? `-${r.t}` : ""}`, playoff_record: `${r.pw}-${r.pl}`, points_per_game: Math.round(r.ppg * 10) / 10, treasury: berry(t ? t.total : 0),
+          regular_season_record: `${r.w}-${r.l}${r.t ? `-${r.t}` : ""}`, playoff_record: `${r.pw}-${r.pl}`, points_per_game: Math.round(r.ppg * 10) / 10, bounty: berry(t ? t.total : 0),
           teams: [...new Set(r.seasons.map((s) => s.teams.find((tm) => tm.mgr === x.who)).filter(Boolean).map((tm) => tm.name))] }; }
       const p = x.who, best = p.weeks.filter((w) => w.start).sort((a, b) => b.pts - a.pts)[0];
       return { name: p.n, type: "player", position: POS_NAME[p.pos] || p.pos, nfl_team: p.pro, rank: ltRank(x)[1], ways_in: ways, played_for: p.mgrs.map((k) => plain(mgrName(k))),
@@ -2219,7 +2219,7 @@ function laughTaleView() {
   const all = laughTale(), classes = {}, plaque = ltPlaque;
   for (const x of [...all].sort((a, b) => b.why.length - a.why.length)) (classes[ltClassKey(x)] = classes[ltClassKey(x)] || []).push(x);
   const order = Object.keys(classes).sort((a, b) => (b === "founding" ? -1 : a === "founding" ? 1 : b - a));
-  const crit = `<div class="box ltcrit"><b>How you get in</b><p>Automatically, when a season ends, and for good. <b>Managers:</b> win a Buckaroo Bowl, or build a ${berry(LT.treasury, 1)} career ${`<button class="mlink" data-go="managers">treasury</button>`}. <b>Players:</b> ${awLink("king", "Pirate King")} (the season's MVP), ${awLink("onepiece", "The One Piece")} (the Bowl MVP), ${LT.champStarts} championship starts (started in a Bowl his team won), the same position award ${LT.posAward} times, or ${LT.points.toLocaleString("en-US")} career points as a starter. A career ${owLink("bounty", "bounty")} past ฿1B joins the list once bounties have a full season behind them.</p><p><b>Ranks</b> climb with every way in, counted each time: each title, Pirate King and One Piece, and every milestone (each third win of the same position award, every ${LT.champStarts} championship starts, every ${LT.points.toLocaleString("en-US")} points, every ${berry(LT.treasury, 1)}). <span class="ltr supernova">Supernova</span> 1 · <span class="ltr warlord">Warlord</span> 2–3 · <span class="ltr emperor">Emperor</span> 4–6 · <span class="ltr joyboy">Joy Boy</span> 7 or more.</p></div>`;
+  const crit = `<div class="box ltcrit"><b>How you get in</b><p>Automatically, when a season ends, and for good. <b>Managers:</b> win a Buckaroo Bowl, or build a ${berry(LT.treasury, 1)} career ${`<button class="mlink" data-go="managers">bounty</button>`}. <b>Players:</b> ${awLink("king", "Pirate King")} (the season's MVP), ${awLink("onepiece", "The One Piece")} (the Bowl MVP), ${LT.champStarts} championship starts (started in a Bowl his team won), the same position award ${LT.posAward} times, or ${LT.points.toLocaleString("en-US")} career points as a starter. A career ${owLink("bounty", "bounty")} past ฿1B joins the list once bounties have a full season behind them.</p><p><b>Ranks</b> climb with every way in, counted each time: each title, Pirate King and One Piece, and every milestone (each third win of the same position award, every ${LT.champStarts} championship starts, every ${LT.points.toLocaleString("en-US")} points, every ${berry(LT.treasury, 1)}). <span class="ltr supernova">Supernova</span> 1 · <span class="ltr warlord">Warlord</span> 2–3 · <span class="ltr emperor">Emperor</span> 4–6 · <span class="ltr joyboy">Joy Boy</span> 7 or more.</p></div>`;
   return `<div class="vhead"><div><div class="eyebrow">Hall of Fame</div><h2>🏝️ Laugh Tale</h2><p>The final island, where only the greatest pirates ever arrive. The managers and players who shaped the Buckaroo Football League's history.</p></div></div>
   ${crit}${order.map((c) => `<h3 class="subhead">${ltClassLink(c)}${c === "founding" ? ` <span class="muted" style="font-weight:500">· ${D.firstYear}–${LT.founded}</span>` : ""} <span class="muted" style="font-weight:500">· ${ALL_NEWS.some((a) => a.id === `class-${c}`) ? "read the induction story →" : "class page →"}</span></h3><div class="ltgrid">${classes[c].map(plaque).join("")}</div>`).join("") || `<p class="muted">Nobody yet.</p>`}`;
 }
