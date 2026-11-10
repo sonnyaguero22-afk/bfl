@@ -1127,6 +1127,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-10T04:06:59.486Z"
+  },
+  {
+   "author": "Habib Hive",
+   "handle": "@HabibHive",
+   "text": "Won by a point and change. Alan had Jefferson on the field and I aged a decade, but Habibsters take it and this season finally owes Habib one.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-10T05:49:11.498Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Habibsters by 1.12 over Team Pillbert, and Luffy had them at 18% an hour ago. Puka Nacua and CeeDee Lamb each put up about 28 and that was the whole gap.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-10T05:52:11.498Z"
+  },
+  {
+   "author": "Brucie Watch",
+   "handle": "@BrucieWatch",
+   "text": "Kenneth Walker III scored 34 and Zoe never got within 50. No Banner only HULK is now winning games by 54 and everyone's just supposed to be cool with it.",
+   "heat": 8,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-10T05:56:11.498Z"
+  },
+  {
+   "author": "Dawgs",
+   "handle": "@Dawgs",
+   "text": "Final: Dawgs 115.86, The fumblers 92.16. Ja'Marr Chase led the way with 26.5 and Brock Bowers added 18.8.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Dawgs",
+   "about": "game",
+   "at": "2026-11-10T05:59:11.498Z"
   }
  ],
  "batches": [
@@ -1160,6 +1200,7 @@
   "2026-11-10T01:48:08.866Z",
   "2026-11-10T02:48:03.406Z",
   "2026-11-10T03:05:29.205Z",
-  "2026-11-10T04:06:59.486Z"
+  "2026-11-10T04:06:59.486Z",
+  "2026-11-10T06:00:11.498Z"
  ]
 }
