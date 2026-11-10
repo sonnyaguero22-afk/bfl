@@ -1,0 +1,70 @@
+{
+ "id": "rankings-2026-9",
+ "type": "rankings",
+ "year": 2026,
+ "wk": 9,
+ "created": "2026-11-10T16:00:07.622Z",
+ "title": "Power Rankings, Week 9: The Hulk Keeps Smashing, Kai Fleeces His Way Up, and Randy Finally Hits Send",
+ "dek": "No Banner only HULK tightens its grip on No. 1, the Dawgs leapfrog a four-game winner on the strength of the trade of the year, and The fumblers learn what happens when you finally make a deal and then play the guy you made it with.",
+ "body": [
+  "The biggest story of Week 9 didn't happen on a Sunday. Randy, a man who has treated his roster like a bank vault with no combination, actually traded. He sent Jonathan Taylor and Amon-Ra St. Brown to the Dawgs for Tee Higgins and Jameson Williams, and then, because the schedule has a sense of humor, he played Mekhi the same week and lost 115.86 to 92.16. Higgins led The fumblers with 17.7, so the new guy showed up. The rest of the team did not, and the streak is now six.",
+  "Elsewhere, No Banner only HULK hung 147.96 on Ghostu-Spider SZN and pushed its Luffy title odds to 38 percent, Habibsters edged Team Pillbert 133.5 to 132.38 in the game of the week, and The Horse is Hea quietly took care of business. The middle of the table is a mess in the best way: four teams between 4-5 and 6-3 with real title equity, and five weeks left to sort it out. That's why the Dawgs jump a team on a four-game heater this week. These rankings are about who we'd fear on Sunday, and right now Kai's roster looks scarier than it has all year."
+ ],
+ "social": [],
+ "teams": [],
+ "power_rankings": [
+  {
+   "rank": 1,
+   "team": "No Banner only HULK",
+   "blurb": "Kenneth Walker III dropped 34.3 and Brucie's squad beat Zoe's by 54 points, which is less a win than a weather event. At 7-2 with a league-best 1,203.9 points, nobody is within 130 points of them, and Luffy has them at 100 percent to make the playoffs and 38 percent to win the whole thing, up from 27. Next up is a Habibsters team on a four-game streak, which is the most interesting test the Hulk has left on the regular-season calendar. Holds at No. 1, and it isn't close.",
+   "id": 7
+  },
+  {
+   "rank": 2,
+   "team": "Team Pillbert",
+   "blurb": "Philly put up 132.38 points, the third-highest total of the week, and lost by 1.12. That's the kind of loss that stings for days, and it cost Team Pillbert real ground with Luffy: title odds slid from 29 to 22 percent and playoff odds from 97 to 93. Brock Purdy's 25.28 led the way, and the No. 2 scoring offense is fully intact. A date with 2-7 Counting or not Counting GV is the best get-right spot on the board, so Alan stays at No. 2.",
+   "id": 4
+  },
+  {
+   "rank": 3,
+   "team": "The Horse is Hea",
+   "blurb": "Bucky Irving's 26.5 carried Sonny to a 104.88 to 87.94 win over JMoney, a clean, unspectacular result that keeps The Horse is Hea at 6-3 and 87 percent to make the playoffs. The concern is the ceiling: fourth in points scored, and Luffy actually nudged their title odds down from 18 to 16 percent after a win. Next week is a showdown with a freshly reloaded Dawgs team, and a win would push playoff odds to 98 percent. Holds at No. 3.",
+   "id": 1
+  },
+  {
+   "rank": 4,
+   "team": "Dawgs",
+   "blurb": "Mekhi traded for Jonathan Taylor and Amon-Ra St. Brown, then beat the guy he got them from 115.86 to 92.16, with Ja'Marr Chase going for 26.5. That is a full week's work. The Dawgs are only 4-5, but they've won two straight, their playoff odds jumped from 47 to 56 percent, and Luffy now gives them the same 16 percent title shot as The Horse is Hea, whom they play next. Up one spot, because on paper this might be the second-most dangerous roster in the league.",
+   "id": 5
+  },
+  {
+   "rank": 5,
+   "team": "Habibsters",
+   "blurb": "Habib beat Team Pillbert 133.5 to 132.38 behind CeeDee Lamb's 28.5, and that's four wins in a row for a team that's third in points scored. The reward? Luffy cut their title odds from 12 to 5 percent and their playoff odds from 51 to 44, mostly because the teams around them got stronger, which is the most Kaushal possible outcome of a win over the No. 2 team. They slip one spot not for anything they did, but because the Dawgs reloaded and No Banner only HULK is up next. Win that one and playoff odds climb to 62 percent, and this ranking will look silly.",
+   "id": 6
+  },
+  {
+   "rank": 6,
+   "team": "The fumblers",
+   "blurb": "Randy finally made a trade, and the first returns are a 23-point loss to the team on the other side of it. Tee Higgins did his part with 17.7, but at 3-6, sixth in points and on a six-game losing streak, The fumblers are at 10 percent to make the playoffs. The math is simple: beat Ghostu-Spider SZN next week and that number goes to 15 percent; lose and it's 3. Holds at No. 6, mostly on points scored.",
+   "id": 2
+  },
+  {
+   "rank": 7,
+   "team": "Ghostu-Spider SZN",
+   "blurb": "Running into the Hulk in a 147.96-point mood is nobody's idea of a good week, and Zoe's 93.5, led by Bijan Robinson's 23.7, wasn't going to cut it. Oddly, Z²'s playoff odds actually rose from 6 to 10 percent, thanks to the results around her. Next week's game against The fumblers is a straight elimination bout, worth 19 percent with a win and 3 with a loss. Holds at No. 7, but a win jumps her past Randy.",
+   "id": 8
+  },
+  {
+   "rank": 8,
+   "team": "Counting or not Counting GV",
+   "blurb": "Joe Burrow threw for 29.54 fantasy points and JMoney still lost by almost 17, which sums up the season. At 2-7 with the league's lowest point total, Counting or not Counting GV's playoff odds have now officially hit 0 percent. Next up is Team Pillbert, coming off a one-point loss and looking to take it out on someone. The spoiler role is the job now, and Jordan has a chance to wreck Philly's week.",
+   "id": 3
+  }
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 3410
+ }
+}
