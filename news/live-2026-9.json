@@ -1067,6 +1067,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-10T02:46:03.406Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Habibsters fell from 39% to 18% in one swing, and Luffy is right to be nervous. Kaushal leads by about 3.5 but Justin Jefferson is the only player Alan has left, and Jefferson is playing now.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-10T03:04:29.205Z"
+  },
+  {
+   "author": "Habib Hive",
+   "handle": "@HabibHive",
+   "text": "Up 3.5 with nothing left to play and somehow it's an 18% win chance. This season has been unlucky the whole way, and I'm watching Jefferson's every snap through my fingers.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-10T03:03:29.205Z"
+  },
+  {
+   "author": "Philly Pillbert Truth",
+   "handle": "@PillbertTruth",
+   "text": "Alan is 3.5 back with Justin Jefferson still on the field. Of course the bad guy wins this on a Monday night comeback and everyone acts shocked.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-10T03:05:29.205Z"
   }
  ],
  "batches": [
@@ -1098,6 +1128,7 @@
   "2026-11-09T03:46:16.801Z",
   "2026-11-09T04:29:27.201Z",
   "2026-11-10T01:48:08.866Z",
-  "2026-11-10T02:48:03.406Z"
+  "2026-11-10T02:48:03.406Z",
+  "2026-11-10T03:05:29.205Z"
  ]
 }
