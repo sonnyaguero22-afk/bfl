@@ -38,6 +38,11 @@ const next = (why, min) => out("wait", min * 60, min ? `Next run in about ${min 
       if (live.length) return next(`${live.length} game(s) on`, 3);
       if (recent.length || soon.length) return next(`${recent.length} recent, ${soon.length} within 4 hours`, 13);
       if (later.length) return next(`${later.length} game(s) kick off within a day`, 58);
+      // The power rankings come out Tuesday at 9am ET; GitHub's schedule might not fire until hours later, so the chain
+      // waits for 9:02 itself (in hops of at most 5 hours, under GitHub's 6-hour job limit)
+      const et = Object.fromEntries(new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", weekday: "short", hour: "numeric", minute: "numeric", hourCycle: "h23" }).formatToParts(new Date()).map((x) => [x.type, x.value]));
+      const toRankings = et.weekday === "Tue" ? 9 * 60 + 2 - (+et.hour * 60 + +et.minute) : et.weekday === "Mon" && +et.hour >= 20 ? 24 * 60 + 9 * 60 + 2 - (+et.hour * 60 + +et.minute) : -1;
+      if (toRankings > 0) return next("waiting for Tuesday's 9am power rankings", Math.min(toRankings, 300));
       return next("no NFL games within a day", 0);
     }
     if (live.length) return decide(`${live.length} game(s) in progress`, true);
