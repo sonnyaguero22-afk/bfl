@@ -33,7 +33,10 @@ const next = (why, min) => out("wait", min * 60, min ? `Next run in about ${min 
     const soon = games.filter((e) => { const k = Date.parse(e.date); return k > now && k - now <= 4 * 3600e3; });
     const later = games.filter((e) => { const k = Date.parse(e.date); return k > now && k - now <= 24 * 3600e3; });
     if (NEXT) {
-      if (live.length || recent.length || soon.length) return next(`${live.length} game(s) on, ${recent.length} recent, ${soon.length} within 4 hours`, 13);
+      // Every ~5 minutes while games are being played (the wait plus a 1 to 2 minute update), so the live win
+      // chance graph gets a point every few minutes; every ~15 around games
+      if (live.length) return next(`${live.length} game(s) on`, 3);
+      if (recent.length || soon.length) return next(`${recent.length} recent, ${soon.length} within 4 hours`, 13);
       if (later.length) return next(`${later.length} game(s) kick off within a day`, 58);
       return next("no NFL games within a day", 0);
     }
