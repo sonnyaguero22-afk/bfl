@@ -592,7 +592,7 @@ h3.subhead { margin: 0 0 10px; font-size: 15px; color: var(--muted); }
 .ltplaque { padding: 14px 16px; box-shadow: inset 0 0 0 1px var(--gold-soft), 0 0 0 0 transparent; }
 .lthead { display: flex; align-items: center; gap: 10px; } .lthead b { display: block; font-size: 16px; } .lthead small { display: block; }
 .ltpos .pos, .ltpos span { font-size: 12px; }
-.ltplaque { position: relative; } .ltrank { position: absolute; top: 12px; right: 14px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.lthead > div { min-width: 0; } .ltrank { margin-left: auto; align-self: flex-start; flex-shrink: 0; padding-top: 2px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
 .lt-supernova .ltrank, .ltr.supernova { color: #5aa9ff; } .lt-warlord .ltrank, .ltr.warlord { color: #b58cff; } .lt-emperor .ltrank, .ltr.emperor { color: var(--gold); }
 .lt-joyboy .ltrank, .ltr.joyboy { background: linear-gradient(90deg, #ff6b6b, #ffd60a, #4cd964, #5aa9ff, #b58cff); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .ltr { font-weight: 700; }
@@ -2198,7 +2198,7 @@ const ltPlaque = (x) => { const m = x.kind === "m", k = x.who;
     const st = m ? (() => { const r = mgrStats(k), t = treasuries()[k]; return `${r.titles.length} title${r.titles.length === 1 ? "" : "s"} · ${r.w}–${r.l} · 💰 ${berry(t ? t.total : 0, 1)}`; })()
       : `${f1(x.who.ptsS)} pts as a starter · ${ringsOf(x.who).length} ring${ringsOf(x.who).length === 1 ? "" : "s"}`;
     const [, rk, rc] = ltRank(x);
-    return `<div class="box ltplaque lt-${rc}"><div class="ltrank">${rk}</div><div class="lthead">${head}</div><ul>${Object.values(x.g).map((g) => `<li>${ltLine(g)}</li>`).join("")}</ul><div class="muted ltstat">${st}</div></div>`; };
+    return `<div class="box ltplaque lt-${rc}"><div class="lthead">${head}<div class="ltrank">${rk}</div></div><ul>${Object.values(x.g).map((g) => `<li>${ltLine(g)}</li>`).join("")}</ul><div class="muted ltstat">${st}</div></div>`; };
 function ltClassView() {
   const c = state.ltClass, xs = ltMembers(c); if (!xs.length) return `<p class="muted">No such class.</p>`;
   const all = ltClasses(), i = all.indexOf(c), art = ALL_NEWS.find((a) => a.id === `class-${c}`), mg = xs.filter((x) => x.kind === "m"), pl = xs.filter((x) => x.kind === "p");

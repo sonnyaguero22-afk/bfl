@@ -222,6 +222,20 @@ for (const year of years) {
       if (m.win !== null || m.wk !== L.status.currentMatchupPeriod) continue;
       const s = W.schedule.find((x) => x.matchupPeriodId === m.wk && x.home.teamId === m.h);
       if (!s) continue;
+      // ESPN only marks winners and updates records hours after Monday night's game. Once every starter's NFL game
+      // in the matchup's last week is final, settle it ourselves (ESPN's result replaces it on the next run if a stat correction flips it)
+      const sps = ss.matchupPeriods[m.wk] || [m.wk], starters = [s.home, s.away].flatMap((side) => (side.rosterForCurrentScoringPeriod || { entries: [] }).entries.filter((e) => e.lineupSlotId !== 20 && e.lineupSlotId !== 21));
+      if (nflClock && !gamesOn && L.status.latestScoringPeriod === Math.max(...sps) && starters.length && starters.every((e) => nflClock(e.playerPoolEntry.player.proTeamId) === 0)) {
+        m.hp = r2(s.home.totalPointsLive ?? s.home.totalPoints); m.ap = r2(s.away.totalPointsLive ?? s.away.totalPoints);
+        m.win = m.hp > m.ap ? m.h : m.ap > m.hp ? m.a : 0; m.early = true;
+        if (m.wk <= ss.matchupPeriodCount) for (const [id, p, op] of [[m.h, m.hp, m.ap], [m.a, m.ap, m.hp]]) {
+          const t = teams.find((x) => x.id === id), r = m.win === id ? "W" : m.win === 0 ? "T" : "L";
+          t[r === "W" ? "w" : r === "L" ? "l" : "t"]++; t.pf = r2(t.pf + p); t.pa = r2(t.pa + op);
+          t.streak = t.streak[0] === r ? `${r}${+t.streak.slice(1) + 1}` : `${r}1`;
+        }
+        console.log(`::notice::${year} week ${m.wk} settled before ESPN: ${teams.find((x) => x.id === m.h).name} ${m.hp}, ${teams.find((x) => x.id === m.a).name} ${m.ap}`);
+        continue;
+      }
       m.live = true;
       m.on = gamesOn; // an NFL game is being played right now
       if (s.home.winProbability != null) m.espn = Math.round(s.home.winProbability * 1000) / 1000; // ESPN's own win chance for the home team
