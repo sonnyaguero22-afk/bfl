@@ -997,6 +997,36 @@
    "team": "The Horse is Hea",
    "about": "game",
    "at": "2026-11-09T04:28:27.201Z"
+  },
+  {
+   "author": "Gridiron Gus",
+   "handle": "@GusOnTheGrid",
+   "text": "Josh Allen just threw it to the wrong team and Ramon's team is up forty already. Zoe needed a miracle and Allen is not in the business of handing her one, but I'll take the effort.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-10T01:45:08.866Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Josh Allen's turnover is the only live drama on this slate, and it barely registers. Ghostu-Spider SZN is at 0% against No Banner only HULK and Luffy has not wavered.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-10T01:46:08.866Z"
+  },
+  {
+   "author": "Zilgit Zealots",
+   "handle": "@ZSquaredFanClub",
+   "text": "Allen picks up an interception and Z² is still down forty-two. Cheering for a Bills turnover to cut into a deficit this big is a new low for us, and I'd do it again.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-10T01:47:08.866Z"
   }
  ],
  "batches": [
@@ -1026,6 +1056,7 @@
   "2026-11-09T01:55:22.445Z",
   "2026-11-09T03:17:20.876Z",
   "2026-11-09T03:46:16.801Z",
-  "2026-11-09T04:29:27.201Z"
+  "2026-11-09T04:29:27.201Z",
+  "2026-11-10T01:48:08.866Z"
  ]
 }
