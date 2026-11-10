@@ -1097,6 +1097,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-10T03:05:29.205Z"
+  },
+  {
+   "author": "Dawg Pound Dispatch",
+   "handle": "@DawgPoundDispatch",
+   "text": "Cook walks in for the touchdown and Dawgs are up eighteen on the fumblers. Kai's week just stopped being a kicker problem, I can breathe again.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-10T04:04:59.486Z"
+  },
+  {
+   "author": "Bears Den Bobby",
+   "handle": "@BearsDenBobby",
+   "text": "James Cook III scores and now Randy is down eighteen with nobody left to play. Cheering for the Bills at all was a mistake, and I'd like it noted I knew that going in.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-10T04:05:59.486Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Cook's touchdown puts Dawgs up 18 with only Tyler Bass left. Luffy had The fumblers at 0% already, and now it's not close.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-10T04:06:59.486Z"
   }
  ],
  "batches": [
@@ -1129,6 +1159,7 @@
   "2026-11-09T04:29:27.201Z",
   "2026-11-10T01:48:08.866Z",
   "2026-11-10T02:48:03.406Z",
-  "2026-11-10T03:05:29.205Z"
+  "2026-11-10T03:05:29.205Z",
+  "2026-11-10T04:06:59.486Z"
  ]
 }
