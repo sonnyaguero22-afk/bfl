@@ -1,0 +1,45 @@
+{
+ "id": "live-2026-10",
+ "type": "live",
+ "year": 2026,
+ "wk": 10,
+ "created": "2026-11-11T18:08:58.753Z",
+ "title": "Week 10 Live",
+ "dek": "",
+ "body": [],
+ "social": [
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "Waiver move out of the Dawgs camp: Mekhi picks up the Packers D/ST and lets the Falcons D/ST go. Week 10 hasn't kicked off yet, so this is all about the matchup he's chasing.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-11T09:02:37.658Z"
+  },
+  {
+   "author": "Cheesehead Carla",
+   "handle": "@CarlaCurdsAndCuts",
+   "text": "Mekhi grabbing the Packers D/ST on a Wednesday like it's a normal Tuesday. Waiver king doing waiver king things, Randy still can't say anything nice about it.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-11T09:14:37.658Z"
+  },
+  {
+   "author": "Dawgs",
+   "handle": "@Dawgs",
+   "text": "Welcome to the squad, Packers D/ST. The Falcons D/ST gave us two points and a handshake. Thanks for the time.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Dawgs",
+   "about": "move",
+   "at": "2026-11-11T09:26:37.658Z"
+  }
+ ],
+ "batches": [
+  "2026-11-11T18:09:03.967Z"
+ ]
+}
