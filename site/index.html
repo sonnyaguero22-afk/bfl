@@ -487,6 +487,15 @@ td.ru { font-size: 12.5px; white-space: nowrap; }
 @media (max-width: 520px) { .awgrid { grid-template-columns: 1fr 1fr; gap: 8px; } .award { padding: 10px; } .award .who { font-size: 14px; flex-wrap: wrap; } }
 .award .k { font-size: 12px; font-weight: 700; }
 .award .who { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+.trophy { display: block; width: 100%; height: auto; }
+.award { position: relative; } .award .k, .award .who { padding-right: 40px; }
+.awtro { position: absolute; top: 6px; right: 6px; width: 40px; pointer-events: none; }
+.ibimg { width: 180px; max-width: 70%; margin: 8px auto 0; }
+.tcase { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 10px 10px; margin: 6px 0 12px; }
+.tc { all: unset; cursor: pointer; width: 92px; display: grid; justify-items: center; gap: 1px; text-align: center; border-radius: 12px; padding: 4px 2px; }
+.tc:hover { background: rgba(127, 127, 127, .12); } .tc:focus-visible { outline: 2px solid var(--gold); }
+.tc .trophy { width: 76px; } .tc b { font-size: 12px; line-height: 1.2; } .tc small { font-size: 11px; color: var(--muted); }
+@media (max-width: 520px) { .tc { width: 76px; } .tc .trophy { width: 64px; } }
 .award small { display: block; font-size: 12px; line-height: 1.35; }
 .award.top { border-color: var(--gold); }
 .award.shame .k { color: var(--loss); }
@@ -1598,7 +1607,7 @@ function mgrWiki(k, r) {
   const t = S[lastYear] && S[lastYear].teams.find((x) => x.mgr === k), b = t && D.news && D.news.bios[lastYear] && D.news.bios[lastYear][t.id];
   const season = live && b ? `<h3 class="wikisub">${lastYear} Season</h3><p>${esc(b.bio)} <span class="muted">(after week ${b.wk})</span></p>` : "";
   const career = PROFILE[k] ? `<h3 class="wikisub">Career</h3><p class="muted" style="margin-top:-4px"><i>${esc(PROFILE[k].title)}</i></p>${PROFILE[k].body.map((p) => `<p>${esc(p)}</p>`).join("")}${aiNote}` : "";
-  const awards = aw.length ? `<h3 class="wikisub">Awards</h3><ul class="wikirefs" style="list-style:none;padding:0">${aw.map((x) => `<li>${x.e} ${awLink(x.key)} <span class="muted">· ${x.cat} · <button class="mlink" data-go="${x.y}">${x.y}</button></span> — ${x.stat}</li>`).join("")}</ul>` : "";
+  const awards = aw.length ? `<h3 class="wikisub">Awards</h3>${trophyCase(grouped.map((a) => ({ k: a.key, ys: a.ys })))}<ul class="wikirefs" style="list-style:none;padding:0">${aw.map((x) => `<li>${x.e} ${awLink(x.key)} <span class="muted">· ${x.cat} · <button class="mlink" data-go="${x.y}">${x.y}</button></span> — ${x.stat}</li>`).join("")}</ul>` : "";
   // Infobox
   const row = (a, v) => (v ? `<tr><th>${a}</th><td>${v}</td></tr>` : "");
   const where = LOC ? journey(k) : [];
@@ -1893,10 +1902,10 @@ function awardsView(kind) {
   const bar = `<div class="weekbar" style="margin:0">${ys.map((yy) => `<button data-awyear="${yy}" aria-current="${yy === y}">${yy}</button>`).join("")}</div>`;
   let cards;
   if (mgr) { const ma = seasonMgrAwards(s);
-    cards = MGR_AWARDS.filter(([k]) => ma[k]).map(([k, e, nm, cat, why]) => `<div class="box award${k === "bellamy" ? " shame" : ""}" title="${esc(why)}"><div class="k">${e} ${awLink(k)} <span class="muted">· ${cat}</span></div><div class="who">${ma[k].ks.map((m) => `${mbadge(m, 1)} <button class="mlink" data-go="mgr-${m}">${mgrName(m)}</button>`).join(" ")}</div><small>${ma[k].stat}</small>${topFive(ma[k].top5, (r) => `${mbadge(r.k, 1)} <button class="mlink" data-go="mgr-${r.k}">${mgrName(r.k)}</button>`)}</div>`).join(""); }
+    cards = MGR_AWARDS.filter(([k]) => ma[k]).map(([k, e, nm, cat, why]) => `<div class="box award${k === "bellamy" ? " shame" : ""}" title="${esc(why)}"><span class="awtro">${trophy(k, 1)}</span><div class="k">${e} ${awLink(k)} <span class="muted">· ${cat}</span></div><div class="who">${ma[k].ks.map((m) => `${mbadge(m, 1)} <button class="mlink" data-go="mgr-${m}">${mgrName(m)}</button>`).join(" ")}</div><small>${ma[k].stat}</small>${topFive(ma[k].top5, (r) => `${mbadge(r.k, 1)} <button class="mlink" data-go="mgr-${r.k}">${mgrName(r.k)}</button>`)}</div>`).join(""); }
   else { const a = seasonAwards(s);
     cards = AWARDS.filter(([k]) => a[k]).map(([k, e, nm, cat, why]) => { const x = a[k];
-      return `<div class="box award${k === "ace" || k === "buggy" ? " shame" : k === "king" || k === "onepiece" ? " top" : ""}" title="${esc(why)}"><div class="k">${e} ${awLink(k)} <span class="muted">· ${cat}</span></div><div class="who">${posTag(x.p.pos)}${pn(x.p.n)}</div><small class="muted">${badge(x.t, 1)} ${esc(x.t.name)} · ${mgrName(x.t.mgr)}</small><small>${x.stat}</small>${topFive(x.top5, (r) => `${posTag(r.p.pos)}${pn(r.p.n)}`, (r) => `${esc(r.t.name)} · `)}</div>`; }).join(""); }
+      return `<div class="box award${k === "ace" || k === "buggy" ? " shame" : k === "king" || k === "onepiece" ? " top" : ""}" title="${esc(why)}"><span class="awtro">${trophy(k, 1)}</span><div class="k">${e} ${awLink(k)} <span class="muted">· ${cat}</span></div><div class="who">${posTag(x.p.pos)}${pn(x.p.n)}</div><small class="muted">${badge(x.t, 1)} ${esc(x.t.name)} · ${mgrName(x.t.mgr)}</small><small>${x.stat}</small>${topFive(x.top5, (r) => `${posTag(r.p.pos)}${pn(r.p.n)}`, (r) => `${esc(r.t.name)} · `)}</div>`; }).join(""); }
   const list = mgr ? MGR_AWARDS : AWARDS;
   return `<div class="vhead"><div><div class="eyebrow">${s.done ? `Buckaroo Bowl ${roman(y - D.firstYear + 1)} · ${y}` : `${y} · so far`}</div><h2>${mgr ? "Manager" : "Player"} Awards</h2><p>${mgr ? "The things a title doesn't measure, named for the Strawhats' friends and foes." : "The season's best (and worst) players, named for the Strawhats and friends."} ${s.done ? "" : "The season isn't over, so these are the leaders so far."}</p></div>${bar}</div>
   <div class="awgrid">${cards || `<p class="muted">Nothing to award yet.</p>`}</div>
@@ -1951,6 +1960,206 @@ const awInfo = (k) => { const a = AWARDS.find((x) => x[0] === k); if (a) return 
 // "the Pirate King" but "The One Piece" (its name already has the article)
 const theAw = (k) => (/^The /.test(awInfo(k).nm) ? awLink(k) : `the ${awLink(k)}`);
 const awLink = (k, label) => `<button class="mlink awl" data-go="aw-${k}">${label ?? awInfo(k).nm}</button>`;
+// ---------- Trophies: a statue per award (SVG), on award pages, award cards and trophy cases ----------
+// Symbols only, never the characters; gold for honors, bronze for busts and blunders, silver for Bon Clay
+const trDefs = (id, metal) => {
+  const M = metal === "bronze" ? ["#ffd9b0", "#c98a4b", "#7a4a1f", "#4a2a10"] : metal === "silver" ? ["#ffffff", "#d4d9e0", "#8c95a1", "#4b525c"] : ["#fff6c8", "#f2c94c", "#b8862b", "#6e4a12"];
+  return `<defs>
+  <linearGradient id="g${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${M[0]}"/><stop offset=".35" stop-color="${M[1]}"/><stop offset=".7" stop-color="${M[2]}"/><stop offset="1" stop-color="${M[3]}"/></linearGradient>
+  <linearGradient id="v${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${M[0]}"/><stop offset=".5" stop-color="${M[1]}"/><stop offset="1" stop-color="${M[2]}"/></linearGradient>
+  <linearGradient id="m${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3a40"/><stop offset="1" stop-color="#141418"/></linearGradient>
+  <radialGradient id="glow${id}" cx=".5" cy=".45" r=".5"><stop offset="0" stop-color="${metal === "bronze" ? "#ff9a4a" : "#ffd75a"}" stop-opacity=".35"/><stop offset="1" stop-color="#ffd75a" stop-opacity="0"/></radialGradient>
+  <linearGradient id="p${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${M[1]}"/><stop offset="1" stop-color="${M[2]}"/></linearGradient>
+</defs>`;
+};
+// Pedestal: two marble steps and a nameplate (left blank on small trophies)
+const TR_FIT = ' textLength="98" lengthAdjust="spacingAndGlyphs"';
+const trPed = (id, name, sub) => `
+  <ellipse cx="120" cy="${312}" rx="92" ry="7" fill="#000" opacity=".35"/>
+  <path d="M44 262h152l10 46H34z" fill="url(#m${id})"/>
+  <path d="M58 238h124l8 26H50z" fill="url(#m${id})"/><rect x="50" y="262" width="140" height="2" fill="#55555c"/>
+  <rect x="34" y="306" width="172" height="3" fill="#0b0b0d"/>
+  <rect x="66" y="270" width="108" height="30" rx="3" fill="url(#p${id})" stroke="#00000055"/>
+  ${name ? `<text x="120" y="284" text-anchor="middle" font-family="Georgia, serif" font-weight="700" font-size="12" fill="#3b2608" letter-spacing=".5"${name.length > 13 ? TR_FIT : ""}>${name}</text>
+  <text x="120" y="295" text-anchor="middle" font-family="Georgia, serif" font-size="7.5" fill="#3b2608" letter-spacing="1.2"${sub.length > 16 ? TR_FIT : ""}>${sub.toUpperCase()}</text>` : ""}`;
+const trShine = (d) => `<path d="${d}" fill="#fff" opacity=".35"/>`;
+const trCup = (id) => `
+  <path d="M86 150c-26 0-30-40-6-42h10M154 150c26 0 30-40 6-42h-10" fill="none" stroke="url(#g${id})" stroke-width="7"/>
+  <path d="M80 100h80c0 54-16 78-40 82-24-4-40-28-40-82z" fill="url(#g${id})"/>
+  ${trShine("M90 106h8c0 30 6 50 16 64-14-6-23-30-24-64z")}
+  <rect x="112" y="182" width="16" height="26" fill="url(#v${id})"/><path d="M92 208h56l6 30H86z" fill="url(#g${id})"/>`;
+
+const TROPHY = {
+  king: { art: (i) => `${trCup(i)}
+    <path d="M86 98l6-40 16 22 12-30 12 30 16-22 6 40z" fill="url(#g${i})" stroke="#6e4a12" stroke-width="1"/>
+    <circle cx="92" cy="56" r="4" fill="url(#g${i})"/><circle cx="120" cy="46" r="5" fill="url(#g${i})"/><circle cx="148" cy="56" r="4" fill="url(#g${i})"/>
+    <circle cx="120" cy="88" r="6" fill="#d7263d" stroke="#fff6" /><circle cx="101" cy="90" r="4" fill="#2e86de"/><circle cx="139" cy="90" r="4" fill="#2e86de"/>
+    <text x="120" y="150" text-anchor="middle" font-family="Georgia, serif" font-size="20" font-weight="700" fill="#6e4a12" opacity=".6">★</text>` },
+  onepiece: { art: (i) => `
+    ${[...Array(9)].map((_, k) => `<path d="M120 150L${120 + 110 * Math.cos(-Math.PI * (k + 1) / 10)} ${150 + 110 * Math.sin(-Math.PI * (k + 1) / 10)}" stroke="#ffd75a" stroke-width="3" opacity=".25"/>`).join("")}
+    <path d="M70 150L84 104Q120 84 156 104L170 150z" fill="url(#g${i})"/><path d="M80 146L90 112Q120 96 150 112L160 146z" fill="#3b2608"/>
+    <rect x="70" y="150" width="100" height="70" rx="4" fill="url(#g${i})"/>
+    <rect x="70" y="160" width="100" height="6" fill="#6e4a12" opacity=".45"/><rect x="70" y="200" width="100" height="6" fill="#6e4a12" opacity=".45"/>
+    <rect x="113" y="168" width="14" height="18" rx="2" fill="#6e4a12"/><circle cx="120" cy="175" r="3" fill="#fff6c8"/>
+    
+    <path d="M100 142l8-12 8 12-8 10z" fill="#5ad1ff"/><path d="M122 140l10-14 10 14-10 12z" fill="#ff5a7a"/><circle cx="90" cy="146" r="6" fill="#fff6c8"/><circle cx="150" cy="146" r="6" fill="url(#g${i})"/><path d="M134 148l6-8 6 8-6 6z" fill="#7dff9a"/>
+    <path d="M88 220h64l8 18H80z" fill="url(#g${i})"/>
+    ${trShine("M76 172h8v40h-8z")}` },
+  nami: { art: (i) => `
+    <circle cx="120" cy="96" r="46" fill="none" stroke="url(#g${i})" stroke-width="8"/>
+    <circle cx="120" cy="96" r="36" fill="#1c2a3a" opacity=".85"/>
+    <path d="M120 62l7 27 27 7-27 7-7 27-7-27-27-7 27-7z" fill="url(#g${i})"/><path d="M120 62l7 27-7 7z" fill="#d7263d"/>
+    <path d="M100 76l14 14-6 6zM140 116l-14-14 6-6z" fill="url(#g${i})" opacity=".8"/>
+    <circle cx="120" cy="96" r="4" fill="#fff6c8"/>
+    <path d="M114 142h12l4 70h-20z" fill="url(#v${i})"/>
+    <path d="M90 236q30-28 60 0z" fill="url(#g${i})"/><path d="M84 212h72l6 26H78z" fill="url(#g${i})"/>
+    <circle cx="84" cy="200" r="12" fill="#ff8a1f"/><path d="M84 188q6-8 14-6-6 8-14 6z" fill="#3fae4a"/>
+    <circle cx="160" cy="203" r="9" fill="#ff8a1f"/><path d="M160 194q5-6 11-4-5 6-11 4z" fill="#3fae4a"/>
+    ${trShine("M84 76a40 40 0 0 1 22-20l2 6a34 34 0 0 0-18 18z")}` },
+  zoro: { art: (i) => `
+    ${[-24, 0, 24].map((a) => `<g transform="rotate(${a} 120 196)">
+      <path d="M116 92h8v100l-4 10-4-10z" fill="#e8ecf2" stroke="#9aa3ad" stroke-width="1"/><path d="M120 92v104" stroke="#fff" stroke-width="1.5" opacity=".7"/>
+      <rect x="104" y="85" width="32" height="7" rx="3" fill="url(#g${i})"/>
+      <rect x="115" y="48" width="10" height="37" fill="${a === 0 ? "#f4f4f4" : a < 0 ? "#2b2b33" : "#b3203a"}"/>
+      ${[0, 1, 2, 3].map((k) => `<path d="M115 ${52 + 8 * k}l10 4-10 4" stroke="url(#g${i})" stroke-width="1.5" fill="none"/>`).join("")}
+      <rect x="114" y="42" width="12" height="7" rx="2" fill="url(#g${i})"/></g>`).join("")}
+    <path d="M70 204q50-52 100 0-50 52-100 0z" fill="url(#g${i})" stroke="#6e4a12" stroke-width="1.5"/>
+    <path d="M84 186q36-26 72 0" stroke="#6e4a12" stroke-width="2" fill="none" opacity=".5"/>
+    <path d="M100 204h40M106 199v10M113 199v10M120 199v10M127 199v10M134 199v10" stroke="#6e4a12" stroke-width="2.2"/>
+    ${trShine("M80 200q16-24 44-30-24 10-36 32z")}
+    <path d="M112 226h16v6h-16z" fill="url(#v${i})"/><path d="M90 230h60l4 8H86z" fill="url(#g${i})"/>` },
+  usopp: { art: (i) => `
+    <circle cx="120" cy="92" r="50" fill="url(#g${i})"/><circle cx="120" cy="92" r="38" fill="#b3203a"/><circle cx="120" cy="92" r="26" fill="url(#g${i})"/><circle cx="120" cy="92" r="14" fill="#b3203a"/><circle cx="120" cy="92" r="5" fill="url(#g${i})"/>
+    <circle cx="120" cy="92" r="2.6" fill="#2a160a"/><path d="M60 148L120 92" stroke="#6e4a12" stroke-width="3.2" stroke-linecap="round"/>
+    <path d="M60 148l-11 1 5-9zM66 142l-11 1 5-9zM60 148l-1 11 9-5zM66 142l-1 11 9-5z" fill="#d7263d"/>
+    <path d="M120 236v-50M120 186l-24-40M120 186l24-40" stroke="url(#v${i})" stroke-width="9" stroke-linecap="round" fill="none"/>
+    <path d="M96 146q24 30 48 0" stroke="#5b3b1a" stroke-width="3" fill="none"/>
+    <path d="M92 220h56l6 18H86z" fill="url(#g${i})"/>
+    ${trShine("M86 70a40 40 0 0 1 20-18l3 5a34 34 0 0 0-17 15z")}` },
+  sanji: { art: (i) => `
+    <path d="M150 58q-46 4-66 40-14 26 2 54" fill="none" stroke="#ff7a1a" stroke-width="22" stroke-linecap="round" opacity=".45"/>
+    <path d="M144 66q-36 6-52 34-10 20 0 40" fill="none" stroke="#ffd04a" stroke-width="10" stroke-linecap="round" opacity=".75"/>
+    <path d="M108 206l-4-52 30-84 18 8-26 80 2 48z" fill="url(#g${i})" stroke="#6e4a12" stroke-width="1"/>
+    <path d="M132 72l6-18q6-12 18-10l26 8q10 4 6 12t-14 6l-22-4-4 12z" fill="#2a2a30" stroke="url(#g${i})" stroke-width="2.5"/>
+    <path d="M138 56l42 12" stroke="url(#g${i})" stroke-width="1.5" opacity=".8"/>
+    ${trShine("M110 150l26-74 4 2-26 74z")}
+    <path d="M92 206h56l6 32H86z" fill="url(#g${i})"/>` },
+  franky: { art: (i) => `
+    <circle cx="120" cy="100" r="48" fill="url(#g${i})"/>
+    ${[...Array(12)].map((_, k) => `<rect x="112" y="44" width="16" height="16" rx="2" fill="url(#g${i})" transform="rotate(${k * 30} 120 100)"/>`).join("")}
+    <circle cx="120" cy="100" r="30" fill="#2a2a30"/><circle cx="120" cy="100" r="22" fill="url(#g${i})"/>
+    <g transform="rotate(-40 120 100)"><rect x="114" y="62" width="12" height="76" rx="3" fill="#e8ecf2" stroke="#8c95a1"/><path d="M106 54h28v14h-8v-6h-12v6h-8z" fill="#e8ecf2" stroke="#8c95a1"/><circle cx="120" cy="132" r="3" fill="#8c95a1"/></g>
+    <g transform="rotate(40 120 100)"><rect x="116" y="70" width="8" height="68" rx="2" fill="#7a3a12"/><rect x="102" y="58" width="36" height="16" rx="3" fill="#cfd5dc" stroke="#8c95a1"/></g>
+    <path d="M112 148h16v62h-16z" fill="url(#v${i})"/><path d="M90 210h60l6 28H84z" fill="url(#g${i})"/>` },
+  jinbe: { art: (i) => `
+    <path d="M76 64h88v62q0 52-44 74-44-22-44-74z" fill="url(#g${i})" stroke="#6e4a12" stroke-width="1.5"/>
+    <path d="M84 72h72v54q0 44-36 64-36-20-36-64z" fill="#123a5c"/>
+    <path d="M86 150q14-40 44-40 24 0 24 22-10-12-22-8 10 6 8 18-10-12-24-8-14 6-30 16z" fill="#4fb3ff"/>
+    <path d="M86 150q14-40 44-40" stroke="#e8f6ff" stroke-width="3" fill="none"/>
+    <path d="M90 170q30-14 60 0" stroke="#4fb3ff" stroke-width="5" fill="none" opacity=".7"/>
+    <path d="M112 200h16v12h-16z" fill="url(#v${i})"/><path d="M90 212h60l6 26H84z" fill="url(#g${i})"/>
+    ${trShine("M82 70h6v54q0 30 12 48-18-14-18-48z")}` },
+  robin: { art: (i) => `
+    <path d="M70 92q26-12 50 4 24-16 50-4v74q-26-10-50 4-24-14-50-4z" fill="url(#g${i})" stroke="#6e4a12" stroke-width="1.5"/>
+    <path d="M78 96q20-8 38 4v62q-18-10-38-4zM162 96q-20-8-38 4v62q18-10 38-4z" fill="#fbf1d6"/>
+    ${[0, 1, 2, 3, 4].map((k) => `<path d="M84 ${110 + 10 * k}q12-4 26 2M130 ${112 + 10 * k}q12-6 26-2" stroke="#b8a77a" stroke-width="1.5" fill="none"/>`).join("")}
+    <path d="M144 100l6 22-8-4-8 4 6-22" fill="#d7263d" opacity=".85"/>
+    <path d="M118 100v66" stroke="#6e4a12" stroke-width="2"/>
+    <path d="M98 166h44l-6 20h-32z" fill="url(#g${i})"/><path d="M112 186h16v26h-16z" fill="url(#v${i})"/><path d="M90 212h60l6 26H84z" fill="url(#g${i})"/>
+    ${[[84, 70], [104, 58], [138, 60], [156, 74]].map(([x, y]) => `<g transform="translate(${x} ${y})">${[0, 72, 144, 216, 288].map((a) => `<ellipse cx="0" cy="-5" rx="3" ry="5" fill="#ff8fb8" transform="rotate(${a})"/>`).join("")}<circle r="2.2" fill="#ffd75a"/></g>`).join("")}` },
+  sunny: { art: (i) => `
+    ${[...Array(16)].map((_, k) => `<path d="M120 84L${120 + 58 * Math.cos(k * Math.PI / 8)} ${84 + 58 * Math.sin(k * Math.PI / 8)}" stroke="url(#g${i})" stroke-width="${k % 2 ? 3 : 6}" stroke-linecap="round"/>`).join("")}
+    <circle cx="120" cy="84" r="34" fill="url(#g${i})" stroke="#6e4a12" stroke-width="1"/>
+    <path d="M106 80a3 3 0 0 0 6 0M128 80a3 3 0 0 0 6 0M106 96q14 12 28 0" stroke="#6e4a12" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M78 176h84l-12 22H90z" fill="url(#g${i})"/><path d="M120 120v56" stroke="#6e4a12" stroke-width="3"/><path d="M122 126q30 20 26 46h-26z" fill="#fbf1d6" stroke="#b8a77a"/><path d="M118 132q-22 18-20 40h20z" fill="#fbf1d6" stroke="#b8a77a"/>
+    <path d="M70 204q12-8 25 0t25 0 25 0 25 0" stroke="#4fb3ff" stroke-width="4" fill="none"/>
+    <path d="M88 212h64l6 26H82z" fill="url(#g${i})"/>` },
+  chopper: { art: (i) => `
+    <path d="M120 54v-18M120 46l-12-12M120 40l12-10" stroke="url(#v${i})" stroke-width="5" stroke-linecap="round" fill="none" transform="translate(-26 18) rotate(-20 120 54)"/>
+    <path d="M120 54v-18M120 46l12-12M120 40l-12-10" stroke="url(#v${i})" stroke-width="5" stroke-linecap="round" fill="none" transform="translate(26 18) rotate(20 120 54)"/>
+    <path d="M120 186c-60-36-64-82-40-100 18-12 34-2 40 12 6-14 22-24 40-12 24 18 20 64-40 100z" fill="url(#g${i})" stroke="#6e4a12" stroke-width="1.5"/>
+    <path d="M110 104h20v18h18v20h-18v18h-20v-18H92v-20h18z" fill="#fff" stroke="#d7263d" stroke-width="2"/>
+    <path d="M70 150l18-14 10 10 18-20" stroke="#4cd964" stroke-width="4" fill="none" stroke-linecap="round" opacity=".0"/>
+    <path d="M112 184h16v28h-16z" fill="url(#v${i})"/><path d="M90 212h60l6 26H84z" fill="url(#g${i})"/>
+    ${trShine("M86 96c8-10 20-10 26 0-10-4-18-2-26 8z")}` },
+  brook: { art: (i) => `
+    <g transform="rotate(-14 120 140)">
+      <rect x="116" y="30" width="8" height="70" fill="#2a160a"/><path d="M114 22q6-8 12 0v10h-12z" fill="url(#g${i})"/>
+      <path d="M120 96c-24 0-30 16-22 30-12 6-16 22-10 36 8 20 56 20 64 0 6-14 2-30-10-36 8-14 2-30-22-30z" fill="url(#g${i})" stroke="#6e4a12" stroke-width="1.5"/>
+      <path d="M108 124q-6 4 0 8M132 124q6 4 0 8" stroke="#2a160a" stroke-width="3" fill="none"/>
+      <path d="M116 100v76M120 100v76M124 100v76" stroke="#fff6c8" stroke-width=".8" opacity=".8"/><rect x="110" y="152" width="20" height="5" fill="#2a160a"/>
+    </g>
+    <path d="M64 64l120 110" stroke="#2a160a" stroke-width="3"/><path d="M64 64l120 110" stroke="#fff6c8" stroke-width="1" opacity=".6" transform="translate(2 -2)"/>
+    <text x="160" y="72" font-size="22" fill="url(#g${i})">♪</text><text x="62" y="120" font-size="18" fill="url(#g${i})">♫</text>
+    <path d="M92 212h56l6 26H86z" fill="url(#g${i})"/><path d="M112 192h16v20h-16z" fill="url(#v${i})"/>` },
+  ace: { metal: "bronze", art: (i) => `
+    <path d="M88 120q-10-40 18-70 0 26 14 34 4-22 22-34-6 30 10 44 10 14 0 30z" fill="#ff7a1a" opacity=".85"/>
+    <path d="M100 120q-4-26 14-44 2 18 12 24 6-12 16-18-2 22 6 32z" fill="#ffd04a"/>
+    <circle cx="120" cy="150" r="48" fill="url(#g${i})" stroke="#4a2a10" stroke-width="1.5"/>
+    <path d="M78 138q8-30 42-32 34 2 42 32-8 10-16 2-6 10-14 2-6 8-12 0-6 8-14 0-8 8-14-2-8 6-14-2z" fill="#ff8fb8"/>
+    <circle cx="120" cy="150" r="17" fill="#141418" stroke="#4a2a10" stroke-width="2"/>
+    ${[[98, 124, 20], [138, 120, -30], [110, 114, 70], [148, 134, 10], [92, 138, -50]].map(([x, y, a]) => `<rect x="${x}" y="${y}" width="8" height="3" rx="1.5" fill="${["#4fb3ff", "#ffd04a", "#fff", "#4cd964", "#b58cff"][x % 5]}" transform="rotate(${a} ${x} ${y})"/>`).join("")}
+    <path d="M112 198h16v14h-16z" fill="url(#v${i})"/><path d="M90 212h60l6 26H84z" fill="url(#g${i})"/>` },
+  vegapunk: { art: (i) => `
+    <path d="M106 40h28v8h-4v44l38 84q6 16-10 18H82q-16-2-10-18l38-84V48h-4z" fill="#cfe9ff" opacity=".35" stroke="url(#g${i})" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M94 132h52l22 46q4 10-8 12H80q-12-2-8-12z" fill="#4cd964" opacity=".85"/>
+    <circle cx="104" cy="164" r="6" fill="#d9ffe0" opacity=".8"/><circle cx="128" cy="150" r="4" fill="#d9ffe0" opacity=".8"/><circle cx="140" cy="172" r="5" fill="#d9ffe0" opacity=".8"/>
+    <circle cx="124" cy="112" r="4" fill="#4cd964" opacity=".7"/><circle cx="116" cy="92" r="3" fill="#4cd964" opacity=".6"/><circle cx="128" cy="70" r="5" fill="#4cd964" opacity=".5"/>
+    <path d="M114 50v38" stroke="#fff" stroke-width="2" opacity=".6"/>
+    <path d="M90 212h60l6 26H84z" fill="url(#g${i})"/><path d="M80 192h80v20H80z" fill="url(#v${i})"/>` },
+  wapol: { art: (i) => `
+    <ellipse cx="120" cy="170" rx="70" ry="12" fill="url(#g${i})" stroke="#6e4a12" stroke-width="1"/>
+    <path d="M60 166q0-76 60-78 60 2 60 78z" fill="url(#g${i})" stroke="#6e4a12" stroke-width="1.5"/>
+    <circle cx="120" cy="82" r="8" fill="url(#g${i})" stroke="#6e4a12"/>
+    ${trShine("M76 150q2-44 34-54-20 18-26 54z")}
+    <path d="M40 90v80M34 90v24q6 8 12 0V90M40 114v0" stroke="url(#v${i})" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M200 90q12 20 0 40v40" stroke="url(#v${i})" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M112 182h16v30h-16z" fill="url(#v${i})"/><path d="M90 212h60l6 26H84z" fill="url(#g${i})"/>` },
+  doflamingo: { art: (i) => `
+    <path d="M118 212V150M118 150l-10-22" stroke="url(#v${i})" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M118 176l16-14" stroke="url(#v${i})" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M96 112q-10 40 30 40 40-4 48-30-20 6-34-4-14-12-44-6z" fill="url(#g${i})" stroke="#6e4a12" stroke-width="1"/>
+    <path d="M110 120q30-4 50 6" stroke="#ff7ab0" stroke-width="5" fill="none" opacity=".75"/><path d="M110 132q26 0 46 6" stroke="#ff7ab0" stroke-width="4" fill="none" opacity=".6"/>
+    <path d="M100 114q-16-20 0-44 12-16 2-30" stroke="url(#v${i})" stroke-width="9" fill="none" stroke-linecap="round"/>
+    <circle cx="102" cy="40" r="10" fill="url(#g${i})"/><path d="M110 38q12 2 12 14l-6 4q-2-10-8-12z" fill="#2a160a"/>
+    <rect x="94" y="34" width="14" height="6" rx="3" fill="#ff7ab0"/>
+    <path d="M90 212h60l6 26H84z" fill="url(#g${i})"/>` },
+  blackbeard: { art: (i) => `
+    <path d="M150 40v120" stroke="#6e4a12" stroke-width="4"/><path d="M150 44q-30 10-60 0v48q30 10 60 0z" fill="#141418" stroke="url(#g${i})" stroke-width="2"/>
+    <circle cx="120" cy="64" r="9" fill="url(#g${i})"/><circle cx="116" cy="62" r="2" fill="#141418"/><circle cx="124" cy="62" r="2" fill="#141418"/><path d="M106 80l28-6M106 74l28 6" stroke="url(#g${i})" stroke-width="3"/>
+    <g transform="rotate(-12 96 160)"><rect x="70" y="134" width="50" height="50" rx="8" fill="url(#g${i})" stroke="#6e4a12"/>${[[84, 148], [106, 148], [95, 159], [84, 170], [106, 170]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="4.5" fill="#141418"/>`).join("")}</g>
+    <g transform="rotate(14 150 168)"><rect x="126" y="146" width="46" height="46" rx="8" fill="url(#g${i})" stroke="#6e4a12"/>${[[138, 158], [160, 158], [138, 180], [160, 180], [138, 169], [160, 169]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="4" fill="#141418"/>`).join("")}</g>
+    <path d="M90 212h60l6 26H84z" fill="url(#g${i})"/>` },
+  bonclay: { metal: "silver", art: (i) => `
+    <path d="M70 186q50 18 100 0" stroke="#4fb3ff" stroke-width="4" fill="none" opacity=".7"/><path d="M80 196q40 12 80 0" stroke="#4fb3ff" stroke-width="3" fill="none" opacity=".5"/>
+    <path d="M78 150q8 32 50 32 36 0 46-28-18 8-34-4-10-8-12-24-4 24-50 24z" fill="url(#g${i})" stroke="#4b525c" stroke-width="1"/>
+    <path d="M150 156q-20-30-6-20" fill="none"/><path d="M130 120q-2-30 -16-48-10-14 0-26 12-10 24 0" stroke="url(#v${i})" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M140 46l14 6-14 4z" fill="#ff8a1f"/><circle cx="134" cy="48" r="2" fill="#141418"/>
+    <path d="M100 152q20 0 30-14" stroke="#fff" stroke-width="2" fill="none" opacity=".7"/>
+    <text x="74" y="80" font-family="Georgia, serif" font-size="13" fill="#8c95a1" opacity=".9">✦</text>
+    <path d="M112 196h16v16h-16z" fill="url(#v${i})"/><path d="M90 212h60l6 26H84z" fill="url(#g${i})"/>` },
+  bellamy: { metal: "bronze", art: (i) => `
+    <path d="M120 142${[...Array(6)].map((_, k) => `l${k % 2 ? -26 : 26} 12`).join("")}" stroke="url(#v${i})" stroke-width="6" fill="none" stroke-linejoin="round" stroke-linecap="round" transform="translate(-13 0)"/>
+    <g transform="rotate(184 120 104)"><path d="M84 70h72c0 44-14 64-36 68-22-4-36-24-36-68z" fill="url(#g${i})"/><path d="M90 108c-20 0-24-28-4-30h8M150 108c20 0 24-28 4-30h-8" fill="none" stroke="url(#g${i})" stroke-width="6"/><path d="M98 138h44l4 8H94z" fill="url(#g${i})"/></g>
+    <text x="150" y="58" font-family="Georgia, serif" font-size="13" fill="#c98a4b" opacity=".85" transform="rotate(10 150 58)">boing</text>
+    <path d="M92 214h56l6 24H86z" fill="url(#g${i})"/>` },
+  marco: { art: (i) => `
+    ${[-1, 1].map((d) => `<g transform="translate(120 0) scale(${d} 1)">${[0, 1, 2, 3, 4].map((k) => `<path d="M6 ${118 - k * 6}q${30 + k * 8} ${-40 + k * 4} ${70 - k * 6} ${-60 + k * 14}q-${20 - k * 2} ${30} -${70 - k * 6} ${60 + k * 2}" fill="${k % 2 ? "#4fb3ff" : "#7ad7ff"}" opacity="${0.9 - k * 0.12}"/>`).join("")}</g>`).join("")}
+    <path d="M120 200V70M120 70l-16 20M120 70l16 20" stroke="url(#v${i})" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M110 120q10-36 10-60 4 24 14 40-6-6-12 0 6 12 0 22z" fill="#cfe9ff" opacity=".8"/>
+    <path d="M90 212h60l6 26H84z" fill="url(#g${i})"/>` },
+  buggy: { metal: "bronze", art: (i) => `<g transform="rotate(-9 120 220)">${trCup(i)}</g>
+    <path d="M128 112l-6 18 8 10-5 16 4 10" stroke="#2a160a" stroke-width="2.5" fill="none"/>
+    <circle cx="112" cy="138" r="14" fill="#e01b24"/><circle cx="107" cy="133" r="4" fill="#fff" opacity=".6"/>
+    <path d="M150 230l14-6 4 12z" fill="url(#g${i})" opacity=".9"/>
+    <text x="166" y="96" font-family="Georgia, serif" font-size="13" fill="#c98a4b" opacity=".8" transform="rotate(14 166 96)">honk</text>` },
+};
+// Each drawing gets its own gradient ids, so several trophies can share a page
+let trophyN = 0;
+const trophy = (k, small) => { const t = TROPHY[k], a = awInfo(k); if (!t || !a) return ""; const i = `t${trophyN++}`;
+  return `<svg class="trophy" viewBox="0 0 240 320" role="img" aria-label="${esc(a.nm)} trophy" xmlns="http://www.w3.org/2000/svg">${trDefs(i, t.metal)}<ellipse cx="120" cy="130" rx="110" ry="120" fill="url(#glow${i})"/>${t.art(i)}${trPed(i, small ? "" : esc(a.nm), small ? "" : esc(a.cat))}</svg>`; };
+// A shelf of the trophies someone has won, with the seasons under each ({ k, ys })
+const trophyCase = (list) => `<div class="box tcase">${list.map((a) => `<button class="tc" data-go="aw-${a.k}">${trophy(a.k, 1)}<b>${esc(awInfo(a.k).nm)}</b><small>${a.ys.join(", ")}</small></button>`).join("")}</div>`;
 function awardView() {
   const a = awInfo(state.aw); if (!a) return "";
   const seasons = D.seasons.filter((s) => s.done || s.played.length);
@@ -1979,7 +2188,7 @@ function awardView() {
   const criteria = `<h3 class="wikisub">Criteria</h3><p>${esc(a.why)}.${a.mgr ? " There is always exactly one winner." : " Points count only in weeks a lineup played a game, playoffs and consolation games included."}</p>`;
   const table = `<div class="box scroll"><table class="compact"><thead><tr><th>Season</th><th>Winner</th>${a.mgr ? "" : "<th>Team</th>"}<th>Why</th><th>Runners-up</th></tr></thead><tbody>${rows.map((r) => `<tr><td><button class="mlink" data-go="${r.s.year}"><b>${r.s.year}</b></button>${r.s.done ? "" : ` <span class="pill live">So far</span>`}</td><td>${link(r)}</td>${a.mgr ? "" : `<td><span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap">${badge(r.w.t, 1)} ${esc(r.w.t.name)} <span class="muted">· <button class="mlink" data-go="mgr-${r.w.t.mgr}">${mgrName(r.w.t.mgr)}</button></span></span></td>`}<td>${r.w.stat}</td><td class="ru">${(r.w.top5 || []).slice(1, 4).map((x, i) => `<div><span class="muted">${i + 2}.</span> ${a.mgr ? `<button class="mlink" data-go="mgr-${x.k}">${mgrName(x.k)}</button>` : pn(x.p.n)}</div>`).join("") || "—"}</td></tr>`).join("")}</tbody></table></div>`;
   const others = (a.mgr ? MGR_AWARDS : AWARDS).filter((x) => x[0] !== a.k).map((x) => `${x[1]} ${awLink(x[0])}`).join(" · ");
-  const info = `<aside class="infobox box ibd-only"><div class="ibhead">${a.e} ${esc(a.nm)}</div><div class="ibsub">${a.mgr ? "Manager" : "Player"} award</div><table>
+  const info = `<aside class="infobox box ibd-only"><div class="ibhead">${a.e} ${esc(a.nm)}</div><div class="ibimg">%TROPHY%</div><div class="ibsub">${a.mgr ? "Manager" : "Player"} award</div><table>
     <tr><th>Awarded for</th><td>${esc(a.cat)}</td></tr>
     <tr><th>First awarded</th><td>${final.length ? final[final.length - 1].s.year : "Not yet"}</td></tr>
     <tr><th>Times awarded</th><td>${final.length}</td></tr>
@@ -1987,7 +2196,7 @@ function awardView() {
     ${multi.length ? `<tr><th>Most wins</th><td>${whoName(multi[0].r)} <span class="muted">(${multi[0].n})</span></td></tr>` : ""}
   </table></aside>`;
   return `<div class="vhead"><div><div class="eyebrow">${a.mgr ? "Manager" : "Player"} Award</div><h2>${a.e} ${esc(a.nm)}</h2></div><button class="pill" data-go="${a.mgr ? "mgrawards" : "awards"}" style="border:0;cursor:pointer">← All ${a.mgr ? "manager" : "player"} awards</button></div>
-  <div class="wiki"><article class="wikimain">${lead}${info.replace("ibd-only", "ibm-only")}${history}<h3 class="wikisub">Winners</h3>${table}${criteria}<h3 class="wikisub">See Also</h3><p>${others}</p></article>${info}</div>`;
+  <div class="wiki"><article class="wikimain">${lead}${info.replace("ibd-only", "ibm-only").replace("%TROPHY%", trophy(a.k))}${history}<h3 class="wikisub">Winners</h3>${table}${criteria}<h3 class="wikisub">See Also</h3><p>${others}</p></article>${info.replace("%TROPHY%", trophy(a.k))}</div>`;
 }
 
 // Wiki pages for the Bounty Board (Ones to Watch in the code), its joke sponsor the Baratie, Gear 5 and Seastoned
@@ -2394,7 +2603,7 @@ function wikiHtml(p, best) {
     ${row("Moves", `${p.drafts} drafted · ${p.adds} pickup${p.adds === 1 ? "" : "s"} · ${p.drops} drop${p.drops === 1 ? "" : "s"} · ${p.trades} trade${p.trades === 1 ? "" : "s"}`)}
     ${ltBlock(`p-${p.k}`)}
   </table></aside>`;
-  return `<div class="wiki"><article class="wikimain">${lead}${info.replace('class="infobox box"', 'class="infobox box ibm-only"')}<h3 class="wikisub">BFL Career</h3>${career}${news}</article>${info.replace('class="infobox box"', 'class="infobox box ibd-only"')}</div>`;
+  return `<div class="wiki"><article class="wikimain">${lead}${info.replace('class="infobox box"', 'class="infobox box ibm-only"')}<h3 class="wikisub">BFL Career</h3>${career}${grouped.length ? `<h3 class="wikisub">Trophy Case</h3>${trophyCase(grouped)}` : ""}${news}</article>${info.replace('class="infobox box"', 'class="infobox box ibd-only"')}</div>`;
 }
 
 function playerView() {
