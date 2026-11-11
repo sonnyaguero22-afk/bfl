@@ -55,7 +55,7 @@ header.mast { background: var(--bg); }
 .mast .wrap { padding-block: 34px 18px; display: flex; flex-wrap: wrap; gap: 16px 28px; align-items: end; justify-content: space-between; }
 .brand { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .brand small { font-size: 13px; color: var(--muted); font-weight: 500; }
-.brand h1 { margin: 0; font-family: var(--f-display); font-weight: 700; font-size: clamp(30px, 5vw, 44px); line-height: 1.05; letter-spacing: -0.03em; text-wrap: balance; }
+.brand h1 { margin: 0; font-family: var(--f-display); font-weight: 700; font-size: clamp(30px, 5vw, 41px); line-height: 1.05; letter-spacing: -0.03em; text-wrap: balance; }
 .brand h1 span { color: inherit; }
 /* Segmented control */
 .themebtn { margin-left: 8px; background: var(--sunk); border: 0; color: var(--muted); border-radius: 999px; padding: 2px 9px; font: inherit; font-size: 11px; cursor: pointer; vertical-align: 1px; }
@@ -488,6 +488,8 @@ td.ru { font-size: 12.5px; white-space: nowrap; }
 .award .k { font-size: 12px; font-weight: 700; }
 .award .who { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
 .trophy { display: block; width: 100%; height: auto; }
+.lglogo { height: .78em; width: auto; vertical-align: -.06em; margin-right: .2em; }
+.tc.big b { color: var(--gold); }
 .lbar { margin-bottom: 10px; } .ltable th.on, .ltable td.on { font-weight: 700; color: var(--ink); }
 .lwho, .lteam { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
 .lmark { all: unset; cursor: pointer; font-size: 13px; margin-left: 2px; }
@@ -714,7 +716,7 @@ h3.subhead { margin: 0 0 10px; font-size: 15px; color: var(--muted); }
   <div class="wrap">
     <div class="brand">
       <small>Est. 2023 · 8 teams · ESPN <button class="themebtn" id="themebtn" type="button"></button></small>
-      <h1><button class="brandlink" data-go="home">Buckaroo Football League</button></h1>
+      <h1><button class="brandlink" data-go="home"><span id="brandlogo"></span>Buckaroo Football League</button></h1>
     </div>
     <nav class="top" id="topnav" aria-label="Sections"></nav>
   </div>
@@ -1030,13 +1032,13 @@ function gameView() {
   const side = (t) => { const rows = boxSide(s, m, t.id); return `<div class="box scroll"><table class="compact"><thead><tr><th colspan="2">${badge(t, 1)} ${esc(t.name)} <span class="muted">· ${mgrName(t.mgr)}</span></th><th class="n">${f1(pts(t))}</th></tr></thead><tbody>${rows.map((r) => `<tr class="${r.start ? "" : "muted"}"><td>${posTag(r.pos)}${pn(r.n)}</td><td class="muted">${r.start ? "" : "Bench"}</td><td class="n">${f1(r.pts)}${r.proj ? ` <span class="muted">/ ${f1(r.proj)}</span>` : ""}</td></tr>`).join("")}</tbody></table></div>`; };
   const chart = wpChart(s, m);
   const row = (a, v) => (v ? `<tr><th>${a}</th><td>${v}</td></tr>` : "");
-  const info = `<aside class="infobox box"><div class="ibhead">${kind === "bowl" ? "🏆" : "🗑️"} ${title}</div><div class="ibsub">${y} season</div><table>
+  const info = `<aside class="infobox box"><div class="ibhead">${kind === "bowl" ? "🏆" : "🗑️"} ${title}</div>${kind === "bowl" ? `<div class="ibimg">%TROPHY%</div>` : ""}<div class="ibsub">${y} season</div><table>
     <tr><td colspan="2" class="ibscore"><div>${badge(win, 1)} <b>${esc(win.name)}</b><span class="num">${f1(pts(win))}</span></div><div>${badge(lose, 1)} ${esc(lose.name)}<span class="num">${f1(pts(lose))}</span></div></td></tr>
     ${row("Played", two ? `Weeks ${s.spans(m.wk).join("–")}` : `Week ${s.spans(m.wk)[0]}`)}${row("Seeds", `${win.seed || "—"} vs ${lose.seed || "—"}`)}${row("Winner", `${mgrName(win.mgr)}`)}${row("Margin", f1(Math.abs(m.hp - m.ap)))}${op ? row(`${awInfo("onepiece").e} The One Piece`, pn(op.p.n)) : ""}
   </table>${succession(kind, y)}</aside>`;
   return `<div class="vhead"><div><div class="eyebrow">${kind === "bowl" ? "Championship" : "Consolation"} · ${y}</div><h2>${title}</h2></div><button class="pill" data-go="${y}" style="border:0;cursor:pointer">← ${y} season</button></div>
   <div class="herowrap">${gameHero(s, m)}</div>${teamStats(s, m)}
-  <div class="wiki"><article class="wikimain">${lead}${info.replace('class="infobox box"', 'class="infobox box ibm-only"')}${body}${chart ? `<h3 class="wikisub">Win Chance</h3><div class="wpwrap">${chart}</div>` : ""}<h3 class="wikisub">Box Score</h3><div class="boxpair">${side(win)}${side(lose)}</div></article>${info.replace('class="infobox box"', 'class="infobox box ibd-only"')}</div>`;
+  <div class="wiki"><article class="wikimain">${lead}${info.replace('class="infobox box"', 'class="infobox box ibm-only"').replace("%TROPHY%", trophy("bowl"))}${body}${chart ? `<h3 class="wikisub">Win Chance</h3><div class="wpwrap">${chart}</div>` : ""}<h3 class="wikisub">Box Score</h3><div class="boxpair">${side(win)}${side(lose)}</div></article>${info.replace('class="infobox box"', 'class="infobox box ibd-only"').replace("%TROPHY%", trophy("bowl"))}</div>`;
 }
 
 function seasonView() {
@@ -1612,7 +1614,7 @@ function mgrWiki(k, r) {
   const t = S[lastYear] && S[lastYear].teams.find((x) => x.mgr === k), b = t && D.news && D.news.bios[lastYear] && D.news.bios[lastYear][t.id];
   const season = live && b ? `<h3 class="wikisub">${lastYear} Season</h3><p>${esc(b.bio)} <span class="muted">(after week ${b.wk})</span></p>` : "";
   const career = PROFILE[k] ? `<h3 class="wikisub">Career</h3><p class="muted" style="margin-top:-4px"><i>${esc(PROFILE[k].title)}</i></p>${PROFILE[k].body.map((p) => `<p>${esc(p)}</p>`).join("")}${aiNote}` : "";
-  const awards = aw.length ? `<h3 class="wikisub">Awards</h3>${trophyCase(grouped.map((a) => ({ k: a.key, ys: a.ys })))}<ul class="wikirefs" style="list-style:none;padding:0">${aw.map((x) => `<li>${x.e} ${awLink(x.key)} <span class="muted">· ${x.cat} · <button class="mlink" data-go="${x.y}">${x.y}</button></span> — ${x.stat}</li>`).join("")}</ul>` : "";
+  const awards = aw.length || r.titles.length ? `<h3 class="wikisub">Awards</h3>${trophyCase([...(r.titles.length ? [{ k: "bowl", ys: r.titles }] : []), ...grouped.map((a) => ({ k: a.key, ys: a.ys }))])}<ul class="wikirefs" style="list-style:none;padding:0">${aw.map((x) => `<li>${x.e} ${awLink(x.key)} <span class="muted">· ${x.cat} · <button class="mlink" data-go="${x.y}">${x.y}</button></span> — ${x.stat}</li>`).join("")}</ul>` : "";
   // Infobox
   const row = (a, v) => (v ? `<tr><th>${a}</th><td>${v}</td></tr>` : "");
   const where = LOC ? journey(k) : [];
@@ -1967,7 +1969,7 @@ const awInfo = (k) => { const a = AWARDS.find((x) => x[0] === k); if (a) return 
 const theAw = (k) => (/^The /.test(awInfo(k).nm) ? awLink(k) : `the ${awLink(k)}`);
 const awLink = (k, label) => `<button class="mlink awl" data-go="aw-${k}">${label ?? awInfo(k).nm}</button>`;
 // ---------- Trophies: a statue per award (SVG), on award pages, award cards and trophy cases ----------
-// Symbols only, never the characters; gold for honors, bronze for busts and blunders, silver for Bon Clay
+// Symbols only, never the characters; only the Buckaroo Bowl is gold, the awards are silver and the busts and blunders bronze
 const trDefs = (id, metal) => {
   const M = metal === "bronze" ? ["#ffd9b0", "#c98a4b", "#7a4a1f", "#4a2a10"] : metal === "silver" ? ["#ffffff", "#d4d9e0", "#8c95a1", "#4b525c"] : ["#fff6c8", "#f2c94c", "#b8862b", "#6e4a12"];
   return `<defs>
@@ -2136,7 +2138,7 @@ const TROPHY = {
     <g transform="rotate(-12 96 160)"><rect x="70" y="134" width="50" height="50" rx="8" fill="url(#g${i})" stroke="#6e4a12"/>${[[84, 148], [106, 148], [95, 159], [84, 170], [106, 170]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="4.5" fill="#141418"/>`).join("")}</g>
     <g transform="rotate(14 150 168)"><rect x="126" y="146" width="46" height="46" rx="8" fill="url(#g${i})" stroke="#6e4a12"/>${[[138, 158], [160, 158], [138, 180], [160, 180], [138, 169], [160, 169]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="4" fill="#141418"/>`).join("")}</g>
     <path d="M90 212h60l6 26H84z" fill="url(#g${i})"/>` },
-  bonclay: { metal: "silver", art: (i) => `
+  bonclay: { art: (i) => `
     <path d="M70 186q50 18 100 0" stroke="#4fb3ff" stroke-width="4" fill="none" opacity=".7"/><path d="M80 196q40 12 80 0" stroke="#4fb3ff" stroke-width="3" fill="none" opacity=".5"/>
     <path d="M78 150q8 32 50 32 36 0 46-28-18 8-34-4-10-8-12-24-4 24-50 24z" fill="url(#g${i})" stroke="#4b525c" stroke-width="1"/>
     <path d="M150 156q-20-30-6-20" fill="none"/><path d="M130 120q-2-30 -16-48-10-14 0-26 12-10 24 0" stroke="url(#v${i})" stroke-width="10" fill="none" stroke-linecap="round"/>
@@ -2160,12 +2162,41 @@ const TROPHY = {
     <path d="M150 230l14-6 4 12z" fill="url(#g${i})" opacity=".9"/>
     <text x="166" y="96" font-family="Georgia, serif" font-size="13" fill="#c98a4b" opacity=".8" transform="rotate(14 166 96)">honk</text>` },
 };
+// The Buckaroo Bowl: a gold Lombardi, the straw hat hooked over the ball's tip, the league flag on the plinth
+const trBall = (i, cx, cy, rot) => `<g transform="rotate(${rot} ${cx} ${cy})">
+  <path d="M${cx - 46} ${cy}q46-38 92 0-46 38-92 0z" fill="url(#g${i})" stroke="#6e4a12" stroke-width="1.5"/>
+  <path d="M${cx - 30} ${cy - 12}q30-12 60 0" stroke="#6e4a12" stroke-width="1.4" fill="none" opacity=".4"/>
+  <path d="M${cx - 16} ${cy - 4}h32${[-12, -6, 0, 6, 12].map((d) => `M${cx + d} ${cy - 8}v8`).join("")}" stroke="#fff6c8" stroke-width="2.2"/>
+  <path d="M${cx - 34} ${cy - 3}q12-11 30-14-14 5-24 16z" fill="#fff" opacity=".35"/></g>`;
+const trHat = (x, y, rot, sc = 1) => `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${sc})">
+  <ellipse cx="0" cy="0" rx="46" ry="10" fill="#e8c46a" stroke="#a87b2a" stroke-width="1.5"/>
+  <path d="M-24 -1q0-30 24-30t24 30z" fill="#efcf7a" stroke="#a87b2a" stroke-width="1.5"/>
+  <path d="M-24 -2q24 7 48 0v-9q-24 7-48 0z" fill="#d7263d"/>
+  ${[-36, -24, -12, 0, 12, 24, 36].map((x) => `<path d="M${x} -5q2 5 0 10" stroke="#c49a45" stroke-width="1" fill="none" opacity=".7"/>`).join("")}
+  ${[-14, -5, 4, 13].map((x) => `<path d="M${x} -26q3 6 2 13" stroke="#c49a45" stroke-width="1" fill="none" opacity=".7"/>`).join("")}
+  <path d="M-16 -24q10-8 20-6" stroke="#fff8dc" stroke-width="2" fill="none" opacity=".7"/></g>`;
+// The league's flag: a skull in the straw hat over crossed footballs
+const lgEmblem = (x, y, sc) => `<g transform="translate(${x} ${y}) scale(${sc})">
+  ${[32, -32].map((a) => `<g transform="rotate(${a})"><path d="M-54 0q54-30 108 0-54 30-108 0z" fill="#8b4a22" stroke="#f2efe6" stroke-width="2.5"/><path d="M28 -4h16M31 -8v8M36 -8v8M41 -8v8" stroke="#f2efe6" stroke-width="2"/><path d="M-42 -3q-1 3 0 6M42 -3q1 3 0 6" stroke="#f2efe6" stroke-width="2" fill="none"/></g>`).join("")}
+  <circle cx="0" cy="2" r="22" fill="#f2efe6"/><rect x="-13" y="16" width="26" height="13" rx="4" fill="#f2efe6"/>
+  <ellipse cx="-8" cy="4" rx="6" ry="7" fill="#141418"/><ellipse cx="8" cy="4" rx="6" ry="7" fill="#141418"/><path d="M0 11l-3 6h6z" fill="#141418"/>
+  <path d="M-6 22v6M0 22v6M6 22v6" stroke="#141418" stroke-width="1.6"/>
+  ${trHat(0, -14, -6, 0.6)}</g>`;
+const lgCloth = (x, y, w, h, a = 7) => `<path d="M${x} ${y}C${x + w * 0.35} ${y - a} ${x + w * 0.65} ${y + a} ${x + w} ${y}V${y + h}C${x + w * 0.65} ${y + h + a} ${x + w * 0.35} ${y + h - a} ${x} ${y + h}z" fill="#141418" stroke="#2a2a30" stroke-width="1.5"/>`;
+const leagueLogo = (cls = "lglogo") => `<svg class="${cls}" viewBox="0 0 200 140" role="img" aria-label="Buckaroo Football League flag" xmlns="http://www.w3.org/2000/svg">${lgCloth(8, 10, 184, 120)}${lgEmblem(100, 74, 1.12)}</svg>`;
+TROPHY.bowl = { art: (i) => { const r = -36 * Math.PI / 180, c = Math.cos(r), sn = Math.sin(r), tx = 121 + 46 * c, ty = 112 + 46 * sn;
+  return `<path d="M113 134h14l15 84H98z" fill="url(#g${i})"/>${trShine("M114 138h4l-8 76h-5z")}
+  <path d="M107 138q13-12 26 0l-4 4h-18z" fill="url(#g${i})" stroke="#6e4a12" stroke-width=".8"/><path d="M86 216h68l6 22H80z" fill="url(#g${i})"/>
+  ${trBall(i, 121, 112, -36)}${trHat(tx - 9 * c, ty - 9 * sn - 2, 26, 0.5)}`; },
+  over: () => `${lgCloth(103, 243, 34, 18, 1.5)}${lgEmblem(120, 252, 0.13)}` };
+// Names and links for a trophy: the awards, plus the Buckaroo Bowl
+const trInfo = (k) => (k === "bowl" ? { nm: "Buckaroo Bowl", cat: "Champion", go: "trophies" } : { ...awInfo(k), go: `aw-${k}` });
 // Each drawing gets its own gradient ids, so several trophies can share a page
 let trophyN = 0;
-const trophy = (k, small) => { const t = TROPHY[k], a = awInfo(k); if (!t || !a) return ""; const i = `t${trophyN++}`;
-  return `<svg class="trophy" viewBox="0 0 240 320" role="img" aria-label="${esc(a.nm)} trophy" xmlns="http://www.w3.org/2000/svg">${trDefs(i, t.metal)}<ellipse cx="120" cy="130" rx="110" ry="120" fill="url(#glow${i})"/>${t.art(i)}${trPed(i, small ? "" : esc(a.nm), small ? "" : esc(a.cat))}</svg>`; };
+const trophy = (k, small) => { const t = TROPHY[k], a = trInfo(k); if (!t || !a.nm) return ""; const i = `t${trophyN++}`;
+  return `<svg class="trophy" viewBox="0 0 240 320" role="img" aria-label="${esc(a.nm)} trophy" xmlns="http://www.w3.org/2000/svg">${trDefs(i, k === "bowl" ? "gold" : t.metal || "silver")}<ellipse cx="120" cy="130" rx="110" ry="120" fill="url(#glow${i})"/>${t.art(i)}${trPed(i, small ? "" : esc(a.nm), small ? "" : esc(a.cat))}${t.over ? t.over(i) : ""}</svg>`; };
 // A shelf of the trophies someone has won, with the seasons under each ({ k, ys })
-const trophyCase = (list) => `<div class="box tcase">${list.map((a) => `<button class="tc" data-go="aw-${a.k}">${trophy(a.k, 1)}<b>${esc(awInfo(a.k).nm)}</b><small>${a.ys.join(", ")}</small></button>`).join("")}</div>`;
+const trophyCase = (list) => `<div class="box tcase">${list.map((a) => `<button class="tc${a.k === "bowl" ? " big" : ""}" data-go="${trInfo(a.k).go}">${trophy(a.k, 1)}<b>${esc(trInfo(a.k).nm)}</b><small>${a.ys.join(", ")}</small></button>`).join("")}</div>`;
 function awardView() {
   const a = awInfo(state.aw); if (!a) return "";
   const seasons = D.seasons.filter((s) => s.done || s.played.length);
@@ -3344,6 +3375,10 @@ $("#app").addEventListener("input", (e) => {
 window.addEventListener("popstate", (e) => { parseHash(); render(); window.scrollTo({ top: (e.state && e.state.scroll) || 0 }); });
 // A hash typed or pasted by hand (no history state of ours)
 window.addEventListener("hashchange", () => { if (!history.state) { parseHash(); render(); } });
+// The league flag beside the name, and its emblem as the tab icon
+(() => { const el = document.getElementById("brandlogo"); if (el) el.innerHTML = leagueLogo();
+  const ic = document.createElement("link"); ic.rel = "icon"; ic.type = "image/svg+xml";
+  ic.href = "data:image/svg+xml," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="-62 -62 124 124">${lgEmblem(0, 0, 1)}</svg>`); document.head.appendChild(ic); })();
 tint(); parseHash(); render();
 })();
 </script>
