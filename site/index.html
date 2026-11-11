@@ -488,6 +488,11 @@ td.ru { font-size: 12.5px; white-space: nowrap; }
 .award .k { font-size: 12px; font-weight: 700; }
 .award .who { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
 .trophy { display: block; width: 100%; height: auto; }
+.lbar { margin-bottom: 10px; } .ltable th.on, .ltable td.on { font-weight: 700; color: var(--ink); }
+.lwho, .lteam { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.lmark { all: unset; cursor: pointer; font-size: 13px; margin-left: 2px; }
+/* Phones: just the stat being sorted by, and the team's square without the manager */
+@media (max-width: 520px) { .ltable .st:not(.on) { display: none; } .ltable .lteam .muted { display: none; } .ltable td, .ltable th { padding-left: 6px; padding-right: 6px; } }
 .award { position: relative; } .award .k, .award .who { padding-right: 40px; }
 .awtro { position: absolute; top: 6px; right: 6px; width: 40px; pointer-events: none; }
 .ibimg { width: 180px; max-width: 70%; margin: 8px auto 0; }
@@ -918,7 +923,7 @@ function parseHash() {
   else if ((m = h.match(/^ow-([a-z0-9]+)$/)) && OW[m[1] === "buggyd" ? "seastone" : m[1]]) { state.view = "ow"; state.ow = m[1] === "buggyd" ? "seastone" : m[1]; } // Seastoned was briefly Buggy'd
   else if ((m = h.match(/^(bowl|bum)-(\d{4})$/)) && S[+m[2]] && S[+m[2]].done) { state.view = "game"; state.gameKind = m[1]; state.year = +m[2]; }
   else if ((m = h.match(/^news-([a-z0-9-]+)$/)) && NEWS.some((a) => a.id === m[1])) { state.view = "article"; state.newsId = m[1]; }
-  else if (["home", "news", "rankings", "social", "trophies", "managers", "map", "players", "overrated", "transactions", "odds", "h2h", "ratings", "awards", "mgrawards", "records", "laughtale"].includes(h)) state.view = h;
+  else if (["home", "news", "rankings", "social", "trophies", "managers", "map", "players", "leaders", "overrated", "transactions", "odds", "h2h", "ratings", "awards", "mgrawards", "records", "laughtale"].includes(h)) state.view = h;
   else state.view = "home"; // no or unknown hash: the home page
 }
 // Each page gets its own history entry so the browser's back button returns to it,
@@ -934,7 +939,7 @@ document.addEventListener("click", (e) => { const b = e.target.closest("[data-go
 const SECTIONS = {
   news: [["news", "News"], ["rankings", "Power Rankings"], ["social", "Social"]],
   managers: [["managers", "Managers"], ["ratings", "Laboon"], ["h2h", "Head-to-Head"], ["map", "Map"]],
-  players: [["players", "Players"], ["overrated", "Overrated"], ["transactions", "Transactions"]],
+  players: [["players", "Players"], ["leaders", "Leaders"], ["overrated", "Overrated"], ["transactions", "Transactions"]],
   awards: [["awards", "Players"], ["mgrawards", "Managers"]],
   trophies: [["trophies", "Buckaroo Bowls"], ["laughtale", "Laugh Tale"], ["records", "Record Book"]],
 };
@@ -2437,6 +2442,38 @@ const pWho = (p) => `${posTag(p.pos)}${pn(p.n)}`;
 const firsts = (ks) => ks.map((k) => esc(D.managers[k].first)).join(", ");
 function topMgr(p, f) { const c = {}; for (const w of p.weeks.filter(f)) c[w.mgr] = (c[w.mgr] || 0) + 1; const k = Object.keys(c).sort((a, b) => c[b] - c[a])[0]; return k ? D.managers[k].first : "—"; }
 const PSORT = { ptsS: ["Points as a Starter", (p) => p.ptsS], ptsB: ["Points on the Bench", (p) => p.ptsB], wks: ["Weeks Rostered", (p) => p.wks], mgrs: ["Managers", (p) => p.mgrs.length], moves: ["Times Moved", (p) => p.adds + p.drops + p.trades], name: ["Name", null] };
+// ---------- League Leaders: every player's season, filtered by position and sorted by any stat ----------
+// Counts the same weeks as the awards (finished games, playoffs included), so the leader here is the award's leader
+const LSORT = { ptsS: ["Points as a starter", "Started"], per: ["Points per start", "Per start"], best: ["Best week", "Best"], ptsB: ["Points on the bench", "Bench"], tot: ["Total points", "Total"] };
+function leaderRows(s) {
+  const y = s.year, aw = seasonAwards(s), marks = new Map();
+  for (const [k, e] of AWARDS) if (aw[k] && aw[k].p) (marks.get(aw[k].p) || marks.set(aw[k].p, []).get(aw[k].p)).push([k, e]);
+  return PL.map((p) => { const ws = p.weeks.filter((w) => w.y === y && w.fin); if (!ws.length) return null;
+    const st = ws.filter((w) => w.start), ptsS = sum(st, (w) => w.pts), by = {};
+    for (const w of ws) by[w.t.id] = (by[w.t.id] || 0) + (w.start ? w.pts : 0.001);
+    const tid = Object.keys(by).sort((a, b) => by[b] - by[a])[0], last = ws[ws.length - 1];
+    return { p, n: st.length, ptsS, per: st.length ? ptsS / st.length : 0, best: st.length ? Math.max(...st.map((w) => w.pts)) : 0,
+      ptsB: sum(ws.filter((w) => w.slot === "BN"), (w) => w.pts), tot: sum(ws, (w) => w.pts), t: s.byId[tid], wk: last.wk, aw: marks.get(p) || [] }; }).filter(Boolean);
+}
+function leadersView() {
+  const ys = D.seasons.filter((x) => x.done || x.played.length).map((x) => x.year).reverse();
+  const y = ys.includes(+state.ly) ? +state.ly : ys[0], s = S[y], pos = state.lpos || "", sk = LSORT[state.lsort] ? state.lsort : "ptsS";
+  // Per start needs a few starts, or a one-week fill-in tops the list
+  let rows = leaderRows(s).filter((r) => !pos || r.p.pos === pos).filter((r) => sk !== "per" || r.n >= 3);
+  rows.sort((a, b) => b[sk] - a[sk] || b.ptsS - a.ptsS);
+  const all = rows.length, shown = state.lall || pos ? rows : rows.slice(0, 100);
+  const wk = Math.max(0, ...s.played.filter((m) => m.wk <= s.regWeeks).map((m) => m.wk));
+  const bar = (key, list, cur) => `<div class="weekbar lbar">${list.map(([v, l]) => `<button data-${key}="${v}" aria-current="${v === cur}">${l}</button>`).join("")}</div>`;
+  const c = (k, v) => `<td class="n st${k === sk ? " on" : ""}">${v}</td>`;
+  const body = shown.map((r, i) => `<tr><td class="n muted">${i + 1}</td><td><span class="lwho">${pWho(r.p)}${r.aw.map(([k, e]) => `<button class="lmark" data-go="aw-${k}" title="${esc(awInfo(k).nm)}${s.done ? "" : " (leading)"}">${e}</button>`).join("")}</span></td>
+    <td><span class="lteam">${badge(r.t, 1)}<span class="muted">${mgrName(mgrAt(r.t, r.wk))}</span></span></td><td class="n">${r.n}</td>${c("ptsS", f1(r.ptsS))}${c("per", r.n ? f1(r.per) : "–")}${c("best", r.n ? f1(r.best) : "–")}${c("ptsB", f1(r.ptsB))}${c("tot", f1(r.tot))}</tr>`).join("");
+  return `<div class="vhead"><div><div class="eyebrow">${s.done ? `${y} season` : `${y} · through week ${wk}`}</div><h2>League Leaders</h2><p>Every player's ${y} season in the BFL, by what he scored for the teams that had him.</p></div></div>
+  ${bar("ly", ys.map((yy) => [yy, yy]), y)}
+  ${bar("lpos", [["", "All"], ...["QB", "RB", "WR", "TE", "K", "D/ST"].map((x) => [x, x])], pos)}
+  <div class="filters"><select id="lsort" aria-label="Sort by">${Object.entries(LSORT).map(([k, [l]]) => `<option value="${k}"${k === sk ? " selected" : ""}>Sort: ${l}</option>`).join("")}</select></div>
+  <div class="box scroll"><table class="compact ltable"><thead><tr><th class="n">#</th><th>Player</th><th>Team</th><th class="n">Starts</th>${Object.entries(LSORT).map(([k, [, h]]) => `<th class="n st${k === sk ? " on" : ""}">${h}</th>`).join("")}</tr></thead><tbody>${body || `<tr><td colspan="9" class="muted">Nobody yet.</td></tr>`}</tbody></table></div>
+  <p class="note">${all} player${all === 1 ? "" : "s"}${shown.length < all ? `, showing the top ${shown.length}. <button class="mlink" data-lall="1">Show all</button>` : ""}. Points count only finished games, playoffs and consolation games included, the same weeks as the awards; the team is where he scored the most. ${sk === "per" ? "Per start needs at least 3 starts. " : ""}An award emoji marks ${s.done ? "a winner" : "the current leader"}; tap it for the award.</p>`;
+}
 function playersView() {
   const by = (f, n = 5) => [...PL].sort((a, b) => f(b) - f(a)).slice(0, n);
   const boards = [
@@ -3199,7 +3236,7 @@ function render() {
   chrome();
   if (mapObj) { mapObj.remove(); mapObj = null; }
   const v = state.view;
-  $("#app").innerHTML = sectionTabs(v) + (v === "season" ? seasonView() : v === "mgr" ? mgrView() : v === "managers" ? managers() : v === "players" ? playersView() : v === "player" ? playerView() : v === "home" ? home() : v === "news" ? newsView() : v === "rankings" ? rankingsView() : v === "article" ? articleView() : v === "social" ? socialView() : v === "odds" ? oddsView() : v === "map" ? mapView() : v === "overrated" ? overratedView() : v === "transactions" ? txView() : v === "h2h" ? h2h() : v === "ratings" ? ratingsView() : v === "records" ? records() : v === "award" ? awardView() : v === "ow" ? owView() : v === "user" ? userView() : v === "laughtale" ? laughTaleView() : v === "ltclass" ? ltClassView() : v === "game" ? gameView() : v === "awards" ? awardsView("p") : v === "mgrawards" ? awardsView("m") : trophies());
+  $("#app").innerHTML = sectionTabs(v) + (v === "season" ? seasonView() : v === "mgr" ? mgrView() : v === "managers" ? managers() : v === "players" ? playersView() : v === "leaders" ? leadersView() : v === "player" ? playerView() : v === "home" ? home() : v === "news" ? newsView() : v === "rankings" ? rankingsView() : v === "article" ? articleView() : v === "social" ? socialView() : v === "odds" ? oddsView() : v === "map" ? mapView() : v === "overrated" ? overratedView() : v === "transactions" ? txView() : v === "h2h" ? h2h() : v === "ratings" ? ratingsView() : v === "records" ? records() : v === "award" ? awardView() : v === "ow" ? owView() : v === "user" ? userView() : v === "laughtale" ? laughTaleView() : v === "ltclass" ? ltClassView() : v === "game" ? gameView() : v === "awards" ? awardsView("p") : v === "mgrawards" ? awardsView("m") : trophies());
   document.title = "Buckaroo League History";
   if (v === "map") initMap();
   if (v === "season") setTimeout(celebrate, 200);
@@ -3223,6 +3260,7 @@ $("#app").addEventListener("click", (e) => {
   const og = e.target.closest("[data-opengame]"); if (og) { const [y, w, h] = og.dataset.opengame.split("|").map(Number); state.week = w; state.open = `${w}-${h}`; state.gameTab = "stats"; go(`${y}-weekly`); return; }
   const gt = e.target.closest("[data-gtab]"); if (gt) { state.gameTab = gt.dataset.gtab; render(); return; }
   const owy = e.target.closest("[data-owyear]"); if (owy) { state.owYear = owy.dataset.owyear === "all" ? null : +owy.dataset.owyear; render(); return; }
+  const lb = e.target.closest("[data-ly],[data-lpos],[data-lall]"); if (lb) { const d = lb.dataset; if (d.ly) state.ly = +d.ly; if ("lpos" in d) state.lpos = d.lpos; state.lall = !!d.lall; render(); return; }
   const ay = e.target.closest("[data-awyear]"); if (ay) { state.awYear = +ay.dataset.awyear; if (!ay.dataset.go) { render(); return; } } // a link can also pick the year it opens to
   const oy = e.target.closest("[data-oddsyear]"); if (oy) { state.oddsYear = +oy.dataset.oddsyear; state.oddsFocus = null; render(); return; }
   const ok = e.target.closest("[data-oddskey]"); if (ok) { state.oddsKey = ok.dataset.oddskey; render(); return; }
@@ -3241,6 +3279,7 @@ $("#app").addEventListener("change", (e) => {
   if (id === "moveTeam") { state.moveTeam = e.target.value; render(); }
   if (id === "rosterWeek") { state.rosterWeek = e.target.value; render(); }
   if (id === "standWeek") { state.standWeek = e.target.value; render(); }
+  if (id === "lsort") { state.lsort = e.target.value; render(); return; }
   if (id === "ppos" || id === "psort") { state[id] = e.target.value; $("#plist").innerHTML = playerRows(); }
   if (id === "txy" || id === "txm" || id === "txt") { state[id] = e.target.value; $("#txlist").innerHTML = txRows(); }
 });
