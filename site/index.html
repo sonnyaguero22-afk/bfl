@@ -487,7 +487,8 @@ td.ru { font-size: 12.5px; white-space: nowrap; }
 @media (max-width: 520px) { .awgrid { grid-template-columns: 1fr 1fr; gap: 8px; } .award { padding: 10px; } .award .who { font-size: 14px; flex-wrap: wrap; } }
 .award .k { font-size: 12px; font-weight: 700; }
 .award .who { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
-.trophy { display: block; width: 100%; height: auto; }
+.trophy, .ring { display: block; width: 100%; height: auto; }
+.tc .ring { width: 72px; height: 101px; } .tc.ringc b { color: var(--gold); }
 .lglogo { height: .78em; width: auto; vertical-align: -.06em; margin-right: .2em; }
 .tc.big b { color: var(--gold); }
 .lbar { margin-bottom: 10px; } .ltable th.on, .ltable td.on { font-weight: 700; color: var(--ink); }
@@ -502,7 +503,7 @@ td.ru { font-size: 12.5px; white-space: nowrap; }
 .tc { all: unset; cursor: pointer; width: 92px; display: grid; justify-items: center; gap: 1px; text-align: center; border-radius: 12px; padding: 4px 2px; }
 .tc:hover { background: rgba(127, 127, 127, .12); } .tc:focus-visible { outline: 2px solid var(--gold); }
 .tc .trophy { width: 76px; } .tc b { font-size: 12px; line-height: 1.2; } .tc small { font-size: 11px; color: var(--muted); }
-@media (max-width: 520px) { .tc { width: 76px; } .tc .trophy { width: 64px; } }
+@media (max-width: 520px) { .tc { width: 76px; } .tc .trophy { width: 64px; } .tc .ring { width: 60px; height: 85px; } }
 .award small { display: block; font-size: 12px; line-height: 1.35; }
 .award.top { border-color: var(--gold); }
 .award.shame .k { color: var(--loss); }
@@ -2185,19 +2186,64 @@ const lgEmblem = (x, y, sc) => `<g transform="translate(${x} ${y}) scale(${sc})"
 const lgCloth = (x, y, w, h, a = 7) => `<path d="M${x} ${y}C${x + w * 0.35} ${y - a} ${x + w * 0.65} ${y + a} ${x + w} ${y}V${y + h}C${x + w * 0.65} ${y + h + a} ${x + w * 0.35} ${y + h - a} ${x} ${y + h}z" fill="#141418" stroke="#2a2a30" stroke-width="1.5"/>`;
 const leagueLogo = (cls = "lglogo") => `<svg class="${cls}" viewBox="0 0 200 140" role="img" aria-label="Buckaroo Football League flag" xmlns="http://www.w3.org/2000/svg">${lgCloth(8, 10, 184, 120)}${lgEmblem(100, 74, 1.12)}</svg>`;
 TROPHY.bowl = { art: (i) => { const r = -36 * Math.PI / 180, c = Math.cos(r), sn = Math.sin(r), tx = 121 + 46 * c, ty = 112 + 46 * sn;
-  return `<path d="M113 134h14l15 84H98z" fill="url(#g${i})"/>${trShine("M114 138h4l-8 76h-5z")}
+  return `<g transform="translate(120 238) scale(1.2) translate(-120 -238)"><path d="M113 134h14l15 84H98z" fill="url(#g${i})"/>${trShine("M114 138h4l-8 76h-5z")}
   <path d="M107 138q13-12 26 0l-4 4h-18z" fill="url(#g${i})" stroke="#6e4a12" stroke-width=".8"/><path d="M86 216h68l6 22H80z" fill="url(#g${i})"/>
-  ${trBall(i, 121, 112, -36)}${trHat(tx - 9 * c, ty - 9 * sn - 2, 26, 0.5)}`; } };
+  ${trBall(i, 121, 112, -36)}${trHat(tx - 9 * c, ty - 9 * sn - 2, 26, 0.5)}</g>`; } };
 // Every trophy carries the league flag on its plinth
 const trPlinth = () => `${lgCloth(103, 243, 34, 18, 1.5)}${lgEmblem(120, 252, 0.13)}`;
 // Names and links for a trophy: the awards, plus the Buckaroo Bowl
 const trInfo = (k) => (k === "bowl" ? { nm: "Buckaroo Bowl", cat: "Champion", go: "trophies" } : { ...awInfo(k), go: `aw-${k}` });
+// ---------- Championship rings: one per Buckaroo Bowl, in the champion's color, at the front of a ringed player's trophy case ----------
+// A ship's-wheel rim lettered BUCKAROO BOWL <n>, a pavé halo around a stone with the league emblem, the year and team on the band,
+// and a story: an ornament at six o'clock between the team and a phrase, plus a line on the band. Seasons without a story get
+// a star per title the manager has won and his regular-season record.
+const RING_STORY = {
+  2023: { right: "CHAMPIONS", band: "THE FIRST", mid: "star" },
+  2024: { right: "BACK TO BACK", band: "2023 · 2024", mid: "stars" },
+  2025: { right: "CHAMPIONS", band: "WORST TO FIRST", mid: "crown" },
+};
+let ringN = 0;
+const ringArt = (y, small) => { const s = S[y], c = s && s.teams.find((t) => t.final === 1); if (!c) return "";
+  const i = `r${ringN++}`, h = hue[c.mgr] ?? 210, R2 = Math.PI / 180, nm = nameAt(c, s.regWeeks).toUpperCase();
+  const titles = D.seasons.filter((x) => x.done && x.year <= y && x.teams.some((t) => t.final === 1 && t.mgr === c.mgr)).length;
+  const st = RING_STORY[y] || { right: "CHAMPIONS", band: `${c.w}–${c.l}${c.t ? `–${c.t}` : ""}`, mid: titles > 1 ? "stars" : "star" };
+  const BX = 140, BY = 176, RX = 74, RY = 96, gem = `url(#d${i})`, ink = "#4a3008";
+  const star = (x, yy) => `<path transform="translate(${x} ${yy}) scale(.72) translate(${-x} ${-yy})" d="M${x} ${yy - 9}l3 7 7 .5-5.5 4.5 2 7-6.5-4-6.5 4 2-7-5.5-4.5 7-.5z" fill="${gem}" stroke="#b8862b" stroke-width=".6"/>`;
+  const n = st.mid === "stars" ? Math.min(Math.max(titles, 2), 3) : 1, mid = st.mid === "crown"
+    ? `<path d="M132 201l-1.5-10 5 4.5 4.5-7 4.5 7 5-4.5-1.5 10z" fill="${gem}" stroke="#b8862b" stroke-width=".7" stroke-linejoin="round"/><path d="M132 201h16" stroke="#b8862b" stroke-width="1.2"/>`
+    : [...Array(n)].map((_, k) => star(140 + (k - (n - 1) / 2) * 18, 195)).join("");
+  const gap = st.mid === "crown" ? 18 : n === 1 ? 17 : 15 + 9 * n, L = Math.PI * 78, g = (gap / L) * 100;
+  const left = nm.length <= 12 ? nm : (c.abbrev || "").toUpperCase();
+  const eng = (path, off, txt, size) => `<text font-family="Georgia, serif" font-weight="700" font-size="${size}" fill="${ink}" letter-spacing="1.2" dominant-baseline="central"><textPath href="#${path}${i}" startOffset="${off}%" text-anchor="middle">${esc(txt)}</textPath></text>`;
+  return `<svg class="ring" viewBox="0 0 280 300" role="img" aria-label="Buckaroo Bowl ${roman(y - D.firstYear + 1)} ring" xmlns="http://www.w3.org/2000/svg"><defs>
+  <linearGradient id="g${i}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff6c8"/><stop offset=".3" stop-color="#f2c94c"/><stop offset=".65" stop-color="#b8862b"/><stop offset="1" stop-color="#6e4a12"/></linearGradient>
+  <linearGradient id="v${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6c8"/><stop offset=".45" stop-color="#e0b445"/><stop offset="1" stop-color="#7a5418"/></linearGradient>
+  <radialGradient id="s${i}" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="hsl(${h} 80% 80%)"/><stop offset=".55" stop-color="hsl(${h} 62% 46%)"/><stop offset="1" stop-color="hsl(${h} 70% 18%)"/></radialGradient>
+  <radialGradient id="d${i}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#dfe9f5"/><stop offset="1" stop-color="#9fb2c8"/></radialGradient>
+  <radialGradient id="p${i}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#f4f7fb"/><stop offset=".6" stop-color="#c7d2de"/><stop offset="1" stop-color="#8e9aa8"/></radialGradient>
+  <radialGradient id="w${i}" cx=".5" cy=".42" r=".5"><stop offset="0" stop-color="#ffd75a" stop-opacity=".3"/><stop offset="1" stop-color="#ffd75a" stop-opacity="0"/></radialGradient>
+  <path id="t${i}" d="M70 120a70 70 0 0 1 140 0"/><path id="b${i}" d="M62 120a78 78 0 0 0 156 0"/>
+  <path id="l${i}" d="M${BX} ${BY + RY}A${RX} ${RY} 0 0 1 ${BX} ${BY - RY}"/><path id="k${i}" d="M${BX} ${BY - RY}A${RX} ${RY} 0 0 1 ${BX} ${BY + RY}"/><path id="u${i}" d="M${BX - RX} ${BY}A${RX} ${RY} 0 0 0 ${BX + RX} ${BY}"/></defs>
+  <ellipse cx="140" cy="140" rx="135" ry="135" fill="url(#w${i})"/>
+  <ellipse cx="${BX}" cy="${BY}" rx="${RX}" ry="${RY}" fill="none" stroke="url(#v${i})" stroke-width="26"/>
+  ${[-13, 13].map((d) => `<ellipse cx="${BX}" cy="${BY}" rx="${RX + d}" ry="${RY + d}" fill="none" stroke="#6e4a12" stroke-width="1.2" opacity=".45"/>`).join("")}
+  ${small ? "" : `${eng("l", 33, String(y), 13)}${eng("k", 67, (c.abbrev || "").toUpperCase(), 13)}${eng("u", 50, st.band, 10)}`}
+  ${[...Array(8)].map((_, k) => { const a = (k * 45 + 22.5) * R2, x = Math.cos(a), yy = Math.sin(a);
+    return `<path d="M${140 + 86 * x} ${120 + 86 * yy}L${140 + 100 * x} ${120 + 100 * yy}" stroke="url(#v${i})" stroke-width="6" stroke-linecap="round"/><circle cx="${140 + 102 * x}" cy="${120 + 102 * yy}" r="5.5" fill="url(#g${i})" stroke="#6e4a12" stroke-width=".8"/>`; }).join("")}
+  <circle cx="140" cy="120" r="88" fill="url(#g${i})" stroke="#6e4a12" stroke-width="1.5"/>
+  ${small ? "" : `<text font-family="Georgia, serif" font-weight="700" font-size="13" fill="${ink}" letter-spacing="2.5"><textPath href="#t${i}" startOffset="50%" text-anchor="middle">BUCKAROO BOWL ${roman(y - D.firstYear + 1)}</textPath></text>
+  ${[[left, 50 - g, "end"], [st.right, 50 + g, "start"]].map(([t, o, an]) => `<text font-family="Georgia, serif" font-weight="700" font-size="10" fill="${ink}" textLength="88" lengthAdjust="spacing"><textPath href="#b${i}" startOffset="${o.toFixed(2)}%" text-anchor="${an}" textLength="88" lengthAdjust="spacing">${esc(t)}</textPath></text>`).join("")}`}
+  ${mid}
+  <circle cx="140" cy="120" r="58" fill="#3a2a0e"/>${[...Array(40)].map((_, k) => { const a = (k / 40) * Math.PI * 2; return `<circle cx="${(140 + 53 * Math.cos(a)).toFixed(1)}" cy="${(120 + 53 * Math.sin(a)).toFixed(1)}" r="3.3" fill="url(#p${i})" stroke="#b8862b" stroke-width=".6"/>`; }).join("")}
+  <circle cx="140" cy="120" r="46" fill="url(#s${i})" stroke="url(#g${i})" stroke-width="3"/>
+  ${[0, 60, 120, 180, 240, 300].map((a) => `<path d="M140 120L${140 + 44 * Math.cos(a * R2)} ${120 + 44 * Math.sin(a * R2)}" stroke="#fff" stroke-width=".8" opacity=".18"/>`).join("")}
+  <g opacity=".95">${lgEmblem(140, 124, 0.62)}</g><path d="M96 88q20-26 52-30" stroke="#fff" stroke-width="3" fill="none" opacity=".35" stroke-linecap="round"/></svg>`; };
 // Each drawing gets its own gradient ids, so several trophies can share a page
 let trophyN = 0;
 const trophy = (k, small) => { const t = TROPHY[k], a = trInfo(k); if (!t || !a.nm) return ""; const i = `t${trophyN++}`;
   return `<svg class="trophy" viewBox="0 0 240 320" role="img" aria-label="${esc(a.nm)} trophy" xmlns="http://www.w3.org/2000/svg">${trDefs(i, k === "bowl" ? "gold" : t.metal || "silver")}<ellipse cx="120" cy="130" rx="110" ry="120" fill="url(#glow${i})"/>${t.art(i)}${trPed(i, small ? "" : esc(a.nm), small ? "" : esc(a.cat))}${trPlinth()}</svg>`; };
 // A shelf of the trophies someone has won, with the seasons under each ({ k, ys })
-const trophyCase = (list) => `<div class="box tcase">${list.map((a) => `<button class="tc${a.k === "bowl" ? " big" : ""}" data-go="${trInfo(a.k).go}">${trophy(a.k, 1)}<b>${esc(trInfo(a.k).nm)}</b><small>${a.ys.join(", ")}</small></button>`).join("")}</div>`;
+const trophyCase = (list) => `<div class="box tcase">${list.map((a) => a.ring ? `<button class="tc ringc" data-go="bowl-${a.ring}">${ringArt(a.ring, 1)}<b>Bowl ${roman(a.ring - D.firstYear + 1)}</b><small>${a.ring} ring</small></button>` : `<button class="tc${a.k === "bowl" ? " big" : ""}" data-go="${trInfo(a.k).go}">${trophy(a.k, 1)}<b>${esc(trInfo(a.k).nm)}</b><small>${a.ys.join(", ")}</small></button>`).join("")}</div>`;
 function awardView() {
   const a = awInfo(state.aw); if (!a) return "";
   const seasons = D.seasons.filter((s) => s.done || s.played.length);
@@ -2673,7 +2719,7 @@ function wikiHtml(p, best) {
     ${row("Moves", `${p.drafts} drafted · ${p.adds} pickup${p.adds === 1 ? "" : "s"} · ${p.drops} drop${p.drops === 1 ? "" : "s"} · ${p.trades} trade${p.trades === 1 ? "" : "s"}`)}
     ${ltBlock(`p-${p.k}`)}
   </table></aside>`;
-  return `<div class="wiki"><article class="wikimain">${lead}${info.replace('class="infobox box"', 'class="infobox box ibm-only"')}<h3 class="wikisub">BFL Career</h3>${career}${grouped.length ? `<h3 class="wikisub">Trophy Case</h3>${trophyCase(grouped)}` : ""}${news}</article>${info.replace('class="infobox box"', 'class="infobox box ibd-only"')}</div>`;
+  return `<div class="wiki"><article class="wikimain">${lead}${info.replace('class="infobox box"', 'class="infobox box ibm-only"')}<h3 class="wikisub">BFL Career</h3>${career}${grouped.length || rings.length ? `<h3 class="wikisub">Trophy Case</h3>${trophyCase([...rings.map((r) => ({ ring: r.y })), ...grouped])}` : ""}${news}</article>${info.replace('class="infobox box"', 'class="infobox box ibd-only"')}</div>`;
 }
 
 function playerView() {
