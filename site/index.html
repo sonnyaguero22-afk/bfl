@@ -488,6 +488,8 @@ td.ru { font-size: 12.5px; white-space: nowrap; }
 .award .k { font-size: 12px; font-weight: 700; }
 .award .who { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
 .trophy, .ring { display: block; width: 100%; height: auto; }
+@media (max-width: 520px) { .roster .acq { display: none; } }
+.roster .rgroup th { text-align: left; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding-top: 14px; background: none; }
 #app svg[data-zoom] { cursor: zoom-in; }
 #zoomview { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 16px; background: rgba(0, 0, 0, .72); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
 #zoomview[hidden] { display: none; }
@@ -1028,6 +1030,21 @@ function succession(kind, y) {
   const go = (yy) => (kind === "season" ? `<button class="mlink" data-go="${yy}">${yy}</button>` : gameLink(kind, yy, kind === "bowl" ? bowlName(yy) : `${yy} Bum Bowl`));
   return prev || next ? `<div class="succ"><span>${prev ? `← ${go(prev)}` : ""}</span><span>${next ? `${go(next)} →` : ""}</span></div>` : "";
 }
+// The champion's roster on its Bowl page, like a Super Bowl article's: every player who earned a ring, by position,
+// with how he got there, his starts and points for the champion that season and what he scored in the Bowl
+function champRoster(s, c) {
+  const y = s.year, bowl = s.spans(bowlWeek(s)), ORDER = ["QB", "RB", "WR", "TE", "K", "D/ST"], PLURAL = { QB: "Quarterbacks", RB: "Running backs", WR: "Wide receivers", TE: "Tight ends", K: "Kickers", "D/ST": "Defenses" };
+  const how = (e) => (!e ? "" : e.type === "draft" ? `Draft, round ${e.rd}` : e.type === "trade" ? `Trade, week ${Math.ceil(e.wk)}` : `Waivers, week ${Math.ceil(e.wk)}`);
+  const rows = PL.filter((p) => ringsOf(p).some((r) => r.y === y)).map((p) => { const ws = p.weeks.filter((w) => w.y === y && w.t.id === c.id && w.start && w.fin);
+    return { p, n: ws.length, pts: sum(ws, (w) => w.pts), bowl: ws.filter((w) => bowl.includes(w.wk)), e: p.ev.find((e) => e.y === y && e.t && e.t.id === c.id) }; })
+    .sort((a, b) => ORDER.indexOf(a.p.pos) - ORDER.indexOf(b.p.pos) || b.pts - a.pts);
+  if (!rows.length) return "";
+  const body = ORDER.filter((pos) => rows.some((r) => r.p.pos === pos)).map((pos) => `<tr class="rgroup"><th colspan="5">${PLURAL[pos]}</th></tr>${rows.filter((r) => r.p.pos === pos).map((r) =>
+    `<tr><td><span class="lwho">${posTag(r.p.pos)}${pn(r.p.n)}</span></td><td class="muted acq">${how(r.e)}</td><td class="n">${r.n}</td><td class="n">${f1(r.pts)}</td><td class="n">${r.bowl.length ? f1(sum(r.bowl, (w) => w.pts)) : `<span class="muted">–</span>`}</td></tr>`).join("")}`).join("");
+  return `<h3 class="wikisub">Championship Roster</h3><p>${rows.length} players earned a ring with ${esc(nameAt(c, s.regWeeks))} in ${y}. A ring goes to a player with three or more starts for the champion that season, or a start in one of its playoff games; kickers and defenses need a start in the Bowl or half the regular season.</p>
+  <div class="box scroll"><table class="compact roster"><thead><tr><th>Player</th><th class="acq">Acquired</th><th class="n">Starts</th><th class="n">Points</th><th class="n">Bowl</th></tr></thead><tbody>${body}</tbody></table></div>
+  <p class="note">Starts and points are for ${esc(nameAt(c, s.regWeeks))} that season, playoffs included. Bowl is what he scored in the Buckaroo Bowl.</p>`;
+}
 function gameView() {
   const s = S[state.year], y = s.year, kind = state.gameKind, m = kind === "bowl" ? bowlGame(s) : bumGame(s);
   if (!m) return `<p class="muted">No game on record.</p>`;
@@ -1048,7 +1065,7 @@ function gameView() {
   </table>${succession(kind, y)}</aside>`;
   return `<div class="vhead"><div><div class="eyebrow">${kind === "bowl" ? "Championship" : "Consolation"} · ${y}</div><h2>${title}</h2></div><button class="pill" data-go="${y}" style="border:0;cursor:pointer">← ${y} season</button></div>
   <div class="herowrap">${gameHero(s, m)}</div>${teamStats(s, m)}
-  <div class="wiki"><article class="wikimain">${lead}${info.replace('class="infobox box"', 'class="infobox box ibm-only"').replace("%TROPHY%", trophy("bowl"))}${body}${chart ? `<h3 class="wikisub">Win Chance</h3><div class="wpwrap">${chart}</div>` : ""}<h3 class="wikisub">Box Score</h3><div class="boxpair">${side(win)}${side(lose)}</div></article>${info.replace('class="infobox box"', 'class="infobox box ibd-only"').replace("%TROPHY%", trophy("bowl"))}</div>`;
+  <div class="wiki"><article class="wikimain">${lead}${info.replace('class="infobox box"', 'class="infobox box ibm-only"').replace("%TROPHY%", trophy("bowl"))}${body}${chart ? `<h3 class="wikisub">Win Chance</h3><div class="wpwrap">${chart}</div>` : ""}<h3 class="wikisub">Box Score</h3><div class="boxpair">${side(win)}${side(lose)}</div>${kind === "bowl" ? champRoster(s, win) : ""}</article>${info.replace('class="infobox box"', 'class="infobox box ibd-only"').replace("%TROPHY%", trophy("bowl"))}</div>`;
 }
 
 function seasonView() {
