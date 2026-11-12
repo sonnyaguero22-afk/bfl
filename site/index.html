@@ -2230,7 +2230,7 @@ const ringArt = (y, small) => { const s = S[y], c = s && s.teams.find((t) => t.f
   ${small ? "" : `${eng("l", 33, String(y), 13)}${eng("k", 67, (c.abbrev || "").toUpperCase(), 13)}${eng("u", 50, st.band, 10)}`}
   ${[...Array(8)].map((_, k) => { const a = (k * 45 + 22.5) * R2, x = Math.cos(a), yy = Math.sin(a);
     return `<path d="M${140 + 86 * x} ${120 + 86 * yy}L${140 + 100 * x} ${120 + 100 * yy}" stroke="url(#v${i})" stroke-width="6" stroke-linecap="round"/><circle cx="${140 + 102 * x}" cy="${120 + 102 * yy}" r="5.5" fill="url(#g${i})" stroke="#6e4a12" stroke-width=".8"/>`; }).join("")}
-  <circle cx="140" cy="120" r="88" fill="url(#g${i})" stroke="#6e4a12" stroke-width="1.5"/>
+  <circle cx="140" cy="120" r="88" fill="url(#g${i})" stroke="#6e4a12" stroke-width="1.5"/><circle cx="140" cy="120" r="83.5" fill="none" stroke="#fff6c8" stroke-width="1" opacity=".5"/>
   ${small ? "" : `<text font-family="Georgia, serif" font-weight="700" font-size="13" fill="${ink}" letter-spacing="2.5"><textPath href="#t${i}" startOffset="50%" text-anchor="middle">BUCKAROO BOWL ${roman(y - D.firstYear + 1)}</textPath></text>
   ${[[left, 50 - g, "end"], [st.right, 50 + g, "start"]].map(([t, o, an]) => `<text font-family="Georgia, serif" font-weight="700" font-size="10" fill="${ink}" textLength="88" lengthAdjust="spacing"><textPath href="#b${i}" startOffset="${o.toFixed(2)}%" text-anchor="${an}" textLength="88" lengthAdjust="spacing">${esc(t)}</textPath></text>`).join("")}`}
   ${mid}
@@ -2243,7 +2243,7 @@ let trophyN = 0;
 const trophy = (k, small) => { const t = TROPHY[k], a = trInfo(k); if (!t || !a.nm) return ""; const i = `t${trophyN++}`;
   return `<svg class="trophy" viewBox="0 0 240 320" role="img" aria-label="${esc(a.nm)} trophy" xmlns="http://www.w3.org/2000/svg">${trDefs(i, k === "bowl" ? "gold" : t.metal || "silver")}<ellipse cx="120" cy="130" rx="110" ry="120" fill="url(#glow${i})"/>${t.art(i)}${trPed(i, small ? "" : esc(a.nm), small ? "" : esc(a.cat))}${trPlinth()}</svg>`; };
 // A shelf of the trophies someone has won, with the seasons under each ({ k, ys })
-const trophyCase = (list) => `<div class="box tcase">${list.map((a) => a.ring ? `<button class="tc ringc" data-go="bowl-${a.ring}">${ringArt(a.ring, 1)}<b>Bowl ${roman(a.ring - D.firstYear + 1)}</b><small>${a.ring} ring</small></button>` : `<button class="tc${a.k === "bowl" ? " big" : ""}" data-go="${trInfo(a.k).go}">${trophy(a.k, 1)}<b>${esc(trInfo(a.k).nm)}</b><small>${a.ys.join(", ")}</small></button>`).join("")}</div>`;
+const trophyCase = (list) => `<div class="box tcase">${list.map((a) => a.ring ? `<button class="tc ringc" data-go="bowl-${a.ring}">${ringArt(a.ring, 1)}<b>Bowl ${roman(a.ring - D.firstYear + 1)}</b><small>${a.ring}</small></button>` : `<button class="tc${a.k === "bowl" ? " big" : ""}" data-go="${trInfo(a.k).go}">${trophy(a.k, 1)}<b>${esc(trInfo(a.k).nm)}</b><small>${a.ys.join(", ")}</small></button>`).join("")}</div>`;
 function awardView() {
   const a = awInfo(state.aw); if (!a) return "";
   const seasons = D.seasons.filter((s) => s.done || s.played.length);
