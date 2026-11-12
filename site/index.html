@@ -2212,6 +2212,10 @@ const RING_STORY = {
   2025: { right: "CHAMPIONS", band: "WORST TO FIRST", mid: "crown" },
 };
 let ringN = 0;
+// The stone is the gem nearest the champion's team color, each at its own depth (a raw green reads as lime)
+const RING_GEMS = [[20, 32, 80, 48], [50, 146, 68, 38], [110, 160, 55, 34], [150, 185, 62, 42], [195, 216, 67, 54], [245, 272, 55, 50], [290, 325, 62, 42], [330, 352, 70, 45]];
+const ringGem = (h) => { const g = [...RING_GEMS].reverse().find(([from]) => h >= from) || RING_GEMS[RING_GEMS.length - 1], [, hh, sat, l] = g;
+  return [`hsl(${hh} ${sat}% ${Math.min(l + 36, 86)}%)`, `hsl(${hh} ${sat}% ${l}%)`, `hsl(${hh} ${Math.min(sat + 8, 90)}% ${Math.round(l * 0.42)}%)`]; };
 const ringArt = (y, small) => { const s = S[y], c = s && s.teams.find((t) => t.final === 1); if (!c) return "";
   const i = `r${ringN++}`, h = hue[c.mgr] ?? 210, R2 = Math.PI / 180, nm = nameAt(c, s.regWeeks).toUpperCase();
   const titles = D.seasons.filter((x) => x.done && x.year <= y && x.teams.some((t) => t.final === 1 && t.mgr === c.mgr)).length;
@@ -2227,7 +2231,7 @@ const ringArt = (y, small) => { const s = S[y], c = s && s.teams.find((t) => t.f
   return `<svg class="ring" data-zoom="r:${y}" viewBox="0 0 280 300" role="img" aria-label="Buckaroo Bowl ${roman(y - D.firstYear + 1)} ring" xmlns="http://www.w3.org/2000/svg"><defs>
   <linearGradient id="g${i}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff6c8"/><stop offset=".3" stop-color="#f2c94c"/><stop offset=".65" stop-color="#b8862b"/><stop offset="1" stop-color="#6e4a12"/></linearGradient>
   <linearGradient id="v${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6c8"/><stop offset=".45" stop-color="#e0b445"/><stop offset="1" stop-color="#7a5418"/></linearGradient>
-  <radialGradient id="s${i}" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="hsl(${h} 80% 80%)"/><stop offset=".55" stop-color="hsl(${h} 62% 46%)"/><stop offset="1" stop-color="hsl(${h} 70% 18%)"/></radialGradient>
+  <radialGradient id="s${i}" cx=".38" cy=".32" r=".75">${ringGem(h).map((c, k) => `<stop offset="${[0, 0.55, 1][k]}" stop-color="${c}"/>`).join("")}</radialGradient>
   <radialGradient id="d${i}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#dfe9f5"/><stop offset="1" stop-color="#9fb2c8"/></radialGradient>
   <radialGradient id="p${i}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#f4f7fb"/><stop offset=".6" stop-color="#c7d2de"/><stop offset="1" stop-color="#8e9aa8"/></radialGradient>
   <radialGradient id="w${i}" cx=".5" cy=".42" r=".5"><stop offset="0" stop-color="#ffd75a" stop-opacity=".3"/><stop offset="1" stop-color="#ffd75a" stop-opacity="0"/></radialGradient>
