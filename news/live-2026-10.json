@@ -137,12 +137,53 @@
    "team": "Dawgs",
    "about": "move",
    "at": "2026-11-12T19:20:57.590Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Luffy took The fumblers from 90% down to 61% against Ghostu-Spider SZN and nobody has scored. The swing is all lineup and injury news. Randy's lineup was given a big boost earlier, and now Luffy is taking some of it back.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-12T21:08:50.188Z"
+  },
+  {
+   "author": "Zilgit Zealots",
+   "handle": "@ZilgitZealots",
+   "text": "Zoe swapped the Broncos D/ST for Cam Little and the kicker has 56 points in seven weeks. Fine, I see it, the kicker is the move nobody saw coming.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-12T20:52:53.267Z"
+  },
+  {
+   "author": "Band Camp Brad",
+   "handle": "@BandCampBrad",
+   "text": "JMoney cut Michael Wilson and brought in Khalil Shakir and Wan'Dale Robinson in the same sitting. That's a whole receiver room rebuilt before kickoff and I respect the chaos.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-12T21:15:41.111Z"
+  },
+  {
+   "author": "Counting or not Counting GV",
+   "handle": "@CountingornotCountingGV",
+   "text": "Welcome to the squad, Khalil Shakir. He slots straight into the starting lineup against Team Pillbert.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Counting or not Counting GV",
+   "about": "move",
+   "at": "2026-11-12T21:19:50.188Z"
   }
  ],
  "batches": [
   "2026-11-11T18:09:03.967Z",
   "2026-11-12T00:50:48.938Z",
   "2026-11-12T03:02:41.024Z",
-  "2026-11-12T19:20:57.590Z"
+  "2026-11-12T19:20:57.590Z",
+  "2026-11-12T21:19:50.188Z"
  ]
 }
