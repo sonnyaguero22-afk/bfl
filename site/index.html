@@ -3134,18 +3134,22 @@ function fanOf(u) {
   const top = Object.entries(n).sort((a, b) => b[1] - a[1]), tot = sum(top, (e) => e[1]);
   return top.length && top[0][1] >= 2 && top[0][1] >= 0.6 * tot ? s.byId[top[0][0]] : null;
 }
+// Guest stars on the preview panel (parody One Piece characters; picks in news.js GUESTS)
+const GUEST_BIO = { "Roronoa Zoro": "Guest picker. Swordsman. Not lost.", "Nami": "Guest picker. Navigator. I know what every pick pays.", "Usopp": "Guest picker. I called every upset. Ask anyone.",
+  "Sanji": "Guest picker. A lineup is a recipe.", "Tony Tony Chopper": "Guest picker. Doctor. I read every injury report.", "Brook": "Guest picker. Musician. I can finally see the games clearly.", "Buggy": "Guest picker. Captain. Every right pick was mine." };
 const PANEL_BIO = { "Dana Whitfield": "League insider. If it's happening in the BFL, I heard it first.", "Marcus Pell": "Columnist. Long takes on short benches.", "Sal Benedetto": "I bet on everything. Ask me about my locks.", "Dr. Nina Kessler": "Analytics. In Luffy we trust (mostly)." };
 function userView() {
   const u = accounts()[state.user];
   if (!u) return `<div class="vhead"><div><div class="eyebrow">Social</div><h2>Account not found</h2></div></div><p><button class="mlink" data-go="social">← Back to Social</button></p>`;
-  const tm = u.team && u.team.t, fan = u.kind === "fan" || u.kind === "pundit" ? fanOf(u) : null, panel = PANEL_BIO[u.author];
+  const tm = u.team && u.team.t, fan = u.kind === "fan" || u.kind === "pundit" ? fanOf(u) : null, panel = PANEL_BIO[u.author] || GUEST_BIO[u.author];
   const bio = panel || (u.kind === "league" ? "The official account of the Buckaroo Football League. Est. 2023." : tm ? `The official account of ${esc(tm.name)}.` : u.kind === "reporter" ? "Covering the Buckaroo Football League." : u.kind === "pundit" ? "Fantasy football opinions, free of charge and worth it." : fan ? `${esc(fan.name)} fan. Opinions are my own and correct.` : "Fantasy football fan. Here for the takes.");
   const ava = tm ? teamAva(tm, "big") : `<span class="avatar" style="--h:${avatarHue(u.handle)}" aria-hidden="true">${esc((u.author.match(/[A-Za-z0-9]/) || ["?"])[0].toUpperCase())}</span>`;
   // Extras by kind: a team's season, a panelist's picks and berries
   const extra = [];
   if (tm) { const s = S[u.team.y], k = mgrAt(tm, s.curWeek || s.regWeeks), tr = (treasuries()[k] || { by: {} }).by[s.year];
     extra.push(`<button class="mlink" data-go="mgr-${k}">${mbadge(k, 1)} ${mgrName(k)}</button>`, `${s.year}: <b>${tm.w}–${tm.l}${tm.t ? `–${tm.t}` : ""}</b>`); if (tr) extra.push(`💰 ${berry(tr, 1)} this season`); }
-  if (panel) { const y = Math.max(...NEWS.filter((a) => a.type === "preview").map((a) => a.year), 0), r = panelRecord(y, 99)[u.author];
+  if (GUEST_BIO[u.author]) { const g = guestRecord(u.author); if (g.weeks) extra.push(`Guest picks <b>${g.w}-${g.l}</b>`, `${g.weeks} appearance${g.weeks === 1 ? "" : "s"}`); }
+  else if (panel) { const y = Math.max(...NEWS.filter((a) => a.type === "preview").map((a) => a.year), 0), r = panelRecord(y, 99)[u.author];
     if (r) extra.push(`${y} picks <b>${r.w}-${r.l}</b>`, `locks <b>${r.lw}-${r.ll}</b>`, `<b>${berry(r.b, 1)}</b> bankroll`); }
   if (fan) extra.push(`Fan of ${badge(fan, 1)} <b>${esc(fan.name)}</b>`);
   const top = [...u.posts].sort((x, y) => buzz(y.p).likes - buzz(x.p).likes)[0];
@@ -3176,17 +3180,23 @@ function panelRecord(year, upToWk) {
   for (const pv of NEWS.filter((x) => x.type === "preview" && x.year === year && x.wk <= upToWk)) for (const g of pv.picks || []) {
     const m = (S[year] || { matchups: [] }).matchups.find((x) => x.wk === pv.wk && x.h === g.h && x.a === g.a);
     if (!m || m.win === null || m.live) continue;
-    for (const p of g.panel) { const x = (r[p.panelist] = r[p.panelist] || { w: 0, l: 0, lw: 0, ll: 0, b: BANKROLL }); const ok = p.id === m.win; x[ok ? "w" : "l"]++; if (p.confidence === "lock") x[ok ? "lw" : "ll"]++;
+    for (const p of g.panel) { if (!PANEL_BIO[p.panelist]) continue; const x = (r[p.panelist] = r[p.panelist] || { w: 0, l: 0, lw: 0, ll: 0, b: BANKROLL }); const ok = p.id === m.win; x[ok ? "w" : "l"]++; if (p.confidence === "lock") x[ok ? "lw" : "ll"]++;
       const pr = Math.min(0.95, Math.max(0.05, teamWin(S[year], m, p.id) ?? 0.5)); x.b += betResult(pr, ok, STAKE[p.confidence] || STAKE.lean); }
   }
   return r;
 }
+// Guest stars' records: every graded pick in every season, kept apart from Panel Standings
+function guestRecord(name) { let w = 0, l = 0, n = 0;
+  for (const pv of NEWS.filter((x) => x.type === "preview")) for (const g of pv.picks || []) for (const p of g.panel) { if (p.panelist !== name) continue;
+    const m = (S[pv.year] || { matchups: [] }).matchups.find((x) => x.wk === pv.wk && x.h === g.h && x.a === g.a); n++;
+    if (m && m.win !== null && !m.live) p.id === m.win ? w++ : l++; }
+  return { w, l, weeks: new Set(NEWS.filter((x) => x.type === "preview" && (x.picks || []).some((g) => g.panel.some((p) => p.panelist === name))).map((x) => `${x.year}-${x.wk}`)).size }; }
 function picksHtml(a) {
   if (a.type !== "preview" || !a.picks || !a.picks.length) return "";
   const s = S[a.year], res = (g) => s && s.matchups.find((x) => x.wk === a.wk && x.h === g.h && x.a === g.a);
   const games = a.picks.map((g) => { const m = res(g), fin = m && m.win !== null && !m.live;
     return `<div class="box pgame"><div class="k">${esc(g.game)}${fin ? ` <span class="muted">· Final: ${esc(s.byId[m.win].name)} won</span>` : ""}</div>${g.panel.map((p) => { const t = s && s.byId[p.id], hit = fin ? (p.id === m.win ? " hit" : " miss") : "";
-      return `<div class="ppick${hit}"><span class="avatar" style="--h:${avatarHue(p.panelist)}" aria-hidden="true">${esc(p.panelist.replace("Dr. ", "")[0])}</span><div><div class="phead"><b>${esc(p.panelist)}</b> <span class="pill gold">${CONF[p.confidence] || ""}</span> ${t ? badge(t, 1) : ""} <b>${esc(p.pick)}</b>${hit ? ` <span class="pill${hit === " hit" ? "" : " live"}">${hit === " hit" ? "✓" : "✗"}</span>` : ""}</div><p>${esc(p.take)}</p></div></div>`; }).join("")}</div>`; }).join("");
+      return `<div class="ppick${hit}"><span class="avatar" style="--h:${avatarHue(p.panelist)}" aria-hidden="true">${esc(p.panelist.replace("Dr. ", "")[0])}</span><div><div class="phead"><b>${esc(p.panelist)}</b>${GUEST_BIO[p.panelist] ? ` <span class="pill">Guest</span>` : ""} <span class="pill gold">${CONF[p.confidence] || ""}</span> ${t ? badge(t, 1) : ""} <b>${esc(p.pick)}</b>${hit ? ` <span class="pill${hit === " hit" ? "" : " live"}">${hit === " hit" ? "✓" : "✗"}</span>` : ""}</div><p>${esc(p.take)}</p></div></div>`; }).join("")}</div>`; }).join("");
   const rec = panelRecord(a.year, a.wk), names = [...new Set(a.picks.flatMap((g) => g.panel.map((p) => p.panelist)))];
   const table = Object.keys(rec).length ? `<div class="box scroll"><table><thead><tr><th>Panelist</th><th class="n">Picks</th><th class="n">Locks</th><th class="n" title="Each starts the season with ${berry(BANKROLL, 1)} and bets on every pick (lean ${berry(STAKE.lean, 1)}, confident ${berry(STAKE.confident, 1)}, lock ${berry(STAKE.lock, 1)}) at Luffy's pregame odds">Berries</th></tr></thead><tbody>${[...names].sort((p, q) => (rec[q] || { b: BANKROLL }).b - (rec[p] || { b: BANKROLL }).b).map((n) => { const x = rec[n] || { w: 0, l: 0, lw: 0, ll: 0, b: BANKROLL }, d = x.b - BANKROLL; return `<tr><td><b>${esc(n)}</b></td><td class="n">${x.w}-${x.l}</td><td class="n">${x.lw}-${x.ll}</td><td class="n" style="white-space:nowrap"><b>${berry(x.b, 1)}</b>${Math.abs(d) >= 1e6 ? ` <span class="${d > 0 ? "w" : "l"}">${d > 0 ? "+" : ""}${berry(d, 1)}</span>` : ""}</td></tr>`; }).join("")}</tbody></table></div><p class="note">Berries: each panelist starts the season with ${berry(BANKROLL, 1)} and bets every pick (lean ${berry(STAKE.lean, 1)}, confident ${berry(STAKE.confident, 1)}, lock ${berry(STAKE.lock, 1)}), paid at Luffy's pregame odds, so backing an underdog pays more.</p>` : "";
   return `<section><h3>The Panel's Picks</h3><div class="pgrid">${games}</div>${table ? `<h3>Panel Standings, ${a.year}</h3>${table}` : ""}</section>`;
