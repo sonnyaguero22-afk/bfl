@@ -29,7 +29,7 @@ Story types in `news.js`, each dated in-world by `when.js`:
 | Type | When | Notes |
 | --- | --- | --- |
 | recap | after Monday night's game | awards, Trade Watch, playoff stakes, team bios, social |
-| rankings | Tuesday 9am ET | NFL.com-style power rankings, own tab (News, Power Rankings) |
+| rankings | Tuesday 9am ET | NFL.com-style power rankings, own tab (News, Power Rankings); a green ▲ or red ▼ with the spots moved (gray dash if unchanged) under each rank number |
 | preview | 2 hours before the week's first NFL kickoff | storylines plus a four-person pundit panel picking every game (graded); win chances assume holes get filled, which are mentioned in passing at most |
 | final | Sunday, 75 minutes before the 1pm games | short Sonnet follow-up: lineup moves and win chance changes since the preview, Thursday's points, holes still unfilled |
 | trade | as soon as a trade is seen | before/after odds from frozen week-end snapshots |

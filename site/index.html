@@ -488,6 +488,8 @@ td.ru { font-size: 12.5px; white-space: nowrap; }
 .award .k { font-size: 12px; font-weight: 700; }
 .award .who { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
 .trophy, .ring { display: block; width: 100%; height: auto; }
+.rkcol { display: flex; flex-direction: column; align-items: center; gap: 6px; } .rmove { font-size: 13px; font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.rmove.up { color: var(--win); } .rmove.down { color: var(--loss); } .rmove.same, .rmove.new { color: var(--muted); font-weight: 600; } .rmove.new { font-size: 11px; }
 @media (max-width: 520px) { .roster .acq { display: none; } }
 .roster .rgroup th { text-align: left; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding-top: 14px; background: none; }
 #app svg[data-zoom] { cursor: zoom-in; }
@@ -3205,8 +3207,8 @@ function rankingsView() {
   const pills = `<div class="weekbar" style="margin:0 0 18px">${[...list].reverse().map((a) => `<button data-rankwk="${a.wk}" aria-current="${a === sel}">Wk ${a.wk}</button>`).join("")}</div>`;
   return head(`${year} · After Week ${sel.wk}`) + pills + `<article class="article" style="max-width:none"><h2 class="headline" style="margin-top:0">${esc(sel.title)}</h2><p class="dek big">${esc(sel.dek)}</p><div class="artbody">${sel.body.map((p) => `<p>${esc(p)}</p>`).join("")}</div></article>
     <div class="ranks">${[...sel.power_rankings].sort((a, b) => a.rank - b.rank).map((x) => { const t = s.byId[x.id], d = was[x.id] ? was[x.id] - x.rank : null;
-      const mv = d == null ? `<span class="pill">New</span>` : d > 0 ? `<span class="pill w">▲ ${d}</span>` : d < 0 ? `<span class="pill l">▼ ${-d}</span>` : `<span class="pill">–</span>`;
-      return `<div class="box rankrow"><span class="rk num">${x.rank}</span><div><div class="rhead">${t ? badge(t) : ""}<span><b>${esc(t ? nameAt(t, sel.wk) : x.team)}</b><small class="muted">${t ? mgrName(mgrAt(t, sel.wk)) + " · " : ""}${t ? recThrough(t.id) : ""}</small></span>${prev ? mv : ""}</div>
+      const mv = d == null ? `<span class="rmove new">New</span>` : d > 0 ? `<span class="rmove up" title="Up ${d} from last week">▲ ${d}</span>` : d < 0 ? `<span class="rmove down" title="Down ${-d} from last week">▼ ${-d}</span>` : `<span class="rmove same" title="Same as last week">–</span>`;
+      return `<div class="box rankrow"><span class="rkcol"><span class="rk num">${x.rank}</span>${prev ? mv : ""}</span><div><div class="rhead">${t ? badge(t) : ""}<span><b>${esc(t ? nameAt(t, sel.wk) : x.team)}</b><small class="muted">${t ? mgrName(mgrAt(t, sel.wk)) + " · " : ""}${t ? recThrough(t.id) : ""}</small></span></div>
         <small class="muted">${t ? line(t.id) : ""}${was[x.id] ? ` · Last week: ${was[x.id]}` : ""}</small><p>${esc(x.blurb)}</p></div></div>`; }).join("")}</div>${aiNote}`;
 }
 // Recaps carry quick takes on earlier trades; a trade's page collects every take on it since
