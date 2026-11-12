@@ -488,6 +488,15 @@ td.ru { font-size: 12.5px; white-space: nowrap; }
 .award .k { font-size: 12px; font-weight: 700; }
 .award .who { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
 .trophy, .ring { display: block; width: 100%; height: auto; }
+#app svg[data-zoom] { cursor: zoom-in; }
+#zoomview { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 16px; background: rgba(0, 0, 0, .72); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+#zoomview[hidden] { display: none; }
+.zv-on, .zv-on body { overflow: hidden; }
+.zv-card { position: relative; width: min(420px, 100%); max-height: calc(100vh - 32px); overflow: auto; background: #1c1c1e; color: #f5f5f7; border-radius: 22px; padding: 22px 22px 18px; box-shadow: 0 20px 60px rgba(0, 0, 0, .5); }
+.zv-card svg { width: 100%; max-height: 62vh; }
+.zv-cap { display: grid; gap: 3px; text-align: center; margin-top: 8px; } .zv-cap b { font-size: 18px; } .zv-cap small { color: var(--muted); } .zv-cap .mlink { margin-top: 6px; color: var(--brass); justify-self: center; }
+:root[data-theme="light"] .zv-card { background: #fff; color: #1d1d1f; }
+.zv-x { position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; border: 0; border-radius: 50%; background: rgba(127, 127, 127, .18); color: inherit; font-size: 15px; cursor: pointer; }
 .tc .ring { width: 72px; height: 101px; } .tc.ringc b { color: var(--gold); }
 .lglogo { height: .78em; width: auto; vertical-align: -.06em; margin-right: .2em; }
 .tc.big b { color: var(--gold); }
@@ -497,7 +506,7 @@ td.ru { font-size: 12.5px; white-space: nowrap; }
 /* Phones: just the stat being sorted by, and the team's square without the manager */
 @media (max-width: 520px) { .ltable .st:not(.on) { display: none; } .ltable .lteam .muted { display: none; } .ltable td, .ltable th { padding-left: 6px; padding-right: 6px; } }
 .award { position: relative; } .award .k, .award .who { padding-right: 40px; }
-.awtro { position: absolute; top: 6px; right: 6px; width: 40px; pointer-events: none; }
+.awtro { position: absolute; top: 6px; right: 6px; width: 40px; }
 .ibimg { width: 180px; max-width: 70%; margin: 8px auto 0; }
 .tcase { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 10px 10px; margin: 6px 0 12px; }
 .tc { all: unset; cursor: pointer; width: 92px; display: grid; justify-items: center; gap: 1px; text-align: center; border-radius: 12px; padding: 4px 2px; }
@@ -2210,19 +2219,19 @@ const ringArt = (y, small) => { const s = S[y], c = s && s.teams.find((t) => t.f
   const BX = 140, BY = 176, RX = 74, RY = 96, gem = `url(#d${i})`, ink = "#4a3008";
   const star = (x, yy) => `<path transform="translate(${x} ${yy}) scale(.72) translate(${-x} ${-yy})" d="M${x} ${yy - 9}l3 7 7 .5-5.5 4.5 2 7-6.5-4-6.5 4 2-7-5.5-4.5 7-.5z" fill="${gem}" stroke="#b8862b" stroke-width=".6"/>`;
   const n = st.mid === "stars" ? Math.min(Math.max(titles, 2), 3) : 1, mid = st.mid === "crown"
-    ? `<path d="M132 201l-1.5-10 5 4.5 4.5-7 4.5 7 5-4.5-1.5 10z" fill="${gem}" stroke="#b8862b" stroke-width=".7" stroke-linejoin="round"/><path d="M132 201h16" stroke="#b8862b" stroke-width="1.2"/>`
-    : [...Array(n)].map((_, k) => star(140 + (k - (n - 1) / 2) * 18, 195)).join("");
-  const gap = st.mid === "crown" ? 18 : n === 1 ? 17 : 15 + 9 * n, L = Math.PI * 78, g = (gap / L) * 100;
+    ? `<path d="M132 197l-1.5-10 5 4.5 4.5-7 4.5 7 5-4.5-1.5 10z" fill="${gem}" stroke="#b8862b" stroke-width=".7" stroke-linejoin="round"/><path d="M132 197h16" stroke="#b8862b" stroke-width="1.2"/>`
+    : [...Array(n)].map((_, k) => star(140 + (k - (n - 1) / 2) * 18, 191)).join("");
+  const gap = st.mid === "crown" ? 18 : 10 + 7 * n, L = 74.5 * (220 * Math.PI / 180), g = (gap / L) * 100;
   const left = nm.length <= 12 ? nm : (c.abbrev || "").toUpperCase();
   const eng = (path, off, txt, size) => `<text font-family="Georgia, serif" font-weight="700" font-size="${size}" fill="${ink}" letter-spacing="1.2" dominant-baseline="central"><textPath href="#${path}${i}" startOffset="${off}%" text-anchor="middle">${esc(txt)}</textPath></text>`;
-  return `<svg class="ring" viewBox="0 0 280 300" role="img" aria-label="Buckaroo Bowl ${roman(y - D.firstYear + 1)} ring" xmlns="http://www.w3.org/2000/svg"><defs>
+  return `<svg class="ring" data-zoom="r:${y}" viewBox="0 0 280 300" role="img" aria-label="Buckaroo Bowl ${roman(y - D.firstYear + 1)} ring" xmlns="http://www.w3.org/2000/svg"><defs>
   <linearGradient id="g${i}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff6c8"/><stop offset=".3" stop-color="#f2c94c"/><stop offset=".65" stop-color="#b8862b"/><stop offset="1" stop-color="#6e4a12"/></linearGradient>
   <linearGradient id="v${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6c8"/><stop offset=".45" stop-color="#e0b445"/><stop offset="1" stop-color="#7a5418"/></linearGradient>
   <radialGradient id="s${i}" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="hsl(${h} 80% 80%)"/><stop offset=".55" stop-color="hsl(${h} 62% 46%)"/><stop offset="1" stop-color="hsl(${h} 70% 18%)"/></radialGradient>
   <radialGradient id="d${i}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#dfe9f5"/><stop offset="1" stop-color="#9fb2c8"/></radialGradient>
   <radialGradient id="p${i}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#f4f7fb"/><stop offset=".6" stop-color="#c7d2de"/><stop offset="1" stop-color="#8e9aa8"/></radialGradient>
   <radialGradient id="w${i}" cx=".5" cy=".42" r=".5"><stop offset="0" stop-color="#ffd75a" stop-opacity=".3"/><stop offset="1" stop-color="#ffd75a" stop-opacity="0"/></radialGradient>
-  <path id="t${i}" d="M70 120a70 70 0 0 1 140 0"/><path id="b${i}" d="M62 120a78 78 0 0 0 156 0"/>
+  <path id="t${i}" d="M73 120a67 67 0 0 1 134 0"/><path id="b${i}" d="M70 94.5A74.5 74.5 0 1 0 210 94.5"/>
   <path id="l${i}" d="M${BX} ${BY + RY}A${RX} ${RY} 0 0 1 ${BX} ${BY - RY}"/><path id="k${i}" d="M${BX} ${BY - RY}A${RX} ${RY} 0 0 1 ${BX} ${BY + RY}"/><path id="u${i}" d="M${BX - RX} ${BY}A${RX} ${RY} 0 0 0 ${BX + RX} ${BY}"/></defs>
   <ellipse cx="140" cy="140" rx="135" ry="135" fill="url(#w${i})"/>
   <ellipse cx="${BX}" cy="${BY}" rx="${RX}" ry="${RY}" fill="none" stroke="url(#v${i})" stroke-width="26"/>
@@ -2241,7 +2250,7 @@ const ringArt = (y, small) => { const s = S[y], c = s && s.teams.find((t) => t.f
 // Each drawing gets its own gradient ids, so several trophies can share a page
 let trophyN = 0;
 const trophy = (k, small) => { const t = TROPHY[k], a = trInfo(k); if (!t || !a.nm) return ""; const i = `t${trophyN++}`;
-  return `<svg class="trophy" viewBox="0 0 240 320" role="img" aria-label="${esc(a.nm)} trophy" xmlns="http://www.w3.org/2000/svg">${trDefs(i, k === "bowl" ? "gold" : t.metal || "silver")}<ellipse cx="120" cy="130" rx="110" ry="120" fill="url(#glow${i})"/>${t.art(i)}${trPed(i, small ? "" : esc(a.nm), small ? "" : esc(a.cat))}${trPlinth()}</svg>`; };
+  return `<svg class="trophy" data-zoom="t:${k}" viewBox="0 0 240 320" role="img" aria-label="${esc(a.nm)} trophy" xmlns="http://www.w3.org/2000/svg">${trDefs(i, k === "bowl" ? "gold" : t.metal || "silver")}<ellipse cx="120" cy="130" rx="110" ry="120" fill="url(#glow${i})"/>${t.art(i)}${trPed(i, small ? "" : esc(a.nm), small ? "" : esc(a.cat))}${trPlinth()}</svg>`; };
 // A shelf of the trophies someone has won, with the seasons under each ({ k, ys })
 const trophyCase = (list) => `<div class="box tcase">${list.map((a) => a.ring ? `<button class="tc ringc" data-go="bowl-${a.ring}">${ringArt(a.ring, 1)}<b>Bowl ${roman(a.ring - D.firstYear + 1)}</b><small>${a.ring}</small></button>` : `<button class="tc${a.k === "bowl" ? " big" : ""}" data-go="${trInfo(a.k).go}">${trophy(a.k, 1)}<b>${esc(trInfo(a.k).nm)}</b><small>${a.ys.join(", ")}</small></button>`).join("")}</div>`;
 function awardView() {
@@ -3422,6 +3431,28 @@ $("#app").addEventListener("input", (e) => {
 window.addEventListener("popstate", (e) => { parseHash(); render(); window.scrollTo({ top: (e.state && e.state.scroll) || 0 }); });
 // A hash typed or pasted by hand (no history state of ours)
 window.addEventListener("hashchange", () => { if (!history.state) { parseHash(); render(); } });
+// ---------- Trophy viewer: tap a trophy or ring anywhere to see it full size, like a wiki's media viewer ----------
+function zoomOpen(z) {
+  const [kind, v] = z.split(":"), y = +v;
+  let art, title, sub, go;
+  if (kind === "r") { const s = S[y], c = s && s.teams.find((t) => t.final === 1); if (!c) return;
+    art = ringArt(y); title = `Buckaroo Bowl ${roman(y - D.firstYear + 1)} ring`; sub = `${esc(nameAt(c, s.regWeeks))} · ${mgrName(c.mgr)} · ${y}`; go = `bowl-${y}`; }
+  else { const a = trInfo(v); if (!a.nm) return; art = trophy(v); title = v === "bowl" ? "The Buckaroo Bowl trophy" : `The ${esc(a.nm)} trophy`.replace("The The", "The");
+    sub = v === "bowl" ? "Awarded to the league champion" : `${a.mgr ? "Manager" : "Player"} award · ${esc(a.cat)}`; go = a.go; }
+  let el = document.getElementById("zoomview");
+  if (!el) { el = document.createElement("div"); el.id = "zoomview"; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); document.body.appendChild(el); }
+  el.innerHTML = `<div class="zv-card"><button class="zv-x" type="button" aria-label="Close">✕</button>${art}<div class="zv-cap"><b>${title}</b><small>${sub}</small><button class="mlink" data-go="${go}">Read the article →</button></div></div>`;
+  el.hidden = false; document.documentElement.classList.add("zv-on");
+}
+function zoomClose() { const el = document.getElementById("zoomview"); if (el) el.hidden = true; document.documentElement.classList.remove("zv-on"); }
+// Runs before the page's own click handling, so tapping the picture inside a link opens the viewer instead of the article
+document.addEventListener("click", (e) => {
+  const zv = document.getElementById("zoomview");
+  if (zv && !zv.hidden) { if (e.target.closest(".zv-x") || !e.target.closest(".zv-card")) { e.preventDefault(); e.stopPropagation(); zoomClose(); } else if (e.target.closest("[data-go]")) zoomClose(); return; }
+  const z = e.target.closest("svg[data-zoom]"); if (!z || !z.closest("#app")) return;
+  e.preventDefault(); e.stopPropagation(); zoomOpen(z.dataset.zoom);
+}, true);
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") zoomClose(); });
 // The league flag beside the name, and its emblem as the tab icon
 (() => { const el = document.getElementById("brandlogo"); if (el) el.innerHTML = leagueLogo();
   const ic = document.createElement("link"); ic.rel = "icon"; ic.type = "image/svg+xml";
