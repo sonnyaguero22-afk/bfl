@@ -2187,14 +2187,15 @@ const leagueLogo = (cls = "lglogo") => `<svg class="${cls}" viewBox="0 0 200 140
 TROPHY.bowl = { art: (i) => { const r = -36 * Math.PI / 180, c = Math.cos(r), sn = Math.sin(r), tx = 121 + 46 * c, ty = 112 + 46 * sn;
   return `<path d="M113 134h14l15 84H98z" fill="url(#g${i})"/>${trShine("M114 138h4l-8 76h-5z")}
   <path d="M107 138q13-12 26 0l-4 4h-18z" fill="url(#g${i})" stroke="#6e4a12" stroke-width=".8"/><path d="M86 216h68l6 22H80z" fill="url(#g${i})"/>
-  ${trBall(i, 121, 112, -36)}${trHat(tx - 9 * c, ty - 9 * sn - 2, 26, 0.5)}`; },
-  over: () => `${lgCloth(103, 243, 34, 18, 1.5)}${lgEmblem(120, 252, 0.13)}` };
+  ${trBall(i, 121, 112, -36)}${trHat(tx - 9 * c, ty - 9 * sn - 2, 26, 0.5)}`; } };
+// Every trophy carries the league flag on its plinth
+const trPlinth = () => `${lgCloth(103, 243, 34, 18, 1.5)}${lgEmblem(120, 252, 0.13)}`;
 // Names and links for a trophy: the awards, plus the Buckaroo Bowl
 const trInfo = (k) => (k === "bowl" ? { nm: "Buckaroo Bowl", cat: "Champion", go: "trophies" } : { ...awInfo(k), go: `aw-${k}` });
 // Each drawing gets its own gradient ids, so several trophies can share a page
 let trophyN = 0;
 const trophy = (k, small) => { const t = TROPHY[k], a = trInfo(k); if (!t || !a.nm) return ""; const i = `t${trophyN++}`;
-  return `<svg class="trophy" viewBox="0 0 240 320" role="img" aria-label="${esc(a.nm)} trophy" xmlns="http://www.w3.org/2000/svg">${trDefs(i, k === "bowl" ? "gold" : t.metal || "silver")}<ellipse cx="120" cy="130" rx="110" ry="120" fill="url(#glow${i})"/>${t.art(i)}${trPed(i, small ? "" : esc(a.nm), small ? "" : esc(a.cat))}${t.over ? t.over(i) : ""}</svg>`; };
+  return `<svg class="trophy" viewBox="0 0 240 320" role="img" aria-label="${esc(a.nm)} trophy" xmlns="http://www.w3.org/2000/svg">${trDefs(i, k === "bowl" ? "gold" : t.metal || "silver")}<ellipse cx="120" cy="130" rx="110" ry="120" fill="url(#glow${i})"/>${t.art(i)}${trPed(i, small ? "" : esc(a.nm), small ? "" : esc(a.cat))}${trPlinth()}</svg>`; };
 // A shelf of the trophies someone has won, with the seasons under each ({ k, ys })
 const trophyCase = (list) => `<div class="box tcase">${list.map((a) => `<button class="tc${a.k === "bowl" ? " big" : ""}" data-go="${trInfo(a.k).go}">${trophy(a.k, 1)}<b>${esc(trInfo(a.k).nm)}</b><small>${a.ys.join(", ")}</small></button>`).join("")}</div>`;
 function awardView() {
