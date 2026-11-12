@@ -37,9 +37,50 @@
    "team": "Dawgs",
    "about": "move",
    "at": "2026-11-11T09:26:37.658Z"
+  },
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "Randy has cleared out Mike Evans, Stefon Diggs, Cameron Dicker and the Browns D/ST in one sitting, and is bringing in Darren Waller and two new defenses. Nothing has been played yet, so this is all roster shuffling for Ghostu-Spider SZN week.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-11T20:10:16.887Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Luffy moved The fumblers from 55% to 90% and not one point has been scored. That's the lineup work, not a play. I'm not going to argue with a jump that size.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-12T00:44:48.938Z"
+  },
+  {
+   "author": "Gridiron Gary",
+   "handle": "@GaryGetsSacked",
+   "text": "Randy just dropped Mike Evans AND Stefon Diggs on the same night and the guy still won't trade a single Bears player. Absolute cardiac cleanup, I need to lie down.",
+   "heat": 7,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-11T20:30:59.145Z"
+  },
+  {
+   "author": "Zilgit Zealots",
+   "handle": "@ZSquaredSZN",
+   "text": "Randy cut two receivers and picked up a tight end who scored 5 points in four weeks, and Luffy loves it? Zoe, please go make him regret this.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-11T20:44:41.868Z"
   }
  ],
  "batches": [
-  "2026-11-11T18:09:03.967Z"
+  "2026-11-11T18:09:03.967Z",
+  "2026-11-12T00:50:48.938Z"
  ]
 }
