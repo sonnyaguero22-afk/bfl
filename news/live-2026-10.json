@@ -77,10 +77,41 @@
    "team": "",
    "about": "move",
    "at": "2026-11-11T20:44:41.868Z"
+  },
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "Sonny has cut Lamar Jackson loose and picked up Corey Kiner. Jackson put up 79.1 points over eight weeks, and Sonny is going with C.J. Stroud at quarterback against the Dawgs.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-12T02:00:22.777Z"
+  },
+  {
+   "author": "Boston Brian",
+   "handle": "@BrianBeansBFL",
+   "text": "Sonny dropped Lamar Jackson for a running back who has zero points in one week. Maybe it's a master plan, maybe the Civ brain has taken over, but I can't tell which and I'm watching anyway.",
+   "heat": 7,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-12T02:13:08.792Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Ramon cutting Jason Myers (75 points over nine weeks) is a real decision, and Brandon Aubrey is already in the lineup. Nothing has been played yet, so Luffy has No Banner only HULK at 87% against Habibsters.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-12T02:53:41.183Z"
   }
  ],
  "batches": [
   "2026-11-11T18:09:03.967Z",
-  "2026-11-12T00:50:48.938Z"
+  "2026-11-12T00:50:48.938Z",
+  "2026-11-12T03:02:41.024Z"
  ]
 }
