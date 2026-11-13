@@ -207,6 +207,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-13T02:34:00.761Z"
+  },
+  {
+   "author": "Dawgs",
+   "handle": "@Dawgs",
+   "text": "Jayden Daniels throws a touchdown pass and Dawgs are on the board first on Thursday night. Good start, a lot of lineup still to come.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Dawgs",
+   "about": "game",
+   "at": "2026-11-13T03:00:03.352Z"
+  },
+  {
+   "author": "Horse Hea Hank",
+   "handle": "@HorseHeaHank",
+   "text": "Sixteen for Mekhi and I have not seen a single Horse on the field. I'm fine. This is fine. Smith-Njigba, please get here.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-13T03:03:03.352Z"
+  },
+  {
+   "author": "Marcus Pell",
+   "handle": "@MarcusPellWrites",
+   "text": "Mekhi dumps the Packers D/ST, Daniels throws a touchdown, and the Dawgs lead before Sonny's roster has taken a snap. Some call that luck. I call it a man who knows his own mind.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-13T03:07:03.352Z"
   }
  ],
  "batches": [
@@ -215,6 +245,7 @@
   "2026-11-12T03:02:41.024Z",
   "2026-11-12T19:20:57.590Z",
   "2026-11-12T21:19:50.188Z",
-  "2026-11-13T02:34:00.761Z"
+  "2026-11-13T02:34:00.761Z",
+  "2026-11-13T03:09:03.352Z"
  ]
 }
