@@ -688,7 +688,7 @@ async function write(client, job) {
   // Stories are permanent, so don't keep one that came back hollow
   const hollow = job.type === "rankings" ? !(out.body || []).length || (out.power_rankings || []).length !== job.s.teams.length
     : !out.body || out.body.length < 2 || (schemas[job.type].required.includes("social") && !(out.social || []).length);
-  if (hollow) { console.log(`::warning::${job.id}: came back with an empty story, will retry next run`); return null; }
+  if (hollow) { console.log(`::warning::${job.id}: came back with an empty story (${(out.body || []).length} paragraphs, ${(out.social || []).length} posts, title ${JSON.stringify(out.title || out.headline || "")}, stop ${res.stop_reason}), will retry next run`); return null; }
   // Bios name teams as written in the facts ("Name (Manager)"); match on the team-name part
   const teamFor = (label) => job.s.teams.find((t) => label === nameAt(t, job.wk) || label.startsWith(nameAt(t, job.wk) + " ("));
   return {
@@ -719,10 +719,15 @@ if (require.main === module) (async () => {
   if (!LORE) { console.log("No LEAGUE_LORE secret set, skipping news until it is."); return; }
   const client = new Anthropic();
   fs.mkdirSync(NEWS, { recursive: true });
-  for (const job of todo.slice(0, MAX_PER_RUN)) {
+  // Failed tries per story (history/news_tries.json, saved by GitHub): after three, skip it until the file entry is removed
+  const triesFile = path.join(__dirname, "history", "news_tries.json"), tries = fs.existsSync(triesFile) ? JSON.parse(fs.readFileSync(triesFile, "utf8")) : {};
+  const saveTries = () => { if (process.env.GITHUB_ACTIONS === "true") { fs.mkdirSync(path.dirname(triesFile), { recursive: true }); fs.writeFileSync(triesFile, JSON.stringify(tries, null, 1)); } };
+  for (const job of todo.filter((j) => (tries[j.id] || 0) >= 3)) console.log(`::warning::${job.id}: skipped after ${tries[job.id]} failed tries; delete it from history/news_tries.json to try again`);
+  for (const job of todo.filter((j) => (tries[j.id] || 0) < 3).slice(0, MAX_PER_RUN)) {
     try {
       const art = await write(client, job);
-      if (!art) continue;
+      if (!art) { tries[job.id] = (tries[job.id] || 0) + 1; saveTries(); continue; }
+      if (tries[job.id]) { delete tries[job.id]; saveTries(); }
       fs.writeFileSync(path.join(NEWS, `${job.id}.json`), JSON.stringify(art, null, 1));
       console.log(`${job.id}: "${art.title}" (${art.usage.input} in / ${art.usage.output} out tokens)`);
     } catch (err) {
