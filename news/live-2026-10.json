@@ -177,6 +177,36 @@
    "team": "Counting or not Counting GV",
    "about": "move",
    "at": "2026-11-12T21:19:50.188Z"
+  },
+  {
+   "author": "Dawg Pound Dan",
+   "handle": "@DawgPoundDan",
+   "text": "Jayden Daniels finds the end zone through the air and Mekhi is on the board first on Thursday night. Dolphins D/ST swap looking smarter by the minute, if I'm allowed to say that this early.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-13T02:32:00.761Z"
+  },
+  {
+   "author": "Boston Brian",
+   "handle": "@BostonBrianBFL",
+   "text": "Daniels throws a touchdown and Sonny is already chasing, with nobody on his roster even on the field yet. Corey Kiner is going to have to be a genius from the bench column.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-13T02:33:00.761Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Daniels' touchdown pass moves the Dawgs to 67% against The Horse is Hea in Luffy's view. A fast start is nice, but Sonny has a full lineup still to play.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-13T02:34:00.761Z"
   }
  ],
  "batches": [
@@ -184,6 +214,7 @@
   "2026-11-12T00:50:48.938Z",
   "2026-11-12T03:02:41.024Z",
   "2026-11-12T19:20:57.590Z",
-  "2026-11-12T21:19:50.188Z"
+  "2026-11-12T21:19:50.188Z",
+  "2026-11-13T02:34:00.761Z"
  ]
 }
