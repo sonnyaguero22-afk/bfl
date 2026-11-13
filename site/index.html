@@ -302,6 +302,7 @@ ol.path li:first-child::before { content: "•"; }
 .oddschart .ax { fill: var(--muted); font-size: 11px; font-family: var(--f-body); }
 @media (max-width: 560px) { .oddschart .ax { font-size: 22px; } .oddschart .ln polyline { stroke-width: 4; } }
 .oddschart .pozone { fill: var(--gold-soft); }
+.oddschart .trademark line { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 4 4; } .oddschart .trademark text { fill: var(--muted); font-size: 13px; } .oddschart .trademark { cursor: help; }
 .oddschart .ln polyline { fill: none; stroke: hsl(var(--h) var(--mgr-s) var(--mgr-l)); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
 .oddschart .ln circle { fill: hsl(var(--h) var(--mgr-s) var(--mgr-l)); }
 .oddschart .ln.dim { opacity: .18; }
@@ -1481,6 +1482,29 @@ function oddsReason(s, id, N) {
 }
 // Odds chart frame (SVG units), shared by the chart and its hover readout
 const OC = { W: 800, H: 300, L: 40, R: 16, T: 14, B: 34 };
+// Odds by day: each day's latest odds (week-end odds before daily saving began), with each trade marked on its day
+function oddsDailyChart(s, key) {
+  const D_ = s.oddsDaily, days = Object.keys(D_.days).sort(), { W, H, L, R, T, B } = OC, mi = { c: 0, p: 1, l: 2 }[key];
+  const t0 = Date.parse(days[0]), t1 = Date.parse(days[days.length - 1]), x = (d) => L + (t1 === t0 ? 0 : ((Date.parse(d) - t0) * (W - L - R)) / (t1 - t0)), y = (v) => T + ((100 - v) * (H - T - B)) / 100;
+  const md = (d) => new Date(d + "T12:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+  const focus = state.oddsFocus;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" class="oddschart" role="img" aria-label="${ODDS_METRIC[key]} odds by day">`;
+  for (const v of [0, 25, 50, 75, 100]) svg += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" class="grid"/><text x="${L - 8}" y="${y(v) + 4}" class="ax" text-anchor="end">${v}%</text>`;
+  const ticks = 6, seen = new Set();
+  for (let k = 0; k <= ticks; k++) { const d = days[Math.round((k * (days.length - 1)) / ticks)]; if (seen.has(d)) continue; seen.add(d); svg += `<text x="${x(d)}" y="${H - 10}" class="ax" text-anchor="middle">${md(d)}</text>`; }
+  // Trades, marked on the day they first showed up
+  const nm = (id) => esc(s.byId[id] ? s.byId[id].name : "");
+  for (const [k, d] of Object.entries(D_.trades || {})) { const tr = s.trades.find((t) => `${t.wk}-${[...t.teams].sort((a, b) => a - b).join("-")}` === k); if (!tr || d < days[0]) continue;
+    const who = tr.teams.map((id) => `${nm(id)} got ${(tr.got[id] || []).map((p) => esc(p.split("|")[0])).join(", ")}`).join("; ");
+    svg += `<g class="trademark"><title>${md(d)} trade: ${who}</title><line x1="${x(d)}" x2="${x(d)}" y1="${T}" y2="${H - B}"/><text x="${x(d)}" y="${T + 10}" text-anchor="middle">⇄</text></g>`; }
+  const order = [...s.teams].sort((a, b) => (a.id === focus) - (b.id === focus));
+  for (const t of order) {
+    const pts = days.filter((d) => D_.days[d].teams[t.id]).map((d) => [x(d), y(D_.days[d].teams[t.id][mi])]);
+    if (!pts.length) continue; const [lx, ly] = pts[pts.length - 1], dim = focus && focus !== t.id;
+    svg += `<g style="--h:${hue[t.mgr]}" class="ln${dim ? " dim" : ""}${focus === t.id ? " on" : ""}"><title>${esc(t.name)}</title><polyline points="${pts.map((p) => p.map((v) => v.toFixed(1)).join(",")).join(" ")}"/><circle cx="${lx}" cy="${ly}" r="4"/></g>`;
+  }
+  return svg + `</svg>`;
+}
 function oddsChart(s, key) {
   const o = s.odds, { W, H, L, R, T, B } = OC;
   const n = o.weeks.length, x = (i) => L + (n === 1 ? 0 : (i * (W - L - R)) / (n - 1)), y = (v) => T + ((100 - v) * (H - T - B)) / 100;
@@ -1504,7 +1528,8 @@ function oddsTab(s) {
   const key = ODDS_METRIC[state.oddsKey] ? state.oddsKey : "c";
   const n = o.weeks.length, last = n - 1;
   const rows = [...s.teams].sort((a, b) => o.t[b.id][key][last] - o.t[a.id][key][last] || o.t[b.id].c[last] - o.t[a.id].c[last]);
-  const pills = `<div class="weekbar" style="margin:0">${Object.entries(ODDS_METRIC).map(([k, l]) => `<button data-oddskey="${k}" aria-current="${k === key}">${l}</button>`).join("")}</div>`;
+  const daily = s.oddsDaily && Object.keys(s.oddsDaily.days).length > 1, byDay = daily && state.oddsSpan === "day";
+  const pills = `<div class="weekbar" style="margin:0">${Object.entries(ODDS_METRIC).map(([k, l]) => `<button data-oddskey="${k}" aria-current="${k === key}">${l}</button>`).join("")}</div>${daily ? `<div class="weekbar" style="margin:6px 0 0">${[["week", "By week"], ["day", "By day"]].map(([k, l]) => `<button data-oddsspan="${k}" aria-current="${(byDay ? "day" : "week") === k}">${l}</button>`).join("")}</div>` : ""}`;
   const legend = `<div class="box scroll"><table><thead><tr><th>Team</th><th class="n">Draft Day</th><th class="n">Best</th><th class="n">Worst</th><th class="n">Last Week</th><th class="n">${s.done ? "Final" : "Now"}</th></tr></thead><tbody>
     ${rows.map((t) => { const v = o.t[t.id][key], d = last ? v[last] - v[last - 1] : 0;
       return `<tr class="${state.oddsFocus === t.id ? "sel" : ""}"><td><button class="mlink team" data-oddsteam="${t.id}" style="min-width:0">${badge(t, 1)}<span><b>${esc(t.name)}</b><small>${mgrName(t.mgr)}</small></span></button></td>
@@ -1515,8 +1540,8 @@ function oddsTab(s) {
   for (const t of s.teams) { const v = o.t[t.id].c; for (let i = 1; i < n; i++) if (o.weeks[i] <= s.regWeeks) swings.push({ t, N: o.weeks[i], from: v[i - 1], to: v[i], d: v[i] - v[i - 1] }); }
   const sw = (list, up) => list.map((x) => `<li><span>${badge(x.t, 1)} <b>${esc(x.t.name)}</b> <span class="muted">· after week ${x.N}</span><small class="ctx sub">${oddsReason(s, x.t.id, x.N) || "No game or moves recorded"}</small></span><span class="num ${up ? "w" : "l"}">${pct1(x.from)} → ${pct1(x.to)}</span></li>`).join("");
   const ups = [...swings].sort((a, b) => b.d - a.d).slice(0, 8).filter((x) => x.d > 0), downs = [...swings].sort((a, b) => a.d - b.d).slice(0, 8).filter((x) => x.d < 0);
-  return `<div class="vhead" style="margin-bottom:12px"><div><h3 style="margin:0">${{ c: "Chances to Win the Buckaroo Bowl", p: "Chances to Make the Playoffs", l: "Chances to Finish Last" }[key]}, Week by Week</h3><p>${s.done ? "How the race looked at every point of the season." : `Updated after every finished week. Week ${s.curWeek} counts once its games are final.`} Click a team to highlight it.</p></div>${pills}</div>
-  <div class="box oddswrap" data-y="${s.year}" data-key="${key}" style="padding:10px 8px 4px">${oddsChart(s, key)}<div class="oddstip" hidden></div></div>
+  return `<div class="vhead" style="margin-bottom:12px"><div><h3 style="margin:0">${{ c: "Chances to Win the Buckaroo Bowl", p: "Chances to Make the Playoffs", l: "Chances to Finish Last" }[key]}, ${byDay ? "Day by Day" : "Week by Week"}</h3><p>${s.done ? "How the race looked at every point of the season." : byDay ? "Updated every day with lineup moves, pickups and trades, not just after games." : `Updated after every finished week. Week ${s.curWeek} counts once its games are final.`} Click a team to highlight it.</p></div>${pills}</div>
+  ${byDay ? `<div class="box" style="padding:10px 8px 4px">${oddsDailyChart(s, key)}</div><p class="note">Each day's latest odds, updated with every lineup move, pickup and trade; ⇄ marks the day a trade went through (hover it for the details). Before ${new Date(Object.keys(s.oddsDaily.days).sort().find((d) => !s.oddsDaily.days[d].weekly) + "T12:00:00Z").toLocaleDateString("en-US", { month: "long", day: "numeric", timeZone: "UTC" })}, points are each week's final odds.</p>` : `<div class="box oddswrap" data-y="${s.year}" data-key="${key}" style="padding:10px 8px 4px">${oddsChart(s, key)}<div class="oddstip" hidden></div></div>`}
   <section style="margin-top:16px">${legend}</section>
   <section><h3>Biggest Swings in Title Odds</h3><div class="recs">
     <div class="box rec"><div class="k">Biggest Jumps</div><ol class="swing">${sw(ups, true) || "<li class=muted>None</li>"}</ol></div>
@@ -3390,6 +3415,7 @@ $("#app").addEventListener("click", (e) => {
   const ay = e.target.closest("[data-awyear]"); if (ay) { state.awYear = +ay.dataset.awyear; if (!ay.dataset.go) { render(); return; } } // a link can also pick the year it opens to
   const oy = e.target.closest("[data-oddsyear]"); if (oy) { state.oddsYear = +oy.dataset.oddsyear; state.oddsFocus = null; render(); return; }
   const ok = e.target.closest("[data-oddskey]"); if (ok) { state.oddsKey = ok.dataset.oddskey; render(); return; }
+  const osp = e.target.closest("[data-oddsspan]"); if (osp) { state.oddsSpan = osp.dataset.oddsspan; render(); return; }
   const ef = e.target.closest("[data-elofocus]"); if (ef) { state.eloFocus = state.eloFocus === ef.dataset.elofocus ? null : ef.dataset.elofocus; render(); return; }
   const ot = e.target.closest("[data-oddsteam]"); if (ot) { state.oddsFocus = state.oddsFocus === +ot.dataset.oddsteam ? null : +ot.dataset.oddsteam; render(); return; }
   const fs2 = e.target.closest("[data-feedsort]"); if (fs2) { state.feedSort = fs2.dataset.feedsort; render(); return; }

@@ -423,6 +423,30 @@ for (const s of seasons) {
     if (changed && process.env.GITHUB_ACTIONS === "true") { fs.mkdirSync(HISTORY, { recursive: true }); fs.writeFileSync(f, JSON.stringify(snap)); }
     s.oddsAtWeekEnd = snap;
   }
+  // Odds day by day (history/odds_daily_<year>.json, saved by GitHub): each day's latest title, playoff and last-place odds
+  // (Eastern time), and the day each trade first showed up, so the Odds page shows a trade's effect when it happens.
+  // A new file starts from each finished week's odds on the Tuesday that week ended.
+  if (!s.done && s.odds) {
+    const f = path.join(HISTORY, `odds_daily_${s.year}.json`), now = new Date(), i = s.odds.weeks.length - 1;
+    const etDay = (d) => d.toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+    const vals = (k) => Object.fromEntries(s.teams.map((t) => [t.id, ["c", "p", "l"].map((m) => Math.round(s.odds.t[t.id][m][k] * 10) / 10)]));
+    const tradeKey = (tr) => `${tr.wk}-${[...tr.teams].sort((a, b) => a - b).join("-")}`;
+    let daily = fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, "utf8")) : null;
+    if (!daily) {
+      // Week N ends the Tuesday after its Monday night game: Labor Day plus 8 days for week 1, a week later for each after
+      const labor = new Date(Date.UTC(s.year, 8, 1)); while (labor.getUTCDay() !== 1) labor.setUTCDate(labor.getUTCDate() + 1);
+      const weekEnd = (N) => { const d = new Date(labor); d.setUTCDate(d.getUTCDate() + (N === 0 ? 1 : 8 + 7 * (N - 1))); return d.toISOString().slice(0, 10); };
+      daily = { days: {}, trades: {} };
+      s.odds.weeks.forEach((N, k) => { if (k < i) daily.days[weekEnd(N)] = { wk: N, weekly: true, teams: vals(k) }; });
+      // Earlier trades are placed the day after the week before them ended; this week's go on today
+      for (const tr of s.trades) daily.trades[tradeKey(tr)] = tr.wk - 1 < s.odds.weeks[i] ? new Date(Date.parse(weekEnd(tr.wk - 1)) + 864e5).toISOString().slice(0, 10) : etDay(now);
+    }
+    const before = JSON.stringify(daily);
+    daily.days[etDay(now)] = { wk: s.odds.weeks[i], t: now.toISOString(), teams: vals(i) };
+    for (const tr of s.trades) if (!daily.trades[tradeKey(tr)]) daily.trades[tradeKey(tr)] = etDay(now);
+    if (JSON.stringify(daily) !== before && process.env.GITHUB_ACTIONS === "true") { fs.mkdirSync(HISTORY, { recursive: true }); fs.writeFileSync(f, JSON.stringify(daily)); }
+    s.oddsDaily = daily;
+  }
 }
 
 // Each NFL team's opponent by week (by abbreviation), from saved schedules or this season's download
