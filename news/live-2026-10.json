@@ -237,6 +237,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-13T03:07:03.352Z"
+  },
+  {
+   "author": "Band Camp Brad",
+   "handle": "@BandCampBrad",
+   "text": "Isaiah Likely finds the end zone and JMoney's brand new receiver room suddenly has a tight end carrying it. Alan hasn't had a single guy take the field yet. Nobody tell him.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-13T03:35:32.469Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Likely's touchdown puts Counting or not Counting GV ahead before Team Pillbert has played a snap, yet Luffy still has Alan at 69%. That's a lot of faith in a lineup that hasn't started.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-13T03:37:32.469Z"
+  },
+  {
+   "author": "Pillbert Pain",
+   "handle": "@PillbertPain",
+   "text": "Isaiah Likely scores for Jordan and Philly is staring at a zero. Nine guys still to play and I've already got a bad feeling.",
+   "heat": 8,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-13T03:39:32.469Z"
   }
  ],
  "batches": [
@@ -246,6 +276,7 @@
   "2026-11-12T19:20:57.590Z",
   "2026-11-12T21:19:50.188Z",
   "2026-11-13T02:34:00.761Z",
-  "2026-11-13T03:09:03.352Z"
+  "2026-11-13T03:09:03.352Z",
+  "2026-11-13T03:41:32.469Z"
  ]
 }
