@@ -1,0 +1,72 @@
+{
+ "id": "trade-2026-10-1-6",
+ "type": "trade",
+ "year": 2026,
+ "wk": 10,
+ "created": "2026-11-13T23:22:39.854Z",
+ "title": "Judkins for Douglas: Sonny and Habib Swap 81 Points for 81 Points, and Luffy Still Picks a Side",
+ "dek": "The Horse is Hea lands Quinshon Judkins, Habibsters get DeMario Douglas, and a trade that looks perfectly even in the box score tilts toward Sonny once Luffy runs it.",
+ "body": [
+  "On the scoreboard, this might be the most balanced trade in league history. Sonny sent DeMario Douglas to Habibsters for Quinshon Judkins, and the two players arrived at the deal with nearly identical seasons: 81.1 points for Judkins, 80.9 for Douglas. You could not split a check more evenly if you used a calculator. But the paths to those numbers could not be more different, and that is where this gets interesting.",
+  "Judkins has been on a roster all nine weeks, so his 81.1 is the whole story, and the recent chapters are not great. He scored 22.9 in Week 7, then 5.9 and 5 in the two weeks since, which is the profile of a running back whose good weeks are carrying his average. Sonny is buying the Week 7 version and betting the last two were a blip. If he's right, The Horse is Hea adds a real weekly starter to a backfield that already leans on Bucky Irving and Ollie Gordon II.",
+  "Douglas is the sneakier piece. His 16.5 points as a rostered player over two weeks make him look like a throw-in, but that badly undersells him: he put up 64.4 points across seven weeks sitting on the waiver wire, where every manager in the league could have grabbed him and didn't. His season is 80.9, and his form is pointing the right way, with 15.1 and 12.7 in his last two games after a 3.8 in Week 7. Habib is getting a receiver who has been quietly productive all year and is getting better, not a flyer.",
+  "So who won? Luffy gives it to Sonny, if only by a nose. The Horse is Hea climbs from 16% to 18% to win Buckaroo Bowl IV and from 87% to 89% to make the playoffs. Habibsters tick up from 44% to 46% in playoff odds, but their title chances stay flat at 5%. Both sides got a little better, which is exactly what a good trade is supposed to do, but only one of them moved the championship needle.",
+  "The case for Habibi is that he bought the hotter player for the same price, and if Douglas keeps stacking double-digit weeks while Judkins keeps posting fives, this will look like a steal by December. The case for Sonny is that running backs with 22-point ceilings are harder to find than slot receivers who were sitting in free agency for two months. Luffy has made his call. Now Judkins and Douglas get to make theirs."
+ ],
+ "social": [
+  {
+   "author": "The Horse is Hea",
+   "handle": "@TheHorseisHea",
+   "text": "Welcome to the stable, Quinshon Judkins. 81.1 points and a 22.9 in Week 7 say you know where the end zone is. Saddle up.",
+   "when": -45,
+   "heat": 2,
+   "kind": "team",
+   "team": "The Horse is Hea"
+  },
+  {
+   "author": "Habibsters",
+   "handle": "@Habibsters",
+   "text": "Officially welcoming DeMario Douglas to #HabibNation. 15.1 and 12.7 his last two weeks. Trending up, just like us.",
+   "when": -30,
+   "heat": 2,
+   "kind": "team",
+   "team": "Habibsters"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Judkins 81.1, Douglas 80.9. Even on points, not even on Luffy: Sonny +2 in title odds, Habib flat at 5%. Note Douglas scored 64.4 of his 80.9 as a free agent, so his roster number undersells him badly.",
+   "when": 38,
+   "heat": 2,
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Waiver Wire Whisperer",
+   "handle": "@WaiverWhispersBFL",
+   "text": "DeMario Douglas scored 64.4 points on the waiver wire and nobody touched him for seven weeks. Habib just traded a starting RB for a guy all of us could have had for free. Respect the hustle, I guess.",
+   "when": 112,
+   "heat": 8,
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Horse Sense",
+   "handle": "@HorseSenseBFL",
+   "text": "Everyone looking at Judkins' 5 and 5.9 like we didn't watch him drop 22.9 three weeks ago. Buy low. 89% playoff odds. The barn is getting crowded.",
+   "when": 204,
+   "heat": 4,
+   "kind": "fan",
+   "team": ""
+  }
+ ],
+ "teams": [
+  1,
+  6
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 2242
+ }
+}
