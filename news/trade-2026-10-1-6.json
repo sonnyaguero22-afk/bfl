@@ -1,0 +1,71 @@
+{
+ "id": "trade-2026-10-1-6",
+ "type": "trade",
+ "year": 2026,
+ "wk": 10,
+ "created": "2026-11-13T23:28:30.785Z",
+ "title": "Waiver Find for a Seventh-Rounder: Sonny Sends DeMario Douglas to Habibsters for Quinshon Judkins",
+ "dek": "The Horse is Hea turns a week-old free-agent pickup into Kaushal's mid-round running back, and Luffy says both sides walk away a little better off.",
+ "body": [
+  "The Week 10 trade wire lit up with a one-for-one that's simple on paper: The Horse is Hea sends wide receiver DeMario Douglas to Habibsters, and Habib sends running back Quinshon Judkins back the other way. Neither guy is a household name, but both teams are in the thick of the race, and in November a single flex spot can decide a playoff seed. Luffy liked it for both of them, which almost never happens.",
+  "Sonny's end is a backfield bet. Judkins was Kaushal's seventh-round pick and has been on a roster all nine weeks, putting up 81.1 points, every one of them for Habibsters. The recent form is the catch: 22.9 in Week 7, then 5.9 and 5 the last two weeks, so Sonny is buying a back whose full season looks a lot better than his last two Sundays. Luffy still bumped The Horse is Hea's title odds from 16% to 18% and its playoff odds from 87% to 89%.",
+  "Habib's end is the better story. Douglas spent seven weeks as a free agent and scored 64.4 points while nobody wanted him, then Sonny scooped him up in Week 9 and, about a week later, turned him into a drafted starting running back. That makes the 16.5 points Douglas scored on a roster a misleading number: his full season is 80.9, nearly dead even with Judkins, and he's trending the right way with 15.1 and 12.7 in his last two weeks after a 3.8 in Week 7. Luffy moved Kaushal's playoff odds from 44% to 46%, though his title odds held steady at 5%.",
+  "So who won it on paper? Sonny, narrowly, since a two-point title bump beats zero, and he got a seventh-rounder for a guy he picked up off the wire for free. But Habib bought the hotter player at a price that matches the season totals almost to the decimal, and at 46% he needs points now more than he needs a backfield with upside. Call it a commissioner's profit with no fleecing attached, which in this league counts as diplomacy."
+ ],
+ "social": [
+  {
+   "author": "Buckaroo Football League",
+   "handle": "@BuckarooFL",
+   "text": "Trade completed: The Horse is Hea acquire RB Quinshon Judkins from Habibsters in exchange for WR DeMario Douglas.",
+   "when": -15,
+   "heat": 1,
+   "kind": "league",
+   "team": ""
+  },
+  {
+   "author": "Habibsters",
+   "handle": "@Habibsters",
+   "text": "Welcome to the club, DeMario Douglas! 80.9 points this season and 27.8 over his last two. Let's get to work. #HabibNation",
+   "when": 30,
+   "heat": 2,
+   "kind": "team",
+   "team": "Habibsters"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Season totals: Judkins 81.1, Douglas 80.9. Luffy moves Sonny's title odds 16% to 18% and Habib's playoff odds 44% to 46%. Rare trade where both sides gain. Recent form favors Douglas; Judkins has 10.9 over his last two.",
+   "when": 95,
+   "heat": 2,
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Horse Sense",
+   "handle": "@HorseSenseBFL",
+   "text": "We picked a guy up off waivers and a week later he's a seventh-round running back. This is called asset management. Judkins, welcome to the stable.",
+   "when": 180,
+   "heat": 5,
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Waiver Wire Whisperer",
+   "handle": "@WaiverWhispersBFL",
+   "text": "DeMario Douglas scored 64.4 points sitting in free agency for seven weeks and every one of you scrolled right past him. Sonny didn't. Now Habib owns him. The wire was the real trade partner all along.",
+   "when": -150,
+   "heat": 6,
+   "kind": "pundit",
+   "team": ""
+  }
+ ],
+ "teams": [
+  1,
+  6
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 1887
+ }
+}
