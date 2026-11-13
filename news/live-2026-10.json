@@ -297,6 +297,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-13T04:10:46.136Z"
+  },
+  {
+   "author": "Fumbler Faithful",
+   "handle": "@BearsDownBadRandy",
+   "text": "Randy actually picked up a receiver. Mike Evans off waivers, no trade needed, and he gets to keep every other asset he has. This is the most Randy way possible to improve a team.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-13T08:50:07.483Z"
+  },
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "The fumblers (Randy) have claimed Mike Evans off waivers. He has 75.5 points through ten weeks, and the lineup he's joining hasn't played yet this week.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-13T09:02:07.483Z"
+  },
+  {
+   "author": "Ghost Web Gwen",
+   "handle": "@GwenSwingsSZN",
+   "text": "Randy grabbing Mike Evans the morning of a game against Zoe. Cool. Cool cool cool. I'll just be over here hoping he stays on the bench.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-13T09:18:07.483Z"
   }
  ],
  "batches": [
@@ -308,6 +338,7 @@
   "2026-11-13T02:34:00.761Z",
   "2026-11-13T03:09:03.352Z",
   "2026-11-13T03:41:32.469Z",
-  "2026-11-13T04:12:46.136Z"
+  "2026-11-13T04:12:46.136Z",
+  "2026-11-13T14:09:24.811Z"
  ]
 }
