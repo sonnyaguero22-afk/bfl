@@ -267,6 +267,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-13T03:39:32.469Z"
+  },
+  {
+   "author": "Dawg Pound Dan",
+   "handle": "@DawgPoundDan",
+   "text": "Daniels hits another touchdown throw and it's twenty-one for Mekhi before Sonny has even had a player take a snap. Thursday night belongs to the Dawgs so far.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-13T04:03:46.136Z"
+  },
+  {
+   "author": "Horse Hea Hank",
+   "handle": "@HorseHeaHank",
+   "text": "Twenty-one to nothing and my whole lineup is still in the tunnel. I'd like to formally file a complaint with the commissioner, who I'm told is also my manager.",
+   "heat": 7,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-13T04:07:46.136Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Daniels' second big moment lifts the Dawgs to 71% against The Horse is Hea in Luffy's view. Sonny still has nine starters to play, so that number can move fast.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-13T04:10:46.136Z"
   }
  ],
  "batches": [
@@ -277,6 +307,7 @@
   "2026-11-12T21:19:50.188Z",
   "2026-11-13T02:34:00.761Z",
   "2026-11-13T03:09:03.352Z",
-  "2026-11-13T03:41:32.469Z"
+  "2026-11-13T03:41:32.469Z",
+  "2026-11-13T04:12:46.136Z"
  ]
 }
