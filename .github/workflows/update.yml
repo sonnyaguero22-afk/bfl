@@ -94,7 +94,13 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: public
+      # GitHub sometimes can't find the artifact it was just handed ("No artifacts named github-pages"); try once more
       - id: deploy
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+      - if: steps.deploy.outcome == 'failure'
+        run: sleep 30
+      - if: steps.deploy.outcome == 'failure'
         uses: actions/deploy-pages@v4
 
   # On game days, start the next run (see check-games.js); updates never overlap (concurrency on update)
