@@ -310,6 +310,12 @@ for (const year of years) {
 
   seasons.push({
     year: +year, name: L.settings.name, done, curWeek: L.status.currentMatchupPeriod, regWeeks,
+    // Weekly points (actual, every week, on a roster or not) for traded players, from fetch.js
+    tradedPts: (() => { if (!exists(`traded_${year}.json`)) return undefined; const out = {};
+      for (const e of load(`traded_${year}.json`).players || []) { const p = e.player || {}, wk = {};
+        for (const st of p.stats || []) if (st.statSourceId === 0 && st.statSplitTypeId === 1 && st.scoringPeriodId > 0) wk[st.scoringPeriodId] = r2(st.appliedTotal || 0);
+        if (p.fullName && Object.keys(wk).length) out[p.fullName] = wk; }
+      console.log(`::notice::${year} weekly points for ${Object.keys(out).length} traded players`); return out; })(),
     on: matchups.some((m) => m.on), nflByes: done ? undefined : nflByes, kicks: done ? undefined : kicks, playoffTeams: ss.playoffTeamCount, periods: ss.matchupPeriods, teams, future, matchups, byes, lineups, draft, moves, trades: finalTrades, rosters, wp,
   });
   for (const w of [L.status.latestScoringPeriod - 1, L.status.latestScoringPeriod]) if (lineups[w]) { const all = Object.values(lineups[w]).flat(); console.log(`::notice::${year} week ${w}: on bye ${all.filter((p) => p.st === "bye").map((p) => p.n).join(", ") || "none"}; out ${all.filter((p) => p.st === "out").map((p) => p.n).join(", ") || "none"}; games on now: ${gamesOn}`); }
@@ -410,7 +416,10 @@ for (const s of seasons) {
     let changed = false;
     // Only the newest week, and only before any trade for the next week, so a "before" never includes the trade
     const newest = s.odds.weeks[s.odds.weeks.length - 1];
-    s.odds.weeks.forEach((N, i) => { if (N > 0 && N === newest && !snap[N] && !s.trades.some((t) => t.wk === N + 1)) { snap[N] = Object.fromEntries(s.teams.map((t) => [t.id, { c: s.odds.t[t.id].c[i], p: s.odds.t[t.id].p[i] }])); changed = true; } });
+    // and only once ESPN has made the week official: a week the site settled early is still missing next week's lineups,
+    // which left the week 9 snapshot of 2026 far off
+    const official = !s.matchups.some((m) => m.wk === newest && m.early);
+    s.odds.weeks.forEach((N, i) => { if (N > 0 && N === newest && official && !snap[N] && !s.trades.some((t) => t.wk === N + 1)) { snap[N] = Object.fromEntries(s.teams.map((t) => [t.id, { c: s.odds.t[t.id].c[i], p: s.odds.t[t.id].p[i] }])); changed = true; } });
     if (changed && process.env.GITHUB_ACTIONS === "true") { fs.mkdirSync(HISTORY, { recursive: true }); fs.writeFileSync(f, JSON.stringify(snap)); }
     s.oddsAtWeekEnd = snap;
   }

@@ -56,6 +56,13 @@ async function get(url, file, headers = {}) {
       await get(`${lg}?view=mMatchupScore&view=mBoxscore&scoringPeriodId=${w}`, `wk_${y}_${w}.json`);
       await get(`${lg}?view=mTransactions2&scoringPeriodId=${w}`, `tx_${y}_${w}.json`);
     }
+    // Weekly points for every player who was traded, rostered or not, so a trade story can count what he scored as a free agent
+    const traded = new Set();
+    for (let w = 1; w <= last; w++) { try { const T = JSON.parse(fs.readFileSync(path.join(DATA, `tx_${y}_${w}.json`), "utf8"));
+      for (const t of T.transactions || []) if (/TRADE/.test(t.type || "")) for (const it of t.items || []) if (it.playerId > 0) traded.add(it.playerId); } catch {} }
+    if (traded.size) await get(`${lg}?view=kona_player_info&scoringPeriodId=${last}`, `traded_${y}.json`, {
+      "x-fantasy-filter": JSON.stringify({ players: { filterIds: { value: [...traded] }, filterStatsForTopScoringPeriodIds: { value: last + 1, additionalValue: [`00${y}`] } } }),
+    });
     // Activity feed (has full trade details when logged in)
     await get(`${lg}/communication/?view=kona_league_communication`, `comm_${y}.json`, {
       "x-fantasy-filter": JSON.stringify({ topics: { filterType: { value: ["ACTIVITY_TRANSACTIONS"] }, limit: 1000, limitPerMessageSet: { value: 25 }, offset: 0, sortMessageDate: { sortPriority: 1, sortAsc: false }, sortFor: { sortPriority: 2, sortAsc: false }, filterIncludeMessageTypeIds: { value: [178, 180, 179, 239, 181, 244] } } }),
