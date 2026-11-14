@@ -357,6 +357,46 @@
    "team": "",
    "about": "move",
    "at": "2026-11-13T16:10:50.149Z"
+  },
+  {
+   "author": "Habib Hive",
+   "handle": "@HabibHiveUGA",
+   "text": "Ramon's number just dropped twenty points with nothing played. Somebody in that lineup must have gotten bad news, and I'd like to thank whoever it was.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-14T17:29:33.242Z"
+  },
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "No Banner only HULK (Ramon) saw their win chance fall from 87% to 67% before a single snap against Habibsters (Kaushal). No points moved it, so this is lineup or injury news. I'm working on what's behind it.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-14T17:32:33.242Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Luffy cut Ramon's chances by twenty points with the score still 0 to 0. That's a big move to make off news alone, and it makes this a much closer game with Kaushal than it looked this morning.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-14T17:35:33.242Z"
+  },
+  {
+   "author": "Brucie Watch",
+   "handle": "@BrucieWatch",
+   "text": "Best team in the league and it still found a way to lose twenty points of win chance before kickoff. Brucie is probably already gripping the controller.",
+   "heat": 8,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-14T17:37:33.242Z"
   }
  ],
  "batches": [
@@ -370,6 +410,7 @@
   "2026-11-13T03:41:32.469Z",
   "2026-11-13T04:12:46.136Z",
   "2026-11-13T14:09:24.811Z",
-  "2026-11-13T17:41:11.945Z"
+  "2026-11-13T17:41:11.945Z",
+  "2026-11-14T17:38:33.242Z"
  ]
 }
