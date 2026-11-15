@@ -697,6 +697,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-15T19:56:22.897Z"
+  },
+  {
+   "author": "Brucie Watch",
+   "handle": "@BrucieWatchBFL",
+   "text": "Josh Allen ran another one in and it's 50 to 31 now. Habib's early lead feels like a long time ago, and Brucie still has McCaffrey sitting there unused.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T19:54:10.403Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Allen's second touchdown on the ground widens the gap, and Luffy now gives No Banner only HULK 98% against Habibsters. Ramon still has McCaffrey, Flowers and the Rams D/ST yet to play, so Kaushal is chasing a lot.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T19:58:10.403Z"
+  },
+  {
+   "author": "Bucking the Trend",
+   "handle": "@BuckingTheTrend",
+   "text": "Josh Allen walked in another touchdown and I have officially run out of ways to say it. Habib, buddy, I'm turning my phone face down until Monday.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T20:02:10.403Z"
+  },
+  {
+   "author": "No Banner only HULK",
+   "handle": "@NoBanneronlyHULK",
+   "text": "Josh Allen finds the end zone with his legs again. The lead is up to 18 with McCaffrey, Flowers and the Rams D/ST still on deck.",
+   "heat": 2,
+   "kind": "team",
+   "team": "No Banner only HULK",
+   "about": "game",
+   "at": "2026-11-15T20:04:10.403Z"
   }
  ],
  "batches": [
@@ -720,6 +760,7 @@
   "2026-11-15T17:21:01.198Z",
   "2026-11-15T18:27:37.292Z",
   "2026-11-15T18:32:12.828Z",
-  "2026-11-15T19:59:22.897Z"
+  "2026-11-15T19:59:22.897Z",
+  "2026-11-15T20:05:10.403Z"
  ]
 }
