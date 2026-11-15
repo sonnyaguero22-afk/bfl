@@ -507,6 +507,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-15T15:51:09.105Z"
+  },
+  {
+   "author": "Fumbler Faithful",
+   "handle": "@FumblerFaithful",
+   "text": "Goff just coughed it up and Zoe's quarterback is the one who gave it away. Randy, I'm not saying breathe, but the zero is looking a lot less lonely.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T16:07:26.080Z"
+  },
+  {
+   "author": "Zoey's Wisconsin Wagon",
+   "handle": "@ZoeyWagon",
+   "text": "Goff throws a touchdown, then gives it right back with a turnover. Z² still leads Randy, but I'd like him to stop trying to give the rest of us a heart attack.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T16:08:26.080Z"
+  },
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "Goff's turnover keeps Ghostu-Spider SZN's lead over The fumblers at just nine points, with Bijan Robinson and Nico Collins still to play. This matchup has plenty of football left.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T16:09:26.080Z"
   }
  ],
  "batches": [
@@ -524,6 +554,7 @@
   "2026-11-14T17:38:33.242Z",
   "2026-11-15T14:47:47.032Z",
   "2026-11-15T14:52:03.926Z",
-  "2026-11-15T15:52:09.105Z"
+  "2026-11-15T15:52:09.105Z",
+  "2026-11-15T16:09:26.080Z"
  ]
 }
