@@ -1,0 +1,67 @@
+{
+ "id": "final-2026-10",
+ "type": "final",
+ "year": 2026,
+ "wk": 10,
+ "created": "2026-11-15T16:45:39.380Z",
+ "title": "Sunday Final Word: Sonny Rebuilds on the Fly, Habib Swaps His Quarterback, and Philly Gets a Gibbs Head Start",
+ "dek": "Lineup moves and early scores have shaken up three of the four games before the 1pm kickoff, with Kai's Dawgs and Philly's Team Pillbert the biggest winners so far.",
+ "body": [
+  "The biggest overhaul belongs to Sonny. The Horse is Hea moved Ashton Jeanty, Patrick Mahomes, the Ravens D/ST and Javonte Williams into the lineup and benched Parker Washington, Zach Charbonnet, C.J. Stroud and the Texans D/ST, after dropping Omarion Hampton for the Ravens defense. Mekhi's Dawgs already hold 44.56 from Jayden Daniels (20.76) and Amon-Ra St. Brown (23.8) while Sonny hasn't scored a point, so Luffy has jumped Dawgs from 66% to 84%. Mekhi also dropped Aaron Rodgers, which cost him nothing on the scoreboard. Marcus Pell is still on The Horse is Hea at confident, and he now has to explain how Sonny erases a 44-point head start.",
+  "Habib shuffled his own deck. Dak Prescott and Keenan Allen are out, Drake Maye and Deebo Samuel Sr. are in, and Maye has already put up 3.02 for Habibsters. It's a start, and it moved Luffy: No Banner only HULK went from 87% to 69%, the biggest slide of the week. Ramon hasn't scored yet, with Josh Allen still to come. Sal stays on Habibsters at lock, and for once Luffy is meeting him partway.",
+  "Elsewhere, Jahmyr Gibbs has already posted 28.8 for Team Pillbert, moving Alan from 81% to 90% against Counting or not Counting GV. Alan benched Javonte Williams for Zach Charbonnet, who arrived in the trade wire shuffle. JMoney isn't dead yet at 32.9, thanks to Isaiah Likely's 23.2, Rachaad White's 5.7 and a 4 from the Patriots D/ST. In the elimination game, Jared Goff's 18.54 for Ghostu-Spider SZN against Jameson Williams' 3.7 flipped Luffy from Randy at 62% to Zoe at 54%. Randy added Mike Evans, but Mike Evans has not played yet, so we can't say what he's worth."
+ ],
+ "social": [
+  {
+   "author": "Sal Benedetto",
+   "handle": "@SalBetsBig",
+   "text": "Dawgs 44 points and Sonny at ZERO. Lock stays. Habibsters lock stays. Luffy can catch up to me whenever he's ready.",
+   "when": 6,
+   "heat": 5,
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Luffy has HULK down from 87% to 69% after the Maye swap, and Dawgs up from 66% to 84% after Daniels and St. Brown. I'm staying with Ramon, but that's a much closer game than Thursday's.",
+   "when": 14,
+   "heat": 2,
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Cheesehead Spider",
+   "handle": "@ZSquaredSZN",
+   "text": "Goff 18.54, Jameson Williams 3.7. I'm not saying the Chicago-Wisconsin argument is over, but Randy should check his roster again.",
+   "when": 22,
+   "heat": 7,
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Pillbert Til I Die",
+   "handle": "@PhillyPhaithful",
+   "text": "Gibbs 28.8 before the real games even start. Philly is up and JMoney needs Tuten to carry the whole thing. Good luck.",
+   "when": 31,
+   "heat": 4,
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Horse Sense",
+   "handle": "@HorseSenseBFL",
+   "text": "Jeanty, Mahomes and the Ravens D are in. Down 44 with no one scored yet isn't panic, it's a long afternoon. Let's ride.",
+   "when": 40,
+   "heat": 3,
+   "kind": "team",
+   "team": "The Horse is Hea"
+  }
+ ],
+ "teams": [],
+ "model": "claude-sonnet-5-5",
+ "usage": {
+  "input": 4,
+  "output": 1446
+ }
+}
