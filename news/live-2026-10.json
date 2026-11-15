@@ -737,6 +737,36 @@
    "team": "No Banner only HULK",
    "about": "game",
    "at": "2026-11-15T20:04:10.403Z"
+  },
+  {
+   "author": "Seattle Seven Nation",
+   "handle": "@SeaSevenNation",
+   "text": "Seahawks D/ST just made a huge play and Team Pillbert gets the points. Alan was already up by 60 and now the defense is piling on too. Rough day to be JMoney.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T20:59:00.123Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "The Rams D/ST came up with a big play, and Ramon's lead over Habibsters is now almost 40 with McCaffrey, Flowers and Aubrey still to play. Luffy already had No Banner only HULK at 100%, so this is just overkill.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T21:04:00.123Z"
+  },
+  {
+   "author": "Philly Hater Number One",
+   "handle": "@PhillyHater1",
+   "text": "The Seahawks defense just made a play for Team Pillbert, and Philly now has over 119 points with Purdy still to go. He is going to be insufferable in the group chat tonight.",
+   "heat": 9,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T21:06:00.123Z"
   }
  ],
  "batches": [
@@ -761,6 +791,7 @@
   "2026-11-15T18:27:37.292Z",
   "2026-11-15T18:32:12.828Z",
   "2026-11-15T19:59:22.897Z",
-  "2026-11-15T20:05:10.403Z"
+  "2026-11-15T20:05:10.403Z",
+  "2026-11-15T21:08:00.123Z"
  ]
 }
