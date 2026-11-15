@@ -467,6 +467,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-15T14:51:03.926Z"
+  },
+  {
+   "author": "Pillbert Pile-On",
+   "handle": "@PillbertPileOn",
+   "text": "Gibbs just walked into the end zone and Alan is back in this thing. 24.6 against 34.9 with Jefferson, Purdy and the whole bench still to come. Suddenly Philly looks very comfortable.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T15:43:09.105Z"
+  },
+  {
+   "author": "Team Pillbert",
+   "handle": "@TeamPillbert",
+   "text": "Jahmyr Gibbs punches it in for the touchdown. Team Pillbert is within ten of Counting or not Counting GV with most of the lineup still to play.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Team Pillbert (Alan)",
+   "about": "game",
+   "at": "2026-11-15T15:46:09.105Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Gibbs scores and Team Pillbert sits at an 87% win chance per Luffy, despite trailing by ten. Alan has eight starters left to play and Jordan has six, so the math favors the deeper pile of unplayed names.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T15:49:09.105Z"
+  },
+  {
+   "author": "JMoney Doubters",
+   "handle": "@JMoneyDoubters",
+   "text": "Isaiah Likely and a Patriots defense built a 10-point lead and Gibbs erased most of it on one carry. I would not be sleeping well if I were Jordan right now.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T15:51:09.105Z"
   }
  ],
  "batches": [
@@ -483,6 +523,7 @@
   "2026-11-13T17:41:11.945Z",
   "2026-11-14T17:38:33.242Z",
   "2026-11-15T14:47:47.032Z",
-  "2026-11-15T14:52:03.926Z"
+  "2026-11-15T14:52:03.926Z",
+  "2026-11-15T15:52:09.105Z"
  ]
 }
