@@ -827,6 +827,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-15T22:35:37.285Z"
+  },
+  {
+   "author": "Web Spinners Weekly",
+   "handle": "@WebSpinnersWk",
+   "text": "Blake Corum punches it in for Zoe and Ghostu-Spider SZN is up 43 on Randy with Corum still going. Fumblers need Henry, Warren and Higgins to do a lot of work tonight.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T22:52:12.868Z"
+  },
+  {
+   "author": "Ghostu-Spider SZN",
+   "handle": "@GhostuSpiderSZN",
+   "text": "Blake Corum finds the end zone for the Rams and we're rolling. Lead is up to 43 over The fumblers. Keep it going, Blake.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Ghostu-Spider SZN",
+   "about": "game",
+   "at": "2026-11-15T22:53:12.868Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Corum's touchdown helps Zoe, but Luffy still gives The fumblers 37% because Henry, Warren and Higgins are all yet to play. That is a lot of upside for Randy to chase, and a 43-point gap is a lot to cover.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T22:54:12.868Z"
   }
  ],
  "batches": [
@@ -854,6 +884,7 @@
   "2026-11-15T20:05:10.403Z",
   "2026-11-15T21:08:00.123Z",
   "2026-11-15T21:12:25.472Z",
-  "2026-11-15T22:36:37.285Z"
+  "2026-11-15T22:36:37.285Z",
+  "2026-11-15T22:54:12.868Z"
  ]
 }
