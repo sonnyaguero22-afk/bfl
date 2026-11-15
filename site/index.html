@@ -104,7 +104,7 @@ tr.cut td { border-bottom: 2px dashed var(--brass); }
 .badge.sm { width: 22px; height: 22px; border-radius: 6px; font-size: 9px; }
 .badge { overflow: hidden; }
 /* Capitals sit high in a line box; drop them onto the square's center, in proportion to each label's own size */
-.badge .bt { display: block; line-height: 1; transform: translateY(var(--bt-y, 0.06em)); }
+.badge .bt { min-width: 0; max-width: none; margin: 0; padding: 0; background: none; color: inherit; text-align: center; display: block; line-height: 1; transform: translateY(var(--bt-y, 0.06em)); }
 a.mlink, button.mlink { color: inherit; text-decoration: none; background: none; border: 0; padding: 0; cursor: pointer; text-align: left; }
 a.mlink:hover b, button.mlink:hover b, button.mlink:hover { text-decoration: underline; text-decoration-color: var(--brass); text-underline-offset: 3px; }
 .w { color: var(--win); font-weight: 600; } .l { color: var(--loss); font-weight: 600; }
@@ -597,7 +597,7 @@ aside.infobox.box th, aside.infobox.box td { padding-top: 8px; padding-bottom: 8
 .gbar { position: sticky; top: 62px; z-index: 4; margin: 10px 0 4px; border-radius: 18px; padding: 8px 10px 10px; color: #fff; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
   background: linear-gradient(90deg, hsl(var(--ha) 50% 24%), hsl(var(--hb) 50% 24%)); box-shadow: 0 8px 22px rgba(0,0,0,.45); }
 .gmini { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 13px; } .gmini b { font-family: "Barlow Condensed", var(--f-display); font-size: 26px; font-variant-numeric: tabular-nums; }
-.gmini span { color: rgba(255,255,255,.75); font-weight: 600; min-width: 74px; text-align: center; } .gmini .badge { flex: none; width: 26px !important; height: 26px; min-width: 0; font-size: 9px; }
+.gmini > span { color: rgba(255,255,255,.75); font-weight: 600; min-width: 74px; text-align: center; } .gmini .badge { flex: none; width: 26px !important; height: 26px; min-width: 0; font-size: 9px; }
 .gtabs { display: flex; justify-content: center; gap: 4px; margin-top: 6px; } .gtabs button { border: 0; background: none; color: #fff; font-weight: 600; font-size: 14px; padding: 6px 14px; border-radius: 999px; cursor: pointer; }
 .gtabs button[aria-current="true"] { background: #fff; color: #111; }
 /* Standings: one clean table, a single cut line */
@@ -623,7 +623,7 @@ h3.subhead { margin: 0 0 10px; font-size: 15px; color: var(--muted); }
 .watch { padding: 12px 14px; display: grid; gap: 8px; }
 .watch .k { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .watch .k .mlink { font-size: inherit; }
-.wrow .badge.sm { width: 30px; height: 30px; font-size: 10px; }
+.wrow .badge.sm { width: 30px; height: 30px; font-size: 12px; }
 .wrow { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 8px; align-items: start; font-size: 13.5px; line-height: 1.35; }
 .owbox { margin: 12px 0; padding: 0; }
 .ltcrit { padding: 14px 16px; margin-bottom: 18px; } .ltcrit p { margin: 6px 0 0; font-size: 14px; line-height: 1.55; }
