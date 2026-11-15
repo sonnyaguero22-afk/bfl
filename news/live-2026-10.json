@@ -667,6 +667,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-15T18:30:12.828Z"
+  },
+  {
+   "author": "Zilgit Zone",
+   "handle": "@WebSlingerWisco",
+   "text": "KC Concepcion just walked into the end zone and Randy is now down more than 40 to my girl Zoe. Somebody tell the Bears fans it's okay, we'll bring cheese.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T19:50:22.897Z"
+  },
+  {
+   "author": "Ghostu-Spider SZN",
+   "handle": "@GhostuSpiderSZN",
+   "text": "KC Concepcion punches it in for the touchdown, and Ghostu-Spider SZN keeps stretching the lead over The fumblers. Nice one, KC.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Ghostu-Spider SZN",
+   "about": "game",
+   "at": "2026-11-15T19:53:22.897Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Concepcion's touchdown pushes Ghostu-Spider SZN further ahead, and Luffy gives The fumblers just 28% against Zoe. Randy has Henry, Warren, Higgins and the 49ers D/ST still to play, so it isn't over, but he needs a lot to go right.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T19:56:22.897Z"
   }
  ],
  "batches": [
@@ -689,6 +719,7 @@
   "2026-11-15T17:16:34.974Z",
   "2026-11-15T17:21:01.198Z",
   "2026-11-15T18:27:37.292Z",
-  "2026-11-15T18:32:12.828Z"
+  "2026-11-15T18:32:12.828Z",
+  "2026-11-15T19:59:22.897Z"
  ]
 }
