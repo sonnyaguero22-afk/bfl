@@ -105,6 +105,8 @@ tr.cut td { border-bottom: 2px dashed var(--brass); }
 .badge { overflow: hidden; }
 /* Capitals sit high in a line box; drop them onto the square's center, in proportion to each label's own size */
 .badge .bt { min-width: 0; max-width: none; margin: 0; padding: 0; background: none; color: inherit; text-align: center; display: block; line-height: 1; transform: translateY(var(--bt-y, 0.06em)); }
+/* Where the browser can trim a line to its capital letters (Safari 18.2+, Chrome 133+), center the capitals exactly */
+@supports (text-box: trim-both cap alphabetic) { .badge .bt { text-box: trim-both cap alphabetic; transform: none; } }
 a.mlink, button.mlink { color: inherit; text-decoration: none; background: none; border: 0; padding: 0; cursor: pointer; text-align: left; }
 a.mlink:hover b, button.mlink:hover b, button.mlink:hover { text-decoration: underline; text-decoration-color: var(--brass); text-underline-offset: 3px; }
 .w { color: var(--win); font-weight: 600; } .l { color: var(--loss); font-weight: 600; }
