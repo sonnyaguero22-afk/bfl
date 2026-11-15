@@ -427,6 +427,46 @@
    "team": "Counting or not Counting GV",
    "about": "game",
    "at": "2026-11-15T14:45:47.032Z"
+  },
+  {
+   "author": "Dawgs Den",
+   "handle": "@DawgsDenBFL",
+   "text": "Amon-Ra St. Brown just caught a touchdown and Mekhi is past thirty with Chase and Jonathan Taylor still waiting. Sonny has a defense and a prayer.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T14:43:03.926Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "St. Brown's touchdown puts Dawgs (Mekhi) at an 80% win chance against The Horse is Hea (Sonny), who haven't had a single starter play yet. Luffy likes that gap and so do I.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T14:45:03.926Z"
+  },
+  {
+   "author": "Zoey's Wisconsin Wagon",
+   "handle": "@ZSquaredSZN",
+   "text": "Goff throws a touchdown and Z² is on the board first against Randy. Bijan and Nico haven't even played. Randy, enjoy your zero while it lasts.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T14:49:03.926Z"
+  },
+  {
+   "author": "Fumbler Faithful",
+   "handle": "@FumblerFaithful",
+   "text": "Jameson Williams is on the field for the same game where Goff just threw a touchdown. We have a zero and a lot of faith in Derrick Henry.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T14:51:03.926Z"
   }
  ],
  "batches": [
@@ -442,6 +482,7 @@
   "2026-11-13T14:09:24.811Z",
   "2026-11-13T17:41:11.945Z",
   "2026-11-14T17:38:33.242Z",
-  "2026-11-15T14:47:47.032Z"
+  "2026-11-15T14:47:47.032Z",
+  "2026-11-15T14:52:03.926Z"
  ]
 }
