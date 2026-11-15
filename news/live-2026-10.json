@@ -397,6 +397,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-14T17:37:33.242Z"
+  },
+  {
+   "author": "Counting Cheese Curds",
+   "handle": "@CurdsAndNumbers",
+   "text": "Patriots D/ST just got ten points on JMoney's side, and Isaiah Likely was already carrying the whole building. Alan has to be sweating through his Gibbs-and-prayers lineup right now.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T14:38:47.032Z"
+  },
+  {
+   "author": "Philly Pain Index",
+   "handle": "@PhillyPainIndex",
+   "text": "Jordan has 38.9 and Alan has a zero and a lot of players who haven't played. Oh, I'm absolutely fine. Totally normal Sunday.",
+   "heat": 7,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T14:42:47.032Z"
+  },
+  {
+   "author": "Counting or not Counting GV",
+   "handle": "@CountingornotCountingGV",
+   "text": "Patriots D/ST are making noise early. Ten points and counting for GV, and Isaiah Likely already gave us a huge start to the morning.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Counting or not Counting GV",
+   "about": "game",
+   "at": "2026-11-15T14:45:47.032Z"
   }
  ],
  "batches": [
@@ -411,6 +441,7 @@
   "2026-11-13T04:12:46.136Z",
   "2026-11-13T14:09:24.811Z",
   "2026-11-13T17:41:11.945Z",
-  "2026-11-14T17:38:33.242Z"
+  "2026-11-14T17:38:33.242Z",
+  "2026-11-15T14:47:47.032Z"
  ]
 }
