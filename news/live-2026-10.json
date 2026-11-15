@@ -797,6 +797,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-15T21:12:25.472Z"
+  },
+  {
+   "author": "Bucking the Trend",
+   "handle": "@BuckingTrendBFL",
+   "text": "McCaffrey catches a touchdown for Brucie and I'm not even surprised anymore. Habib is down 60 and now the guy who's already won gets the bonus round too.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T22:32:37.285Z"
+  },
+  {
+   "author": "Philly Hater Number One",
+   "handle": "@PhillyHaterOne",
+   "text": "Purdy throws a touchdown pass and Alan is at 136 against a team that needs a miracle. Somebody please take away his group chat privileges tonight.",
+   "heat": 8,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T22:34:37.285Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Purdy's touchdown pushes Team Pillbert to 136 and Luffy was already at 100% against Counting or not Counting GV. Alan is just running up the score now.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T22:35:37.285Z"
   }
  ],
  "batches": [
@@ -823,6 +853,7 @@
   "2026-11-15T19:59:22.897Z",
   "2026-11-15T20:05:10.403Z",
   "2026-11-15T21:08:00.123Z",
-  "2026-11-15T21:12:25.472Z"
+  "2026-11-15T21:12:25.472Z",
+  "2026-11-15T22:36:37.285Z"
  ]
 }
