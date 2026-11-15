@@ -102,7 +102,7 @@ tr.cut td { border-bottom: 2px dashed var(--brass); }
 .team small { color: var(--muted); font-size: 12px; }
 .badge { flex: none; width: 34px; height: 34px; border-radius: 8px; display: grid; place-items: center; font-family: var(--f-mono); font-weight: 600; font-size: 10.5px; color: var(--surface); background: hsl(var(--h) var(--mgr-s) var(--mgr-l)); letter-spacing: -.02em; }
 .badge.sm { width: 22px; height: 22px; border-radius: 6px; font-size: 9px; }
-.badge { overflow: hidden; } .badge.b4 { font-size: 9px; letter-spacing: -0.06em; } .badge.sm.b4 { font-size: 6.5px; letter-spacing: -0.04em; }
+.badge { overflow: hidden; }
 a.mlink, button.mlink { color: inherit; text-decoration: none; background: none; border: 0; padding: 0; cursor: pointer; text-align: left; }
 a.mlink:hover b, button.mlink:hover b, button.mlink:hover { text-decoration: underline; text-decoration-color: var(--brass); text-underline-offset: 3px; }
 .w { color: var(--win); font-weight: 600; } .l { color: var(--loss); font-weight: 600; }
@@ -621,7 +621,7 @@ h3.subhead { margin: 0 0 10px; font-size: 15px; color: var(--muted); }
 .watch { padding: 12px 14px; display: grid; gap: 8px; }
 .watch .k { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .watch .k .mlink { font-size: inherit; }
-.wrow .badge.sm { width: 30px; height: 30px; font-size: 10px; } .wrow .badge.sm.b4 { font-size: 8px; }
+.wrow .badge.sm { width: 30px; height: 30px; font-size: 10px; }
 .wrow { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 8px; align-items: start; font-size: 13.5px; line-height: 1.35; }
 .owbox { margin: 12px 0; padding: 0; }
 .ltcrit { padding: 14px 16px; margin-bottom: 18px; } .ltcrit p { margin: 6px 0 0; font-size: 14px; line-height: 1.55; }
@@ -912,7 +912,11 @@ function mgrStats(k) {
 }
 
 // ---------- Pieces ----------
-const badge = (t, sm) => { const a = (t.abbrev || D.managers[t.mgr].first).slice(0, 4); return `<span class="badge${sm ? " sm" : ""}${a.length > 3 ? " b4" : ""}" style="--h:${hue[t.mgr]}${gray(t.mgr)}" aria-hidden="true">${esc(a)}</span>`; };
+// Abbreviations shrink only by as much as they're wider than a typical three letters, so PILL stays full size and HULK just fits
+const GLYPH = { I: 0.28, i: 0.25, l: 0.25, j: 0.27, "1": 0.5, f: 0.34, t: 0.36, r: 0.4, L: 0.55, J: 0.5, M: 0.88, W: 0.96, m: 0.88, w: 0.78, " ": 0.28 };
+const glyphW = (str) => [...str].reduce((t, c) => t + (GLYPH[c] ?? (c === c.toUpperCase() && /[A-Z]/.test(c) ? 0.68 : 0.58)), 0);
+const badge = (t, sm) => { const a = (t.abbrev || D.managers[t.mgr].first).slice(0, 4), k = Math.min(1, 2.05 / glyphW(a));
+  return `<span class="badge${sm ? " sm" : ""}" style="--h:${hue[t.mgr]}${gray(t.mgr)}" aria-hidden="true">${k < 1 ? `<span style="font-size:${k.toFixed(2)}em">${esc(a)}</span>` : esc(a)}</span>`; };
 // Manager squares show initials like the map pins (Sonny A. → SA, Zoe → Z²), so Randy D. and Ramon A. no longer both read "RA"
 const mbadge = (k, sm, txt) => `<span class="badge${sm ? " sm" : ""}" style="--h:${hue[k]}${gray(k)}" aria-hidden="true">${esc(txt || initials(k))}</span>`;
 // First and last initials ("Sonny A." → SA), except the league's own nicknames: Zoe is Z², Jordan is J$
