@@ -637,6 +637,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-15T18:19:37.292Z"
+  },
+  {
+   "author": "Brucie Watch",
+   "handle": "@BrucieWatch",
+   "text": "Josh Allen just kept it himself and walked in from the goal line, and Habib's one-point lead lasted about as long as a Bears fourth-quarter lead. Brucie is back in front and probably not even looking at his phone.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T18:26:12.828Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Allen's rushing touchdown puts No Banner only HULK back on top, and Luffy has Ramon at 94% against Habibsters. Ramon still has McCaffrey, Flowers and the Rams D/ST to come, so Kaushal needs his late-game trio to show up.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T18:28:12.828Z"
+  },
+  {
+   "author": "Bucking the Trend",
+   "handle": "@BuckingTheTrend",
+   "text": "Habib had the lead for maybe ten minutes and Josh Allen took it back with his legs. I'm not mad, I'm just going to stare at the wall for a while.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T18:30:12.828Z"
   }
  ],
  "batches": [
@@ -658,6 +688,7 @@
   "2026-11-15T16:09:26.080Z",
   "2026-11-15T17:16:34.974Z",
   "2026-11-15T17:21:01.198Z",
-  "2026-11-15T18:27:37.292Z"
+  "2026-11-15T18:27:37.292Z",
+  "2026-11-15T18:32:12.828Z"
  ]
 }
