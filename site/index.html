@@ -585,7 +585,11 @@ aside.infobox.box th, aside.infobox.box td { padding-top: 8px; padding-bottom: 8
 .srpts.dim { opacity: .38; }
 .srmid { display: grid; justify-items: center; text-align: center; gap: 2px; } .srmid b { font-size: 14px; } .srmid small { color: var(--muted); font-size: 11.5px; } .srmid .srlive { color: #ff6961; }
 .ball { font-size: 11px; opacity: .8; text-align: center; }
-@media (max-width: 420px) { .srow { padding: 12px 8px; gap: 3px; grid-template-columns: minmax(0, 1fr) 72px minmax(74px, auto) 72px minmax(0, 1fr); } .srteam .badge { width: 30px; height: 30px; } }
+.srleft::before { content: " · "; }
+/* Phones: the team squares get fixed columns, the middle stays narrow and puts "in play / to go" on its own line */
+@media (max-width: 440px) { .srow { padding: 12px 6px; gap: 2px; grid-template-columns: 50px minmax(0, 1fr) minmax(0, 100px) minmax(0, 1fr) 50px; }
+  .srteam .badge { width: 30px; height: 30px; } .srteam small { font-size: 11px; } .srpts { font-size: clamp(26px, 8.4vw, 34px); }
+  .srmid b { font-size: 13px; } .srmid small { font-size: 11px; line-height: 1.25; } .srleft { display: block; white-space: nowrap; letter-spacing: -.01em; } .srleft::before { content: none; } }
 /* Open game: pinned compact score bar with capsule tabs */
 .gbar { position: sticky; top: 62px; z-index: 4; margin: 10px 0 4px; border-radius: 18px; padding: 8px 10px 10px; color: #fff; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
   background: linear-gradient(90deg, hsl(var(--ha) 50% 24%), hsl(var(--hb) 50% 24%)); box-shadow: 0 8px 22px rgba(0,0,0,.45); }
@@ -3001,7 +3005,7 @@ function scoreRow(s, wk, m, rec, attr) {
   const fav = teamWin(s, m, m.h), favId = fav == null ? null : fav >= 0.5 ? m.h : m.a, favP = fav == null ? null : Math.max(fav, 1 - fav);
   const status = m.on ? `<b class="srlive">● Live</b>` : m.live ? `<b>In Progress</b>` : done ? `<b>Final</b>` : `<b>${roundName(s, m) || `Week ${wk}`}</b>`;
   const bone = favId && !done && luffyPick(s, m, favId) ? ` <span title="Luffy's pick">🍖</span>` : "";
-  const sub = done ? (fav != null && m.win !== favId && m.win !== 0 ? `<span style="color:var(--gold);font-weight:700">Upset</span>` : roundName(s, m) || "") : favId ? `${esc(s.byId[favId].abbrev || "")} ${winPct(favP)}${bone}${m.live ? leftLabel(m) : ""}` : "";
+  const sub = done ? (fav != null && m.win !== favId && m.win !== 0 ? `<span style="color:var(--gold);font-weight:700">Upset</span>` : roundName(s, m) || "") : favId ? `${esc(s.byId[favId].abbrev || "")} ${winPct(favP)}${bone}${m.live && leftLabel(m) ? `<span class="srleft">${leftLabel(m).replace(/^ · /, "")}</span>` : ""}` : "";
   return `<div class="srow${isBowl(s, m) ? " bowl" : ""}${attr.includes("aria-current") ? " cur" : ""}" ${attr} role="button" tabindex="0">${team(m.h, ka)}<span class="srpts${dim(m.h) ? " dim" : ""}">${m.live || done ? f1(m.hp) : "–"}</span><span class="srmid">${status}<small>${sub}</small></span><span class="srpts${dim(m.a) ? " dim" : ""}">${m.live || done ? f1(m.ap) : "–"}</span>${team(m.a, kb)}</div>`;
 }
 // rowAttr(m) gives each row its click target; the followed team's game goes first, then the Bowl
