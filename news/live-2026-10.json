@@ -567,6 +567,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-15T17:14:34.974Z"
+  },
+  {
+   "author": "Pillbert Pile-On",
+   "handle": "@PillbertPileOn",
+   "text": "Third Gibbs touchdown of the morning and Alan is up 14 with half his roster still asleep. I'm going to need someone to stop this before Philly starts giving speeches.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T17:12:01.198Z"
+  },
+  {
+   "author": "Team Pillbert",
+   "handle": "@TeamPillbert",
+   "text": "Jahmyr Gibbs finds the end zone again. Team Pillbert leads Counting or not Counting GV with Jefferson, Purdy and the rest still on deck.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Team Pillbert",
+   "about": "game",
+   "at": "2026-11-15T17:15:01.198Z"
+  },
+  {
+   "author": "Band Room Burnout",
+   "handle": "@BandRoomBurnout",
+   "text": "Jordan watched Gibbs run it in for the second time in an hour and I think the whole drum line just stopped marching. Likely gave him everything and it's still not enough.",
+   "heat": 9,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T17:18:01.198Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Gibbs scores and Luffy has Team Pillbert at 97% against Counting or not Counting GV. Alan holds a 14-point lead with eight starters still to play, so this one looks finished.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T17:20:01.198Z"
   }
  ],
  "batches": [
@@ -586,6 +626,7 @@
   "2026-11-15T14:52:03.926Z",
   "2026-11-15T15:52:09.105Z",
   "2026-11-15T16:09:26.080Z",
-  "2026-11-15T17:16:34.974Z"
+  "2026-11-15T17:16:34.974Z",
+  "2026-11-15T17:21:01.198Z"
  ]
 }
