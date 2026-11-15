@@ -857,6 +857,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-15T22:54:12.868Z"
+  },
+  {
+   "author": "Brucie Bandwagon",
+   "handle": "@BillsMafiaBrucie",
+   "text": "McCaffrey runs in another one and Ramon's team is up 60 on Habib with Zay Flowers still to play. At this point Habibsters need a recount, not a rally.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T23:52:23.025Z"
+  },
+  {
+   "author": "No Banner only HULK",
+   "handle": "@NoBanneronlyHULK",
+   "text": "Christian McCaffrey finds the end zone again for the 49ers, and he's up to 29 on the day. Big Sunday for the Hulk.",
+   "heat": 2,
+   "kind": "team",
+   "team": "No Banner only HULK",
+   "about": "game",
+   "at": "2026-11-15T23:53:23.025Z"
+  },
+  {
+   "author": "Habib Hopeless",
+   "handle": "@HabibsHeartbreak",
+   "text": "CMC scores on me again and I'm not even playing him. Down 60 and my season is a hostage situation.",
+   "heat": 8,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T23:54:23.025Z"
   }
  ],
  "batches": [
@@ -885,6 +915,7 @@
   "2026-11-15T21:08:00.123Z",
   "2026-11-15T21:12:25.472Z",
   "2026-11-15T22:36:37.285Z",
-  "2026-11-15T22:54:12.868Z"
+  "2026-11-15T22:54:12.868Z",
+  "2026-11-15T23:55:23.025Z"
  ]
 }
