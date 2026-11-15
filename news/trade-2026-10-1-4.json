@@ -1,0 +1,71 @@
+{
+ "id": "trade-2026-10-1-4",
+ "type": "trade",
+ "year": 2026,
+ "wk": 10,
+ "created": "2026-11-15T15:31:57.940Z",
+ "title": "Javonte Williams Comes Home to Sonny, and Philly Takes Two for One on His Way Out",
+ "dek": "Sonny reunites with last season's running back by sending Zach Charbonnet and Parker Washington to Team Pillbert, and Luffy says Philly got the better end.",
+ "body": [
+  "The Week 10 trade wire wasn't done with The Horse is Hea. A day after the Judkins deal, Sonny went back to the running back aisle and brought home an old friend: Javonte Williams arrives from Team Pillbert, and Alan gets running back Zach Charbonnet and wide receiver Parker Washington in return. It's a two-for-one consolidation between two 6-3 teams. Luffy did not split the difference.",
+  "Start with the homecoming, because this one has frequent-flyer miles. Williams spent 16 weeks with Sonny in 2025, the championship season, and since then he's been passed around like a casserole dish: Randy had him to open this year, traded him to Philly before Week 4, and now Philly has flipped him back to where he spent last season. He's been worth the paperwork, with 147.6 points through nine weeks, every week of it on a roster, and 20.4 and 21.5 in two of his last three around a 6.2 in Week 8. Sonny is getting the best player in the deal, and a guy he already knows how to start.",
+  "Philly's end is about volume. Washington was Sonny's 11th-round pick and has paid that back with 95.1 points in nine weeks, including 13.1 last week after a 3.1 in Week 8, which is real production for a pick that late. Charbonnet is the throw-in with a twist: Sonny grabbed him off the wire in Week 7, he scored zero across six weeks as a free agent and 13.5 in three weeks with The Horse is Hea, and now he's half of a trade package. Together they add up to 108.6 points, short of Williams alone, but Alan gets two bodies for one lineup slot, which is how a contender builds depth for a November injury.",
+  "On paper, Philly wins this one, and not narrowly. Luffy pushed Team Pillbert's title odds from 22% to 26% and its playoff odds from 93% to 96%, while The Horse is Hea dropped from 16% to 13% for the title and from 87% to 79% for the playoffs. That's an eight-point playoff hit for adding the best player in the trade, which tells you Luffy thinks Sonny's lineup just got thinner, especially at receiver, where Washington was part of the rotation. Sonny is betting that a 147-point back he trusts beats depth he doesn't need; Luffy is betting Philly just got a free flex spot and a spare running back from one of his direct rivals at 6-3."
+ ],
+ "social": [
+  {
+   "author": "Buckaroo Football League",
+   "handle": "@BuckarooFL",
+   "text": "Trade completed: The Horse is Hea acquire RB Javonte Williams from Team Pillbert in exchange for RB Zach Charbonnet and WR Parker Washington.",
+   "when": -95,
+   "heat": 1,
+   "kind": "league",
+   "team": ""
+  },
+  {
+   "author": "Team Pillbert",
+   "handle": "@TeamPillbert",
+   "text": "Welcome to the club, Parker Washington and Zach Charbonnet! 108.6 combined points and two more reasons to like our depth chart down the stretch. Let's work.",
+   "when": -60,
+   "heat": 2,
+   "kind": "team",
+   "team": "Team Pillbert"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Williams 147.6, Washington plus Charbonnet 108.6. Sonny gets the best player and still loses 8 points of playoff odds, 87% to 79%. Luffy is pricing in the lineup hole at WR, and I agree with him.",
+   "when": 40,
+   "heat": 2,
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Horse Sense",
+   "handle": "@HorseSenseBFL",
+   "text": "Javonte spent a year on a tour of the league and came back to the house where he won a ring. You don't measure that in Luffy percentages. Welcome home.",
+   "when": 75,
+   "heat": 4,
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Fumble Recovery Unit",
+   "handle": "@FumblersForever",
+   "text": "Javonte Williams has now been traded twice since Week 4 and we're the only team that didn't get anything good out of it. Randy, what did we even do. It's 2 AM and I am looking at Philly's roster with my mouth open.",
+   "when": 610,
+   "heat": 6,
+   "kind": "fan",
+   "team": ""
+  }
+ ],
+ "teams": [
+  1,
+  4
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 2648
+ }
+}
