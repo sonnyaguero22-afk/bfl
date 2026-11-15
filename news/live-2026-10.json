@@ -537,6 +537,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-15T16:09:26.080Z"
+  },
+  {
+   "author": "Pillbert Pile-On",
+   "handle": "@PillbertPile",
+   "text": "Gibbs scores again and Alan is in front by a single point, with Jefferson and Purdy still waiting in the wings. I hate how good this looks for Philly.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T17:07:34.974Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Team Pillbert takes the lead and Luffy puts them at 92% to beat Counting or not Counting GV. Alan has eight starters left and Jordan has six, so depth is doing the talking.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T17:11:34.974Z"
+  },
+  {
+   "author": "Band Room Burnout",
+   "handle": "@BandRoomBurnout",
+   "text": "Jordan led by ten, and now he's down one to a team that has barely played. Isaiah Likely did his job and it still might not be enough. Somebody get that man a trumpet to cry into.",
+   "heat": 8,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-15T17:14:34.974Z"
   }
  ],
  "batches": [
@@ -555,6 +585,7 @@
   "2026-11-15T14:47:47.032Z",
   "2026-11-15T14:52:03.926Z",
   "2026-11-15T15:52:09.105Z",
-  "2026-11-15T16:09:26.080Z"
+  "2026-11-15T16:09:26.080Z",
+  "2026-11-15T17:16:34.974Z"
  ]
 }
