@@ -403,6 +403,9 @@ table.compact .team { min-width: 0; }
 .pinned { font-size: 12px; margin-bottom: -4px; }
 .wtfbox { padding: 12px 14px 6px; margin-bottom: 14px; } .wtfbox .k { font-weight: 700; margin-bottom: 4px; }
 .wtf { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 10px; align-items: center; width: 100%; border: 0; background: none; padding: 5px 0; line-height: 1.25; border-top: 1px solid var(--line); cursor: pointer; text-align: left; color: inherit; font: inherit; }
+.tacc { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px 6px; padding: 6px 0 8px; }
+.tacc button { all: unset; cursor: pointer; display: grid; justify-items: center; gap: 4px; text-align: center; min-width: 0; } .tacc small { font-size: 11px; line-height: 1.2; color: var(--muted); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tacc .tava.sm, .tacc .tava.sm .badge, .tacc > button > .badge { width: 40px; height: 40px; } .tacc button:hover small { color: var(--ink); }
 .wtf small { display: block; } .wtf .avatar, .wtf .badge { width: 30px; height: 30px; }
 .post.take { grid-template-columns: minmax(0, 1fr); }
 .history { padding: 20px 22px; margin: 0 0 24px; }
@@ -3314,10 +3317,17 @@ function socialView() {
   // Trending: the most-liked posts from the last two days
   const posts = hot ? allPosts().filter((x) => !x.p.at || Date.now() - new Date(x.p.at).getTime() < 48 * 3600e3).sort((x, y) => buzz(y.p).likes - buzz(x.p).likes).slice(0, 40) : allPosts();
   const sort = `<div class="weekbar" style="margin:0 0 14px"><button data-feedsort="latest" aria-current="${!hot}">Latest</button><button data-feedsort="trending" aria-current="${hot}">🔥 Trending</button></div>`;
-  return `${newsHead("social")}${posts.length ? whoToFollow() : ""}${sort}
+  return `${newsHead("social")}${posts.length ? teamAccounts() + whoToFollow() : ""}${sort}
     ${posts.length ? `<div class="box rec socialfeed"><div class="feed">${posts.map((x) => postHtml(x.p, x.a)).join("")}</div></div>${aiNote}` : newsEmpty}`;
 }
 
+// Every team's official account in one row of logos, so they're one tap away instead of somewhere in the feed
+function teamAccounts() {
+  const y = Math.max(...years.filter((yy) => S[yy])), s = S[y], A = Object.values(accounts());
+  const acct = (t) => A.find((u) => u.kind === "team" && u.team && u.team.t.id === t.id && u.team.y === y);
+  const list = [...s.teams].sort((a, b) => a.name.localeCompare(b.name)).map((t) => [t, acct(t)]).filter(([, u]) => u);
+  return list.length ? `<div class="box wtfbox teamaccts"><div class="k">Team Accounts</div><div class="tacc">${list.map(([t, u]) => `<button data-go="u-${u.k}" title="${esc(t.name)}">${teamAva(t, "sm")}<small>${esc(t.name)}</small></button>`).join("")}</div></div>` : "";
+}
 // ---------- Odds page (top menu): one season at a time, newest first ----------
 // Playoff Picture: the bracket if the season ended today (seeds, projected matchups, what next week is worth,
 // clinches), with the teams still chasing a spot beside it
