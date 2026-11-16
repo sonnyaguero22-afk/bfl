@@ -494,6 +494,9 @@ td.ru { font-size: 12.5px; white-space: nowrap; }
 .award .k { font-size: 12px; font-weight: 700; }
 .award .who { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
 .trophy, .ring { display: block; width: 100%; height: auto; }
+.grades { display: grid; gap: 10px; } .gradecard { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 14px; padding: 14px 16px; align-items: start; }
+.grade { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 14px; font-size: 26px; font-weight: 800; color: #fff; background: hsl(var(--gh) 55% 40%); }
+.gradecard .rhead { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; } .gradecard .rhead > span { display: grid; } .gradecard .ghead { display: block; margin-top: 2px; } .gradecard p { margin: 4px 0 0; font-size: 15px; line-height: 1.5; }
 .rkcol { display: flex; flex-direction: column; align-items: center; gap: 6px; } .rmove { font-size: 13px; font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .rmove.up { color: var(--win); } .rmove.down { color: var(--loss); } .rmove.same, .rmove.new { color: var(--muted); font-weight: 600; } .rmove.new { font-size: 11px; }
 @media (max-width: 520px) { .roster .acq { display: none; } }
@@ -3111,8 +3114,8 @@ const LIVE = ALL_NEWS.filter((a) => a.type === "live");
 const HISTORY = ALL_NEWS.find((a) => a.type === "history");
 const PROFILE = {};
 for (const a of ALL_NEWS) if (a.type === "profile" && a.mgr && !PROFILE[a.mgr]) PROFILE[a.mgr] = a;
-const NEWS_TYPE = { recap: "Weekly Recap", trade: "Trade", review: "Season in Review", draft: "Draft", preview: "Week Preview", final: "Final Word" };
-const newsWhen = (a) => (a.type === "review" ? `${a.year} Season` : a.type === "draft" ? `${a.year} Draft` : a.type === "preview" ? `${a.year} · Week ${a.wk} Preview` : a.type === "final" ? `${a.year} · Week ${a.wk} Final Word` : a.type === "trade" ? `${a.year} · Before Week ${a.wk}` : `${a.year} · Week ${a.wk}`);
+const NEWS_TYPE = { grades: "Report Card", recap: "Weekly Recap", trade: "Trade", review: "Season in Review", draft: "Draft", preview: "Week Preview", final: "Final Word" };
+const newsWhen = (a) => (a.type === "grades" ? `${a.year} · ${a.stage === "final" ? "Final Grades" : "Regular Season Grades"}` : a.type === "review" ? `${a.year} Season` : a.type === "draft" ? `${a.year} Draft` : a.type === "preview" ? `${a.year} · Week ${a.wk} Preview` : a.type === "final" ? `${a.year} · Week ${a.wk} Final Word` : a.type === "trade" ? `${a.year} · Before Week ${a.wk}` : `${a.year} · Week ${a.wk}`);
 const newsCard = (a, big) => `<button class="box newscard${big ? " big" : ""}" data-go="news-${a.id}"><span class="pill${a.type === "trade" ? " gold" : ""}">${NEWS_TYPE[a.type]}</span><b>${esc(a.title)}</b><span class="dek">${esc(a.dek)}</span><small class="muted">${newsWhen(a)}</small></button>`;
 const hasLogo = (t) => t && t.logo && !/\/images\/default|\/default[^/]*$/.test(t.logo);
 const teamAva = (t, cls = "") => (hasLogo(t) ? `<span class="tava ${cls}"><img src="${esc(t.logo)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add('nologo')">${badge(t)}</span>` : badge(t));
@@ -3275,6 +3278,15 @@ function tradeWatchHtml(a) {
   const later = NEWS.filter((x) => x.type === "recap" && x.year === a.year && (x.trade_watch || []).some((t) => t.id === a.id)).sort((x, y) => x.wk - y.wk);
   return later.length ? `<section><h3>Since Then</h3><div class="box rec"><div class="feed">${later.map((x) => `<div class="post take"><div class="pbody"><p>${esc(x.trade_watch.find((t) => t.id === a.id).take)}</p><button class="mlink postsrc" data-go="news-${x.id}">After Week ${x.wk} · ${esc(x.title)}</button></div></div>`).join("")}</div></div></section>` : "";
 }
+// Report cards: every team's letter grade, with the regular-season grade beside the final one
+const GRADE_HUE = (g) => ({ A: 140, B: 95, C: 45, D: 25, F: 0 })[g[0]] ?? 210;
+function gradesHtml(a) {
+  if (a.type !== "grades" || !a.grades) return "";
+  const s = S[a.year], prev = a.stage === "final" ? (ALL_NEWS.find((x) => x.type === "grades" && x.year === a.year && x.stage === "reg") || {}).grades || [] : [];
+  return `<section><h3>${a.stage === "final" ? "Final Grades" : "Regular Season Grades"}</h3><div class="grades">${a.grades.map((g) => { const t = s && s.byId[g.id], was = prev.find((x) => x.id === g.id);
+    return `<div class="box gradecard"><span class="grade" style="--gh:${GRADE_HUE(g.grade)}">${esc(g.grade)}</span><div><div class="rhead">${t ? badge(t) : ""}<span><b>${esc(t ? t.name : g.team)}</b><small class="muted">${t ? mgrName(t.mgr) : ""}${was ? ` · Regular season: ${esc(was.grade)}` : ""}</small></span></div>
+      <b class="ghead">${esc(g.headline)}</b><p>${esc(g.blurb)}</p></div></div>`; }).join("")}</div></section>`;
+}
 function articleView() {
   const a = NEWS.find((x) => x.id === state.newsId);
   if (!a) return newsView();
@@ -3282,6 +3294,7 @@ function articleView() {
   return `<article class="article"><button class="pill" data-go="news" style="border:0;cursor:pointer">← All News</button>
     <div class="eyebrow" style="margin-top:18px">${NEWS_TYPE[a.type]} · ${newsWhen(a)}${a.published ? ` · <span style="text-transform:none;letter-spacing:0">${stamp(a.published)}</span>` : ""}</div><h2 class="headline">${esc(a.title)}</h2><p class="dek big">${esc(a.dek)}</p>
     <div class="artbody">${a.body.map((p) => `<p>${esc(p)}</p>`).join("")}</div>
+    ${gradesHtml(a)}
     ${picksHtml(a)}
     ${awardsHtml(a)}
     ${tradeWatchHtml(a)}

@@ -30,6 +30,7 @@ function natural(a, periods = {}) {
     case "final": return eastern(y, thursday(y, first(a.wk)) + 3, 11, 40 + j(15));   // Sunday, after inactives, before the 1pm games
     case "trade": return eastern(y, thursday(y, first(a.wk)) - 1, 13, j(180));      // midweek before the trade's first game
     case "draft": return eastern(y, openerDay(y) - 4, 20, j(60));                    // the Sunday before opening night
+    case "grades": return eastern(y, thursday(y, last(Math.floor(a.wk))) + 6, 10, j(30)); // Wednesday morning after the week ends
     case "review": return null;
     default: return null;
   }
