@@ -887,6 +887,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-15T23:54:23.025Z"
+  },
+  {
+   "author": "Dawg Pound Dispatch",
+   "handle": "@DawgPoundDispatch",
+   "text": "CMC catches another touchdown and Ramon's lead over Habib is somewhere past comfortable. Brucie's roster is just showing off now. Brandon Aubrey still has a kick or two left.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-16T00:10:42.618Z"
+  },
+  {
+   "author": "Cheese Curd Chronicles",
+   "handle": "@CurdChronicles",
+   "text": "Purdy hits another touchdown pass and Philly's already past 159 against a team that needed a miracle. Somewhere Alan is smiling and it's the worst possible thing to see on a Sunday night.",
+   "heat": 8,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-16T00:15:42.618Z"
+  },
+  {
+   "author": "Team Pillbert",
+   "handle": "@TeamPillbert",
+   "text": "Brock Purdy finds the end zone and the Pillbert total climbs to 159.56. Jahmyr Gibbs and Chuba Hubbard led the way today.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Team Pillbert",
+   "about": "game",
+   "at": "2026-11-16T00:17:42.618Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "McCaffrey's catch keeps No Banner only HULK at 100% over Habibsters, and Luffy hasn't wavered on it for a while. Zay Flowers is the only player left to play, and he's only adding to the margin.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-16T00:20:42.618Z"
   }
  ],
  "batches": [
@@ -916,6 +956,7 @@
   "2026-11-15T21:12:25.472Z",
   "2026-11-15T22:36:37.285Z",
   "2026-11-15T22:54:12.868Z",
-  "2026-11-15T23:55:23.025Z"
+  "2026-11-15T23:55:23.025Z",
+  "2026-11-16T00:21:42.618Z"
  ]
 }
