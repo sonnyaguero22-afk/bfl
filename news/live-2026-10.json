@@ -987,6 +987,36 @@
    "team": "Counting or not Counting GV (Jordan)",
    "about": "game",
    "at": "2026-11-16T01:58:59.659Z"
+  },
+  {
+   "author": "Garbage Time Gazette",
+   "handle": "@GarbageTimeGaz",
+   "text": "Burrow throws another touchdown for JMoney and it moves the total to 95, which is still a long way from Philly's 161. A touchdown that loud deserves a drumline, and Jordan would know where to get one.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-16T02:48:35.060Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Burrow's touchdown pushes him to 24.88, but Luffy still has Team Pillbert at 100% over Counting or not Counting GV. Only Burrow and McPherson are left to play for Jordan, and that doesn't close a 66-point gap.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-16T02:49:35.060Z"
+  },
+  {
+   "author": "Bayou Burrow Believers",
+   "handle": "@BurrowBelievers",
+   "text": "Burrow keeps getting touchdowns after the game stopped mattering. Best quarterback on the worst-timed team in the league, and I'm staying up for the rest of it anyway.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-16T02:50:35.060Z"
   }
  ],
  "batches": [
@@ -1019,6 +1049,7 @@
   "2026-11-15T23:55:23.025Z",
   "2026-11-16T00:21:42.618Z",
   "2026-11-16T01:32:38.738Z",
-  "2026-11-16T01:58:59.659Z"
+  "2026-11-16T01:58:59.659Z",
+  "2026-11-16T02:51:35.060Z"
  ]
 }
