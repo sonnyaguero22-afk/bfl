@@ -957,6 +957,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-16T01:30:38.738Z"
+  },
+  {
+   "author": "Queue Up Jordan",
+   "handle": "@GVBandKid",
+   "text": "Burrow throws a touchdown and my team is still down over 80 to Philly. I'll take the points, but this is garbage time with a drumline.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-16T01:57:59.659Z"
+  },
+  {
+   "author": "Pillbert Watch",
+   "handle": "@PillbertWatch",
+   "text": "Joe Burrow scoring for JMoney doesn't change anything. Philly is at 161 and it's already over, which is somehow still annoying.",
+   "heat": 8,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-16T01:56:59.659Z"
+  },
+  {
+   "author": "Counting or not Counting GV",
+   "handle": "@CountingornotCountingGV",
+   "text": "Joe Burrow throws a touchdown pass and gives us a little something to cheer for tonight. Burrow and Evan McPherson are our last two to play.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Counting or not Counting GV (Jordan)",
+   "about": "game",
+   "at": "2026-11-16T01:58:59.659Z"
   }
  ],
  "batches": [
@@ -988,6 +1018,7 @@
   "2026-11-15T22:54:12.868Z",
   "2026-11-15T23:55:23.025Z",
   "2026-11-16T00:21:42.618Z",
-  "2026-11-16T01:32:38.738Z"
+  "2026-11-16T01:32:38.738Z",
+  "2026-11-16T01:58:59.659Z"
  ]
 }
