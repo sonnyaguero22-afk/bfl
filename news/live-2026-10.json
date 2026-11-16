@@ -927,6 +927,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-16T00:20:42.618Z"
+  },
+  {
+   "author": "Web Spinners Weekly",
+   "handle": "@WebSpinnersWkly",
+   "text": "Steelers defense just made a big play and Zoe's D/ST is at 10 points and still playing. Randy needed a miracle and keeps getting handed another reason to wait for Henry.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-16T01:23:38.738Z"
+  },
+  {
+   "author": "Fumbler Faithful",
+   "handle": "@FumblerFaithful",
+   "text": "Of course the Steelers defense picks tonight to show up, and it's on Zoe's roster. Randy's down 58 and still won't trade for anyone, so Derrick Henry is the whole plan now.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-16T01:27:38.738Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Steelers D/ST at 10 and still playing pushes Ghostu-Spider SZN further ahead. Luffy has The fumblers at 9% and this play isn't helping them.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-16T01:30:38.738Z"
   }
  ],
  "batches": [
@@ -957,6 +987,7 @@
   "2026-11-15T22:36:37.285Z",
   "2026-11-15T22:54:12.868Z",
   "2026-11-15T23:55:23.025Z",
-  "2026-11-16T00:21:42.618Z"
+  "2026-11-16T00:21:42.618Z",
+  "2026-11-16T01:32:38.738Z"
  ]
 }
