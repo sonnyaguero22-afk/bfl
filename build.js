@@ -57,7 +57,10 @@ for (const year of years) {
     teamMgr[t.id] = key;
     const o = t.record.overall;
     return {
-      id: t.id, mgr: key, name: (t.name || `${t.location} ${t.nickname}`).trim(), abbrev: t.abbrev, logo: t.logo || "",
+      id: t.id, mgr: key, name: (t.name || `${t.location} ${t.nickname}`).trim(), abbrev: t.abbrev,
+      // A logo fetch.js saved goes out with the site (logos/), so it loads wherever ESPN refuses to serve it to other pages
+      logo: (() => { const dir = path.join(__dirname, "archive", "logos"), f = fs.existsSync(dir) && fs.readdirSync(dir).find((x) => x.startsWith(`${year}_${t.id}.`)); if (!f) return t.logo || "";
+        fs.mkdirSync(path.join(__dirname, "public", "logos"), { recursive: true }); fs.copyFileSync(path.join(dir, f), path.join(__dirname, "public", "logos", f)); return `logos/${f}`; })(),
       w: o.wins, l: o.losses, t: o.ties, pf: r2(o.pointsFor), pa: r2(o.pointsAgainst),
       streak: `${o.streakType === "WIN" ? "W" : o.streakType === "LOSS" ? "L" : "T"}${o.streakLength}`,
       seed: t.playoffSeed, final: t.rankCalculatedFinal || 0,
@@ -595,4 +598,6 @@ const page = fs.readFileSync(path.join(__dirname, "site", "index.html"), "utf8")
 fs.writeFileSync(path.join(PUB, "index.html"), `<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<meta name="robots" content="noindex">\n<meta http-equiv="Cache-Control" content="no-cache">\n<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>\n</head>\n<body>\n${page}\n</body>\n</html>\n`);
 fs.writeFileSync(path.join(PUB, "data.js"), dataJs);
 fs.writeFileSync(path.join(PUB, ".nojekyll"), "");
+// Saved team logos (archive/logos/, see fetch.js) go out with the site, archived seasons included
+{ const dir = path.join(__dirname, "archive", "logos"); if (fs.existsSync(dir)) { fs.mkdirSync(path.join(PUB, "logos"), { recursive: true }); for (const f of fs.readdirSync(dir)) fs.copyFileSync(path.join(dir, f), path.join(PUB, "logos", f)); } }
 console.log("wrote public/ and site/data.js", (Buffer.byteLength(dataJs) / 1024).toFixed(0) + " KB");

@@ -3122,7 +3122,7 @@ const teamAva = (t, cls = "") => (hasLogo(t) ? `<span class="tava ${cls}"><img s
 const avatarHue = (handle) => [...handle].reduce((x, c) => (x * 31 + c.charCodeAt(0)) % 360, 7);
 // Verified accounts (league, team, reporter) get a tick and a label; team accounts use the team's badge
 const OFFICIAL = { league: "League", team: "Official", reporter: "Reporter" };
-const postTeam = (p, a) => p.kind === "team" && a && S[a.year] ? S[a.year].teams.find((t) => [t, ...(t.eras || [])].some((e) => e.name === p.team)) : null;
+const postTeam = (p, a) => p.kind === "team" && a && S[a.year] ? S[a.year].teams.find((t) => [t, ...(t.eras || [])].some((e) => e.name === p.team || (p.team || "").startsWith(e.name + " ("))) : null;
 // Story and post times, in the viewer's own time zone; posts timed in the future haven't been posted yet
 const stamp = (iso) => new Date(iso).toLocaleString(undefined, { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 const posted = (p) => !p.at || new Date(p.at).getTime() <= Date.now();
@@ -3152,18 +3152,25 @@ const aiNote = `<p class="note">Written by Claude, an AI, from the league's data
 // ---------- Social profiles: tap a name or @ in the feed. Everything comes from the posts already written ----------
 const hkey = (h) => String(h).replace(/^@/, "").toLowerCase().replace(/[^a-z0-9_]/g, "");
 // Followers start from the kind of account (a seeded size, so each one differs) and grow with every like it's earned
-const BASE_FOLLOW = { league: 48000, team: 9000, reporter: 26000, pundit: 11000, fan: 120 };
+const BASE_FOLLOW = { league: 48000, team: 16000, reporter: 26000, pundit: 2500, fan: 120 };
+// Likes turn into followers with diminishing returns (one viral post isn't a following), weighted by kind
+const LIKE_FOLLOW = { league: 90, team: 70, reporter: 60, pundit: 30, fan: 16 };
 let ACCTS = null;
+const ACCT_ALIAS = {};
 function accounts() {
   if (ACCTS) return ACCTS;
   const A = {};
-  for (const x of [...allPosts()].reverse()) { const k = hkey(x.p.handle); if (!k) continue;
-    const u = (A[k] = A[k] || { k, posts: [], likes: 0, week: 0, kinds: {} }); u.author = x.p.author; u.handle = x.p.handle.startsWith("@") ? x.p.handle : "@" + x.p.handle;
+  const teamKey = {};
+  for (const x of [...allPosts()].reverse()) { let k = hkey(x.p.handle); if (!k) continue;
+    const tm0 = x.p.kind === "team" ? postTeam(x.p, x.a) : null;
+    if (tm0) { const tk = `${tm0.id}`; if (!teamKey[tk]) teamKey[tk] = k; else if (teamKey[tk] !== k) { ACCT_ALIAS[k] = teamKey[tk]; k = teamKey[tk]; } }
+    const u = (A[k] = A[k] || { k, posts: [], likes: 0, week: 0, kinds: {} }); u.author = tm0 ? nameAt(tm0, x.a.wk || tm0.wk || 1) : x.p.author; if (hkey(x.p.handle) === k) u.handle = x.p.handle.startsWith("@") ? x.p.handle : "@" + x.p.handle;
     u.kinds[x.p.kind] = (u.kinds[x.p.kind] || 0) + 1; u.posts.push(x); const l = buzz(x.p).likes; u.likes += l;
     if (x.p.at && Date.now() - new Date(x.p.at).getTime() < 7 * 86400e3) u.week += l;
     const tm = postTeam(x.p, x.a); if (tm) u.team = { t: tm, y: x.a.year }; }
   for (const u of Object.values(A)) { u.kind = Object.entries(u.kinds).sort((a, b) => b[1] - a[1])[0][0]; u.posts.reverse();
-    const r = seed(u.k + "followers"); u.followers = Math.round((BASE_FOLLOW[u.kind] || 120) * (0.6 + 0.8 * r) + 3 * u.likes); u.gained = 3 * u.week;
+    const r = seed(u.k + "followers"), lf = LIKE_FOLLOW[u.kind] || 16; u.followers = Math.round((BASE_FOLLOW[u.kind] || 120) * (0.6 + 0.8 * r) + lf * Math.sqrt(u.likes));
+    u.gained = Math.round(lf * (Math.sqrt(u.likes) - Math.sqrt(Math.max(0, u.likes - u.week))));
     u.following = Math.round((OFFICIAL[u.kind] ? 40 : 150) + (OFFICIAL[u.kind] ? 260 : 900) * seed(u.k + "following")); }
   return (ACCTS = A);
 }
@@ -3187,7 +3194,7 @@ const GUEST_BIO = { "Roronoa Zoro": "Guest picker. Swordsman. Not lost.", "Nami"
 const LEGENDS = new Set(["Shanks", "Whitebeard", "Monkey D. Garp", "Dracule Mihawk", "Kizaru", "Big Mom"]);
 const PANEL_BIO = { "Dana Whitfield": "League insider. If it's happening in the BFL, I heard it first.", "Marcus Pell": "Columnist. Long takes on short benches.", "Sal Benedetto": "I bet on everything. Ask me about my locks.", "Dr. Nina Kessler": "Analytics. In Luffy we trust (mostly)." };
 function userView() {
-  const u = accounts()[state.user];
+  const u = accounts()[state.user] || accounts()[ACCT_ALIAS[state.user]];
   if (!u) return `<div class="vhead"><div><div class="eyebrow">Social</div><h2>Account not found</h2></div></div><p><button class="mlink" data-go="social">← Back to Social</button></p>`;
   const tm = u.team && u.team.t, fan = u.kind === "fan" || u.kind === "pundit" ? fanOf(u) : null, panel = PANEL_BIO[u.author] || GUEST_BIO[u.author];
   const bio = panel || (u.kind === "league" ? "The official account of the Buckaroo Football League. Est. 2023." : tm ? `The official account of ${esc(tm.name)}.` : u.kind === "reporter" ? "Covering the Buckaroo Football League." : u.kind === "pundit" ? "Fantasy football opinions, free of charge and worth it." : fan ? `${esc(fan.name)} fan. Opinions are my own and correct.` : "Fantasy football fan. Here for the takes.");

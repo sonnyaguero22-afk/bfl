@@ -56,6 +56,15 @@ async function get(url, file, headers = {}) {
       await get(`${lg}?view=mMatchupScore&view=mBoxscore&scoringPeriodId=${w}`, `wk_${y}_${w}.json`);
       await get(`${lg}?view=mTransactions2&scoringPeriodId=${w}`, `tx_${y}_${w}.json`);
     }
+    // Team logos, saved with the site so they show even where ESPN won't serve them to other pages (custom uploads)
+    for (const t of L.teams || []) { if (!t.logo || /default_logos/.test(t.logo)) continue;
+      try { const res = await fetch(t.logo, { headers: COOKIE && /espn\.com/.test(t.logo) ? { cookie: COOKIE } : {} }), type = res.headers.get("content-type") || "";
+        const ext = /svg/.test(type) ? "svg" : /png/.test(type) ? "png" : /webp/.test(type) ? "webp" : /gif/.test(type) ? "gif" : /jpe?g/.test(type) ? "jpg" : null;
+        // archive/logos/ is saved with the repo, so a logo outlives the season (and its ESPN link)
+        if (res.ok && ext) { const dir = path.join(__dirname, "archive", "logos"); fs.mkdirSync(dir, { recursive: true });
+          for (const old of fs.readdirSync(dir).filter((x) => x.startsWith(`${y}_${t.id}.`))) fs.unlinkSync(path.join(dir, old));
+          fs.writeFileSync(path.join(dir, `${y}_${t.id}.${ext}`), Buffer.from(await res.arrayBuffer())); }
+        console.log(`::notice::logo for team ${t.id}: ${res.status} ${type}${res.ok && ext ? "" : " (not saved)"}`); } catch (e) { console.log(`::warning::logo for team ${t.id}: ${e.message}`); } }
     // Weekly points for every player who was traded, rostered or not, so a trade story can count what he scored as a free agent
     const traded = new Set();
     for (let w = 1; w <= last; w++) { try { const T = JSON.parse(fs.readFileSync(path.join(DATA, `tx_${y}_${w}.json`), "utf8"));
