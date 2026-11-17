@@ -1,0 +1,70 @@
+{
+ "id": "rankings-2026-10",
+ "type": "rankings",
+ "year": 2026,
+ "wk": 10,
+ "created": "2026-11-17T14:03:42.878Z",
+ "title": "Power Rankings, Week 10: Brucie stays on top, Philly is coming for the crown, and Sonny buys out the mall",
+ "dek": "No Banner only HULK holds No. 1 for one more week before the regular season's heavyweight bout, the Dawgs climb on a three-game heater, and The Horse is Hea answers a loss with three trades.",
+ "body": [
+  "Week 10 set up the main event. No Banner only HULK and Team Pillbert both won by 45-plus points, and next week they play each other. Brucie still owns the best record (8-2) and the most points in the league by a wide margin, but Luffy now gives Philly the better title odds, 30% to 26%. That is about as close to a coin flip as a 1-versus-2 matchup gets, and it's the reason the top of this list barely holds.",
+  "Under them, Kai's Dawgs beat The Horse is Hea head-to-head and jumped from 52% to 79% playoff odds, so they move past Sonny. The Horse is Hea answered the loss with three trades in one week, bringing in Javonte Williams, Quinshon Judkins, Kyren Williams and Malik Nabers. At the bottom, Ghostu-Spider SZN beat The fumblers in the head-to-head, and Z² takes over sixth from Randy, who has now lost seven straight."
+ ],
+ "social": [],
+ "teams": [],
+ "power_rankings": [
+  {
+   "rank": 1,
+   "team": "No Banner only HULK",
+   "blurb": "Christian McCaffrey put up 44.3 in a 153.14-106.52 win over Habibsters, and Brucie is now 8-2 with 1,357 points, about 130 more than anyone else. Luffy did shave the title odds from 32% to 26%, which makes this the shakiest first place in the league. A win over Team Pillbert next week clinches a playoff spot and probably settles who's the best team. A loss turns the No. 1 spot into a real argument.",
+   "id": 7
+  },
+  {
+   "rank": 2,
+   "team": "Team Pillbert",
+   "blurb": "Philly beat JMoney 161.56-106.56, the highest score of the week, and Jahmyr Gibbs put up 40.7 of it. He also traded Javonte Williams to Sonny for Zach Charbonnet and Parker Washington, adding depth to a roster that already ranks second in scoring. Luffy has Team Pillbert as the title favorite at 30%. Holding at No. 2 only because HULK still has the better record, and next week he gets the chance to fix that himself.",
+   "id": 4
+  },
+  {
+   "rank": 3,
+   "team": "Dawgs",
+   "blurb": "Kai is up from fourth after a 133.16-123.22 win over The Horse is Hea, his third straight. Ja'Marr Chase led the way with 28.6, and the playoff odds jumped from 52% to 79%. He also sent Bucky Irving to Sonny for Kyren Williams and Malik Nabers, so this lineup will look different going forward. At 5-5, the record says average, but the team hasn't played like it lately. Next is Counting or not Counting GV, a good chance to make it four in a row.",
+   "id": 5
+  },
+  {
+   "rank": 4,
+   "team": "The Horse is Hea",
+   "blurb": "Sonny drops a spot after losing 133.16-123.22 to the Dawgs, despite 35.42 from Patrick Mahomes. He responded with three trades in one week: Javonte Williams from Philly, Quinshon Judkins from Habib, and Kyren Williams plus Malik Nabers from Kai. He gave up Charbonnet, Parker Washington, DeMario Douglas and Bucky Irving. At 6-4 he's still at 89% to make the playoffs, but a loss to Zoe next week would drop that to 61%.",
+   "id": 1
+  },
+  {
+   "rank": 5,
+   "team": "Habibsters",
+   "blurb": "Habib lost 153.14-106.52 to HULK, and his playoff odds fell from 55% to 31%, the biggest drop of the week. That's tough for a team ranked third in points, and Deebo Samuel Sr.'s 24.4 wasn't nearly enough. Kaushal did trade Quinshon Judkins to Sonny for DeMario Douglas, so he's still trying to improve the roster. Next week against The fumblers matters a lot: a win puts him at 41%, a loss drops him to 19%.",
+   "id": 6
+  },
+  {
+   "rank": 6,
+   "team": "Ghostu-Spider SZN",
+   "blurb": "Z² beat The fumblers 105.02-96.28 in the head-to-head, with Jared Goff scoring 20.42, so she moves up from seventh to sixth. She's 4-6 with the second-lowest point total, so the playoffs are a long shot. Still, Luffy gives her 21% if she wins next week, and 1% if she loses. That makes the matchup against Sonny her season.",
+   "id": 8
+  },
+  {
+   "rank": 7,
+   "team": "The fumblers",
+   "blurb": "Randy lost 105.02-96.28 to Zoe and has now lost seven straight. Trevor Lawrence put up 26.78, but nobody else helped much. Playoff odds are down to 1%, and a loss to Habibsters next week takes them to zero. Sonny made three trades this week and Randy made none, which is pretty much what everyone expected.",
+   "id": 2
+  },
+  {
+   "rank": 8,
+   "team": "Counting or not Counting GV",
+   "blurb": "JMoney lost 161.56-106.56 to Team Pillbert, and Joe Burrow's 33.16 couldn't make up the 55-point gap. At 2-8 with the league's lowest point total, this team is out of the playoff race in practice, and a loss to the Dawgs next week makes it official. The best thing left to play for is knocking Kai off his winning streak, which would also help everyone else chasing a playoff spot.",
+   "id": 3
+  }
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 2591
+ }
+}
