@@ -1,0 +1,72 @@
+{
+ "id": "trade-2026-11-1-5",
+ "type": "trade",
+ "year": 2026,
+ "wk": 11,
+ "created": "2026-11-17T13:07:49.257Z",
+ "title": "Kai Cashes In a Waiver Claim and a Sixth-Rounder for Bucky Irving, and Malik Nabers Goes Back to Sonny",
+ "dek": "The Horse is Hea takes Kyren Williams and a homecoming Malik Nabers for Bucky Irving, and Luffy ends up liking the Dawgs side of the ledger.",
+ "body": [
+  "Two days after Dawgs beat The Horse is Hea, the same two teams sat back down at the table. Sonny sends running back Bucky Irving to Mekhi, and Kai sends back running back Kyren Williams and wide receiver Malik Nabers. It's a two-for-one in the Dawgs' favor on bodies, and it's the third deal The Horse is Hea has made on this trade wire, so if you've lost track of Sonny's roster, so has his bench. This time he's the one taking the extra piece instead of consolidating.",
+  "The headline for Sonny is a reunion. Nabers spent 2024 and 2025 with him, 22 weeks across the league's two most dramatically different Sonny seasons, then had a four-week stint with Jordan before Kai grabbed him on a Week 5 waiver claim. Six weeks later, that claim has turned into Bucky Irving, which is about as clean a waiver flip as you'll see. The catch is the form: Nabers has 108.2 points on the season, every week of it on a roster, but his last three outings read 14.6, 6.8 and 4.9. Sonny is betting the guy he used to start is still in there somewhere.",
+  "Kyren Williams brings the bigger season total, 145.3 points, all on a roster, and he's been around: Alan's in 2023, Randy's in 2024, Kai's sixth-round pick and roster fixture for 28 weeks since. The trend is the problem. He's gone 12.4, 7.6 and 4.2 in his last three, sliding the wrong way at the worst time of year. Combined, Sonny takes on 253.5 season points, which looks great on a spreadsheet and less great on the last three Sundays.",
+  "Mekhi's end is the one player in the deal who's actually rolling. Irving was Sonny's eighth-round pick and has 148.1 points in ten weeks on a roster, the most of anyone in the trade, with 23.5, 21 and 26.5 in his last three games. He's also got history: he spent all 18 weeks of 2025 with Ramon and had a one-week cameo with Habib in 2024. Kai turned a waiver claim and a sixth-rounder in a slump into the hottest back in the deal, which is exactly the kind of move you'd expect from the guy who usually wins the wire.",
+  "So who won on paper? Luffy now has Dawgs at 23% for the title and 79% for the playoffs, while The Horse is Hea sits at 89% to make it and 16% to win it all. Sonny keeps the safer path to January, but Luffy gives Kai the better shot at the trophy, and that's the number that matters in a Buckaroo Bowl league. Sonny bought depth and nostalgia; Mekhi bought the best player in the room."
+ ],
+ "social": [
+  {
+   "author": "Buckaroo Football League",
+   "handle": "@BuckarooFL",
+   "text": "Trade completed: The Horse is Hea acquire RB Kyren Williams and WR Malik Nabers from Dawgs in exchange for RB Bucky Irving.",
+   "when": -45,
+   "heat": 1,
+   "kind": "league",
+   "team": ""
+  },
+  {
+   "author": "Dawgs",
+   "handle": "@Dawgs",
+   "text": "Welcome to the pack, Bucky Irving! 148.1 points this season and 71 over his last three games. Let's keep running.",
+   "when": -20,
+   "heat": 2,
+   "kind": "team",
+   "team": "Dawgs"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Sonny takes 253.5 season points, Kai takes 148.1. But Kyren and Nabers combined for 9.1 in Week 10, and Irving's last three average 23.7. Luffy: Dawgs 23% title, Horse 16%. I'm with him.",
+   "when": 35,
+   "heat": 3,
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Horse Sense",
+   "handle": "@HorseSenseBFL",
+   "text": "Malik Nabers is home. Two years in our colors, one month wandering, and now he's back where he belongs. Kyren too. Two starters for one. Welcome back.",
+   "when": 70,
+   "heat": 4,
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Waiver Wire Whisperer",
+   "handle": "@WaiverWhispersBFL",
+   "text": "Kai claimed Malik Nabers off waivers in Week 5 and just flipped him and a slumping Kyren for the hottest RB in the league. Sonny beat him by one point in Week 4 and has now lost to him twice in three days.",
+   "when": 410,
+   "heat": 8,
+   "kind": "fan",
+   "team": ""
+  }
+ ],
+ "teams": [
+  1,
+  5
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 2684
+ }
+}
