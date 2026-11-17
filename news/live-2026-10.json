@@ -1077,6 +1077,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-17T01:21:27.161Z"
+  },
+  {
+   "author": "Fumbler Faithful",
+   "handle": "@FumblerFaithful",
+   "text": "Derrick Henry just punched one in for Randy and I'm not ready to call it a comeback, but I'm no longer looking at the exit. Nineteen behind with Henry still on the field is a pulse.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-17T01:58:35.659Z"
+  },
+  {
+   "author": "Z Squared Nation",
+   "handle": "@ZSquaredNation",
+   "text": "Of course Henry scores now. Zoe's team has nobody left to play and just has to sit there while a Ravens running back cooks on Randy's behalf.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-17T02:02:35.659Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Henry's touchdown moves Luffy's number for The fumblers up to 18%, but Ghostu-Spider SZN is done playing and leads by about 18. Randy needs Henry to keep scoring, and there's a lot of game left only if Baltimore keeps feeding him.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-17T02:05:35.659Z"
   }
  ],
  "batches": [
@@ -1112,6 +1142,7 @@
   "2026-11-16T01:58:59.659Z",
   "2026-11-16T02:51:35.060Z",
   "2026-11-16T03:27:01.804Z",
-  "2026-11-17T01:23:27.161Z"
+  "2026-11-17T01:23:27.161Z",
+  "2026-11-17T02:07:35.659Z"
  ]
 }
