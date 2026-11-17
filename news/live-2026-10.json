@@ -1107,6 +1107,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-17T02:05:35.659Z"
+  },
+  {
+   "author": "Fumbler Faithful",
+   "handle": "@FumblerFaithful",
+   "text": "Henry just walked into the end zone and Randy is down about ten with him still on the field. I said I was done. I lied.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-17T03:47:12.396Z"
+  },
+  {
+   "author": "Z Squared Nation",
+   "handle": "@ZSquaredNation",
+   "text": "Zoe's lineup is finished for the week and Henry just scored on the other side. All we can do now is sit here and watch the Ravens run game.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-17T03:44:12.396Z"
+  },
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "Derrick Henry's touchdown cuts Zoe's lead over The fumblers to roughly ten. Zoe has nobody left to play, and Randy still has Henry going in Baltimore's game.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-17T03:49:12.396Z"
   }
  ],
  "batches": [
@@ -1143,6 +1173,7 @@
   "2026-11-16T02:51:35.060Z",
   "2026-11-16T03:27:01.804Z",
   "2026-11-17T01:23:27.161Z",
-  "2026-11-17T02:07:35.659Z"
+  "2026-11-17T02:07:35.659Z",
+  "2026-11-17T03:50:12.396Z"
  ]
 }
