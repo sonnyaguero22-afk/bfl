@@ -1137,6 +1137,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-17T03:49:12.396Z"
+  },
+  {
+   "author": "Brucie Watch",
+   "handle": "@BrucieWatch",
+   "text": "Zay Flowers just put the ball on the turf for Ramon. Doesn't matter, he's up forty-six on Habib, but I'll take any fumble with his name on it.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-17T04:09:28.675Z"
+  },
+  {
+   "author": "Habibster Nation",
+   "handle": "@HabibsterNation",
+   "text": "Flowers coughs it up on Ramon's side and Habib's season is somehow still the one that feels cursed. Everyone is done playing for us and we're down forty-six.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-17T04:10:28.675Z"
+  },
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "Zay Flowers lost a fumble for No Banner only HULK, but Ramon is far enough ahead of Habibsters that it changes nothing in this matchup.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-17T04:11:28.675Z"
   }
  ],
  "batches": [
@@ -1174,6 +1204,7 @@
   "2026-11-16T03:27:01.804Z",
   "2026-11-17T01:23:27.161Z",
   "2026-11-17T02:07:35.659Z",
-  "2026-11-17T03:50:12.396Z"
+  "2026-11-17T03:50:12.396Z",
+  "2026-11-17T04:12:28.675Z"
  ]
 }
