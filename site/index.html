@@ -492,7 +492,9 @@ table.compact .team { min-width: 0; }
 .top5 li.win span { font-weight: 700; } .top5 li .sc { font-weight: 400; margin-left: 2px; }
 td.ru { font-size: 12.5px; white-space: nowrap; }
 .awsub { margin: 14px 0 8px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
-.award { display: grid; gap: 4px; padding: 12px 14px; min-width: 0; }
+.award { display: grid; gap: 4px; padding: 12px 14px; min-width: 0; align-content: start; }
+/* Cards in a row stay the same height, but their contents sit at the top; a team square stays on its line */
+.awgrid { align-items: start; } .award small .badge, .top5 .badge { display: inline-grid; vertical-align: middle; margin-right: 3px; }
 @media (max-width: 520px) { .awgrid { grid-template-columns: 1fr 1fr; gap: 8px; } .award { padding: 10px; } .award .who { font-size: 14px; flex-wrap: wrap; } }
 .award .k { font-size: 12px; font-weight: 700; }
 .award .who { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
