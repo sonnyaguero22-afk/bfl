@@ -1047,6 +1047,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-16T03:26:01.804Z"
+  },
+  {
+   "author": "Dawg Pound Dispatch",
+   "handle": "@DawgPoundDispatch",
+   "text": "Dawgs had this one at 77% and then the Ravens defense showed up for Sonny. Ten points and Mekhi is suddenly holding on by four. I'm not watching, I'm watching.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-17T01:17:27.161Z"
+  },
+  {
+   "author": "Dr. Nina Kessler",
+   "handle": "@KesslerNumbers",
+   "text": "Luffy dropped Dawgs from 77% to 24% on one Ravens D/ST swing. Mekhi leads by under four with nothing left to play, and Sonny still has Baltimore live.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-17T01:19:27.161Z"
+  },
+  {
+   "author": "Horse Hea Heads",
+   "handle": "@HorseHeaHeads",
+   "text": "Ravens D/ST just did what Sonny's whole bench couldn't. Down to four and the defense is still out there. Commissioner abuse of power would be extending the game clock.",
+   "heat": 8,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-17T01:21:27.161Z"
   }
  ],
  "batches": [
@@ -1081,6 +1111,7 @@
   "2026-11-16T01:32:38.738Z",
   "2026-11-16T01:58:59.659Z",
   "2026-11-16T02:51:35.060Z",
-  "2026-11-16T03:27:01.804Z"
+  "2026-11-16T03:27:01.804Z",
+  "2026-11-17T01:23:27.161Z"
  ]
 }
