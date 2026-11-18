@@ -1,0 +1,55 @@
+{
+ "id": "live-2026-11",
+ "type": "live",
+ "year": 2026,
+ "wk": 11,
+ "created": "2026-11-18T16:32:50.345Z",
+ "title": "Week 11 Live",
+ "dek": "",
+ "body": [],
+ "social": [
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "Sonny's side of the Horse is Hea game moved big this morning with no points on the board, so the swing is coming from lineup news. Worth watching what he does with the rest of that roster before kickoff.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-18T16:23:56.431Z"
+  },
+  {
+   "author": "Gridiron Gus",
+   "handle": "@GusGridiron",
+   "text": "Zoe cut A.J. Brown for Omarion Hampton and Sonny is swapping a Ravens defense for a receiver nobody has seen yet. Wednesday is chaos season on the wire.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-18T15:19:59.532Z"
+  },
+  {
+   "author": "Habibsters",
+   "handle": "@Habibsters",
+   "text": "Welcome to the squad, Stefon Diggs. Braelon Allen heads out as the wire does its thing before the Fumblers matchup.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Habibsters",
+   "about": "move",
+   "at": "2026-11-18T09:21:10.308Z"
+  },
+  {
+   "author": "Bills Mafia Mekhi Fan",
+   "handle": "@DawgsDefenseDesk",
+   "text": "Mekhi swapping in the Bills D/ST for Dolphins D/ST like he's the waiver wire king or something. Oh wait, he is.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-18T09:29:10.307Z"
+  }
+ ],
+ "batches": [
+  "2026-11-18T16:32:56.431Z"
+ ]
+}
