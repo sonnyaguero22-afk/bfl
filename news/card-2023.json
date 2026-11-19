@@ -1,0 +1,367 @@
+{
+ "id": "card-2023",
+ "type": "card",
+ "year": 2023,
+ "wk": 16,
+ "by": "Morgans",
+ "created": "2026-11-19T22:05:00.423Z",
+ "title": "BUCKAROO BOWL I REPORT CARD: Habibsters Crowned in Year One, a Quarterback Lesson Etched Into History",
+ "dek": "The league's first season ended with Kaushal unbeaten down the stretch, Mekhi robbed by the schedule, Sonny stuck at the bottom, and six managers who never made a single trade.",
+ "body": [
+  "Let the record show that the first chapter of Buckaroo Football League history belongs to Habibsters. Kaushal won his last five regular-season games, took the 1 seed at 10-4, then won his two-week playoff rounds against Dawgs (237.54-196.12) and Team Pillbert (251.36-192.08). On draft day Luffy gave him a 17% title chance, tied for the best in a dead-even field. By the end of the regular season that had grown to 41%, and Luffy was right.",
+  "Here is the BIG NEWS for anyone planning next year's draft: this league was won at quarterback, and both winners found theirs in round 6. Josh Allen (371.5) carried Habibsters to the No. 1 QB group, and Jalen Hurts (356.8) did the same for Team Pillbert at No. 2. The two finalists owned the two best quarterbacks. Araleasers got 8.2 points a week at the position, last by a mile, and went 4-10 even with the league's best receiver room.",
+  "Two more lessons come from Dawgs and from the ledger. Mekhi scored the most points in the league (1,542.8) and still went 6-8, two wins short of what his scoring earned, and needed a playoff spot to salvage his season. Meanwhile, the trade market was a ghost town: zero trades, league-wide, all year. Every contender was built on the draft and the wire, and nobody tried to buy their way past a weak position.",
+  "At the bottom, Ben Dover's season ended in the consolation ladder. Sonny lost both of his ladder rounds to Araleasers and finished last, even though he had the league's luckiest schedule. With 245 points from Breece Hall sitting on his bench, the lineups explain most of it. Bowl I is in the books, and the archive will remember it well."
+ ],
+ "social": [
+  {
+   "author": "GLSN",
+   "handle": "@GLSN",
+   "text": "📰 New from @BigNewsMorgans: The Buckaroo Bowl I Report Card. Every team graded, from a Habibsters A to a Ben Dover bench that scored like a starting lineup. Read it now.",
+   "when": 5,
+   "heat": 2,
+   "kind": "network",
+   "team": ""
+  },
+  {
+   "author": "Morgans",
+   "handle": "@BigNewsMorgans",
+   "text": "The first report card in league history is LIVE. Headline: the two best QBs met in the final, and both went in round 6. Draft accordingly, gentlemen.",
+   "when": 12,
+   "heat": 4,
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Habibsters",
+   "handle": "@Habibsters",
+   "text": "An A on the first report card in league history. 🏆 Buckaroo Bowl I champions, Best Draft, and the Pirate King on our roster. Thank you, Josh Allen.",
+   "when": 95,
+   "heat": 2,
+   "kind": "team",
+   "team": "Habibsters"
+  },
+  {
+   "author": "Crocus",
+   "handle": "@CrocusLighthouse",
+   "text": "Most points in the league and a losing record. I've watched a lot of ships go down, and Dawgs sank with the cargo hold full. Kai deserved better than a C.",
+   "when": 240,
+   "heat": 5,
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Deep Bench Dan",
+   "handle": "@DeepBenchDan",
+   "text": "Breece Hall put up 245 points on Sonny's bench. That's not a backup, that's a second team. Ben Dover was a dynasty, it just never played its starters.",
+   "when": -30,
+   "heat": 8,
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Fourth and Philly",
+   "handle": "@FourthAndPhilly",
+   "text": "Philly gets a B+ and they knock him for his bench? Man made the Bowl with the worst D/ST in the league. Imagine if he'd fixed it.",
+   "when": 1310,
+   "heat": 5,
+   "kind": "fan",
+   "team": ""
+  }
+ ],
+ "teams": [],
+ "cards": [
+  {
+   "team": "Habibsters",
+   "grade": "A",
+   "headline": "The First King of the Buckaroo Football League",
+   "summary": "Kaushal went 10-4, ranked second in points (1,528.8), and finished with five straight wins to take the 1 seed. He then won both playoff rounds by a combined 100-plus points, a 237.54-196.12 win over Dawgs and a 251.36-192.08 win in the Bowl over Team Pillbert. Josh Allen won Pirate King (season MVP) and Christian McCaffrey was the Best RB, and Amon-Ra St. Brown put up 43.0 in the Bowl to win The One Piece (Buckaroo Bowl MVP). Habibsters ran the league's best QB, RB and D/ST groups, which more than made up for a kicker ranked dead last. A 1.6-win luck bonus helped, but the title was earned.",
+   "strengths": [
+    "No. 1 QB (26.3 a week), No. 1 RB (45.3) and No. 1 D/ST (11.1) groups",
+    "Best Draft award: 1,812 points from his own picks, the most in the league",
+    "Josh Allen (371.5) and McCaffrey (357.8) were the top two starters in the league",
+    "Went 5-0 to close the regular season, then 2-0 in the playoffs"
+   ],
+   "weaknesses": [
+    "WRs ranked 5 of 6 at 27.1 a week, with St. Brown carrying most of the load",
+    "Kicker ranked last at 5.7 a week",
+    "Left 453.8 points against the best possible lineup; the bench would have flipped three losses, including a 41-point loss in week 5"
+   ],
+   "verdict": "Well managed",
+   "management": "Habib won the Reverie and then kept his hands moving: 16 adds, almost double the league average of 8.8, even though none of them were needed to save the season. His three straight RB picks to open the draft looked old-fashioned, but McCaffrey and Tony Pollard made it work, and getting Allen in round 6 was the steal of the year. His lineups were average for the league, with a few early-season losses the bench could have saved. When it counted, he started the right guys.",
+   "subgrades": [
+    {
+     "area": "Draft",
+     "grade": "A+",
+     "note": "Led the league with 1,812 points from his picks, and Allen in round 6 made up for an Ekeler first-rounder that returned 159.9."
+    },
+    {
+     "area": "Waivers",
+     "grade": "B-",
+     "note": "The busiest manager on the wire with 16 adds, but the pickups added just 205.8 points as starters, lower than both Araleasers (2 adds) and Team Pillbert."
+    },
+    {
+     "area": "Trades",
+     "grade": "INC",
+     "note": "No trades were made anywhere in the league, so there's nothing to grade."
+    },
+    {
+     "area": "Lineups",
+     "grade": "B-",
+     "note": "Hit 82% of the best possible lineup, middle of the pack, and the bench would have flipped losses in weeks 1, 5 and 9."
+    }
+   ],
+   "fix": [
+    "Keep taking a QB in the middle rounds; this year proved the position decides titles here",
+    "Draft a real WR2 early instead of three straight RBs, so a wide receiver room ranked 5th doesn't become a problem next year",
+    "Pick up kickers and defenses based on matchups, since K was the one group ranked last"
+   ],
+   "id": 6
+  },
+  {
+   "team": "Team Pillbert",
+   "grade": "B+",
+   "headline": "Philly Made It to the Last Game and Ran Into a Buzzsaw",
+   "summary": "Alan went 9-5, took the 2 seed, and beat The fumblers 234.86-216.44 to reach Buckaroo Bowl I. That's where the run ended, with a 251.36-192.08 loss to Habibsters. Jalen Hurts (356.8) and Tyreek Hill (316.9) gave him one of the league's best one-two punches, and his pickups scored 365.1 points. But a 1.4-win luck bonus covered up a 2-3 finish to the regular season (LWLWL) and a lineup that kept costing him games. Title odds went from 16% on draft day to 21% after the regular season, about the size of this run.",
+   "strengths": [
+    "No. 2 QB group (23.5 a week), thanks to Hurts in round 6",
+    "Tyreek Hill at pick 2 was worth it, with 316.9 points as a starter",
+    "365.1 points from pickups, second-best in the league on just 11 adds"
+   ],
+   "weaknesses": [
+    "D/ST ranked last (7.7 a week) and K ranked 5th, and both stayed weak all year",
+    "Five losses the bench would have flipped, the most among the playoff teams",
+    "Cooper Kupp at pick 11 returned just 119.1 as a starter"
+   ],
+   "verdict": "Under-managed",
+   "management": "Philly drafted well and worked the wire better than most, so this isn't a manager who checked out. The problem was what he left alone. His D/ST ranked last and his K 5th all season, and his lineup choices cost him games he should have won: in week 14 he lost by 7.9 with a lineup 70.7 points better on the bench, and in week 12 he lost by 18.3 with one 62.6 better. Fix those and he probably gets a bye week and an even better shot at the title.",
+   "subgrades": [
+    {
+     "area": "Draft",
+     "grade": "B",
+     "note": "1,561.1 points from his picks, fourth in the league; Hill and Hurts carried it, while Kupp at pick 11 was a letdown."
+    },
+    {
+     "area": "Waivers",
+     "grade": "B+",
+     "note": "Eleven adds, a bit above the league's 8.8, for 365.1 points as starters, second only to the Waiver King."
+    },
+    {
+     "area": "Trades",
+     "grade": "INC",
+     "note": "Nobody in the league traded, so this one goes ungraded."
+    },
+    {
+     "area": "Lineups",
+     "grade": "C-",
+     "note": "81% efficiency, the worst of the top four, with 460.8 points left behind and five flippable losses."
+    }
+   ],
+   "fix": [
+    "Stream defenses and kickers from the wire every week instead of riding the worst units in the league",
+    "Before locking each lineup, compare every bench player to the starter he'd replace",
+    "Keep drafting the QB in the middle rounds, which worked, but plan a backup WR in case one goes down"
+   ],
+   "id": 4
+  },
+  {
+   "team": "The fumblers",
+   "grade": "B-",
+   "headline": "A Great Draft, a .500 Record, and a Lineup That Wouldn't Budge",
+   "summary": "Randy went 7-7, earned exactly what his scoring deserved (7.0 expected wins, zero luck), and finished the regular season on a three-game win streak. In the playoffs he lost a close one to Team Pillbert, 234.86-216.44, then won third place 206.02-120.34 over Dawgs. His draft scored 1,747.2 points as starters, second in the league, and Travis Etienne Jr. in round 6 (214.4) paid off. But the lineup cost him a lot: the bench would have flipped seven losses, more than any other team. That included a week 10 loss by 1 point and a week 15 loss where Bijan Robinson's -0.1 won the Ace award for the season's most costly donut.",
+   "strengths": [
+    "No. 1 TE group (11.3 a week) and No. 2 D/ST, with the Browns winning Best D/ST at 166.0",
+    "1,747.2 points from his own picks, second in the league",
+    "Strong finish: three straight wins to end the regular season, and a 85.68-point win in the third-place game"
+   ],
+   "weaknesses": [
+    "Seven losses the bench would have flipped, the most in the league",
+    "Only 5 adds against a league average of 8.8, for just 138.1 points as starters",
+    "QB, RB and WR groups all ranked 4th of 6; Justin Jefferson at pick 1 returned only 168.2 as a starter"
+   ],
+   "verdict": "Under-managed",
+   "management": "Randy built a good roster on draft night and then mostly left it alone. Five adds all season was second-lowest in the league, and with QB, RB and WR all ranked fourth, there was room to improve. His lineup efficiency was 82%, which sounds fine until you count the seven losses the bench would have flipped; at 7-7, flip even two of them and he's the 2 seed. Not trading wasn't unusual in a league with no trades, but sitting still on the wire was.",
+   "subgrades": [
+    {
+     "area": "Draft",
+     "grade": "A-",
+     "note": "Second in the league with 1,747.2 points from his picks, with Kelce and Bijan returning value even though Jefferson at No. 1 didn't."
+    },
+    {
+     "area": "Waivers",
+     "grade": "D+",
+     "note": "Five adds and 138.1 points as starters, the lowest pickup total in the league."
+    },
+    {
+     "area": "Trades",
+     "grade": "INC",
+     "note": "There were no trades in the league, so it can't be graded."
+    },
+    {
+     "area": "Lineups",
+     "grade": "D",
+     "note": "Left 420.7 points against the best lineup and had seven flippable losses, including a 1-point loss in week 10."
+    }
+   ],
+   "fix": [
+    "Get on the wire at least once a week; with three position groups ranked fourth, there were upgrades available",
+    "Make lineup decisions on matchups and recent form, not draft position",
+    "Since the QB spot ranked fourth, take a QB in the middle rounds the way the two finalists did"
+   ],
+   "id": 2
+  },
+  {
+   "team": "Dawgs",
+   "grade": "B-",
+   "headline": "Most Points in the League, a Losing Record, and No Justice",
+   "summary": "Mekhi scored more points than anyone (1,542.8) and went 6-8 anyway. His record was two wins worse than his scoring, and he took home the Bon Clay for unluckiest: three losses with an above-median score. He still made the playoffs as the 4 seed, lost 237.54-196.12 to the eventual champion, and then fell apart in the third-place game, losing 206.02-120.34. Kai was the Waiver King with 521.3 points from pickups, and Raheem Mostert, a week 6 add, won Best Pickup with 157.5 points. The draft was the problem: Nick Chubb at pick 15 returned 21.1 points and won the Buggy (Biggest Bust), and Ja'Marr Chase at No. 3 managed 143.9.",
+   "strengths": [
+    "No. 1 in total points (1,542.8)",
+    "Waiver King: 521.3 points from pickups, by far the most in the league",
+    "No. 2 WR group (44 a week), with Stefon Diggs scoring 220.3 and Lamar Jackson in round 6 adding 273.9",
+    "No. 1 kicker group (11.1 a week)"
+   ],
+   "weaknesses": [
+    "Draft returned 1,337.9 points, the fewest in the league",
+    "RB and TE groups both ranked last",
+    "Lost Brandon Aiyuk in week 7, who went on to score 83.1 in five starts elsewhere (the Foxy award for worst drop)",
+    "Lost 2 wins to luck, plus five losses the bench would have flipped"
+   ],
+   "verdict": "Well managed",
+   "management": "Kai's draft was the worst in the league, and then he spent the rest of the season fixing it from the wire better than anyone could have. He got 521.3 points from his pickups, almost 156 more than anyone else, and he did it on a league-average 9 adds. The Aiyuk drop hurt and the lineups left close games on the table, including a 1.9-point loss in week 14 with a lineup 24.2 better on the bench. Mostly, though, this team lost to the schedule, not to its manager.",
+   "subgrades": [
+    {
+     "area": "Draft",
+     "grade": "D",
+     "note": "Last in the league at 1,337.9 points from his picks, sunk by Chubb (21.1) and an underwhelming Chase at No. 3."
+    },
+    {
+     "area": "Waivers",
+     "grade": "A+",
+     "note": "Nine adds, almost exactly the league average, for 521.3 points as starters, the best in the league by a wide margin."
+    },
+    {
+     "area": "Trades",
+     "grade": "INC",
+     "note": "No trades happened anywhere in the league."
+    },
+    {
+     "area": "Lineups",
+     "grade": "C+",
+     "note": "82% efficiency, middle of the pack, but five flippable losses, including a 1.9-point loss in week 14."
+    }
+   ],
+   "fix": [
+    "Use early picks on RBs; a running back group ranked last can't keep up even with a great wire game",
+    "Spread risk across the first rounds instead of loading up on WRs",
+    "Be patient with talented players who start slow before cutting them",
+    "Keep the waiver work exactly as it is"
+   ],
+   "id": 5
+  },
+  {
+   "team": "Araleasers",
+   "grade": "D+",
+   "headline": "Great Receivers, Nobody to Throw Them the Ball",
+   "summary": "Ramon went 4-10 and finished last in points (1,375.3), even though his roster won three position awards: CeeDee Lamb was Best WR (335.7) and Comeback Player, George Kittle was Best TE, and Justin Tucker was Best K. The quarterback spot scored 8.2 points a week, by far the worst in the league, and it never got fixed. His first round also went wrong: Derrick Henry at pick 6 returned just 29.9 as his starter, and Darren Waller at pick 18 added 15.7. He lost games by 0.1, 2.2 and 2.3 points, all with a better lineup on the bench. To his credit, Brucie won both consolation rounds against Ben Dover, 187.5-104.7 and 184.3-163.1, to finish fifth instead of last.",
+   "strengths": [
+    "No. 1 WR group (45.4 a week): Lamb, Chris Olave (187.8) and Keenan Allen (186.6)",
+    "No. 2 TE and No. 2 K groups, with both award winners",
+    "Jahmyr Gibbs in round 5 returned 216.1, the best value pick on the roster",
+    "Won both consolation rounds to avoid last place"
+   ],
+   "weaknesses": [
+    "QB group ranked last at 8.2 a week, the biggest position gap in the league",
+    "Lineup efficiency of 74%, the worst in the league, with 624.2 points left against the best possible lineup",
+    "Only 2 adds all season against a league average of 8.8",
+    "Seven losses the bench would have flipped, three of them by less than 2.5 points"
+   ],
+   "verdict": "Under-managed",
+   "management": "Ramon had two of the best skill-position groups in the league and the worst QB situation by a mile, and he made two adds all season. Those two pickups did score 225.7 points, which suggests the wire had help for him if he'd kept looking. The lineup was the worst in the league: 74% efficiency and 624.2 points left on the table, with a week 2 loss by 0.1 that the bench would have turned into a win by more than 31. With this roster, a few more decisions could have made Araleasers a playoff team.",
+   "subgrades": [
+    {
+     "area": "Draft",
+     "grade": "C",
+     "note": "1,521.3 points from his picks, fourth in the league, but Henry and Waller in the first two rounds cost him."
+    },
+    {
+     "area": "Waivers",
+     "grade": "D",
+     "note": "Two adds, the fewest in the league; they scored 225.7 points, which shows how much more was out there."
+    },
+    {
+     "area": "Trades",
+     "grade": "INC",
+     "note": "With a surplus of WRs and no QB, he was the one manager who needed a trade, but nobody in the league made one."
+    },
+    {
+     "area": "Lineups",
+     "grade": "F",
+     "note": "Worst efficiency in the league at 74%, with 624.2 points left behind and seven flippable losses."
+    }
+   ],
+   "fix": [
+    "Don't come out of the draft without a starting QB; this year's two finalists both took theirs in round 6",
+    "Check the wire every week and cover the weakest position",
+    "Set the lineup every week based on matchups, especially with an extra WR or RB to choose from",
+    "When the roster has a surplus at one position and a hole at another, try trading one for the other"
+   ],
+   "id": 3
+  },
+  {
+   "team": "Ben Dover",
+   "grade": "D",
+   "headline": "The Commissioner Finishes Last, With a Star on the Bench",
+   "summary": "Sonny went 6-8, ranked fifth in points (1,413.3), and needed a lot of luck to get there: Ben Dover won the Blackbeard for luckiest team, with four wins while scoring below the league median. Two wins to start the last five weeks were followed by three losses, and the playoffs slipped away. In the consolation ladder he lost to Araleasers twice, 187.5-104.7 and 184.3-163.1, and finished last in the first season of league history. Breece Hall scored 245 points on his bench, winning the Brook (Bench King) award. Lineup decisions decided the season: six losses a benched player could have flipped (the Bellamy award), and in week 16 his best lineup was 119.6 points better than the one he started.",
+   "strengths": [
+    "No. 2 RB group (38.2 a week), led by Saquon Barkley (202.7) and Alvin Kamara (181.6)",
+    "His early picks held up: Davante Adams (213.9) and Barkley both justified their spots",
+    "Patrick Mahomes in round 5 returned 209 as his starter"
+   ],
+   "weaknesses": [
+    "WR group ranked last at 23.7 a week",
+    "Lineup efficiency of 76%, second-worst, with 541.6 points left against the best lineup",
+    "Six losses a benched player could have flipped (Bellamy award), plus Breece Hall's 245 bench points",
+    "Ranked 5th in points and still needed the league's best luck just to go 6-8"
+   ],
+   "verdict": "Mismanaged",
+   "management": "Sonny's draft was fine and his wire work was average, so this season was lost in the lineup. Starting the wrong players cost him six games, and Breece Hall sat on the bench for 245 points while weaker options started in front of him. The playoff-time collapse was the worst of it: week 15 he lost by 82.8 with a lineup 112.3 better available, and week 16 by 21.2 with one 119.6 better. The commissioner set up the league; next year he needs to set his lineups.",
+   "subgrades": [
+    {
+     "area": "Draft",
+     "grade": "C+",
+     "note": "1,504.9 points from his picks, fifth in the league, solid at the top but thin at WR after Adams."
+    },
+    {
+     "area": "Waivers",
+     "grade": "C",
+     "note": "Ten adds, slightly above the league average, for 176.2 points, fifth in the league."
+    },
+    {
+     "area": "Trades",
+     "grade": "INC",
+     "note": "No trades anywhere in the league, so nothing to grade."
+    },
+    {
+     "area": "Lineups",
+     "grade": "F",
+     "note": "76% efficiency, 541.6 points left behind, and six losses a benched player could have flipped."
+    }
+   ],
+   "fix": [
+    "Start players on production, not on draft position; a bench that outscores the lineup is a warning sign",
+    "Draft more WR depth early, since the group ranked last",
+    "Review each week's lineup before kickoff, especially in the playoffs and consolation ladder",
+    "Don't count on luck: a 6-8 record with the league's best luck means the scoring needs to get better"
+   ],
+   "id": 1
+  }
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 9956,
+  "cache_write": 14764,
+  "cache_read": 0
+ }
+}

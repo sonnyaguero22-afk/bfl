@@ -1,0 +1,370 @@
+{
+ "id": "card-2025",
+ "type": "card",
+ "year": 2025,
+ "wk": 18,
+ "by": "Morgans",
+ "created": "2026-11-19T22:08:34.063Z",
+ "title": "BIG NEWS FROM THE BASEMENT: Worst to First, and the 2025 Report Cards Are In",
+ "dek": "Ben Dover went from two straight last places to a 13-3 crown in Buckaroo Bowl III, while the league's top two scoring teams went home empty-handed and one of them finished dead last.",
+ "body": [
+  "History will record 2025 as the year the Buckaroo Football League turned upside down. Ben Dover, last in Bowl I and last in Bowl II, went 13-3, took the top seed and beat The fumblers 105.1-86.48 to win Buckaroo Bowl III, with Trevor Lawrence dropping 23.3 in the Bowl to claim The One Piece. The Habibsters' run of two straight titles ended in the semifinal with a 137.1-79.96 thumping. And the team that scored the second-most points in the league, Dawgs, finished last after losing on the consolation ladder to a roster whose manager had been removed in week 8.",
+  "If you want a lesson in how this league is won, it isn't simply scoring. Habibsters led the league with 1,973.6 points and went 8-8. Dawgs were second at 1,858.2 and finished sixth. Sonny was third in points, and Luffy's own math says his scoring was worth about 8.6 wins, not 13; the Blackbeard award for Luckiest, with four wins on below-median scores, sits on his mantel. Luck mattered, and nobody had more of it.",
+  "But Ben Dover also won the places nobody else was looking. He had the league's best tight end room, with Trey McBride's 234.3 points earning the Franky, and its best D/ST at 10.3 a week, while his running backs and receivers ranked only fifth. He worked Impel Down harder and better than anyone, pulling 685.9 starter points from 22 pickups, led by Javonte Williams at 118.6. And he set the cleanest lineups in the league at 86 percent of his best possible total, tied with Dawgs.",
+  "The rest of the league bled points on Sundays. Every single team left more than 897 points on the bench, Habibsters lost seven games a better lineup would have flipped, and Team Pillbert lost by 0.7 and 0.5 in weeks a benched player could have saved. In a 6-team league with 3 playoff spots, the margin between a banner and the consolation ladder was a start/sit call or two. Next season brings 8 teams and a fresh Reverie, and if 2025 taught anything, it's that the draft gets you a team and the Tuesdays and Sundays get you the trophy."
+ ],
+ "social": [
+  {
+   "author": "Buckaroo Football League",
+   "handle": "@BuckarooFL",
+   "text": "2025 final standings: 1. Ben Dover (Sonny) 2. The fumblers (Randy) 3. Habibsters (Kaushal) 4. Team Pillbert (Alan) 5. Ramon's Remains 6. Dawgs (Mekhi). Congratulations to the Buckaroo Bowl III champions.",
+   "when": -120,
+   "heat": 1,
+   "kind": "league",
+   "team": ""
+  },
+  {
+   "author": "GLSN",
+   "handle": "@GLSN",
+   "text": "📰 New from @BigNewsMorgans: the 2025 Buckaroo report cards. Champion Ben Dover grades out at an A. The league's top scorer? A B-minus. Full grades for all six teams inside.",
+   "when": 0,
+   "heat": 2,
+   "kind": "network",
+   "team": ""
+  },
+  {
+   "author": "Morgans",
+   "handle": "@BigNewsMorgans",
+   "text": "WORST TO FIRST. Two last places, then 13-3 and a ring. And yes, Luffy says 4.4 of those wins were luck. Banners don't come with footnotes. 2025 report cards are LIVE.",
+   "when": 8,
+   "heat": 4,
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Crocus",
+   "handle": "@CrocusLighthouse",
+   "text": "Most points in the league went 8-8. Second-most finished last. I have watched a lot of crews sail past this lighthouse and the lesson never changes: set your lineup or set sail for the consolation ladder.",
+   "when": 95,
+   "heat": 5,
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Tyler Brandt",
+   "handle": "@CornerBoothTy",
+   "text": "Dawgs scored the 2nd most points in the league, had the MVP, the best QB AND the best draft, and finished dead last after losing to a team with nobody running it. Outcoached by an empty chair.",
+   "when": 240,
+   "heat": 8,
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Habibsters Hive",
+   "handle": "@HabibHive",
+   "text": "1,973.6 points. Most in the league. 8-8. Seven losses the bench would have flipped. It's 3 AM and I'm reading our lineup history like a crime scene report.",
+   "when": 1000,
+   "heat": 6,
+   "kind": "fan",
+   "team": ""
+  }
+ ],
+ "teams": [],
+ "cards": [
+  {
+   "team": "Ben Dover (Sonny)",
+   "grade": "A",
+   "headline": "From the Basement to the Banner",
+   "summary": "Sonny finished last in Bowl I and Bowl II, then went 13-3, took the top seed and won Buckaroo Bowl III, the greatest worst-to-first turn this young league has seen. He was only third in points at 1,850.8, and his 4.4 wins above expectation earned him the Blackbeard award, so the breaks went his way. But he built a balanced machine: De'Von Achane (276.6), Jalen Hurts (270.7) and Trey McBride (234.3) carried the load, and a waiver haul led by Javonte Williams filled the gaps. His title odds climbed from 20% on draft day to 51% after the regular season, and he cashed them in with a 105.1-86.48 Bowl win over The fumblers, with Trevor Lawrence as Bowl MVP. The only blemishes were a soft finish to the regular season and Malik Nabers, his pick 10, winning the Buggy for Biggest Bust.",
+   "strengths": [
+    "Best TE room in the league (17.2 a week, 1 of 6), anchored by Franky winner Trey McBride",
+    "Best D/ST in the league at 10.3 a week",
+    "League-best 685.9 starter points from pickups, the Wapol award",
+    "Cleanest lineups in the league at 86% efficiency, tied with Dawgs"
+   ],
+   "weaknesses": [
+    "RB and WR both ranked 5 of 6 despite Achane's big year",
+    "Played 4.4 wins above his scoring; Luffy had him at 8.6 expected wins",
+    "Malik Nabers at pick 10 produced just 48.1 starter points",
+    "Stumbled late, going WLWL over the last four weeks of the regular season with a season-low 82.8 in week 14"
+   ],
+   "verdict": "Well managed",
+   "management": "Sonny didn't win the draft; he won the season after it. His own picks produced 1,186.8 starter points, fifth in the league, but he made 22 adds against a league average of 18 and those pickups scored more than any other manager's, which turned a middling roster into a 13-win one. His lineup calls were the best in the league, leaving 311.3 points on the table against an ugly league-wide norm of 320 to 456. His one trade lost the exchange, but it was a small dent in a championship season.",
+   "subgrades": [
+    {
+     "area": "Draft",
+     "grade": "C+",
+     "note": "1,186.8 starter points from his own picks ranked fifth, with Nabers a bust, but Achane at 15 and Hurts in round 6 (270.7) were real hits."
+    },
+    {
+     "area": "Waivers",
+     "grade": "A+",
+     "note": "22 adds produced a league-best 685.9 starter points, including Robin winner Javonte Williams at 118.6."
+    },
+    {
+     "area": "Trades",
+     "grade": "C",
+     "note": "His lone deal brought in 83.2 points while what he sent away scored 122.8 for its new team."
+    },
+    {
+     "area": "Lineups",
+     "grade": "A-",
+     "note": "86% efficiency and only 311.3 points left versus the best lineup, the fewest in the league, with just one loss (week 16) the bench would have flipped."
+    }
+   ],
+   "fix": [
+    "Don't bank on another 4-win luck cushion; draft for more weekly scoring at RB and WR, where he ranked fifth",
+    "Keep hammering the wire early, but take the first-round receiver risk more seriously after the Nabers miss",
+    "Treat TE and D/ST as real edges again; they won him weeks the rest of the league conceded"
+   ],
+   "id": 1
+  },
+  {
+   "team": "The fumblers (Randy)",
+   "grade": "B",
+   "headline": "Two Bell Cows, One Bowl Trip, Four Lost Sundays",
+   "summary": "Randy rode a 9-7 record and the second seed into the playoffs, then demolished Habibsters 137.1-79.96 in the semifinal before falling 105.1-86.48 in Buckaroo Bowl III. His backfield was the engine, with James Cook III (277.5) and Derrick Henry (272) both topping 270, and Caleb Williams gave him 267.7 at quarterback, a Bears season he'll talk about until next draft. Amon-Ra St. Brown added 246.1 as his first pick. The scoring was only fourth in the league at 1,792.1, and four regular-season losses could have been wins with a better lineup. Dropping Brock Bowers in week 7, after which he scored 110.2 elsewhere, will haunt this card.",
+   "strengths": [
+    "RB room ranked 2 of 6 at 39.8 a week, with two 270-point backs",
+    "WR room 2 of 6 at 32.4 a week behind Amon-Ra St. Brown",
+    "James Cook III in round 6 (277.5) was one of the best value picks in the league",
+    "Jinbe award: Broncos D/ST scored 123.0 in 13 starts"
+   ],
+   "weaknesses": [
+    "Only 82% lineup efficiency, 437.8 points left versus the best lineup",
+    "Four losses the bench would have flipped, including a 4.6-point loss in week 15",
+    "D/ST ranked 5 of 6 overall at 5.3 a week",
+    "Brock Bowers at pick 8 gave 27.7 starter points before the Foxy-winning drop"
+   ],
+   "verdict": "Under-managed",
+   "management": "Randy drafted the second-best scoring core in the league, then mostly let it ride. He made 16 adds against a league average of 18 and one trade, which lost ground, but the real leak was on Sundays: 437.8 points left versus the best lineup is the second-worst mark in the league, and it cost him four regular-season games. The Bowers drop was the one big call he forced, and it went the wrong way. A runner-up finish is a good season, but this roster had a higher ceiling than its 9-7 record.",
+   "subgrades": [
+    {
+     "area": "Draft",
+     "grade": "B+",
+     "note": "1,417.3 starter points from his picks ranked third, with St. Brown and round-6 steal James Cook III offsetting the Bowers and Chase Brown misses."
+    },
+    {
+     "area": "Waivers",
+     "grade": "B",
+     "note": "Just 16 adds, below the league average of 18, but they produced 554.8 starter points, nearly matching Habibsters' 29."
+    },
+    {
+     "area": "Trades",
+     "grade": "C",
+     "note": "His one trade brought in 43.6 points while the outgoing side scored 66.2."
+    },
+    {
+     "area": "Lineups",
+     "grade": "C-",
+     "note": "82% efficiency and four losses (weeks 4, 7, 15 and 18) a better lineup would have flipped."
+    }
+   ],
+   "fix": [
+    "Spend more time on start/sit; four flippable losses is the difference between a bye and a dogfight",
+    "Give struggling early picks more rope before cutting them, or at least check who's waiting to grab them",
+    "Use the wire more aggressively at TE and D/ST, where he ranked fourth and fifth"
+   ],
+   "id": 2
+  },
+  {
+   "team": "Habibsters (Kaushal)",
+   "grade": "B-",
+   "headline": "Most Points, Fewest Answers",
+   "summary": "The two-time champion scored a league-best 1,973.6 points and still went 8-8, with Luffy's math saying that scoring was worth 10.8 wins. Jonathan Taylor (334.4) was a fourth-round jackpot, Saquon Barkley added 208.2, and Brandon Aubrey won the Usopp as the league's best kicker at 180.6. The bad luck was real, at 2.8 wins below expectation, but seven losses a better lineup would have flipped tell the rest of the story. Habib squeaked into the third seed and then got flattened 137.1-79.96 by The fumblers in the semifinal. The two-year reign ended with a whimper, but the roster was a contender all season.",
+   "strengths": [
+    "League-best 1,973.6 points for",
+    "Jonathan Taylor in round 4 produced 334.4 starter points",
+    "Top-two at QB, TE, K and D/ST, with K ranked first",
+    "Usopp winner Brandon Aubrey at 180.6"
+   ],
+   "weaknesses": [
+    "Seven losses a better lineup would have flipped, the most of any playoff team",
+    "Went 2.8 wins below what his scoring earned",
+    "CeeDee Lamb's week 3 donut on a 16.3 projection cost a 21.7-point loss and won the Ace award",
+    "Lost the semifinal by 57.1 points"
+   ],
+   "verdict": "Over-managed",
+   "management": "Kaushal worked harder than anyone, with a league-high 29 adds against an average of 18, but all that churn produced 555.2 starter points, essentially the same as Randy got from 16. The extra options didn't translate on Sundays: 350.2 points left versus the best lineup and seven flippable losses, by 6.7, 7.3 and 11.2 among them. He made zero trades, never using a deep roster to patch a WR room that ranked fourth. A team with the league's best scoring should not need a three seed.",
+   "subgrades": [
+    {
+     "area": "Draft",
+     "grade": "A-",
+     "note": "1,498.4 starter points from his own picks ranked second, with Taylor in round 4 the best value in the league."
+    },
+    {
+     "area": "Waivers",
+     "grade": "B-",
+     "note": "A league-high 29 adds returned 555.2 starter points, solid but no better than teams that added half as often."
+    },
+    {
+     "area": "Trades",
+     "grade": "Incomplete",
+     "note": "Zero trades against a league average of 1.3, so the deep roster never became a WR upgrade."
+    },
+    {
+     "area": "Lineups",
+     "grade": "D+",
+     "note": "85% efficiency looks fine, but seven losses the bench would have flipped was the most in the league outside Team Pillbert."
+    }
+   ],
+   "fix": [
+    "Churn less and decide more: fewer speculative adds, more time on who actually starts",
+    "Turn surplus depth into a trade when a position like WR lags behind",
+    "Draft the same way, value hunting in the middle rounds clearly works for him"
+   ],
+   "id": 6
+  },
+  {
+   "team": "Team Pillbert (Alan)",
+   "grade": "C",
+   "headline": "The Unluckiest Contender in the Ladder",
+   "summary": "Philly's 5-11 record hides a team that scored like an 8-win club, with 1,762.9 points and the Bon Clay award for four losses on above-median scores. Bijan Robinson (293.9) and Zoro winner Jaxon Smith-Njigba (288.7) gave him the league's best WR room and a strong backfield with Josh Jacobs (218.3). He also won the Doflamingo as the league's Trade Shark at +80.7. But eight losses a better lineup would have flipped, including heartbreakers by 0.7 and 0.5, sank the season. He closed with two wins and beat Ramon's Remains 78.2-70.8 to finish fourth on the consolation ladder.",
+   "strengths": [
+    "WR room 1 of 6 at 34.4 a week, led by Jaxon Smith-Njigba",
+    "Best trade result in the league, +80.7 points",
+    "Round-6 pick JSN (288.7) was a massive value",
+    "Scored like an 8.2-win team despite five wins"
+   ],
+   "weaknesses": [
+    "Eight losses a better lineup would have flipped, most in the league",
+    "81% lineup efficiency, 421.4 points left versus the best lineup",
+    "QB ranked 5 of 6 at 16 a week",
+    "A.J. Brown at pick 11 gave just 97.9 starter points"
+   ],
+   "verdict": "Mismanaged",
+   "management": "Alan nailed the hard parts and fumbled the easy ones. His one trade was the best in the league, bringing in 109.1 points for 28.4 going out, and his 25 adds were well above average. But Sundays were brutal: the Bellamy award for six losses a benched player could have flipped, a week 8 lineup that was 75.1 points worse than his best, and two losses by under a point. A team this talented should have been in the playoff hunt, not on the ladder.",
+   "subgrades": [
+    {
+     "area": "Draft",
+     "grade": "B",
+     "note": "1,271.9 starter points from his picks ranked fourth, with Bijan and JSN offsetting a quiet A.J. Brown."
+    },
+    {
+     "area": "Waivers",
+     "grade": "B-",
+     "note": "25 adds, well above the average of 18, produced 460.1 starter points, fourth in the league."
+    },
+    {
+     "area": "Trades",
+     "grade": "A",
+     "note": "109.1 points in, 28.4 out: the Doflamingo award and the best deal of the season."
+    },
+    {
+     "area": "Lineups",
+     "grade": "F",
+     "note": "81% efficiency and eight losses the bench would have flipped, including by 0.7 and 0.5."
+    }
+   ],
+   "fix": [
+    "Check every lineup against projections and late news; close losses were his whole season",
+    "Prioritize a reliable QB earlier, where he ranked fifth",
+    "Keep trading the same way; it's the best habit he has"
+   ],
+   "id": 4
+  },
+  {
+   "team": "Ramon's Remains (Ramon)",
+   "grade": "D+",
+   "headline": "The Ghost Ship Kept Sailing",
+   "summary": "Ramon ran Araleasers through week 8, then was removed for inactivity, and the renamed Ramon's Remains played out the string without him. The roster scored a league-low 1,523.7 points and ranked last at QB, RB, TE and K. Ja'Marr Chase at pick 1 gave only 120.5 starter points, though Puka Nacua (276.3) and week 8 trade pickup Travis Etienne Jr. (122.8, the Thousand Sunny award) kept it breathing. Somehow the ghost ship went WLWWW down the stretch and beat Dawgs 97.58-93.58 on the consolation ladder before losing 78.2-70.8 to Team Pillbert for fifth. The 5-11 record counts on Ramon's ledger, asterisks and all.",
+   "strengths": [
+    "Puka Nacua at pick 12 delivered 276.3 starter points",
+    "WR room ranked 3 of 6 at 32.2 a week",
+    "Etienne trade won the Thousand Sunny award for best acquisition",
+    "Played 1.6 wins above its scoring"
+   ],
+   "weaknesses": [
+    "Last in points for at 1,523.7",
+    "Ranked 6 of 6 at QB, RB, TE and K",
+    "Pick 1 Ja'Marr Chase produced just 120.5 starter points",
+    "Worst lineup efficiency in the league at 79%"
+   ],
+   "verdict": "Under-managed",
+   "management": "Four trades, more than triple the league average, were the most activity this team saw, and they lost the exchange, 223.2 points in against 297.9 out, even with Etienne landing. Only 8 adds tied for fewest in the league, and the holes at QB and TE never got patched. Lineups left 456.4 points against the best possible, the most in the league. Then the manager vanished altogether, which is about as under-managed as it gets.",
+   "subgrades": [
+    {
+     "area": "Draft",
+     "grade": "D",
+     "note": "1,124.9 starter points from own picks was last in the league, with pick 1 Chase underdelivering; round-16 kicker Chris Boswell (147) was the best value."
+    },
+    {
+     "area": "Waivers",
+     "grade": "D",
+     "note": "8 adds against an average of 18 produced 344.1 starter points, fifth in the league."
+    },
+    {
+     "area": "Trades",
+     "grade": "D+",
+     "note": "Four trades lost 74.7 points on net, though the Etienne deal paid off."
+    },
+    {
+     "area": "Lineups",
+     "grade": "F",
+     "note": "79% efficiency, a league-worst 456.4 points left, and five losses the bench would have flipped."
+    }
+   ],
+   "fix": [
+    "Stay active all 17 weeks; every lineup set is worth more than any trade",
+    "Work the wire at QB and TE instead of riding last-place production",
+    "Trade less often and only when the incoming side clearly wins"
+   ],
+   "id": 3
+  },
+  {
+   "team": "Dawgs (Mekhi)",
+   "grade": "C-",
+   "headline": "The Best Draft in the League, the Worst Place in the League",
+   "summary": "Kai drafted the strongest roster in the league from basic training: his picks scored 1,758.7 starter points for the Vegapunk award, Christian McCaffrey was Pirate King MVP at 356.9, and Josh Allen won the Nami as best QB at 318.4. Dawgs scored 1,858.2, second in the league, yet went 8-8 and landed the fourth seed, one spot out of the playoffs. The WR room ranked dead last at 19.6 a week, the TE and D/ST spots were near the bottom, and five losses a better lineup would have flipped piled up. Then came the indignity: a 97.58-93.58 consolation loss to Ramon's Remains, a team with no manager, that sealed last place. Few teams have ever finished this far below their talent.",
+   "strengths": [
+    "League-best draft: 1,758.7 starter points from own picks",
+    "Best RB room by a mile at 53.4 a week, plus the best QB room",
+    "Pirate King McCaffrey (356.9) and Nami winner Allen (318.4)",
+    "86% lineup efficiency, tied for best in the league"
+   ],
+   "weaknesses": [
+    "WR room ranked 6 of 6 at 19.6 a week",
+    "D/ST ranked last at 4.8 a week and TE fifth",
+    "Only 160.9 starter points from pickups, fewest in the league",
+    "Five losses the bench would have flipped, four by 8 or fewer"
+   ],
+   "verdict": "Under-managed",
+   "management": "Mekhi's draft was a masterpiece, and then the roster was left mostly as drafted. Just 8 adds, tied for fewest in the league, yielded only 160.9 starter points, and nobody arrived to fix a WR room that finished last. His one trade was a win at 32.2 in and 5.8 out, but it was small. Baker Mayfield's 225.8 points on the bench, the Brook award, also hint at value that never got turned into a receiver.",
+   "subgrades": [
+    {
+     "area": "Draft",
+     "grade": "A+",
+     "note": "1,758.7 starter points from his picks led the league, with Gibbs, McCaffrey and round-5 Allen (318.4) all elite."
+    },
+    {
+     "area": "Waivers",
+     "grade": "F",
+     "note": "8 adds against an average of 18 produced a league-low 160.9 starter points."
+    },
+    {
+     "area": "Trades",
+     "grade": "B",
+     "note": "One small win, 32.2 points in against 5.8 out, but no move to fix the WR hole."
+    },
+    {
+     "area": "Lineups",
+     "grade": "B-",
+     "note": "86% efficiency ties for best, though five losses, including by 4 and 5.9, could have been flipped."
+    }
+   ],
+   "fix": [
+    "Balance the draft: grab a WR earlier instead of stacking backs",
+    "Work the wire weekly for WR, TE and D/ST help",
+    "Trade surplus depth, like a benched QB, for a starter at a weak position"
+   ],
+   "id": 5
+  }
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 11319,
+  "cache_write": 14572,
+  "cache_read": 0
+ }
+}
