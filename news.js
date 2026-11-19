@@ -880,7 +880,8 @@ async function write(client, job) {
   const by = STAFF.find((p) => p.name === BYLINE[job.type]);
   const byline = by ? `\n\nThis story runs on GLSN under ${by.name}'s byline (${by.handle}). Write it in his or her voice (${by.voice}), as seasoning: the facts and the story come first, no sign-off, and at most a line in the first person.` : "";
   const avoid = recent.length ? `\n\nThe league's most recent stories, for reference only. Readers just read these, so don't reuse their jokes, nicknames-as-punchlines, or angles; find fresh ones:\n${JSON.stringify(recent)}` : "";
-  const res = await client.beta.messages.create({
+  // Long outputs (the report cards) must stream: the SDK refuses a non-streaming call that could run past 10 minutes
+  const params = {
     model: MODELS[job.type] || MODEL,
     max_tokens: job.type === "card" ? 32000 : 16000,
     betas: ["server-side-fallback-2026-07-01"],
@@ -889,7 +890,8 @@ async function write(client, job) {
     system: SYSTEM,
     output_config: { effort: "medium", format: { type: "json_schema", schema: schemas[job.type] } },
     messages: [{ role: "user", content: `${asks[job.type]}${byline}\n\nFacts (JSON):\n${JSON.stringify(facts)}${dated}${avoid}` }],
-  });
+  };
+  const res = params.max_tokens > 16000 ? await client.beta.messages.stream(params).finalMessage() : await client.beta.messages.create(params);
   if (res.stop_reason === "refusal") { console.log(`::warning::${job.id}: declined (${res.stop_details && res.stop_details.category}), skipping`); return null; }
   if (res.stop_reason === "max_tokens") { console.log(`::warning::${job.id}: ran out of room, will retry next run`); return null; }
   const text = res.content.filter((b) => b.type === "text").map((b) => b.text).join("");
@@ -950,7 +952,8 @@ if (require.main === module) (async () => {
       if (err instanceof Anthropic.AuthenticationError) { console.log("The ANTHROPIC_API_KEY secret was rejected. Check it in GitHub settings."); process.exitCode = 1; return; }
       if (err instanceof Anthropic.RateLimitError) { console.log("Rate limited, will continue next run."); return; }
       if (err instanceof Anthropic.APIError) { console.log(`::warning::${job.id}: API error ${err.status}: ${err.message}`); continue; }
-      throw err;
+      // Anything else (a bug in one story's facts, a client error) skips that story, counted as a try, so the rest still get written
+      console.log(`::warning::${job.id}: ${err.message}`); tries[job.id] = (tries[job.id] || 0) + 1; saveTries();
     }
   }
 })();
