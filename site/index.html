@@ -1871,9 +1871,9 @@ const AWARDS = [
   ["buggy", "🤡", "Buggy", "Biggest Bust", "A top-three-round pick who finished furthest below where he was drafted (all points while rostered)"],
   ["ace", "🍩", "Ace", "Most Costly Donut", "The biggest zero (or worse) from a starter in a loss, ranked by how much he was projected for; D/ST doesn't count"],
   ["foxy", "🦊", "Foxy", "Worst Drop", "Most points as a starter for other teams after a team dropped him; it's charged to the team that let him go"],
-  ["karoo", "🦆", "Karoo", "Player of the Week", "Most weeks as the league's top-scoring starter (Karoo Player of the Week); a tie on weeks goes to more points in them"],
+  ["karoo", "🦆", "Karoo", "Player of the Week", "Most weeks as the league's top-scoring starter (Karoo's Player of the Week); a tie on weeks goes to more points in them"],
 ];
-// Karoo Player of the Week: each NFL week's top-scoring starter, from games that counted (two-week playoff rounds go week by week; ties share it)
+// Karoo's Player of the Week: each NFL week's top-scoring starter, from games that counted (two-week playoff rounds go week by week; ties share it)
 const KAROO = {};
 function karooWeeks(s) {
   if (KAROO[s.year]) return KAROO[s.year];
@@ -1913,7 +1913,7 @@ function seasonAwards(s) {
   best("foxy", rows.flatMap((x) => x.p.ev.filter((e) => e.y === y && e.type === "drop").map((e) => { const ws = x.ws.filter((w) => w.start && w.t.id !== e.t.id && w.wk >= e.wk);
     return ws.length ? { p: x.p, t: e.t, pts: sum(ws, (w) => w.pts), n: ws.length, wk: e.wk } : null; }).filter(Boolean)),
     (x) => x.pts, (x) => `${f1(x.pts)} pts in ${x.n} starts elsewhere after a week ${x.wk} drop`);
-  // Karoo: the most weeks as Karoo Player of the Week (points in those weeks break a tie)
+  // Karoo: the most weeks as Karoo's Player of the Week (points in those weeks break a tie)
   const kc = new Map(); for (const x of karooWeeks(s)) (kc.get(x.p) || kc.set(x.p, []).get(x.p)).push(x);
   best("karoo", [...kc].map(([p, kw]) => ({ p, ws: [], kw })), (x) => x.kw.length + sum(x.kw, (w) => w.pts) / 1e4,
     (x) => `${x.kw.length} ${x.kw.length === 1 ? "week" : "weeks"}: ${x.kw.map((w) => `${f1(w.pts)} in wk ${w.mp}`).join(", ")}`);
@@ -2058,7 +2058,7 @@ const AW_DEF = {
   buggy: "the early-round pick who finishes furthest below where he was drafted",
   ace: "the starter whose zero hurt the most: the highest-projected player to score nothing (or less) in a loss",
   foxy: "the player who scores the most for other teams after being dropped; the award is charged to the team that dropped him",
-  karoo: "the player named Karoo Player of the Week, the league's top-scoring starter in a week, the most times",
+  karoo: "the player named Karoo's Player of the Week, the league's top-scoring starter in a week, the most times",
   vegapunk: "the manager whose draft picks score the most for him", wapol: "the manager who gets the most out of the waiver wire",
   doflamingo: "the manager who comes out furthest ahead on trades",
   blackbeard: "the manager who wins the most games he had no business winning, with a score below that week's median",
@@ -2367,8 +2367,8 @@ const trophy = (k, small) => { const t = TROPHY[k], a = trInfo(k); if (!t || !a.
   return `<svg class="trophy" data-zoom="t:${k}" viewBox="0 0 240 320" role="img" aria-label="${esc(a.nm)} trophy" xmlns="http://www.w3.org/2000/svg">${trDefs(i, k === "bowl" ? "gold" : t.metal || "silver")}<ellipse cx="120" cy="130" rx="110" ry="120" fill="url(#glow${i})"/>${t.art(i)}${trPed(i, small ? "" : esc(a.nm), small ? "" : esc(a.cat))}${trPlinth()}</svg>`; };
 // A shelf of the trophies someone has won, with the seasons under each ({ k, ys })
 const trophyCase = (list) => `<div class="box tcase">${list.map((a) => a.ring ? `<button class="tc ringc" data-go="bowl-${a.ring}">${ringArt(a.ring, 1)}<b>Bowl ${roman(a.ring - D.firstYear + 1)}</b><small>${a.ring}</small></button>` : `<button class="tc${a.k === "bowl" ? " big" : ""}" data-go="${trInfo(a.k).go}">${trophy(a.k, 1)}<b>${esc(trInfo(a.k).nm)}</b><small>${a.ys.join(", ")}</small></button>`).join("")}</div>`;
-// Every Karoo Player of the Week, newest first
-const karooTable = () => `<h3 class="wikisub">Every Karoo Player of the Week</h3><div class="box scroll"><table class="compact"><thead><tr><th>Season</th><th class="n">Week</th><th>Player</th><th>Team</th><th class="n">Pts</th></tr></thead><tbody>${D.seasons.slice().reverse().flatMap((z) => karooWeeks(z).slice().reverse().map((x) => `<tr><td class="num"><button class="mlink" data-go="${z.year}">${z.year}</button></td><td class="num">${x.mp}</td><td>${posTag(x.p.pos)}${pn(x.p.n)}</td><td>${badge(x.t, 1)} ${esc(x.t.name)}</td><td class="num">${f1(x.pts)}</td></tr>`)).join("")}</tbody></table></div>`;
+// Every Karoo's Player of the Week winner, newest first
+const karooTable = () => `<h3 class="wikisub">Every Karoo's Player of the Week Winner</h3><div class="box scroll"><table class="compact"><thead><tr><th>Season</th><th class="n">Week</th><th>Player</th><th>Team</th><th class="n">Pts</th></tr></thead><tbody>${D.seasons.slice().reverse().flatMap((z) => karooWeeks(z).slice().reverse().map((x) => `<tr><td class="num"><button class="mlink" data-go="${z.year}">${z.year}</button></td><td class="num">${x.mp}</td><td>${posTag(x.p.pos)}${pn(x.p.n)}</td><td>${badge(x.t, 1)} ${esc(x.t.name)}</td><td class="num">${f1(x.pts)}</td></tr>`)).join("")}</tbody></table></div>`;
 function awardView() {
   const a = awInfo(state.aw); if (!a) return "";
   const seasons = D.seasons.filter((s) => s.done || s.played.length);
@@ -2834,7 +2834,7 @@ function wikiHtml(p, best) {
     ${row("Managers", p.mgrs.map((k) => `<span class="ibm">${mbadge(k, 1)} <button class="mlink" data-go="mgr-${k}">${mgrName(k)}</button></span>`).join(""))}
     ${row("Drafted", drafted.join("<br>") || "Undrafted")}
     ${((b) => (b ? row("Bounty", `<b>${berry(b)}</b> <button class="mlink" data-go="ow-bounty">📜</button>`) : ""))(bountyOf(p.n))}
-    ${((k) => (k.length ? row(`🦆 ${awLink("karoo", "Karoo POTW")}`, `${k.length}× <small class="muted">(${k.map((x) => `${x.y} wk ${x.mp}`).join(", ")})</small>`) : ""))(D.seasons.flatMap((z) => karooWeeks(z).filter((x) => x.p === p).map((x) => ({ ...x, y: z.year }))))}
+    ${((k) => (k.length ? row(`🦆 ${awLink("karoo", "Karoo's POTW")}`, `${k.length}× <small class="muted">(${k.map((x) => `${x.y} wk ${x.mp}`).join(", ")})</small>`) : ""))(D.seasons.flatMap((z) => karooWeeks(z).filter((x) => x.p === p).map((x) => ({ ...x, y: z.year }))))}
     ${rings.length || aw.length ? `<tr><th colspan="2" class="ibsec">Honors</th></tr><tr><td colspan="2">${rings.map((r) => `<div class="ibh gold">🏆 <button class="mlink" data-go="bowl-${r.y}">Buckaroo Bowl ${roman(r.n)}</button> Champion <span class="muted">(${esc(r.team)})</span></div>`).join("")}${grouped.map((a) => `<div class="ibh${SHAME[a.k] ? " l" : ""}">${a.e} ${awLink(a.k)} <span class="muted">${yrs(a.ys)}</span></div>`).join("")}</td></tr>` : ""}
     <tr><th colspan="2" class="ibsec">BFL career</th></tr>
     ${row("Starts", p.starts)}
