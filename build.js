@@ -179,6 +179,31 @@ for (const year of years) {
     finalTrades = [...manual, ...inferred.filter((t) => t.wk > upTo)];
   }
 
+  // Trades that were agreed but never went through (vetoed), from ESPN's transactions. A proposal and its accept,
+  // veto or review records point at each other (relatedTransactionId), so they're grouped first. Proposals that were
+  // only declined or withdrawn were never public, so they stay out.
+  const tradeTx = new Map();
+  for (let w = 1; w <= lastWeek + 1; w++) if (exists(`tx_${year}_${w}.json`))
+    for (const x of load(`tx_${year}_${w}.json`).transactions || []) if (/TRADE/.test(x.type || "") && x.id) tradeTx.set(x.id, x);
+  const root = {}, find = (id) => (root[id] && root[id] !== id ? (root[id] = find(root[id])) : id);
+  for (const x of tradeTx.values()) { root[x.id] = root[x.id] || x.id; if (x.relatedTransactionId && tradeTx.has(x.relatedTransactionId)) root[find(x.id)] = find(x.relatedTransactionId); }
+  const groups = {}; for (const x of tradeTx.values()) (groups[find(x.id)] = groups[find(x.id)] || []).push(x);
+  const vetoed = [];
+  for (const g of Object.values(groups)) {
+    const veto = g.find((x) => x.status === "VETOED" || x.type === "TRADE_VETO");
+    if (!veto || g.some((x) => x.status === "EXECUTED")) continue;
+    const items = (g.find((x) => x.type === "TRADE_PROPOSAL" && (x.items || []).length) || g.find((x) => (x.items || []).length) || {}).items || [];
+    const got = {};
+    for (const i of items) if (i.playerId > 0 && i.fromTeamId && i.toTeamId && i.fromTeamId !== i.toTeamId) (got[i.toTeamId] = got[i.toTeamId] || []).push(`${pname(i.playerId)}|${ppos(i.playerId)}`);
+    const teams = Object.keys(got).map(Number).sort((a, b) => a - b); if (teams.length < 2) continue;
+    const prop = g.find((x) => x.type === "TRADE_PROPOSAL") || g[0];
+    vetoed.push({ wk: prop.scoringPeriodId || lastWeek, teams, got, at: new Date(Math.max(...g.map((x) => x.processDate || x.proposedDate || 0))).toISOString() });
+  }
+  vetoed.sort((a, b) => (a.at < b.at ? -1 : 1));
+  // What the trade records look like (types and statuses only), so a veto ESPN marks some other way can be spotted
+  if (!done && tradeTx.size) { const k = {}; for (const x of tradeTx.values()) k[`${x.type}/${x.status}`] = (k[`${x.type}/${x.status}`] || 0) + 1;
+    console.log(`::notice::${year} trade records: ${Object.entries(k).map(([a, n]) => `${a} x${n}`).join(", ")}; vetoed: ${vetoed.map((v) => `wk ${v.wk} teams ${v.teams.join(" & ")} (${Object.values(v.got).flat().map((x) => x.split("|")[0]).join(", ")})`).join("; ") || "none"}`); }
+
   // Share of each NFL team's game still to play this week: 1 before kickoff, 0 when final
   // or on bye, in between by the game clock. Null when the saved scoreboard is for another week.
   let nflClock = null, gamesOn = false, kicks;
@@ -326,7 +351,7 @@ for (const year of years) {
           if (st.statSourceId === 1 && st.scoringPeriodId === L.status.latestScoringPeriod) proj = r2(st.appliedTotal || 0); }
         return { n: p.fullName, pos: POS[p.defaultPositionId] || "", pro: PRO[p.proTeamId] || "", owned: Math.round((p.ownership || {}).percentOwned || 0), inj: p.injuryStatus && p.injuryStatus !== "ACTIVE" ? p.injuryStatus : undefined, status: e.status, wk, proj }; }).filter((x) => x.n);
       console.log(`::notice::${year} waiver wire: ${out.length} players, top WRs ${out.filter((x) => x.pos === "WR").slice(0, 5).map((x) => x.n).join(", ")}`); return out; })(),
-    on: matchups.some((m) => m.on), nflByes: done ? undefined : nflByes, kicks: done ? undefined : kicks, playoffTeams: ss.playoffTeamCount, periods: ss.matchupPeriods, teams, future, matchups, byes, lineups, draft, moves, trades: finalTrades, rosters, wp,
+    on: matchups.some((m) => m.on), nflByes: done ? undefined : nflByes, kicks: done ? undefined : kicks, playoffTeams: ss.playoffTeamCount, periods: ss.matchupPeriods, teams, future, matchups, byes, lineups, draft, moves, trades: finalTrades, vetoed, rosters, wp,
   });
   for (const w of [L.status.latestScoringPeriod - 1, L.status.latestScoringPeriod]) if (lineups[w]) { const all = Object.values(lineups[w]).flat(); console.log(`::notice::${year} week ${w}: on bye ${all.filter((p) => p.st === "bye").map((p) => p.n).join(", ") || "none"}; out ${all.filter((p) => p.st === "out").map((p) => p.n).join(", ") || "none"}; games on now: ${gamesOn}`); }
   if (!done) {

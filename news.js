@@ -404,6 +404,17 @@ function tradeFacts(s, tr) {
     })),
   };
 }
+// A trade both sides agreed to that got vetoed: the same player facts as a real trade, but no before/after odds
+// (nothing changed hands), just where each team stands now
+const vetoId = (s, v) => `veto-${s.year}-${v.at.slice(0, 10)}-${v.teams.join("-")}`;
+function vetoFacts(s, v) {
+  const f = tradeFacts(s, { ...v, wk: v.wk + 1 }), rec = recordsThrough(s, s.curWeek - 1), N = s.odds ? s.odds.weeks[s.odds.weeks.length - 1] : null;
+  for (const side of f.sides) { for (const k of Object.keys(side)) if (/_odds_/.test(k)) delete side[k];
+    const id = v.teams.find((t) => who(s.byId[t], v.wk + 1) === side.team), r = rec[id] || { w: 0, l: 0 };
+    side.record = `${r.w}-${r.l}`; if (N != null) { side.title_odds_now = `${Math.round(oddsAt(s, N, id) ?? 0)}%`; side.playoff_odds_now = `${Math.round(oddsAt(s, N, id, "p") ?? 0)}%`; } }
+  return { ...f, status: "agreed by both teams, then vetoed; it did not go through and both rosters stay as they were (the player facts describe the deal as agreed: a reunion means he would have been back with that manager)", vetoed_at: etLabel(new Date(v.at)), happened_before_week: undefined, week: s.curWeek,
+    earlier_vetoes_this_season: (s.vetoed || []).filter((x) => x.at < v.at).length };
+}
 // Report cards: grades for every team when the regular season ends (stage "reg") and again when the playoffs and the
 // consolation ladder are done (stage "final"), from the season's numbers
 function gradesFacts(s, stage) {
@@ -655,6 +666,7 @@ const schemas = {
     awards: { type: "array", items: { type: "object", additionalProperties: false, required: ["award", "winner", "blurb"], properties: { award: str, winner: str, blurb: str } } },
     bios: { type: "array", items: { type: "object", additionalProperties: false, required: ["team", "bio"], properties: { team: str, bio: str } } } } },
   trade: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "social"], properties: { ...ARTICLE, social: SOCIAL } },
+  veto: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "social"], properties: { ...ARTICLE, social: SOCIAL } },
   review: { type: "object", additionalProperties: false, required: ["title", "dek", "body"], properties: ARTICLE },
   grades: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "grades", "social"], properties: { ...ARTICLE, social: SOCIAL,
     grades: { type: "array", items: { type: "object", additionalProperties: false, required: ["team", "grade", "headline", "blurb"], properties: { team: str, grade: str, headline: str, blurb: str } } } } },
@@ -677,6 +689,7 @@ const schemas = {
 const asks = {
   recap: "Write the weekly recap for this week of the Buckaroo Football League: a headline, a one-sentence dek, and 5 to 8 body paragraphs covering the results (lead with the best storyline), standout and disappointing performances (a game's ones_to_watch show who had a Gear 5 or got Seastoned), the standings and title-odds picture, notable moves (a waiver pickup who's producing, or one flipped into a trade, and the waiver_king_race for the Wapol award are fair game when they make a story, without overdoing it; a pickup's reunions, a player back with a manager who had him before, can be a line too), and a look ahead to next week (if next_week_ones_to_watch is given, name a player or two whose game swings a matchup most, or a QB-receiver stack, without their percentages). Then write 6 to 10 social posts reacting to the week, and a fresh 2 to 3 sentence bio for every team in the standings that sums up where its season stands right now (use the exact team name in the team field). Finally, the trade watch: quick 1 to 2 sentence takes on how earlier trades in trade_watch are aging, for the 2 to 5 deals with the most to say this week (a deal that looked lopsided flipping, a player who carried his new team or sat on its bench, a winner pulling further ahead). These are quick hot takes, not articles; say how it looks now compared with before. Use the trade's id from the facts. If there are no trades yet, leave it empty. Then the week's awards: one entry for each award in the facts' awards (award is its name in title case, like 'Manager of the Week'; winner is who won it, short), with a one or two sentence blurb. The winners are already decided; don't change them. When playoff_picture is given, work any clinch, elimination or big stakes into the recap.",
   trade: "Write a trade reaction story: a headline, a one-sentence dek, and 3 to 5 body paragraphs explaining the deal, what each side got, and who won it on paper (use the title and playoff odds change; if the before odds are missing, use only the odds after and don't call them pre-trade). reunion says when a player is back with a manager who had him before (and former_managers lists his past stops): a homecoming is a storyline worth a line. how_the_other_side_got_him says where each player came from: a waiver claim or free-agent pickup flipped into a trade, a late draft pick turned trade chip, or a player traded twice is a storyline worth a line (who found him, what he turned into), without overselling it. Judge each player on season_points_before_trade, every week he played: a player who scored as a free agent (points_as_free_agent_before_trade) was producing even off a roster, so don't treat his roster points or weeks on a roster as his whole season, and say so when it changes the read; last_three_weeks shows his recent form. Then write 3 to 5 social posts reacting to it.",
+  veto: "Breaking news: a trade both teams agreed to was vetoed, so it never happened. Write it like an NFL insider's bombshell: a punchy headline, a one-sentence dek, and 2 to 4 short body paragraphs: the deal that almost was (who would have gone where, using each player's season and recent form), who would have won it on paper, and what the veto leaves each team with (record, odds now). Don't say who vetoed it or why unless the facts say so; the league's reaction can speculate, the story can't. Then 4 to 6 social posts: the first is Dana Whitfield breaking it (pundit, the insider; a terse 'sources' style scoop with a siren or two, when about -3), then the two teams' official accounts (on-brand, putting a brave face on it or saying nothing of substance), the league account (dry and official, 1 or 2 heat), and fans arguing about whether the veto was fair; a veto is the kind of thing fans get loud about.",
   profile: "Write a career profile of this manager for their page on the league website, like a club history page in Football Manager: a short headline that captures who they are in this league, and 3 to 5 body paragraphs telling the story of their whole run: each season, the highs and lows, rivalries from the head-to-head records, their habits as a manager (trades, waiver moves), and where they stand right now. Use their nicknames and the lore, as seasoning on top of what actually happened.",
   draft: "Write the draft-day story for this season's Buckaroo Football League draft, as if written the night of the draft, before any games: a headline, a one-sentence dek, and 5 to 7 body paragraphs covering the first round and draft order, each manager's strategy and haul, position runs, keepers, and the picks that look like reaches or values. Judge picks only by where players went relative to each other, each team's roster build and the draft order; you know nothing about how the season has gone since, and don't cite stats or projections that aren't in the facts. Then write 4 to 8 social posts reacting to the draft, including official team accounts welcoming their first-round picks.",
   rankings: "Write this week's Buckaroo Football League power rankings, the way NFL.com publishes them every Tuesday: a headline, a one-sentence dek, a 1 to 2 paragraph intro on what moved the rankings this week, then every team ranked 1 to N (use the exact team name, without the manager). Each team gets a 2 to 4 sentence write-up in the NFL.com style: what happened this week, what's working or what's broken, and what's next, with a line on why it rose or fell from last_week_rank when there is one. They're the newsroom's opinion, not the standings: weigh record, points, form, the odds and how the team looks right now, and it's fine to rank a team above one with a better record if you can say why.",
@@ -731,6 +744,8 @@ function pending() {
       if (!have.has(`recap-${cur.year}-${W}`)) todo.push({ id: `recap-${cur.year}-${W}`, type: "recap", s: cur, wk: W, facts: () => recapFacts(cur, W) });
     }
     for (const tr of cur.trades) { const id = tradeId(cur, tr); if (!have.has(id)) todo.push({ id, type: "trade", s: cur, wk: tr.wk - 0.5, tr, facts: () => tradeFacts(cur, tr) }); }
+    // Vetoed trades: only fresh ones (within two days), so a veto found late doesn't read as breaking news
+    for (const v of cur.vetoed || []) { const id = vetoId(cur, v); if (!have.has(id) && Date.now() - new Date(v.at) < 2 * 864e5) todo.push({ id, type: "veto", s: cur, wk: v.wk, tr: v, at: v.at, facts: () => vetoFacts(cur, v) }); }
   }
   // Report cards: when the regular season's games are final, and again once the season is done (2026 on)
   for (const z of D.seasons.filter((x) => x.year >= 2026)) {
@@ -763,7 +778,7 @@ async function write(client, job) {
   // Rankings for past weeks mustn't see later stories, so they get none
   const recent = ["profile", "draft", "history", "rankings", "bowl", "class"].includes(job.type) ? [] : recentStories();
   const wk = ["review", "profile", "history", "bowl", "class"].includes(job.type) ? null : job.type === "rankings" || job.type === "grades" ? Math.floor(job.wk) : Math.ceil(job.wk);
-  const pub = published({ id: job.id, type: job.type, year: job.s.year, wk, created: new Date().toISOString() }, job.s.periods);
+  const pub = published({ id: job.id, type: job.type, year: job.s.year, wk, at: job.at, created: new Date().toISOString() }, job.s.periods);
   const dated = pub ? `\n\nThis story goes up ${etLabel(pub)}; time the social posts' "when" from that.` : "";
   const avoid = recent.length ? `\n\nThe league's most recent stories, for reference only. Readers just read these, so don't reuse their jokes, nicknames-as-punchlines, or angles; find fresh ones:\n${JSON.stringify(recent)}` : "";
   const res = await client.beta.messages.create({
@@ -790,7 +805,7 @@ async function write(client, job) {
   // Bios name teams as written in the facts ("Name (Manager)"); match on the team-name part
   const teamFor = (label) => job.s.teams.find((t) => label === nameAt(t, job.wk) || label.startsWith(nameAt(t, job.wk) + " ("));
   return {
-    id: job.id, type: job.type, year: job.s.year, wk, created: new Date().toISOString(),
+    id: job.id, type: job.type, year: job.s.year, wk, at: job.at, created: new Date().toISOString(),
     title: out.title || out.headline, dek: out.dek || "", body: out.body, chapters: out.chapters, social: out.social || [], teams: job.tr ? job.tr.teams : [], mgr: job.mgr,
     trade_watch: out.trade_watch ? out.trade_watch.filter((t) => (facts.trade_watch || []).some((x) => x.id === t.id)) : undefined,
     picks: out.picks ? out.picks.map((g) => { const m = job.s.matchups.find((x) => x.wk === Math.ceil(job.wk) && g.game === `${who(job.s.byId[x.h], x.wk)} vs ${who(job.s.byId[x.a], x.wk)}`);
