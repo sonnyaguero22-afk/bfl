@@ -319,6 +319,13 @@ for (const year of years) {
         for (const st of p.stats || []) if (st.statSourceId === 0 && st.statSplitTypeId === 1 && st.scoringPeriodId > 0) wk[st.scoringPeriodId] = r2(st.appliedTotal || 0);
         if (p.fullName && Object.keys(wk).length) out[p.fullName] = wk; }
       console.log(`::notice::${year} weekly points for ${Object.keys(out).length} traded players`); return out; })(),
+    // The waiver wire (fetch.js): top free agents by how widely they're rostered, with weekly points and this week's projection
+    freeAgents: (() => { if (done || !exists(`freeagents_${year}.json`)) return undefined;
+      const out = (load(`freeagents_${year}.json`).players || []).map((e) => { const p = e.player || {}, wk = {}; let proj = null;
+        for (const st of p.stats || []) { if (st.statSplitTypeId !== 1) continue; if (st.statSourceId === 0 && st.scoringPeriodId > 0) wk[st.scoringPeriodId] = r2(st.appliedTotal || 0);
+          if (st.statSourceId === 1 && st.scoringPeriodId === L.status.latestScoringPeriod) proj = r2(st.appliedTotal || 0); }
+        return { n: p.fullName, pos: POS[p.defaultPositionId] || "", pro: PRO[p.proTeamId] || "", owned: Math.round((p.ownership || {}).percentOwned || 0), inj: p.injuryStatus && p.injuryStatus !== "ACTIVE" ? p.injuryStatus : undefined, status: e.status, wk, proj }; }).filter((x) => x.n);
+      console.log(`::notice::${year} waiver wire: ${out.length} players, top WRs ${out.filter((x) => x.pos === "WR").slice(0, 5).map((x) => x.n).join(", ")}`); return out; })(),
     on: matchups.some((m) => m.on), nflByes: done ? undefined : nflByes, kicks: done ? undefined : kicks, playoffTeams: ss.playoffTeamCount, periods: ss.matchupPeriods, teams, future, matchups, byes, lineups, draft, moves, trades: finalTrades, rosters, wp,
   });
   for (const w of [L.status.latestScoringPeriod - 1, L.status.latestScoringPeriod]) if (lineups[w]) { const all = Object.values(lineups[w]).flat(); console.log(`::notice::${year} week ${w}: on bye ${all.filter((p) => p.st === "bye").map((p) => p.n).join(", ") || "none"}; out ${all.filter((p) => p.st === "out").map((p) => p.n).join(", ") || "none"}; games on now: ${gamesOn}`); }

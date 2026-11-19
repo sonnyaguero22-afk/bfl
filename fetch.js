@@ -65,6 +65,11 @@ async function get(url, file, headers = {}) {
           for (const old of fs.readdirSync(dir).filter((x) => x.startsWith(`${y}_${t.id}.`))) fs.unlinkSync(path.join(dir, old));
           fs.writeFileSync(path.join(dir, `${y}_${t.id}.${ext}`), Buffer.from(await res.arrayBuffer())); }
         console.log(`::notice::logo for team ${t.id}: ${res.status} ${type}${res.ok && ext ? "" : " (not saved)"}`); } catch (e) { console.log(`::warning::logo for team ${t.id}: ${e.message}`); } }
+    // The top of the waiver wire (free agents and players on waivers), with every week's points and this week's projection
+    if (!L.status.isExpired) await get(`${lg}?view=kona_player_info&scoringPeriodId=${last}`, `freeagents_${y}.json`, {
+      "x-fantasy-filter": JSON.stringify({ players: { filterStatus: { value: ["FREEAGENT", "WAIVERS"] }, filterSlotIds: { value: [0, 2, 4, 6, 17, 16] }, limit: 120,
+        sortPercOwned: { sortPriority: 1, sortAsc: false }, filterStatsForTopScoringPeriodIds: { value: last + 1, additionalValue: [`00${y}`, `10${y}`] } } }),
+    });
     // Weekly points for every player who was traded, rostered or not, so a trade story can count what he scored as a free agent
     const traded = new Set();
     for (let w = 1; w <= last; w++) { try { const T = JSON.parse(fs.readFileSync(path.join(DATA, `tx_${y}_${w}.json`), "utf8"));
