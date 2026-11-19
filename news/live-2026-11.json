@@ -47,9 +47,40 @@
    "team": "",
    "about": "move",
    "at": "2026-11-18T09:29:10.307Z"
+  },
+  {
+   "author": "Windy City Waiver Watch",
+   "handle": "@WindyCityWaivers",
+   "text": "Randy dropped Darren Waller and the 49ers D/ST in the same breath, and somehow nobody is claiming he made a trade. Cutting is fine, Randy, it's the trading that scares you.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-19T03:41:13.887Z"
+  },
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldBFL",
+   "text": "The fumblers cleared out Waller and the 49ers D/ST before kickoff against Habibsters. Keep an eye on what Randy picks up to fill the tight end and defense slots, since Colston Loveland is the only tight end listed in his lineup now.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-19T03:54:05.855Z"
+  },
+  {
+   "author": "Habib Hive",
+   "handle": "@HabibHiveUGA",
+   "text": "Randy dumping a whole defense the night before facing Habib. Either he found something better or he's panicking, and with Randy it's usually panic.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-19T04:06:05.855Z"
   }
  ],
  "batches": [
-  "2026-11-18T16:32:56.431Z"
+  "2026-11-18T16:32:56.431Z",
+  "2026-11-19T05:05:20.536Z"
  ]
 }
