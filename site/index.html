@@ -3270,11 +3270,15 @@ const GLSN_STAFF = [
   { name: "GLSN", handle: "@GLSN", kind: "network", e: "📡", bio: "Grand Line Sports Network. Every island, every score. Home of the Buckaroo Football League." },
   { name: "Absalom", handle: "@AbsalomScoops", kind: "reporter", e: "👀", role: "Insider", beat: "Trades, vetoes and scoops", bio: "GLSN insider. You didn't see me. I saw everything." },
   { name: "Morgans", handle: "@BigNewsMorgans", kind: "reporter", e: "🗞️", role: "Editor-in-chief", beat: "Season reviews, report cards and league history", bio: "Founder and editor-in-chief, GLSN. BIG NEWS only." },
-  { name: "Shakky", handle: "@ShakkysBar", kind: "reporter", e: "🍸", role: "The Gambler", beat: "The lines at Shakky's Rip-off Bar", bio: "I set the lines. Information costs extra." },
-  { name: "Haredas", handle: "@HaredasForecast", kind: "reporter", e: "⛅", role: "Analytics", beat: "Previews, forecasts and the Sunday final word", bio: "GLSN forecaster. 70% chance I'm right. Luffy says 68." },
+  { name: "Haredas", handle: "@HaredasForecast", kind: "reporter", e: "⛅", role: "Forecaster", beat: "Previews, forecasts and the Sunday final word", bio: "GLSN forecaster. 70% chance I'm right. Luffy says 68." },
   { name: "Pandaman", handle: "@PandamanSeesAll", kind: "reporter", e: "🐼", role: "Correspondent", beat: "Weekly recaps", bio: "GLSN correspondent. I was at every game. Look closer." },
   { name: "Duval", handle: "@DuvalRanks", kind: "reporter", e: "🌹", role: "Power rankings", beat: "The power rankings", bio: "GLSN power rankings. Every Tuesday, I decide who's beautiful." },
   { name: "Gaimon", handle: "@GaimonDigs", kind: "reporter", e: "📦", role: "Draft analyst", beat: "Draft night", bio: "GLSN draft analyst. Twenty years guarding treasure. I know an empty chest." },
+  // The preview panel: pundits who pick every game (not writers)
+  { name: "Brannew", handle: "@BrannewBriefing", kind: "reporter", e: "📋", role: "Panel · Insider", beat: "Preview panel picks", bio: "GLSN insider on the preview panel. Briefing begins now." },
+  { name: "Crocus", handle: "@CrocusLighthouse", kind: "reporter", e: "🗼", role: "Panel · Columnist", beat: "Preview panel picks", bio: "GLSN columnist. Kept the lighthouse fifty years. I've seen your team's story before." },
+  { name: "Shakky", handle: "@ShakkysBar", kind: "reporter", e: "🍸", role: "Panel · The Gambler", beat: "Preview panel picks", bio: "I set the lines. Information costs extra." },
+  { name: "Professor Clover", handle: "@ProfClover", kind: "reporter", e: "📚", role: "Panel · Analytics", beat: "Preview panel picks", bio: "GLSN analytics. The evidence says otherwise." },
 ];
 const STAFF_BY = Object.fromEntries(GLSN_STAFF.map((p) => [p.name, p])), STAFF_KEY = Object.fromEntries(GLSN_STAFF.map((p) => [hkey(p.handle), p]));
 // Whose byline each story type runs under (the same as news.js)
@@ -3283,11 +3287,11 @@ const BYLINE = { recap: "Pandaman", rankings: "Duval", preview: "Haredas", final
 const bylineOf = (a) => STAFF_BY[a.by || BYLINE[a.type]];
 const byHtml = (a) => { const w = bylineOf(a); return w ? `By <button class="mlink" data-go="u-${hkey(w.handle)}">${esc(w.name)}</button> · GLSN` : ""; };
 // The panel's seats before GLSN took over (2026, week 12): a seat's record and berries carry over to whoever holds it now
-const SEAT = { "Dana Whitfield": "Absalom", "Marcus Pell": "Morgans", "Sal Benedetto": "Shakky", "Dr. Nina Kessler": "Haredas" };
+const SEAT = { "Dana Whitfield": "Brannew", "Marcus Pell": "Crocus", "Sal Benedetto": "Shakky", "Dr. Nina Kessler": "Professor Clover" };
 // Staff get their emoji; everyone else a letter on a color
 function letterAva(author, handle) { const st = STAFF_KEY[hkey(handle)];
   return st ? `<span class="avatar staff" aria-hidden="true">${st.e}</span>` : `<span class="avatar" style="--h:${avatarHue(handle)}" aria-hidden="true">${esc((String(author).match(/[A-Za-z0-9]/) || ["?"])[0].toUpperCase())}</span>`; }
-const PANEL_BIO = { "Absalom": "GLSN insider. You didn't see me. I saw everything.", "Morgans": "Founder and editor-in-chief, GLSN. BIG NEWS only.", "Shakky": "I set the lines. Information costs extra.", "Haredas": "GLSN forecaster. 70% chance I'm right. Luffy says 68.", "Dana Whitfield": "League insider. If it's happening in the BFL, I heard it first.", "Marcus Pell": "Columnist. Long takes on short benches.", "Sal Benedetto": "I bet on everything. Ask me about my locks.", "Dr. Nina Kessler": "Analytics. In Luffy we trust (mostly)." };
+const PANEL_BIO = { "Brannew": "GLSN insider on the preview panel. Briefing begins now.", "Crocus": "GLSN columnist. Kept the lighthouse fifty years. I've seen your team's story before.", "Shakky": "I set the lines. Information costs extra.", "Professor Clover": "GLSN analytics. The evidence says otherwise.", "Dana Whitfield": "League insider. If it's happening in the BFL, I heard it first.", "Marcus Pell": "Columnist. Long takes on short benches.", "Sal Benedetto": "I bet on everything. Ask me about my locks.", "Dr. Nina Kessler": "Analytics. In Luffy we trust (mostly)." };
 function userView() {
   const u = accounts()[state.user] || accounts()[ACCT_ALIAS[state.user]];
   if (!u) return `<div class="vhead"><div><div class="eyebrow">Social</div><h2>Account not found</h2></div></div><p><button class="mlink" data-go="social">← Back to Social</button></p>`;
