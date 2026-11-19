@@ -197,12 +197,14 @@ for (const year of years) {
     for (const i of items) if (i.playerId > 0 && i.fromTeamId && i.toTeamId && i.fromTeamId !== i.toTeamId) (got[i.toTeamId] = got[i.toTeamId] || []).push(`${pname(i.playerId)}|${ppos(i.playerId)}`);
     const teams = Object.keys(got).map(Number).sort((a, b) => a - b); if (teams.length < 2) continue;
     const prop = g.find((x) => x.type === "TRADE_PROPOSAL") || g[0];
-    vetoed.push({ wk: prop.scoringPeriodId || lastWeek, teams, got, at: new Date(Math.max(...g.map((x) => x.processDate || x.proposedDate || 0))).toISOString() });
+    // In a league vote, each team's veto is its own TRADE_VETO record, so the voters can be named (the commissioner's veto is one record)
+    const voters = [...new Set(g.filter((x) => x.type === "TRADE_VETO" && x.teamId).map((x) => x.teamId))];
+    vetoed.push({ wk: prop.scoringPeriodId || lastWeek, teams, got, voters: voters.length ? voters : undefined, at: new Date(Math.max(...g.map((x) => x.processDate || x.proposedDate || 0))).toISOString() });
   }
   vetoed.sort((a, b) => (a.at < b.at ? -1 : 1));
   // What the trade records look like (types and statuses only), so a veto ESPN marks some other way can be spotted
-  if (!done && tradeTx.size) { const k = {}; for (const x of tradeTx.values()) k[`${x.type}/${x.status}`] = (k[`${x.type}/${x.status}`] || 0) + 1;
-    console.log(`::notice::${year} trade records: ${Object.entries(k).map(([a, n]) => `${a} x${n}`).join(", ")}; vetoed: ${vetoed.map((v) => `wk ${v.wk} teams ${v.teams.join(" & ")} (${Object.values(v.got).flat().map((x) => x.split("|")[0]).join(", ")})`).join("; ") || "none"}`); }
+  if (!done && tradeTx.size) { const k = {}; for (const x of tradeTx.values()) k[`${x.type}/${x.status}${x.type !== "TRADE_PROPOSAL" && x.teamId ? ` team ${x.teamId}` : ""}`] = (k[`${x.type}/${x.status}`] || 0) + 1;
+    console.log(`::notice::${year} trade records: ${Object.entries(k).map(([a, n]) => `${a} x${n}`).join(", ")}; vetoed: ${vetoed.map((v) => `wk ${v.wk} teams ${v.teams.join(" & ")}${v.voters ? ` voted down by ${v.voters.join(", ")}` : ""} (${Object.values(v.got).flat().map((x) => x.split("|")[0]).join(", ")})`).join("; ") || "none"}`); }
 
   // Share of each NFL team's game still to play this week: 1 before kickoff, 0 when final
   // or on bye, in between by the game clock. Null when the saved scoreboard is for another week.
