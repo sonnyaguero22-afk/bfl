@@ -1436,7 +1436,7 @@ function treasuries() {
     for (const wk in top) add(top[wk].k, s.year, TREASURE.top, "Manager of the Week");
     // Awards pay once a season is over
     if (s.done) { for (const w of Object.values(seasonMgrAwards(s))) if (w && w.ks) add(w.ks[0], s.year, TREASURE.mgrAward, "Manager awards");
-      for (const w of Object.values(seasonAwards(s))) if (w && w.t) add(mgrAt(w.t, s.regWeeks), s.year, TREASURE.plyAward, "Player awards"); }
+      for (const [k, w] of Object.entries(seasonAwards(s))) if (w && w.t && k !== "foxy") add(mgrAt(w.t, s.regWeeks), s.year, TREASURE.plyAward, "Player awards"); }
   }
   for (const r of wlog()) if (r.gear5) add(mgrAt(r.s.byId[r.x.id], r.m.wk), r.s.year, TREASURE.gear5, "Gear 5s");
   return (TREAS = T);
@@ -1870,7 +1870,19 @@ const AWARDS = [
   ["brook", "🎻", "Brook", "Bench King", "Most points left on the bench"],
   ["buggy", "🤡", "Buggy", "Biggest Bust", "A top-three-round pick who finished furthest below where he was drafted (all points while rostered)"],
   ["ace", "🍩", "Ace", "Most Costly Donut", "The biggest zero (or worse) from a starter in a loss, ranked by how much he was projected for; D/ST doesn't count"],
+  ["foxy", "🦊", "Foxy", "Worst Drop", "Most points as a starter for other teams after a team dropped him; it's charged to the team that let him go"],
+  ["karoo", "🦆", "Karoo", "Player of the Week", "Most weeks as the league's top-scoring starter (Karoo Player of the Week); a tie on weeks goes to more points in them"],
 ];
+// Karoo Player of the Week: each NFL week's top-scoring starter, from games that counted (two-week playoff rounds go week by week; ties share it)
+const KAROO = {};
+function karooWeeks(s) {
+  if (KAROO[s.year]) return KAROO[s.year];
+  const by = {};
+  for (const p of PL) for (const w of p.weeks) if (w.y === s.year && w.fin && w.start) { const mp = w.wk, k = `${mp}|${p.k}`; (by[k] = by[k] || { mp, p, t: w.t, pts: 0 }).pts += w.pts; }
+  const all = Object.values(by), out = [];
+  for (const mp of [...new Set(all.map((x) => x.mp))].sort((a, b) => a - b)) { const ws = all.filter((x) => x.mp === mp), hi = Math.max(...ws.map((x) => x.pts)); out.push(...ws.filter((x) => x.pts === hi)); }
+  return (KAROO[s.year] = out);
+}
 const AW = {};
 function seasonAwards(s) {
   if (AW[s.year]) return AW[s.year];
@@ -1880,7 +1892,7 @@ function seasonAwards(s) {
   // A player's points count wherever he scored them; the credit goes to the team that has him now (or had him last that season)
   const holder = (p) => { const ws = p.weeks.filter((w) => w.y === y); return ws.length ? ws.reduce((a, b) => (b.wk > a.wk ? b : a)).t : null; };
   // The winner plus the top five (one entry per player), like MVP voting; sc is the number each was ranked by
-  const SC = { chopper: (v) => `+${f1(v)} per start`, buggy: (v) => `${v} spots` };
+  const SC = { chopper: (v) => `+${f1(v)} per start`, buggy: (v) => `${v} spots`, karoo: (v) => `${Math.floor(v)}×` };
   const best = (key, list, val, stat) => { const seen = new Set(), ranked = list.filter((x) => val(x) != null && val(x) > 0).sort((a, b) => val(b) - val(a)).filter((x) => !seen.has(x.p) && seen.add(x.p)), top = ranked[0];
     if (top) out[key] = { p: top.p, t: top.t || holder(top.p), stat: stat(top), x: top, v: val(top), top5: ranked.slice(0, 5).map((x) => ({ p: x.p, t: x.t || holder(x.p), stat: stat(x), sc: (SC[key] || f1)(val(x)) })) }; };
   best("king", rows, (x) => stPts(x.ws), (x) => `${f1(stPts(x.ws))} pts in ${x.ws.filter((w) => w.start).length} starts`);
@@ -1897,6 +1909,14 @@ function seasonAwards(s) {
     return { p: x.p, t: e.t, pts: sum(ws, (w) => w.pts), n: ws.length, wk: from }; }).filter(Boolean); });
   best("robin", stint("add"), (x) => x.pts, (x) => `${f1(x.pts)} pts in ${x.n} starts after a week ${x.wk} pickup`);
   best("sunny", stint("trade"), (x) => x.pts, (x) => `${f1(x.pts)} pts in ${x.n} starts after the week ${x.wk} trade`);
+  // Foxy: what a dropped player scored as a starter for other teams from the week of the drop on, charged to the team that dropped him
+  best("foxy", rows.flatMap((x) => x.p.ev.filter((e) => e.y === y && e.type === "drop").map((e) => { const ws = x.ws.filter((w) => w.start && w.t.id !== e.t.id && w.wk >= e.wk);
+    return ws.length ? { p: x.p, t: e.t, pts: sum(ws, (w) => w.pts), n: ws.length, wk: e.wk } : null; }).filter(Boolean)),
+    (x) => x.pts, (x) => `${f1(x.pts)} pts in ${x.n} starts elsewhere after a week ${x.wk} drop`);
+  // Karoo: the most weeks as Karoo Player of the Week (points in those weeks break a tie)
+  const kc = new Map(); for (const x of karooWeeks(s)) (kc.get(x.p) || kc.set(x.p, []).get(x.p)).push(x);
+  best("karoo", [...kc].map(([p, kw]) => ({ p, ws: [], kw })), (x) => x.kw.length + sum(x.kw, (w) => w.pts) / 1e4,
+    (x) => `${x.kw.length} ${x.kw.length === 1 ? "week" : "weeks"}: ${x.kw.map((w) => `${f1(w.pts)} in wk ${w.mp}`).join(", ")}`);
   // Chopper: first half vs second half points per start
   const mid = s.regWeeks / 2;
   best("chopper", rows.map((x) => { const st = x.ws.filter((w) => w.start), a = st.filter((w) => (s.sp2mp?.[w.wk] ?? w.wk) <= mid), b = st.filter((w) => (s.sp2mp?.[w.wk] ?? w.wk) > mid);
@@ -1991,12 +2011,12 @@ function awardsView(kind) {
     cards = MGR_AWARDS.filter(([k]) => ma[k]).map(([k, e, nm, cat, why]) => `<div class="box award${k === "bellamy" ? " shame" : ""}" title="${esc(why)}"><span class="awtro">${trophy(k, 1)}</span><div class="k">${e} ${awLink(k)} <span class="muted">· ${cat}</span></div><div class="who">${ma[k].ks.map((m) => `${mbadge(m, 1)} <button class="mlink" data-go="mgr-${m}">${mgrName(m)}</button>`).join(" ")}</div><small>${ma[k].stat}</small>${topFive(ma[k].top5, (r) => `${mbadge(r.k, 1)} <button class="mlink" data-go="mgr-${r.k}">${mgrName(r.k)}</button>`)}</div>`).join(""); }
   else { const a = seasonAwards(s);
     cards = AWARDS.filter(([k]) => a[k]).map(([k, e, nm, cat, why]) => { const x = a[k];
-      return `<div class="box award${k === "ace" || k === "buggy" ? " shame" : k === "king" || k === "onepiece" ? " top" : ""}" title="${esc(why)}"><span class="awtro">${trophy(k, 1)}</span><div class="k">${e} ${awLink(k)} <span class="muted">· ${cat}</span></div><div class="who">${posTag(x.p.pos)}${pn(x.p.n)}</div><small class="muted">${badge(x.t, 1)} ${esc(x.t.name)} · ${mgrName(x.t.mgr)}</small><small>${x.stat}</small>${topFive(x.top5, (r) => `${posTag(r.p.pos)}${pn(r.p.n)}`, (r) => `${esc(r.t.name)} · `)}</div>`; }).join(""); }
+      return `<div class="box award${k === "ace" || k === "buggy" || k === "foxy" ? " shame" : k === "king" || k === "onepiece" ? " top" : ""}" title="${esc(why)}"><span class="awtro">${trophy(k, 1)}</span><div class="k">${e} ${awLink(k)} <span class="muted">· ${cat}</span></div><div class="who">${posTag(x.p.pos)}${pn(x.p.n)}</div><small class="muted">${k === "foxy" ? "Dropped by " : ""}${badge(x.t, 1)} ${esc(x.t.name)} · ${mgrName(x.t.mgr)}</small><small>${x.stat}</small>${topFive(x.top5, (r) => `${posTag(r.p.pos)}${pn(r.p.n)}`, (r) => `${esc(r.t.name)} · `)}</div>`; }).join(""); }
   const list = mgr ? MGR_AWARDS : AWARDS;
   return `<div class="vhead"><div><div class="eyebrow">${s.done ? `Buckaroo Bowl ${roman(y - D.firstYear + 1)} · ${y}` : `${y} · so far`}</div><h2>${mgr ? "Manager" : "Player"} Awards</h2><p>${mgr ? "The things a title doesn't measure, named for the Strawhats' friends and foes." : "The season's best (and worst) players, named for the Strawhats and friends."} ${s.done ? "" : "The season isn't over, so these are the leaders so far."}</p></div>${bar}</div>
   <div class="awgrid">${cards || `<p class="muted">Nothing to award yet.</p>`}</div>
   <section><h3>How They're Decided</h3><div class="box rec"><ol class="swing">${list.map(([k, e, nm, cat, why]) => `<li><span>${e} <b>${awLink(k)}</b> <span class="muted">· ${cat}</span><small class="ctx sub">${esc(why)}</small></span></li>`).join("")}</ol></div>
-  <p class="note">${mgr ? "Luck and blunders count regular-season weeks (blunders count playoffs too). Every award has one winner; a tie on a count goes to the bigger margin." : "Points count only in weeks a lineup played a game, playoffs and consolation games included. The team shown is where he scored the most."}</p>${mgr ? "" : `<p class="note">Every game's ${OW.bounty[0]} ${owLink("bounty", "Bounty Board")}, presented by ${owLink("baratie", "the Baratie")} ${OW.baratie[0]}, is graded too: ${OW.gear5[0]} ${owLink("gear5")} and ${OW.seastone[0]} ${owLink("seastone")}.</p>`}</section>`;
+  <p class="note">${mgr ? "Luck and blunders count regular-season weeks (blunders count playoffs too). Every award has one winner; a tie on a count goes to the bigger margin." : "Points count only in weeks a lineup played a game, playoffs and consolation games included. The team shown is the one that has him now (or had him last that season); for Foxy, it's the team that dropped him."}</p>${mgr ? "" : `<p class="note">Every game's ${OW.bounty[0]} ${owLink("bounty", "Bounty Board")}, presented by ${owLink("baratie", "the Baratie")} ${OW.baratie[0]}, is graded too: ${OW.gear5[0]} ${owLink("gear5")} and ${OW.seastone[0]} ${owLink("seastone")}.</p>`}</section>`;
 }
 
 // ---------- Award pages: one wiki-style article per award, with every winner ----------
@@ -2015,6 +2035,8 @@ const AW_NAMED = {
   brook: "Named for the Strawhats' musician, a skeleton who waited decades on his own, like points left on a bench.",
   buggy: "Named for Buggy the Clown, who keeps rising in rank without ever quite earning it.",
   ace: "Named for Portgas D. Ace. Around the league, a zero is a donut, and a donut is an Ace.",
+  foxy: "Named for Foxy the Silver Fox, whose Davy Back Fights let him walk off with another crew's members: the player someone else picked up after you let him go.",
+  karoo: "Named for Karoo, Princess Vivi's loyal super spot-billed duck, the fastest runner in the Alabasta desert, who shows up when it counts.",
   vegapunk: "Named for Dr. Vegapunk, the world's greatest scientist, who plans everything years ahead.",
   wapol: "Named for Wapol, the king of Drum Island whose Devil Fruit lets him eat anything, including what everyone else threw away.",
   doflamingo: "Named for Donquixote Doflamingo, the underworld broker who deals in everything.",
@@ -2035,6 +2057,8 @@ const AW_DEF = {
   brook: "the player who scores the most points while sitting on a bench",
   buggy: "the early-round pick who finishes furthest below where he was drafted",
   ace: "the starter whose zero hurt the most: the highest-projected player to score nothing (or less) in a loss",
+  foxy: "the player who scores the most for other teams after being dropped; the award is charged to the team that dropped him",
+  karoo: "the player named Karoo Player of the Week, the league's top-scoring starter in a week, the most times",
   vegapunk: "the manager whose draft picks score the most for him", wapol: "the manager who gets the most out of the waiver wire",
   doflamingo: "the manager who comes out furthest ahead on trades",
   blackbeard: "the manager who wins the most games he had no business winning, with a score below that week's median",
@@ -2234,6 +2258,24 @@ const TROPHY = {
     <path d="M120 200V70M120 70l-16 20M120 70l16 20" stroke="url(#v${i})" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="M110 120q10-36 10-60 4 24 14 40-6-6-12 0 6 12 0 22z" fill="#cfe9ff" opacity=".8"/>
     <path d="M90 212h60l6 26H84z" fill="url(#g${i})"/>` },
+  // Foxy: a football carried off by a big silver-fox tail, with the Davy Back Fight's victory ribbon
+  foxy: { metal: "bronze", art: (i) => `
+    <path d="M128 200c34-6 58-30 60-66 2-30-14-58-40-74-16-10-34-12-48-6 20 2 36 12 44 28-14-8-30-8-40-2 22 4 38 18 42 38-12-8-28-8-38-2 20 6 34 22 34 42 0 18-6 32-14 42z" fill="url(#g${i})" stroke="#4a2a10" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M100 54c14-6 32-4 48 6 12 8 22 19 28 32-14-12-30-18-44-16 6-10-2-16-10-20-8-2-16-2-22-2z" fill="#f6efe6" stroke="#4a2a10" stroke-width="1"/>
+    <path d="M158 104q10 30-4 66M144 112q8 26-2 56" stroke="#4a2a10" stroke-width="1.2" fill="none" opacity=".45"/>
+    <g transform="rotate(-24 100 160)"><path d="M58 160q42-34 84 0-42 34-84 0z" fill="url(#g${i})" stroke="#4a2a10" stroke-width="1.5"/>
+      <path d="M86 160h28" stroke="#fff6e8" stroke-width="2.5"/>${[92, 98, 104, 110].map((x) => `<path d="M${x} 156v8" stroke="#fff6e8" stroke-width="2"/>`).join("")}
+      ${trShine("M70 154q20-14 40-14-22 4-36 18z")}</g>
+    <path d="M112 196h16v16h-16z" fill="url(#v${i})"/><path d="M90 212h60l6 26H84z" fill="url(#g${i})"/>` },
+  // Karoo: a racing duck's feather over the desert, a stopwatch for the week he was the fastest
+  karoo: { art: (i) => `
+    <path d="M70 196q24-18 50-10t50-6v16H70z" fill="#e9c98a" opacity=".55"/>
+    <g transform="rotate(24 120 120)"><path d="M120 34c26 22 30 74 4 128l-4 22-4-22c-26-54-22-106 4-128z" fill="url(#g${i})" stroke="#4b525c" stroke-width="1.5"/>
+      <path d="M120 40v150" stroke="#4b525c" stroke-width="2"/>${[0, 1, 2, 3, 4, 5].map((k) => `<path d="M120 ${66 + 16 * k}l-16 -10M120 ${66 + 16 * k}l16 -10" stroke="#4b525c" stroke-width="1" opacity=".6"/>`).join("")}
+      ${trShine("M114 54c-10 24-10 52-2 82-14-26-14-58 2-82z")}</g>
+    <circle cx="80" cy="84" r="20" fill="url(#g${i})" stroke="#4b525c" stroke-width="1.5"/><circle cx="80" cy="84" r="14" fill="#f4f6fa"/>
+    <path d="M80 84v-10M80 84l7 4" stroke="#2a2a30" stroke-width="2" stroke-linecap="round"/><rect x="76" y="58" width="8" height="6" rx="1" fill="url(#v${i})"/>
+    <path d="M112 196h16v16h-16z" fill="url(#v${i})"/><path d="M90 212h60l6 26H84z" fill="url(#g${i})"/>` },
   buggy: { metal: "bronze", art: (i) => `<g transform="rotate(-9 120 220)">${trCup(i)}</g>
     <path d="M128 112l-6 18 8 10-5 16 4 10" stroke="#2a160a" stroke-width="2.5" fill="none"/>
     <circle cx="112" cy="138" r="14" fill="#e01b24"/><circle cx="107" cy="133" r="4" fill="#fff" opacity=".6"/>
@@ -2325,6 +2367,8 @@ const trophy = (k, small) => { const t = TROPHY[k], a = trInfo(k); if (!t || !a.
   return `<svg class="trophy" data-zoom="t:${k}" viewBox="0 0 240 320" role="img" aria-label="${esc(a.nm)} trophy" xmlns="http://www.w3.org/2000/svg">${trDefs(i, k === "bowl" ? "gold" : t.metal || "silver")}<ellipse cx="120" cy="130" rx="110" ry="120" fill="url(#glow${i})"/>${t.art(i)}${trPed(i, small ? "" : esc(a.nm), small ? "" : esc(a.cat))}${trPlinth()}</svg>`; };
 // A shelf of the trophies someone has won, with the seasons under each ({ k, ys })
 const trophyCase = (list) => `<div class="box tcase">${list.map((a) => a.ring ? `<button class="tc ringc" data-go="bowl-${a.ring}">${ringArt(a.ring, 1)}<b>Bowl ${roman(a.ring - D.firstYear + 1)}</b><small>${a.ring}</small></button>` : `<button class="tc${a.k === "bowl" ? " big" : ""}" data-go="${trInfo(a.k).go}">${trophy(a.k, 1)}<b>${esc(trInfo(a.k).nm)}</b><small>${a.ys.join(", ")}</small></button>`).join("")}</div>`;
+// Every Karoo Player of the Week, newest first
+const karooTable = () => `<h3 class="wikisub">Every Karoo Player of the Week</h3><div class="box scroll"><table class="compact"><thead><tr><th>Season</th><th class="n">Week</th><th>Player</th><th>Team</th><th class="n">Pts</th></tr></thead><tbody>${D.seasons.slice().reverse().flatMap((z) => karooWeeks(z).slice().reverse().map((x) => `<tr><td class="num"><button class="mlink" data-go="${z.year}">${z.year}</button></td><td class="num">${x.mp}</td><td>${posTag(x.p.pos)}${pn(x.p.n)}</td><td>${badge(x.t, 1)} ${esc(x.t.name)}</td><td class="num">${f1(x.pts)}</td></tr>`)).join("")}</tbody></table></div>`;
 function awardView() {
   const a = awInfo(state.aw); if (!a) return "";
   const seasons = D.seasons.filter((s) => s.done || s.played.length);
@@ -2339,7 +2383,7 @@ function awardView() {
   const lead = `<p>${the}<b>${a.e} ${esc(a.nm)}</b> is awarded each Buckaroo Football League season to ${AW_DEF[a.k]}. ${esc(AW_NAMED[a.k] || "")}</p>`;
   // History: the winners in order, as sentences
   const ref = refMaker();
-  const who = (r) => (a.mgr ? `<button class="mlink" data-go="mgr-${r.w.ks[0]}">${mgrName(r.w.ks[0])}</button>` : `${pn(r.w.p.n)} of ${ownTeamFull(r.w.t, r.s.regWeeks, ref)}`);
+  const who = (r) => (a.mgr ? `<button class="mlink" data-go="mgr-${r.w.ks[0]}">${mgrName(r.w.ks[0])}</button>` : a.k === "foxy" ? `${pn(r.w.p.n)}, dropped by ${ownTeamFull(r.w.t, r.s.regWeeks, ref)}` : `${pn(r.w.p.n)} of ${ownTeamFull(r.w.t, r.s.regWeeks, ref)}`);
   const why = (r) => { if (a.k === "ace" && r.w.x) { const x = r.w.x; return `${f1(x.w.pts)} on a ${f1(x.w.proj || 0)} projection in week ${x.w.wk}${x.lost ? `, ${aNum(f1(x.margin))} ${f1(x.margin)}-point loss` : ""}${x.flip ? " his projection alone would have won" : ""}`; } return r.w.stat.replace(/\bpts\b/g, "points").replace(/ · .*$/, ""); };
   const short = (r) => (a.mgr ? mgrName(r.w.ks[0]) : esc(r.w.p.n.split(" ").slice(1).join(" ") || r.w.p.n));
   const seen = {}, hist = [...final].reverse().map((r, i) => { const k = whoKey(r), n = (seen[k] = (seen[k] || 0) + 1);
@@ -2361,7 +2405,7 @@ function awardView() {
     ${multi.length ? `<tr><th>Most wins</th><td>${whoName(multi[0].r)} <span class="muted">(${multi[0].n})</span></td></tr>` : ""}
   </table></aside>`;
   return `<div class="vhead"><div><div class="eyebrow">${a.mgr ? "Manager" : "Player"} Award</div><h2>${a.e} ${esc(a.nm)}</h2></div><button class="pill" data-go="${a.mgr ? "mgrawards" : "awards"}" style="border:0;cursor:pointer">← All ${a.mgr ? "manager" : "player"} awards</button></div>
-  <div class="wiki"><article class="wikimain">${lead}${info.replace("ibd-only", "ibm-only").replace("%TROPHY%", trophy(a.k))}${history}<h3 class="wikisub">Winners</h3>${table}${criteria}<h3 class="wikisub">See Also</h3><p>${others}</p></article>${info.replace("%TROPHY%", trophy(a.k))}</div>`;
+  <div class="wiki"><article class="wikimain">${lead}${info.replace("ibd-only", "ibm-only").replace("%TROPHY%", trophy(a.k))}${history}<h3 class="wikisub">Winners</h3>${table}${a.k === "karoo" ? karooTable() : ""}${criteria}<h3 class="wikisub">See Also</h3><p>${others}</p></article>${info.replace("%TROPHY%", trophy(a.k))}</div>`;
 }
 
 // Wiki pages for the Bounty Board (Ones to Watch in the code), its joke sponsor the Baratie, Gear 5 and Seastoned
@@ -2790,6 +2834,7 @@ function wikiHtml(p, best) {
     ${row("Managers", p.mgrs.map((k) => `<span class="ibm">${mbadge(k, 1)} <button class="mlink" data-go="mgr-${k}">${mgrName(k)}</button></span>`).join(""))}
     ${row("Drafted", drafted.join("<br>") || "Undrafted")}
     ${((b) => (b ? row("Bounty", `<b>${berry(b)}</b> <button class="mlink" data-go="ow-bounty">📜</button>`) : ""))(bountyOf(p.n))}
+    ${((k) => (k.length ? row(`🦆 ${awLink("karoo", "Karoo POTW")}`, `${k.length}× <small class="muted">(${k.map((x) => `${x.y} wk ${x.mp}`).join(", ")})</small>`) : ""))(D.seasons.flatMap((z) => karooWeeks(z).filter((x) => x.p === p).map((x) => ({ ...x, y: z.year }))))}
     ${rings.length || aw.length ? `<tr><th colspan="2" class="ibsec">Honors</th></tr><tr><td colspan="2">${rings.map((r) => `<div class="ibh gold">🏆 <button class="mlink" data-go="bowl-${r.y}">Buckaroo Bowl ${roman(r.n)}</button> Champion <span class="muted">(${esc(r.team)})</span></div>`).join("")}${grouped.map((a) => `<div class="ibh${SHAME[a.k] ? " l" : ""}">${a.e} ${awLink(a.k)} <span class="muted">${yrs(a.ys)}</span></div>`).join("")}</td></tr>` : ""}
     <tr><th colspan="2" class="ibsec">BFL career</th></tr>
     ${row("Starts", p.starts)}
