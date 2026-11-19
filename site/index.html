@@ -3291,11 +3291,17 @@ function whoToFollow() {
   return off.length + fans.length ? `<div class="box wtfbox"><div class="k">Who to Follow</div>${[...off, ...fans].map(row).join("")}</div>` : "";
 }
 const newsHead = (which) => `<div class="vhead"><div><div class="eyebrow">Around the League</div><h2>News</h2><p>${which === "news" ? "Stories from the league's AI beat writer after every week, trade and season." : "What the (made-up) fans, pundits and insiders are saying. Tap a post's source to read the story behind it."}</p></div></div>`;
+// News filter chips: each story type falls under one (Power Rankings has its own tab)
+const NEWS_KINDS = [["", "All"], ["recap", "Recaps"], ["preview", "Previews"], ["trade", "Trades"], ["grades", "Report Cards"], ["season", "Season"]];
+const newsKind = (a) => ({ final: "preview", veto: "trade", card: "grades", review: "season", draft: "season" })[a.type] || a.type;
 function newsView() {
   const head = newsHead("news");
   if (!NEWS.length) return head + newsEmpty;
-  const [lead, ...rest] = NEWS;
-  return head + `<div class="newsgrid"><div class="newsmain">${newsCard(lead, true)}<div class="newslist">${rest.map((a) => newsCard(a)).join("")}</div></div>
+  const kinds = NEWS_KINDS.filter(([k]) => !k || NEWS.some((a) => newsKind(a) === k)), nk = kinds.some(([k]) => k === state.nk) ? state.nk : "";
+  const list = nk ? NEWS.filter((a) => newsKind(a) === nk) : NEWS;
+  const bar = `<div class="weekbar">${kinds.map(([k, l]) => `<button data-nk="${k}" aria-current="${k === nk}">${l}</button>`).join("")}</div>`;
+  const [lead, ...rest] = list;
+  return head + bar + `<div class="newsgrid"><div class="newsmain">${newsCard(lead, true)}<div class="newslist">${rest.map((a) => newsCard(a)).join("")}</div></div>
     <aside><div class="box rec"><div class="k">From the Feed</div><div class="feed">${allPosts().slice(0, 6).map((x) => postHtml(x.p, x.a)).join("")}</div><button class="morebtn" data-go="social">Open Social →</button></div></aside></div>${aiNote}`;
 }
 // Previews: the panel's picks for each game, and how each panelist's picks have done this season
@@ -3542,6 +3548,7 @@ $("#app").addEventListener("click", (e) => {
   const gt = e.target.closest("[data-gtab]"); if (gt) { state.gameTab = gt.dataset.gtab; render(); return; }
   const owy = e.target.closest("[data-owyear]"); if (owy) { state.owYear = owy.dataset.owyear === "all" ? null : +owy.dataset.owyear; render(); return; }
   const lb = e.target.closest("[data-ly],[data-lpos],[data-lall]"); if (lb) { const d = lb.dataset; if (d.ly) state.ly = +d.ly; if ("lpos" in d) state.lpos = d.lpos; state.lall = !!d.lall; render(); return; }
+  const nkb = e.target.closest("[data-nk]"); if (nkb) { state.nk = nkb.dataset.nk; render(); return; }
   const ay = e.target.closest("[data-awyear]"); if (ay) { state.awYear = +ay.dataset.awyear; if (!ay.dataset.go) { render(); return; } } // a link can also pick the year it opens to
   const oy = e.target.closest("[data-oddsyear]"); if (oy) { state.oddsYear = +oy.dataset.oddsyear; state.oddsFocus = null; render(); return; }
   const ok = e.target.closest("[data-oddskey]"); if (ok) { state.oddsKey = ok.dataset.oddskey; render(); return; }
