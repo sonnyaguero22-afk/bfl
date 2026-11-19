@@ -192,7 +192,8 @@ for (const year of years) {
   for (const g of Object.values(groups)) {
     // A TRADE_VETO record is one team's vote (it's "EXECUTED" once cast); the trade went through if its accept or the
     // review's uphold executed, so a group with votes and neither was vetoed
-    const veto = g.find((x) => x.status === "VETOED" || x.type === "TRADE_VETO");
+    // A trade still in review can have a vote or two and go through, so it's vetoed only once ESPN cancels the accept
+    const veto = g.some((x) => x.status === "VETOED") || (g.some((x) => x.type === "TRADE_VETO") && g.some((x) => x.type === "TRADE_ACCEPT" && x.status === "CANCELED"));
     if (!veto || g.some((x) => /TRADE_(ACCEPT|UPHOLD)/.test(x.type) && x.status === "EXECUTED")) continue;
     const items = (g.find((x) => x.type === "TRADE_PROPOSAL" && (x.items || []).length) || g.find((x) => (x.items || []).length) || {}).items || [];
     const got = {};
@@ -205,6 +206,23 @@ for (const year of years) {
       at: new Date(Math.max(...g.map((x) => x.processDate || x.proposedDate || 0).filter((t) => t <= Date.now()))).toISOString() });
   }
   vetoed.sort((a, b) => (a.at < b.at ? -1 : 1));
+  // Every trade offer and how it ended, kept for the offseason's what-if stories (history/proposals_<year>.json; not shown on
+  // the site). Merged into what's saved, so offers stay even if ESPN stops returning them.
+  if (!done && tradeTx.size) {
+    const f = path.join(HISTORY, `proposals_${year}.json`), keep = fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, "utf8")) : {};
+    for (const g of Object.values(groups)) {
+      const prop = g.find((x) => x.type === "TRADE_PROPOSAL"); if (!prop) continue;
+      const got = {}; for (const i of prop.items || []) if (i.playerId > 0 && i.fromTeamId && i.toTeamId) (got[i.toTeamId] = got[i.toTeamId] || []).push(`${pname(i.playerId)}|${ppos(i.playerId)}`);
+      const has = (t, st) => g.some((x) => x.type === t && (!st || x.status === st)), votes = g.filter((x) => x.type === "TRADE_VETO" && x.teamId).map((x) => x.teamId);
+      const status = has("TRADE_ACCEPT", "EXECUTED") || has("TRADE_UPHOLD", "EXECUTED") ? "accepted" : votes.length && has("TRADE_ACCEPT") ? (prop.status === "PENDING" && !has("TRADE_ACCEPT", "CANCELED") ? "in review" : "vetoed")
+        : has("TRADE_DECLINE") ? "declined" : has("TRADE_ACCEPT") ? "in review" : prop.status === "CANCELED" ? "withdrawn or expired" : "open";
+      keep[prop.id] = { wk: prop.scoringPeriodId, from: prop.teamId, to: Object.keys(got).map(Number).find((t) => t !== prop.teamId), got, status, veto_votes: votes.length ? votes : undefined,
+        proposed: new Date(prop.proposedDate || 0).toISOString() };
+    }
+    fs.mkdirSync(HISTORY, { recursive: true }); fs.writeFileSync(f, JSON.stringify(keep));
+    const by = {}; for (const x of Object.values(keep)) by[x.status] = (by[x.status] || 0) + 1;
+    console.log(`::notice::${year} trade offers saved: ${Object.entries(by).map(([k, n]) => `${n} ${k}`).join(", ")}`);
+  }
   // How each group with veto votes is made up (types, statuses, teams, dates), while the veto story is new
   if (!done) for (const g of Object.values(groups)) if (g.some((x) => x.type === "TRADE_VETO"))
     console.log(`::notice::${year} veto group: ${g.map((x) => `${x.type}/${x.status} team ${x.teamId} wk ${x.scoringPeriodId} ${new Date(x.processDate || x.proposedDate || 0).toISOString().slice(0, 16)} items ${(x.items || []).length}`).join(" | ")}`);
