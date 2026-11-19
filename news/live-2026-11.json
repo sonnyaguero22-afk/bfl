@@ -77,10 +77,51 @@
    "team": "",
    "about": "move",
    "at": "2026-11-19T04:06:05.855Z"
+  },
+  {
+   "author": "Dana Whitfield",
+   "handle": "@DanaWhitfieldFF",
+   "text": "Ramon's No Banner only HULK jumped twenty points on win chance with nothing played yet. That's a lineup or injury shift, and Alan's side of the board just got a lot quieter.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-19T22:28:42.711Z"
+  },
+  {
+   "author": "Shakky",
+   "handle": "@ShakkysBar",
+   "text": "Luffy had Brucie at a coin flip an hour ago and now he's the favorite. I don't set lines on Philly beating him, and I'm not about to start tonight.",
+   "heat": 5,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-19T22:32:42.711Z"
+  },
+  {
+   "author": "Pillbert Pessimist",
+   "handle": "@PillbertPain",
+   "text": "Nothing has even kicked off and Philly is already on the wrong end of a twenty point swing. Somebody check if Alan's lineup got hit or if the other guy just got lucky.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-19T22:35:42.711Z"
   }
  ],
  "batches": [
   "2026-11-18T16:32:56.431Z",
-  "2026-11-19T05:05:20.536Z"
+  "2026-11-19T05:05:20.536Z",
+  "2026-11-19T22:37:42.711Z"
+ ],
+ "usage": [
+  {
+   "at": "2026-11-19T22:37:42.711Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 374,
+   "cache_write": 8707,
+   "cache_read": 0
+  }
  ]
 }
