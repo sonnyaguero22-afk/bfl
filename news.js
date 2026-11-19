@@ -801,7 +801,8 @@ async function write(client, job) {
     stage: job.stage, grades: out.grades ? out.grades.map((x) => ({ ...x, id: (teamFor(x.team) || {}).id })) : undefined,
     power_rankings: out.power_rankings ? out.power_rankings.map((x) => ({ ...x, id: (teamFor(x.team) || {}).id })).sort((a, b) => a.rank - b.rank) : undefined,
     bios: out.bios ? Object.fromEntries(out.bios.map((b) => [(teamFor(b.team) || {}).id, b.bio]).filter(([id]) => id != null)) : undefined,
-    model: res.model, usage: { input: res.usage.input_tokens, output: res.usage.output_tokens },
+    // Cached input is billed separately (writes 1.25x, reads 0.1x), so keep those counts too
+    model: res.model, usage: { input: res.usage.input_tokens, output: res.usage.output_tokens, cache_write: res.usage.cache_creation_input_tokens || 0, cache_read: res.usage.cache_read_input_tokens || 0 },
   };
 }
 
