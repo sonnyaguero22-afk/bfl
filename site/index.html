@@ -1904,6 +1904,7 @@ function seasonAwards(s) {
   if (champ) { const sps = s.spans(bowlWeek(s)); best("onepiece", rows.map((x) => ({ ...x, t: champ, bw: x.ws.filter((w) => w.start && w.t.id === champ.id && sps.includes(w.wk)) })).filter((x) => x.bw.length), (x) => sum(x.bw, (w) => w.pts), (x) => `${f1(sum(x.bw, (w) => w.pts))} pts in the Bowl`); }
   // Robin and Thousand Sunny: points as a starter for the team that got him, until his next move
   const stint = (type) => rows.flatMap((x) => { const ev = x.p.ev.filter((e) => e.y === y); return ev.map((e, i) => { if (e.type !== type) return null;
+    if (type === "add" && ev.slice(0, i).some((f) => f.type === "draft" && f.t.id === e.t.id)) return null; // his own draft pick back, not a pickup
     const end = ev.slice(i + 1).find((f) => f.type !== "add" || f.t.id !== e.t.id), from = Math.ceil(e.wk), to = end ? end.wk : 99;
     const ws = x.ws.filter((w) => w.start && w.t.id === e.t.id && (s.sp2mp?.[w.wk] ?? w.wk) >= from && (s.sp2mp?.[w.wk] ?? w.wk) < to);
     return { p: x.p, t: e.t, pts: sum(ws, (w) => w.pts), n: ws.length, wk: from }; }).filter(Boolean); });
@@ -1963,7 +1964,9 @@ function seasonMgrAwards(s) {
     ev.forEach((e, i) => {
       const end = ev.slice(i + 1).find((f) => f.type !== "add" || f.t.id !== e.t.id), from = Math.ceil(e.wk), to = end ? end.wk : 99;
       const pts = sum(ws.filter((w) => w.t.id === e.t.id && mpOf(w) >= from && mpOf(w) < to), (w) => w.pts);
-      if (e.type === "draft") add(draft, e.mgr, pts); else if (e.type === "add") add(waiver, e.mgr, pts);
+      // A manager who drops his own draft pick and picks him back up still has his draft pick, not a waiver find
+      const ownPick = e.type === "add" && ev.slice(0, i).some((f) => f.type === "draft" && f.t.id === e.t.id);
+      if (e.type === "draft" || ownPick) add(draft, e.mgr, pts); else if (e.type === "add") add(waiver, e.mgr, pts);
       else if (e.type === "trade") { add(trade, e.mgr, pts); if (e.from) add(trade, mgrAt(e.from, from), -pts); } // each side gains what its new players scored and loses what the other side's did
     });
   }
