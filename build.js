@@ -201,7 +201,8 @@ for (const year of years) {
     const prop = g.find((x) => x.type === "TRADE_PROPOSAL") || g[0];
     // In a league vote, each team's veto is its own TRADE_VETO record, so the voters can be named (the commissioner's veto is one record)
     const voters = [...new Set(g.filter((x) => x.type === "TRADE_VETO" && x.teamId).map((x) => x.teamId))];
-    vetoed.push({ wk: prop.scoringPeriodId || lastWeek, teams, got, voters: voters.length ? voters : undefined, at: new Date(Math.max(...g.map((x) => x.processDate || x.proposedDate || 0))).toISOString() });
+    vetoed.push({ wk: prop.scoringPeriodId || lastWeek, teams, got, voters: voters.length ? voters : undefined, // When it happened: the last record already in the past (a cancelled accept is dated when ESPN would have processed it)
+      at: new Date(Math.max(...g.map((x) => x.processDate || x.proposedDate || 0).filter((t) => t <= Date.now()))).toISOString() });
   }
   vetoed.sort((a, b) => (a.at < b.at ? -1 : 1));
   // How each group with veto votes is made up (types, statuses, teams, dates), while the veto story is new

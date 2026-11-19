@@ -1,0 +1,83 @@
+{
+  "id": "veto-2026-11-1-2",
+  "type": "veto",
+  "year": 2026,
+  "wk": 11,
+  "at": "2026-11-19T05:20:00.000Z",
+  "created": "2026-11-19T21:00:29.214Z",
+  "title": "VETOED: Kai and Habib Kill Sonny's Derrick Henry Deal Before It Leaves the Building",
+  "dek": "The Horse is Hea and The fumblers agreed to send Derrick Henry to Sonny for Christian Watson and Quinshon Judkins, and the league's first veto of 2026 sent everyone back to their own rosters.",
+  "body": [
+    "The deal was done, at least between the two people who made it. Sonny was set to land Derrick Henry, Randy's third-round pick, who has 152.8 points this season and went 13, 5.58 and 16.5 over the last three weeks. In return, The fumblers would have taken wide receiver Christian Watson (157.6 points, with a 26.6 sandwiched between a 13.3 and a 5.2) and running back Quinshon Judkins (95.7 points, 14.6 last week after a pair of 5s), a reunion with Randy, who had Judkins for one week in 2025. Randy agreeing to move anyone is a story on its own, and he'd picked a heck of a time to start.",
+    "On paper, Randy was the one getting paid. Watson and Judkins add up to 253.3 points against Henry's 152.8, so The fumblers would have turned one back into two starters. Sonny's angle was the classic consolidation: give up depth, take the steadier name, and put one fewer Watson in the lineup on a week where Pickens is on the bench. Henry's recent form is closer to fine than thrilling, but he'd have been Sonny's guy for the stretch run.",
+    "Now the scoop. The votes to kill it came from Habibsters and Dawgs. Counting or not Counting GV, Team Pillbert, No Banner only HULK and Ghostu-Spider SZN did not vote to veto. Both teams that voted it down have history with the players involved: Watson reached Sonny in a trade with Kai before Week 8, and Judkins came over from Habib before Week 10. Neither of them is saying why.",
+    "So everybody stays put. The Horse is Hea is 6-4 with a 79% shot at the playoffs and 12% at the title, still holding Watson, Judkins and a roster that has already changed more times than this site's homepage. The fumblers are 3-7, 1% to make the playoffs and 0% to win it all, and they keep Henry, the one player another contender wanted badly enough to pay two for. It's the first veto of the season, and it won't be the last time anyone brings it up."
+  ],
+  "social": [
+    {
+      "author": "Dana Whitfield",
+      "handle": "@DanaWhitfieldBFL",
+      "text": "\ud83d\udea8\ud83d\udea8 Sources: The Horse is Hea / The fumblers trade (Derrick Henry for Christian Watson + Quinshon Judkins) has been vetoed. Votes against came from Habibsters and Dawgs. Rosters revert. First veto of 2026.",
+      "when": -3,
+      "heat": 3,
+      "kind": "reporter",
+      "team": ""
+    },
+    {
+      "author": "The Horse is Hea",
+      "handle": "@TheHorseisHea",
+      "text": "Watson and Judkins, you're still ours, and we're glad. Eyes on Week 11. Let's ride.",
+      "when": 14,
+      "heat": 2,
+      "kind": "team",
+      "team": "The Horse is Hea"
+    },
+    {
+      "author": "The fumblers",
+      "handle": "@Thefumblers",
+      "text": "Derrick Henry remains a Fumbler. 152.8 points and counting. Business as usual.",
+      "when": 31,
+      "heat": 1,
+      "kind": "team",
+      "team": "The fumblers"
+    },
+    {
+      "author": "Buckaroo Football League",
+      "handle": "@BuckarooFL",
+      "text": "Transaction update: the proposed trade between The Horse is Hea and The fumblers has been vetoed and will not be processed. Both rosters remain unchanged.",
+      "when": 45,
+      "heat": 1,
+      "kind": "league",
+      "team": ""
+    },
+    {
+      "author": "Fumble Recovery Unit",
+      "handle": "@FumblersForever",
+      "text": "Randy finally makes a trade and two guys fighting for the last playoff spot shut it down. Habib plays us THIS WEEK. Totally unrelated, I'm sure.",
+      "when": 88,
+      "heat": 7,
+      "kind": "fan",
+      "team": ""
+    },
+    {
+      "author": "Habib Hive",
+      "handle": "@HabibHiveBFL",
+      "text": "Sonny has traded for half his roster already. He doesn't need Derrick Henry too. Veto was fair and we'd do it again.",
+      "when": 212,
+      "heat": 5,
+      "kind": "fan",
+      "team": ""
+    }
+  ],
+  "teams": [
+    1,
+    2
+  ],
+  "model": "claude-opus-5-5",
+  "usage": {
+    "input": 4,
+    "output": 2490,
+    "cache_write": 13076,
+    "cache_read": 0
+  }
+}

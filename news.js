@@ -406,7 +406,7 @@ function tradeFacts(s, tr) {
 }
 // A trade both sides agreed to that got vetoed: the same player facts as a real trade, but no before/after odds
 // (nothing changed hands), just where each team stands now
-const vetoId = (s, v) => `veto-${s.year}-${v.at.slice(0, 10)}-${v.teams.join("-")}`;
+const vetoId = (s, v) => `veto-${s.year}-${v.wk}-${v.teams.join("-")}`;
 function vetoFacts(s, v) {
   const f = tradeFacts(s, { ...v, wk: v.wk + 1 }), rec = recordsThrough(s, s.curWeek - 1), N = s.odds ? s.odds.weeks[s.odds.weeks.length - 1] : null;
   for (const side of f.sides) { for (const k of Object.keys(side)) if (/_odds_/.test(k)) delete side[k];
