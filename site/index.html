@@ -406,7 +406,7 @@ table.compact .team { min-width: 0; }
 .tacc { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px 6px; padding: 6px 0 8px; }
 .tacc button { all: unset; cursor: pointer; display: grid; justify-items: center; gap: 4px; text-align: center; min-width: 0; } .tacc small { font-size: 11px; line-height: 1.2; color: var(--muted); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tacc .tava.sm, .tacc .tava.sm .badge, .tacc > button > .badge, .tacc > button > .avatar { width: 40px; height: 40px; } .tacc > button > .avatar.staff { font-size: 21px; } .tacc button:hover small { color: var(--ink); }
-.wtf small { display: block; } .wtf .avatar, .wtf .badge { width: 30px; height: 30px; }
+.wtf > span > b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; max-width: calc(100% - 18px); vertical-align: bottom; } .wtf small { display: block; } .wtf .avatar, .wtf .badge { width: 30px; height: 30px; }
 .post.take { grid-template-columns: minmax(0, 1fr); }
 .history { padding: 20px 22px; margin: 0 0 24px; }
 .pgrid { display: grid; gap: 12px; margin-bottom: 18px; }
@@ -682,6 +682,16 @@ h3.subhead { margin: 0 0 10px; font-size: 15px; color: var(--muted); }
 .postsrc { font-size: 12px; color: var(--muted); }
 .postsrc:hover { color: var(--brass); }
 .socialfeed, .profile, .wtfbox { max-width: 640px; }
+.socgrid { display: grid; grid-template-columns: minmax(0, 640px) 300px; gap: 20px; align-items: start; } .socside { position: sticky; top: 12px; } .socside .wtfbox { margin: 50px 0 0; }
+.wtfin { padding: 10px 0 4px; } .wtfin .wtfbox { margin: 0; box-shadow: none; } .mob-only { display: none; }
+@media (max-width: 980px) { .socgrid { grid-template-columns: minmax(0, 1fr); } .socside { display: none; } .mob-only { display: block; } }
+.acstrip { display: flex; align-items: flex-start; gap: 4px; overflow-x: auto; scrollbar-width: none; margin: 0 0 14px; padding: 4px 0 6px; max-width: 960px; -webkit-mask-image: linear-gradient(90deg, #000 92%, transparent); mask-image: linear-gradient(90deg, #000 92%, transparent); }
+.acstrip::-webkit-scrollbar { display: none; }
+.acstrip button { all: unset; cursor: pointer; flex: 0 0 62px; display: grid; justify-items: center; gap: 4px; }
+.acstrip button .avatar, .acstrip button .tava.sm, .acstrip button .tava.sm .badge, .acstrip button > .badge { width: 44px; height: 44px; } .acstrip .avatar.staff { font-size: 22px; }
+.acstrip small { font-size: 11px; color: var(--muted); max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .acstrip button:hover small { color: var(--ink); }
+.acl { writing-mode: vertical-rl; transform: rotate(180deg); font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); align-self: center; padding: 0 2px; flex: none; }
+.acsep { flex: none; width: 1px; align-self: stretch; background: var(--line); margin: 4px 8px; }
 .socialfeed .post + .post { border-top: 1px solid var(--line); padding-top: 14px; }
 .bio { max-width: 640px; font-size: 14.5px; margin: 8px 0 0; }
 @media (max-width: 860px) { .newsgrid, .topstories { grid-template-columns: 1fr; } }
@@ -3323,7 +3333,7 @@ function whoToFollow() {
   const row = (u) => `<button class="wtf" data-go="u-${u.k}">${u.team ? teamAva(u.team.t, "sm") : `${letterAva(u.author, u.handle)}`}<span><b>${esc(u.author)}</b>${OFFICIAL[u.kind] ? ` <span class="tick">✓</span>` : ""}<small class="muted">${esc(u.handle)}</small></span><span class="muted">${kfmt(u.followers)}</span></button>`;
   return off.length + fans.length ? `<div class="box wtfbox"><div class="k">Who to Follow</div>${[...off, ...fans].map(row).join("")}</div>` : "";
 }
-const newsHead = (which) => `<div class="vhead"><div><div class="eyebrow">Around the League</div><h2>News</h2><p>${which === "news" ? "From GLSN, the Grand Line Sports Network: AI-written stories after every week, trade and season." : "What the (made-up) fans, pundits and insiders are saying. Tap a post's source to read the story behind it."}</p></div></div>`;
+const newsHead = (which) => `<div class="vhead"><div><div class="eyebrow">Around the League</div><h2>${which === "social" ? "Social" : "News"}</h2><p>${which === "news" ? "From GLSN, the Grand Line Sports Network: AI-written stories after every week, trade and season." : "What the (made-up) fans, pundits and insiders are saying. Tap a post's source to read the story behind it."}</p></div></div>`;
 // News filter chips: each story type falls under one (Power Rankings has its own tab)
 const NEWS_KINDS = [["", "All"], ["recap", "Recaps"], ["preview", "Previews"], ["trade", "Trades"], ["grades", "Report Cards"], ["season", "Season"]];
 const newsKind = (a) => ({ final: "preview", veto: "trade", card: "grades", review: "season", draft: "season" })[a.type] || a.type;
@@ -3442,11 +3452,20 @@ function socialView() {
   // Trending: the most-liked posts from the last two days
   const posts = hot ? allPosts().filter((x) => !x.p.at || Date.now() - new Date(x.p.at).getTime() < 48 * 3600e3).sort((x, y) => buzz(y.p).likes - buzz(x.p).likes).slice(0, 40) : allPosts();
   const sort = `<div class="weekbar" style="margin:0 0 14px"><button data-feedsort="latest" aria-current="${!hot}">Latest</button><button data-feedsort="trending" aria-current="${hot}">🔥 Trending</button></div>`;
-  return `${newsHead("social")}${posts.length ? glsnAccounts() + teamAccounts() + whoToFollow() : ""}${sort}
-    ${posts.length ? `<div class="box rec socialfeed"><div class="feed">${posts.map((x) => postHtml(x.p, x.a)).join("")}</div></div>${aiNote}` : newsEmpty}`;
+  if (!posts.length) return `${newsHead("social")}${sort}${newsEmpty}`;
+  // One swipeable strip of accounts up top; Who to Follow in a side column on desktop, inside the feed on phones
+  const wtf = whoToFollow(), feed = posts.map((x, i) => postHtml(x.p, x.a) + (i === 4 && wtf ? `<div class="mob-only wtfin">${wtf}</div>` : "")).join("");
+  return `${newsHead("social")}${accountStrip()}<div class="socgrid"><div>${sort}<div class="box rec socialfeed"><div class="feed">${feed}</div></div>${aiNote}</div><aside class="socside">${wtf}</aside></div>`;
 }
 
-// Every team's official account in one row of logos, so they're one tap away instead of somewhere in the feed
+// GLSN's crew, then every team's official account, in one swipeable row, so they're a tap away without crowding the feed
+function accountStrip() {
+  const y = Math.max(...years.filter((yy) => S[yy])), s = S[y], A = Object.values(accounts());
+  const teams = [...s.teams].sort((a, b) => a.name.localeCompare(b.name)).map((t) => [t, A.find((u) => u.kind === "team" && u.team && u.team.t.id === t.id && u.team.y === y)]).filter(([, u]) => u);
+  const btn = (go, ava, name, title) => `<button data-go="u-${go}" title="${esc(title)}">${ava}<small>${esc(name)}</small></button>`;
+  return `<div class="acstrip" role="list"><span class="acl">GLSN</span>${GLSN_STAFF.map((st) => btn(hkey(st.handle), letterAva(st.name, st.handle), st.name.replace("Professor ", "Prof. "), `${st.name}${st.role ? ` · ${st.role}` : ""}`)).join("")}
+    ${teams.length ? `<span class="acsep"></span><span class="acl">Teams</span>${teams.map(([t, u]) => btn(u.k, teamAva(t, "sm"), t.name, t.name)).join("")}` : ""}</div>`;
+}
 // GLSN and its staff, like a network's accounts on a real timeline
 function glsnAccounts() { const A = accounts();
   return `<div class="box wtfbox teamaccts"><div class="k">📡 GLSN · Grand Line Sports Network</div><div class="tacc">${GLSN_STAFF.map((st) => { const u = A[hkey(st.handle)];
