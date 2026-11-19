@@ -1877,11 +1877,15 @@ function seasonAwards(s) {
   const out = {}, y = s.year, n = s.teams.length;
   const rows = PL.map((p) => ({ p, ws: p.weeks.filter((w) => w.y === y && w.fin) })).filter((x) => x.ws.length);
   const stPts = (ws) => sum(ws.filter((w) => w.start), (w) => w.pts);
-  const mostAt = (ws) => { const c = {}; for (const w of ws) c[w.t.id] = (c[w.t.id] || 0) + (w.start ? w.pts : 0.001); return s.byId[Object.keys(c).sort((a, b) => c[b] - c[a])[0]]; };
+  // A player's points count wherever he scored them. From 2026 the credit goes to the team that has him now (or had him
+  // last that season); earlier seasons keep the team he scored the most starting points for, as they were awarded
+  const holder = (p) => { const ws = p.weeks.filter((w) => w.y === y);
+    if (y < 2026) { const c = {}; for (const w of ws.filter((w) => w.fin)) c[w.t.id] = (c[w.t.id] || 0) + (w.start ? w.pts : 0.001); return s.byId[Object.keys(c).sort((a, b) => c[b] - c[a])[0]]; }
+    return ws.length ? ws.reduce((a, b) => (b.wk > a.wk ? b : a)).t : null; };
   // The winner plus the top five (one entry per player), like MVP voting; sc is the number each was ranked by
   const SC = { chopper: (v) => `+${f1(v)} per start`, buggy: (v) => `${v} spots` };
   const best = (key, list, val, stat) => { const seen = new Set(), ranked = list.filter((x) => val(x) != null && val(x) > 0).sort((a, b) => val(b) - val(a)).filter((x) => !seen.has(x.p) && seen.add(x.p)), top = ranked[0];
-    if (top) out[key] = { p: top.p, t: top.t || mostAt(top.ws), stat: stat(top), x: top, v: val(top), top5: ranked.slice(0, 5).map((x) => ({ p: x.p, t: x.t || mostAt(x.ws), stat: stat(x), sc: (SC[key] || f1)(val(x)) })) }; };
+    if (top) out[key] = { p: top.p, t: top.t || holder(top.p), stat: stat(top), x: top, v: val(top), top5: ranked.slice(0, 5).map((x) => ({ p: x.p, t: x.t || holder(x.p), stat: stat(x), sc: (SC[key] || f1)(val(x)) })) }; };
   best("king", rows, (x) => stPts(x.ws), (x) => `${f1(stPts(x.ws))} pts in ${x.ws.filter((w) => w.start).length} starts`);
   for (const [key, pos] of [["nami", "QB"], ["sanji", "RB"], ["zoro", "WR"], ["franky", "TE"], ["usopp", "K"], ["jinbe", "D/ST"]])
     best(key, rows.filter((x) => x.p.pos === pos), (x) => stPts(x.ws), (x) => `${f1(stPts(x.ws))} pts in ${x.ws.filter((w) => w.start).length} starts`);
