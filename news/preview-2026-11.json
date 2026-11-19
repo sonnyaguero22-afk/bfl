@@ -1,0 +1,381 @@
+{
+ "id": "preview-2026-11",
+ "type": "preview",
+ "year": 2026,
+ "wk": 11,
+ "by": "Haredas",
+ "created": "2026-11-19T23:22:45.566Z",
+ "title": "Weather Report, Week 11: High Pressure at the Top as Brucie and Philly Collide",
+ "dek": "GLSN takes over the desk, Smoker growls in as guest, and No Banner only HULK can clinch a playoff spot against a team that has already beaten it once.",
+ "body": [
+  "GLSN takes over the broadcast this week, and the outgoing crew has earned a warm send-off. Thank you to Dana Whitfield, Marcus Pell, Sal Benedetto and Dr. Nina Kessler, who hand over their seats, their records and their berry ledgers exactly as they left them. That means Brannew walks in at 9-3, Shakky arrives at 8-4 with the fattest purse on the set, and Crocus inherits a 4-8 mark he is already grumbling about. Joining them as this week's guest, in his first appearance on the desk, is Smoker, the grumpy marine captain, who has asked twice why the studio lights are so bright. Welcome aboard, Captain.",
+  "The storm system everyone is tracking sits over the top of the standings. No Banner only HULK is 8-2 and clinches a playoff spot with a win, and Ramon's last two outings, 147.96 and 153.14, are the warmest front in the league. But Team Pillbert already beat him in Week 4, 125.42 to 116.72, Philly arrives off a 161.56, and the all-time series leans Alan's way at 6-5. The revenge currents are strong: Jahmyr Gibbs, who spent 2023 with Brucie, now runs for Alan, and Chuba Hubbard was on Ramon's roster for three weeks this very season. Gibbs and Josh Allen are the two names on the Bounty Board, and Luffy reads it 56% HULK, which is the kind of forecast where you still bring the umbrella.",
+  "Down the coast, Habibsters host The fumblers, and there is a little frost on this one. Habib was one of the two votes that killed Randy's Derrick Henry deal last week, and now he gets Randy across the field. Randy has lost seven straight and his playoff hopes are down to a rounding error, while Kaushal at 5-5 is squarely on the bubble: a win keeps him close to a coin flip for a spot, a loss cuts his chances roughly in half. Stefon Diggs and Chase Brown both used to suit up for Randy, Tony Pollard has worn Habibsters colors twice, and the board belongs to CeeDee Lamb, stacked with Dak Prescott, and Randy's Jonah Coleman. Luffy forecasts a 62% chance of Habibsters.",
+  "The Horse is Hea has been the busiest roster in the league, three trades deep, and the newest arrival from Philly, Javonte Williams, is the back on the Bounty Board for Sonny. It is a reunion: Williams was the best thing Sonny found on the wire on his way to a title last year. But his last three weeks read 73.5, 104.88 and 123.22, and Z² already beat him by 25 in Week 4. Zoey brings three of his former players into this one, Omarion Hampton after 20 weeks with Sonny, Saquon Barkley and Tetairoa McMillan, the receiver on her side of the board. Luffy has Sonny at 74%, but for Zoe the stakes are simple: a win keeps a real pulse in her playoff hopes, a loss all but ends them.",
+  "Finally, a front that looks settled. Kai has won three straight and is starting Bucky Irving, the back he pried loose from Sonny, who joins Bhayshul Tuten on the board. JMoney is eliminated with a loss, and Luffy gives him 12%. The quirk worth watching: Joe Burrow throws to Ja'Marr Chase for Jordan's lineup and Mekhi's at the same time, so every Bengals touchdown waters both lawns. Add Khalil Shakir facing the manager who had him last year, and Jordan at least has a few clouds to pray on."
+ ],
+ "social": [
+  {
+   "author": "GLSN",
+   "handle": "@GLSN",
+   "text": "📰 New from @HaredasForecast: the Week 11 preview. The new GLSN desk makes its first picks, Smoker joins as guest, and No Banner only HULK can clinch a playoff spot against Team Pillbert. Read it now.",
+   "when": 1,
+   "heat": 1,
+   "kind": "network",
+   "team": ""
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Week 11 forecast is up. Steady high pressure over the Dawgs, scattered clouds over HULK vs Pillbert, and a 62% chance of Habibsters down the coast. Dress in layers.",
+   "when": 6,
+   "heat": 2,
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Crocus",
+   "handle": "@CrocusLighthouse",
+   "text": "First week in the GLSN chair and I'm slamming a lock on Team Pillbert. Gibbs gets to run against the man who let him go. Write it down.",
+   "when": 15,
+   "heat": 5,
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Hulk Smash Club",
+   "handle": "@HulkSmashClub",
+   "text": "Crocus is 4-8 and his first move at the new job is locking against the 8-2 team. 'Write it down.' Okay. Writing down 4-9.",
+   "when": 28,
+   "heat": 6,
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Shakky",
+   "handle": "@ShakkysBar",
+   "text": "Dawgs, lock. Horse, lock. HULK only gets confident from me this week, and that's all I'll say about that. Tab's open.",
+   "when": 40,
+   "heat": 3,
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Smoker",
+   "handle": "@WhiteHunter",
+   "text": "Asked to pick five games. Picked five. Ghostu-Spider SZN. Don't ask me why twice.",
+   "when": 55,
+   "heat": 4,
+   "kind": "pundit",
+   "team": ""
+  },
+  {
+   "author": "Z² Nation",
+   "handle": "@ZSquaredNation",
+   "text": "Smoker on Ghostu-Spider SZN: 'Rookie keeps showing up.' The grumpy marine gets it. Crocus too. Sonny, check your Week 4 film.",
+   "when": 70,
+   "heat": 4,
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Habib Hive",
+   "handle": "@HabibHiveBFL",
+   "text": "Crocus picking The fumblers because 'every streak in this league ends eventually.' Brother, that's not analysis, that's a horoscope. Seven straight. Make it eight.",
+   "when": 88,
+   "heat": 8,
+   "kind": "fan",
+   "team": ""
+  }
+ ],
+ "teams": [],
+ "picks": [
+  {
+   "game": "No Banner only HULK (Ramon) vs Team Pillbert (Alan)",
+   "h": 7,
+   "a": 4,
+   "panel": [
+    {
+     "panelist": "Brannew",
+     "pick": "No Banner only HULK",
+     "confidence": "confident",
+     "take": "Ramon has scored 147.96 and 153.14 in his last two, and the Allen-to-DJ Moore stack gives him two bites at every big drive. My briefing says the hot hand holds. Confident.",
+     "id": 7
+    },
+    {
+     "panelist": "Crocus",
+     "pick": "Team Pillbert",
+     "confidence": "lock",
+     "take": "Philly already beat this team once, and now Gibbs gets to run against the man who had him first. I've watched plenty of first-place crews get comfortable in November. Lock it, and write it down.",
+     "id": 4
+    },
+    {
+     "panelist": "Shakky",
+     "pick": "No Banner only HULK",
+     "confidence": "confident",
+     "take": "Brucie's been running up a tab at my bar for two weeks, and he pays. Philly cashed my lock last week, so I'm not betting the house against him. Confident, and that's all you get.",
+     "id": 7
+    },
+    {
+     "panelist": "Professor Clover",
+     "pick": "No Banner only HULK",
+     "confidence": "lean",
+     "take": "Luffy has HULK at 56%, a thin edge. The Bounty Board frames it: Allen at 31 or more lifts HULK to 79%, while Gibbs at 28 or more swings it to 67% Pillbert. I lean the quarterback.",
+     "id": 7
+    },
+    {
+     "panelist": "Smoker",
+     "pick": "Team Pillbert",
+     "confidence": "lean",
+     "take": "Eight wins makes a crew sloppy. Pillbert does its job. Lean.",
+     "id": 4
+    }
+   ]
+  },
+  {
+   "game": "Counting or not Counting GV (Jordan) vs Dawgs (Mekhi)",
+   "h": 3,
+   "a": 5,
+   "panel": [
+    {
+     "panelist": "Brannew",
+     "pick": "Dawgs",
+     "confidence": "lock",
+     "take": "Kai has won three straight and Bucky Irving gives him a fourth starting back. Nothing I'm hearing gives Jordan an opening. First lock of the GLSN era.",
+     "id": 5
+    },
+    {
+     "panelist": "Crocus",
+     "pick": "Counting or not Counting GV",
+     "confidence": "lean",
+     "take": "A team that's eliminated with a loss plays like it has nothing to lose, and JMoney hung 138 three weeks ago. Somebody on this desk has to believe. It's me, it's always me.",
+     "id": 3
+    },
+    {
+     "panelist": "Shakky",
+     "pick": "Dawgs",
+     "confidence": "lock",
+     "take": "Three straight wins, Chase, Bowers, Cook. Dawgs cashed for me last week and they'll do it again. Lock.",
+     "id": 5
+    },
+    {
+     "panelist": "Professor Clover",
+     "pick": "Dawgs",
+     "confidence": "lock",
+     "take": "Luffy says 88% Dawgs. Even if Bucky Irving is held under 7, Dawgs still win 78% of the time. Numbers this lopsided earn a lock.",
+     "id": 5
+    },
+    {
+     "panelist": "Smoker",
+     "pick": "Dawgs",
+     "confidence": "confident",
+     "take": "Three straight. That's a crew doing the work. Confident.",
+     "id": 5
+    }
+   ]
+  },
+  {
+   "game": "Habibsters (Kaushal) vs The fumblers (Randy)",
+   "h": 6,
+   "a": 2,
+   "panel": [
+    {
+     "panelist": "Brannew",
+     "pick": "Habibsters",
+     "confidence": "confident",
+     "take": "Dak and CeeDee are Habib's engine, and Randy hasn't cleared 107 in three weeks. The bubble team has more to play for. Confident.",
+     "id": 6
+    },
+    {
+     "panelist": "Crocus",
+     "pick": "The fumblers",
+     "confidence": "lean",
+     "take": "Seven straight losses, and every streak in this league ends eventually. Pollard gets a shot at the team that had him twice, and Randy has a vetoed trade to stew over. Lean the angry team.",
+     "id": 2
+    },
+    {
+     "panelist": "Shakky",
+     "pick": "Habibsters",
+     "confidence": "confident",
+     "take": "Habibsters burned my lock last week, and I remember who does that. They get my berries this week, not my lock. Confident.",
+     "id": 6
+    },
+    {
+     "panelist": "Professor Clover",
+     "pick": "Habibsters",
+     "confidence": "confident",
+     "take": "Luffy: 62% Habibsters, and CeeDee Lamb at 27 or more pushes that to 86%. But flag Jonah Coleman as the sleeper: a 24-point day puts Randy at 57%. Confident, not careless.",
+     "id": 6
+    },
+    {
+     "panelist": "Smoker",
+     "pick": "Habibsters",
+     "confidence": "lean",
+     "take": "Seven losses isn't bad luck. It's a pattern. Lean Habibsters.",
+     "id": 6
+    }
+   ]
+  },
+  {
+   "game": "The Horse is Hea (Sonny) vs Ghostu-Spider SZN (Zoe)",
+   "h": 1,
+   "a": 8,
+   "panel": [
+    {
+     "panelist": "Brannew",
+     "pick": "The Horse is Hea",
+     "confidence": "confident",
+     "take": "Three trades have reshaped Sonny's roster, and Javonte Williams is a back he already knows how to use. Mahomes at home helps. Confident.",
+     "id": 1
+    },
+    {
+     "panelist": "Crocus",
+     "pick": "Ghostu-Spider SZN",
+     "confidence": "confident",
+     "take": "Zoe beat him by 25 in Week 4, and now she lines up three of his old players against him, Hampton after twenty weeks on Sonny's roster. I've seen this ending before.",
+     "id": 8
+    },
+    {
+     "panelist": "Shakky",
+     "pick": "The Horse is Hea",
+     "confidence": "lock",
+     "take": "Zoe cashed for me last week, nothing personal. The champ at home is my kind of bet. Lock.",
+     "id": 1
+    },
+    {
+     "panelist": "Professor Clover",
+     "pick": "The Horse is Hea",
+     "confidence": "confident",
+     "take": "Luffy has Sonny at 74%, and even with Javonte Williams under 9 he's still 59%. Zoe's live card is McMillan: 18 or more and she climbs to 42%.",
+     "id": 1
+    },
+    {
+     "panelist": "Smoker",
+     "pick": "Ghostu-Spider SZN",
+     "confidence": "lean",
+     "take": "Man trades every week, he's chasing something he hasn't got. Rookie keeps showing up. Lean Ghostu-Spider.",
+     "id": 8
+    }
+   ]
+  }
+ ],
+ "chances": [
+  {
+   "h": 7,
+   "a": 4,
+   "p": 0.556
+  },
+  {
+   "h": 3,
+   "a": 5,
+   "p": 0.124
+  },
+  {
+   "h": 6,
+   "a": 2,
+   "p": 0.621
+  },
+  {
+   "h": 1,
+   "a": 8,
+   "p": 0.735
+  }
+ ],
+ "starters": {
+  "1": [
+   "George Kittle",
+   "Ollie Gordon II",
+   "George Pickens",
+   "Will Reichard",
+   "Texans D/ST",
+   "Patrick Mahomes",
+   "Javonte Williams",
+   "Malik Nabers",
+   "Jordyn Tyson"
+  ],
+  "2": [
+   "Colston Loveland",
+   "Jaylen Warren",
+   "Matt Gay",
+   "Trevor Lawrence",
+   "Tee Higgins",
+   "Jonah Coleman",
+   "Tony Pollard",
+   "Buccaneers D/ST",
+   "Mike Evans"
+  ],
+  "3": [
+   "Joe Burrow",
+   "Garrett Wilson",
+   "Bhayshul Tuten",
+   "Emeka Egbuka",
+   "Isaiah Likely",
+   "Evan McPherson",
+   "J.K. Dobbins",
+   "Khalil Shakir",
+   "Lions D/ST"
+  ],
+  "4": [
+   "Jahmyr Gibbs",
+   "Brock Purdy",
+   "Luther Burden III",
+   "Seahawks D/ST",
+   "Spencer Shrader",
+   "Justin Jefferson",
+   "Chuba Hubbard",
+   "Chig Okonkwo",
+   "Parker Washington"
+  ],
+  "5": [
+   "Ja'Marr Chase",
+   "Brock Bowers",
+   "Jayden Daniels",
+   "James Cook III",
+   "Tyler Bass",
+   "Jonathan Taylor",
+   "Amon-Ra St. Brown",
+   "Bucky Irving",
+   "Bills D/ST"
+  ],
+  "6": [
+   "CeeDee Lamb",
+   "Chase Brown",
+   "Breece Hall",
+   "Dak Prescott",
+   "Ka'imi Fairbairn",
+   "Sam LaPorta",
+   "Cam Skattebo",
+   "Jaguars D/ST",
+   "Stefon Diggs"
+  ],
+  "7": [
+   "Christian McCaffrey",
+   "Chris Olave",
+   "Josh Allen",
+   "Travis Kelce",
+   "D'Andre Swift",
+   "DJ Moore",
+   "Brandon Aubrey",
+   "Rams D/ST",
+   "Emmett Johnson"
+  ],
+  "8": [
+   "Saquon Barkley",
+   "Nico Collins",
+   "Tetairoa McMillan",
+   "Dalton Kincaid",
+   "Steelers D/ST",
+   "Josh Downs",
+   "Jared Goff",
+   "Cam Little",
+   "Omarion Hampton"
+  ]
+ },
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 11246,
+  "cache_write": 19551,
+  "cache_read": 0
+ }
+}
