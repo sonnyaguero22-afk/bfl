@@ -1512,8 +1512,9 @@ function oddsDailyChart(s, key) {
   const focus = state.oddsFocus;
   let svg = `<svg viewBox="0 0 ${W} ${H}" class="oddschart" role="img" aria-label="${ODDS_METRIC[key]} odds by day">`;
   for (const v of [0, 25, 50, 75, 100]) svg += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" class="grid"/><text x="${L - 8}" y="${y(v) + 4}" class="ax" text-anchor="end">${v}%</text>`;
-  const ticks = 6, seen = new Set();
-  for (let k = 0; k <= ticks; k++) { const d = days[Math.round((k * (days.length - 1)) / ticks)]; if (seen.has(d)) continue; seen.add(d); svg += `<text x="${x(d)}" y="${H - 10}" class="ax" text-anchor="middle">${md(d)}</text>`; }
+  // Date labels evenly spaced in time (saved days bunch up lately, so picking them by position piles labels on top of each other)
+  const ticks = Math.min(6, Math.max(1, Math.round((t1 - t0) / 864e5)));
+  for (let k = 0; k <= ticks; k++) { const d = new Date(t0 + ((t1 - t0) * k) / ticks).toISOString().slice(0, 10); svg += `<text x="${x(d)}" y="${H - 10}" class="ax" text-anchor="${k === 0 ? "start" : k === ticks ? "end" : "middle"}">${md(d)}</text>`; }
   // Trades, marked on the day they first showed up
   const nm = (id) => esc(s.byId[id] ? s.byId[id].name : "");
   for (const [k, d] of Object.entries(D_.trades || {})) { const tr = s.trades.find((t) => `${t.wk}-${[...t.teams].sort((a, b) => a - b).join("-")}` === k); if (!tr || d < days[0]) continue;
@@ -1525,7 +1526,7 @@ function oddsDailyChart(s, key) {
     if (!pts.length) continue; const [lx, ly] = pts[pts.length - 1], dim = focus && focus !== t.id;
     svg += `<g style="--h:${hue[t.mgr]}" class="ln${dim ? " dim" : ""}${focus === t.id ? " on" : ""}"><title>${esc(t.name)}</title><polyline points="${pts.map((p) => p.map((v) => v.toFixed(1)).join(",")).join(" ")}"/><circle cx="${lx}" cy="${ly}" r="4"/></g>`;
   }
-  return svg + `</svg>`;
+  return svg + `<line class="hoverline" x1="0" x2="0" y1="${T}" y2="${H - B}" style="display:none"/></svg>`;
 }
 function oddsChart(s, key) {
   const o = s.odds, { W, H, L, R, T, B } = OC;
@@ -1563,7 +1564,7 @@ function oddsTab(s) {
   const sw = (list, up) => list.map((x) => `<li><span>${badge(x.t, 1)} <b>${esc(x.t.name)}</b> <span class="muted">· after week ${x.N}</span><small class="ctx sub">${oddsReason(s, x.t.id, x.N) || "No game or moves recorded"}</small></span><span class="num ${up ? "w" : "l"}">${pct1(x.from)} → ${pct1(x.to)}</span></li>`).join("");
   const ups = [...swings].sort((a, b) => b.d - a.d).slice(0, 8).filter((x) => x.d > 0), downs = [...swings].sort((a, b) => a.d - b.d).slice(0, 8).filter((x) => x.d < 0);
   return `<div class="vhead" style="margin-bottom:12px"><div><h3 style="margin:0">${{ c: "Chances to Win the Buckaroo Bowl", p: "Chances to Make the Playoffs", l: "Chances to Finish Last" }[key]}, ${byDay ? "Day by Day" : "Week by Week"}</h3><p>${s.done ? "How the race looked at every point of the season." : byDay ? "Updated every day with lineup moves, pickups and trades, not just after games." : `Updated after every finished week. Week ${s.curWeek} counts once its games are final.`} Click a team to highlight it.</p></div>${pills}</div>
-  ${byDay ? `<div class="box" style="padding:10px 8px 4px">${oddsDailyChart(s, key)}</div><p class="note">Each day's latest odds, updated with every lineup move, pickup and trade; ⇄ marks the day a trade went through (hover it for the details). Before ${new Date(Object.keys(s.oddsDaily.days).sort().find((d) => !s.oddsDaily.days[d].weekly) + "T12:00:00Z").toLocaleDateString("en-US", { month: "long", day: "numeric", timeZone: "UTC" })}, points are each week's final odds.</p>` : `<div class="box oddswrap" data-y="${s.year}" data-key="${key}" style="padding:10px 8px 4px">${oddsChart(s, key)}<div class="oddstip" hidden></div></div>`}
+  ${byDay ? `<div class="box oddswrap" data-y="${s.year}" data-key="${key}" data-span="day" style="padding:10px 8px 4px">${oddsDailyChart(s, key)}<div class="oddstip" hidden></div></div><p class="note">Each day's latest odds, updated with every lineup move, pickup and trade; ⇄ marks the day a trade went through (hover it for the details). Before ${new Date(Object.keys(s.oddsDaily.days).sort().find((d) => !s.oddsDaily.days[d].weekly) + "T12:00:00Z").toLocaleDateString("en-US", { month: "long", day: "numeric", timeZone: "UTC" })}, points are each week's final odds.</p>` : `<div class="box oddswrap" data-y="${s.year}" data-key="${key}" style="padding:10px 8px 4px">${oddsChart(s, key)}<div class="oddstip" hidden></div></div>`}
   <section style="margin-top:16px">${legend}</section>
   <section><h3>Biggest Swings in Title Odds</h3><div class="recs">
     <div class="box rec"><div class="k">Biggest Jumps</div><ol class="swing">${sw(ups, true) || "<li class=muted>None</li>"}</ol></div>
@@ -3482,11 +3483,29 @@ $("#app").addEventListener("change", (e) => {
   if (id === "txy" || id === "txm" || id === "txt") { state[id] = e.target.value; $("#txlist").innerHTML = txRows(); }
 });
 // Search boxes update only their results so typing keeps focus
+function oddsDayHover(e, wrap) {
+  const s = S[+wrap.dataset.y], D_ = s && s.oddsDaily; if (!D_) return;
+  const mi = { c: 0, p: 1, l: 2 }[wrap.dataset.key], days = Object.keys(D_.days).sort(), { W, L, R } = OC;
+  const t0 = Date.parse(days[0]), t1 = Date.parse(days[days.length - 1]), xOf = (d) => L + (t1 === t0 ? 0 : ((Date.parse(d) - t0) * (W - L - R)) / (t1 - t0));
+  const svg = wrap.querySelector("svg"), r = svg.getBoundingClientRect(), vx = ((e.clientX - r.left) * W) / r.width;
+  const d = days.reduce((b, x) => (Math.abs(xOf(x) - vx) < Math.abs(xOf(b) - vx) ? x : b), days[0]), x = xOf(d), day = D_.days[d];
+  const line = svg.querySelector(".hoverline"); line.setAttribute("x1", x); line.setAttribute("x2", x); line.style.display = "";
+  const rows = [...s.teams].filter((t) => day.teams[t.id]).sort((a, b) => day.teams[b.id][mi] - day.teams[a.id][mi]);
+  const trades = Object.entries(D_.trades || {}).filter(([, td]) => td === d).map(([k]) => s.trades.find((t) => `${t.wk}-${[...t.teams].sort((a, b) => a - b).join("-")}` === k)).filter(Boolean);
+  const label = new Date(d + "T12:00:00Z").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" });
+  const tip = wrap.querySelector(".oddstip");
+  tip.innerHTML = `<b>${label}${day.weekly ? ` · after week ${day.wk}` : ""}</b>` + rows.map((t) => `<div class="${state.oddsFocus === t.id ? "sel" : ""}">${badge(t, 1)}<span>${esc(t.name)}</span><span class="num">${pct1(day.teams[t.id][mi])}</span></div>`).join("")
+    + trades.map((tr) => `<small class="muted" style="display:block;margin-top:6px">⇄ ${tr.teams.map((id) => `${esc(s.byId[id].name)} got ${(tr.got[id] || []).map((p) => esc(p.split("|")[0])).join(", ")}`).join("; ")}</small>`).join("");
+  tip.hidden = false;
+  const px = ((x / W) * r.width) + (r.left - wrap.getBoundingClientRect().left), wW = wrap.clientWidth, tw = tip.offsetWidth;
+  tip.style.left = Math.max(4, Math.min(wW - tw - 4, px > wW / 2 ? px - tw - 14 : px + 14)) + "px";
+}
 function oddsHover(e) {
   const wrap = e.target.closest && e.target.closest(".oddswrap");
   for (const w of document.querySelectorAll(".oddswrap")) if (w !== wrap) { const t = w.querySelector(".oddstip"); if (t) t.hidden = true; const l = w.querySelector(".hoverline"); if (l) l.style.display = "none"; }
   if (!wrap) return;
   if (wrap.classList.contains("elowrap")) return eloHover(e, wrap);
+  if (wrap.dataset.span === "day") return oddsDayHover(e, wrap);
   const s = S[+wrap.dataset.y], key = wrap.dataset.key, o = s && s.odds;
   if (!o) return;
   const svg = wrap.querySelector("svg"), r = svg.getBoundingClientRect(), n = o.weeks.length;
