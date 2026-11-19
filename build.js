@@ -190,8 +190,10 @@ for (const year of years) {
   const groups = {}; for (const x of tradeTx.values()) (groups[find(x.id)] = groups[find(x.id)] || []).push(x);
   const vetoed = [];
   for (const g of Object.values(groups)) {
+    // A TRADE_VETO record is one team's vote (it's "EXECUTED" once cast); the trade went through if its accept or the
+    // review's uphold executed, so a group with votes and neither was vetoed
     const veto = g.find((x) => x.status === "VETOED" || x.type === "TRADE_VETO");
-    if (!veto || g.some((x) => x.status === "EXECUTED")) continue;
+    if (!veto || g.some((x) => /TRADE_(ACCEPT|UPHOLD)/.test(x.type) && x.status === "EXECUTED")) continue;
     const items = (g.find((x) => x.type === "TRADE_PROPOSAL" && (x.items || []).length) || g.find((x) => (x.items || []).length) || {}).items || [];
     const got = {};
     for (const i of items) if (i.playerId > 0 && i.fromTeamId && i.toTeamId && i.fromTeamId !== i.toTeamId) (got[i.toTeamId] = got[i.toTeamId] || []).push(`${pname(i.playerId)}|${ppos(i.playerId)}`);
@@ -202,6 +204,9 @@ for (const year of years) {
     vetoed.push({ wk: prop.scoringPeriodId || lastWeek, teams, got, voters: voters.length ? voters : undefined, at: new Date(Math.max(...g.map((x) => x.processDate || x.proposedDate || 0))).toISOString() });
   }
   vetoed.sort((a, b) => (a.at < b.at ? -1 : 1));
+  // How each group with veto votes is made up (types, statuses, teams, dates), while the veto story is new
+  if (!done) for (const g of Object.values(groups)) if (g.some((x) => x.type === "TRADE_VETO"))
+    console.log(`::notice::${year} veto group: ${g.map((x) => `${x.type}/${x.status} team ${x.teamId} wk ${x.scoringPeriodId} ${new Date(x.processDate || x.proposedDate || 0).toISOString().slice(0, 16)} items ${(x.items || []).length}`).join(" | ")}`);
   // What the trade records look like (types and statuses only), so a veto ESPN marks some other way can be spotted
   if (!done && tradeTx.size) { const k = {}; for (const x of tradeTx.values()) k[`${x.type}/${x.status}${x.type !== "TRADE_PROPOSAL" && x.teamId ? ` team ${x.teamId}` : ""}`] = (k[`${x.type}/${x.status}`] || 0) + 1;
     console.log(`::notice::${year} trade records: ${Object.entries(k).map(([a, n]) => `${a} x${n}`).join(", ")}; vetoed: ${vetoed.map((v) => `wk ${v.wk} teams ${v.teams.join(" & ")}${v.voters ? ` voted down by ${v.voters.join(", ")}` : ""} (${Object.values(v.got).flat().map((x) => x.split("|")[0]).join(", ")})`).join("; ") || "none"}`); }
