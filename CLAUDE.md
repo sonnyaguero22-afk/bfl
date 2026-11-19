@@ -82,6 +82,7 @@ The decisions and backtests are logged in the "BFL Model Log" Google Doc in Sonn
 
 - **Apple Sports redesign (live on `main` since November 8, 2026):** near-black dark mode with frosted glass cards (Sonny picked black over navy), an Apple Sports light mode (pale sky gradient, white cards, gray capsule tracks), game sheets in the two teams' colors, one-card score lists on Home and the weekly page, and clean standings with one cut line. Following: a single Follow button on the scores card opens a strip of manager squares; the followed team's game goes first and the page glows in that team's color (saved per browser, `bfl-my`).
 - Add the BFL Model Log entries for Laboon, the awards and Down the Stretch (needs the Google Docs connector, or Sonny pastes the drafted entry).
+- Offseason "what if" stories on trade offers that never happened (declined, withdrawn, vetoed): replay the rest of the season with the swapped players and grade who dodged a fleece. Offers are saved by `build.js` to `history/proposals_<year>.json` (every team's, from ESPN's trade records); Sonny wants them kept quiet until the offseason as a surprise, so nothing on the site or in stories uses them before then.
 - Rivalry pages right after the season (score pairs on playoff meetings, close games, trades and streaks; Opus article, infobox, every meeting).
 - Refresh `LEAGUE_LORE_II` after week 10 with this season's storylines.
 - Build the Report Card page from `history/` and publish its data as a CSV that a Google Sheet pulls in with `IMPORTDATA`.
