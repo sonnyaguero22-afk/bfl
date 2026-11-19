@@ -9,7 +9,7 @@
 const fs = require("fs");
 const path = require("path");
 const Anthropic = require("@anthropic-ai/sdk");
-const { published, etLabel } = require("./when");
+const { published, natural, etLabel } = require("./when");
 
 const MODEL = "claude-opus-5-5";
 const MODELS = { final: "claude-sonnet-5-5" }; // short and fact-driven, so the cheaper model
@@ -449,6 +449,69 @@ function gradesFacts(s, stage) {
     regular_season_grades: stage === "final" ? (saved("grades", s.year).find((a) => a.stage === "reg") || {}).grades?.map((g) => `${g.team}: ${g.grade}`) : undefined,
     report_card: s.teams.map(team).sort((a, b) => (a.final_place || a.standing) - (b.final_place || b.standing)) };
 }
+// The postseason report card: a deep look at every team's season, a week after the Buckaroo Bowl. Built on the
+// regular-season report card's numbers plus how each manager drafted, worked the wire, traded and set lineups.
+const FLEXPOS = ["RB", "WR", "TE"];
+// The best lineup a team could have started from its roster that week (same slots it used), and its points
+function optimal(entries) {
+  const st = entries.filter((e) => e.slot !== "BN" && e.slot !== "IR"), pool = entries.filter((e) => e.slot !== "IR").map((e) => ({ ...e })), used = new Set();
+  const take = (ok) => { const c = pool.filter((e) => !used.has(e) && ok(e)).sort((a, b) => b.pts - a.pts)[0]; if (c) used.add(c); return c ? c.pts : 0; };
+  let pts = 0;
+  for (const sl of st.filter((e) => e.slot !== "FLEX")) pts += take((e) => e.pos === sl.slot);
+  for (const sl of st.filter((e) => e.slot === "FLEX")) pts += take((e) => FLEXPOS.includes(e.pos));
+  return pts;
+}
+function cardFacts(s) {
+  const base = gradesFacts(s, "final"), last = Math.max(...s.matchups.map((m) => m.wk)), n = s.teams.length;
+  const games = s.matchups.filter((m) => m.a && done(m));
+  const draftedBy = {}; for (const d of s.draft || []) draftedBy[d.n] = d.tm;
+  // Awards from the site's own code, so the card matches the Awards page
+  let aw = { ply: [], mgr: [] };
+  try { const { run } = require("./sitecode"); aw = JSON.parse(run(`JSON.stringify((() => { const s = S[${s.year}], a = seasonAwards(s), m = seasonMgrAwards(s);
+    return { ply: AWARDS.filter(([k]) => a[k] && a[k].t).map(([k, e, nm, cat]) => ({ id: a[k].t.id, txt: nm + " (" + cat + "): " + a[k].p.n + ", " + a[k].stat })),
+      mgr: MGR_AWARDS.filter(([k]) => m[k]).map(([k, e, nm, cat]) => ({ ks: m[k].ks, txt: nm + " (" + cat + "): " + m[k].stat })) }; })())`)); } catch {}
+  const per = {};
+  for (const t of s.teams) per[t.id] = { start: {}, posPts: {}, bench: 0, actual: 0, best: 0, weeks: 0, draft: 0, pickup: 0, traded_in: 0, traded_away: 0, blunders: [], adds: 0, drops: 0, starters: {} };
+  for (const m of games) for (const [id, o] of [[m.h, m.a], [m.a, m.h]]) {
+    const P = per[id], myPts = id === m.h ? m.hp : m.ap, oppPts = id === m.h ? m.ap : m.hp;
+    let act = 0, best = 0;
+    for (const sp of spans(s, m.wk)) { const L = (s.lineups[sp] || {})[id] || []; best += optimal(L);
+      for (const e of L) { if (e.slot === "IR") continue;
+        if (e.slot === "BN") { P.bench += e.pts; continue; }
+        act += e.pts; P.posPts[e.pos] = (P.posPts[e.pos] || 0) + e.pts; P.starters[e.n] = P.starters[e.n] || { n: e.n, pos: e.pos, pts: 0, starts: 0 }; P.starters[e.n].pts += e.pts; P.starters[e.n].starts++;
+        const tr = s.trades.find((x) => x.wk <= sp && (x.got[id] || []).some((g) => g.split("|")[0] === e.n));
+        if (draftedBy[e.n] === id) P.draft += e.pts; else if (tr) P.traded_in += e.pts; else P.pickup += e.pts; } }
+    P.actual += act; P.best += best; P.weeks++;
+    if (myPts < oppPts && best - act > oppPts - myPts) P.blunders.push(`week ${m.wk}: lost by ${r1(oppPts - myPts)}, best possible lineup was ${r1(best - act)} better`);
+  }
+  // What players a team traded away went on to score as starters for the team that got them
+  for (const tr of s.trades) for (const id of tr.teams) { const other = tr.teams.find((x) => x !== id);
+    for (const g of tr.got[other] || []) { const nm = g.split("|")[0];
+      for (const sp in s.lineups) if (+sp >= tr.wk) for (const e of (s.lineups[sp][other] || [])) if (e.n === nm && e.slot !== "BN" && e.slot !== "IR") per[id].traded_away += e.pts; } }
+  for (const mv of s.moves) if (per[mv.tm]) { per[mv.tm].adds += mv.add.length; per[mv.tm].drops += mv.drop.length; }
+  const avgAdds = s.moves.reduce((k, m) => k + m.add.length, 0) / n, avgTrades = s.trades.length * 2 / n;
+  // Each position group's points per week as starters, ranked across the league (1 = best)
+  const POS = ["QB", "RB", "WR", "TE", "K", "D/ST"], pos = {};
+  for (const p of POS) { const order = s.teams.map((t) => [t.id, (per[t.id].posPts[p] || 0) / Math.max(1, per[t.id].weeks)]).sort((a, b) => b[1] - a[1]);
+    order.forEach(([id, v], i) => ((pos[id] = pos[id] || {})[p] = `${r1(v)} a week, ${i + 1} of ${n}`)); }
+  const cards = base.report_card.map((rc) => { const t = s.teams.find((x) => rc.team === who(x, s.regWeeks)), P = per[t.id], k = mgrAt(t, last);
+    const picks = (s.draft || []).filter((d) => d.tm === t.id).sort((a, b) => a.pk - b.pk), stPts = (nm) => (P.starters[nm] || { pts: 0 }).pts;
+    return { ...rc,
+      position_groups: pos[t.id],
+      top_starters: Object.values(P.starters).sort((a, b) => b.pts - a.pts).slice(0, 4).map((x) => `${x.n} (${x.pos}) ${r1(x.pts)} in ${x.starts} starts`),
+      draft: { points_as_starters_from_own_picks: r1(P.draft),
+        first_three_picks: picks.slice(0, 3).map((d) => `${d.n} (${d.pos}, pick ${d.pk}): ${r1(stPts(d.n))} as his starter`),
+        best_value_pick: (() => { const v = picks.filter((d) => d.rd > 3).sort((a, b) => stPts(b.n) - stPts(a.n))[0]; return v && `${v.n} (round ${v.rd}): ${r1(stPts(v.n))}`; })() },
+      waivers: { adds: P.adds, league_average_adds: r1(avgAdds), drops: P.drops, points_as_starters_from_pickups: r1(P.pickup) },
+      trades: { trades_made: rc.trades_made, league_average: r1(avgTrades), points_from_players_acquired: r1(P.traded_in), points_players_traded_away_scored_for_new_team: r1(P.traded_away) },
+      lineups: { points_left_on_bench: r1(P.bench), lineup_efficiency: `${Math.round((100 * P.actual) / Math.max(1, P.best))}% of the best possible lineup's points`,
+        points_left_vs_best_lineup: r1(P.best - P.actual), losses_the_bench_would_have_flipped: P.blunders },
+      awards: [...aw.ply.filter((a) => a.id === t.id).map((a) => a.txt), ...aw.mgr.filter((a) => a.ks.includes(k)).map((a) => a.txt)] };
+  });
+  return { season: s.year, teams: n, playoff_teams: s.playoffTeams, champion: base.champion, last_place: base.last_place, next_season: s.year + 1,
+    league_format: "redraft: every roster is drafted fresh next season, nothing carries over (no keepers, not a dynasty league)",
+    regular_season_grades: base.regular_season_grades, report_card: cards };
+}
 function reviewFacts(s) {
   const last = Math.max(...s.matchups.map((m) => m.wk));
   const rec = recordsThrough(s, s.regWeeks);
@@ -670,6 +733,12 @@ const schemas = {
   trade: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "social"], properties: { ...ARTICLE, social: SOCIAL } },
   veto: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "social"], properties: { ...ARTICLE, social: SOCIAL } },
   review: { type: "object", additionalProperties: false, required: ["title", "dek", "body"], properties: ARTICLE },
+  card: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "cards", "social"], properties: { ...ARTICLE, social: SOCIAL,
+    cards: { type: "array", items: { type: "object", additionalProperties: false, required: ["team", "grade", "headline", "summary", "strengths", "weaknesses", "verdict", "management", "subgrades", "fix"], properties: {
+      team: str, grade: str, headline: str, summary: str, strengths: { type: "array", items: str }, weaknesses: { type: "array", items: str },
+      verdict: { type: "string", enum: ["Well managed", "Over-managed", "Under-managed", "Mismanaged"] }, management: str,
+      subgrades: { type: "array", items: { type: "object", additionalProperties: false, required: ["area", "grade", "note"], properties: { area: { type: "string", enum: ["Draft", "Waivers", "Trades", "Lineups"] }, grade: str, note: str } } },
+      fix: { type: "array", items: str } } } } } },
   grades: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "grades", "social"], properties: { ...ARTICLE, social: SOCIAL,
     grades: { type: "array", items: { type: "object", additionalProperties: false, required: ["team", "grade", "headline", "blurb"], properties: { team: str, grade: str, headline: str, blurb: str } } } } },
   class: { type: "object", additionalProperties: false, required: ["title", "dek", "chapters"], properties: { title: str, dek: str,
@@ -700,6 +769,7 @@ const asks = {
   history: "Write the official history of the Buckaroo Football League for the front of its trophy room, like a club history in Football Manager or a long-form feature: a headline, a one-sentence dek, and 4 to 6 chapters, each with a short heading and 2 to 4 paragraphs. Tell it as one story across the seasons: how it started, each Buckaroo Bowl and what decided it, dynasties and droughts, rises and collapses, the rivalries the head-to-head records reveal, and the moments people still bring up. End with a short chapter that sets up the present (from since_then, without any of its results). Every number must come from the facts.",
   class: "Write the induction story for this class of Laugh Tale, the league's Hall of Fame, the way a Hall of Fame covers its enshrinement class, in the voice of the league's wiki: the title is just the class name (the class field), a one-sentence dek, then sections with short headings. Open with the class as a whole (who's in, what ties them together, the seasons it covers, the ranks they enter at). Then one section per inductee in the order given, the heading just his name, 1 to 3 paragraphs on why he belongs: the moments behind each of his ways_in, his numbers, who he won with or for, and what he meant to the league's story. Close with a short section that puts the class in the league's history. Use only the facts; never invent games, quotes or moments. Players' points cover their whole BFL career so far.",
   bowl: "Write a thorough encyclopedia article about this game for the league's wiki, the way Wikipedia covers a Super Bowl: the title is just the game's name (the game field), a one-sentence dek, and 5 or 6 sections, each with a short heading and 2 to 4 paragraphs: Background (both teams' seasons: records, seeds, points, title chances going in, regular-season meetings, earlier titles and playoff history between these managers); Road to the game (each team's earlier playoff games and who carried them); Game summary (for a two-week total, a part for each NFL week: the score after the first week, who drove it, how the second week changed or settled it; scoring_sequence lists the NFL scoring plays involving these starters in the order they happened: tell the game through its key moments (who opened the scoring, the swings, the plays that put it away), not every play, and never give clock times; play_by_play, when present, adds the live win chance; with neither, never invent the order of scoring within a week); Key performers (stars against their projection and their season averages, flops, bench points that would have changed the result); and Aftermath (what it meant: a first or repeat title and where it puts the manager in league history, or last place and the Bum Bowl's shame). Encyclopedic: third person, past tense, specific numbers, no social posts, the league's personality in a light touch. Never mention what isn't recorded or how the site keeps its data; just tell what is known. Use only the facts given.",
+  card: "Write the league's postseason report card for this season, published a week after the Buckaroo Bowl: a headline, a one-sentence dek and 3 to 4 body paragraphs on how the season played out across the league and what it says about how this league is won. Then a detailed card for every team in report_card (use the exact team name), in finishing order: a season letter grade (A+ to F with plus and minus, the full range: the champion and a dominant team near the top, a team that collapsed or never showed up can get a D or F), a punchy headline, and a 4 to 6 sentence summary of the whole season, playoffs or consolation ladder included. Then strengths and weaknesses: 2 to 4 short, specific points each, built on the numbers (position_groups ranks, top_starters, luck, points for rank, how it finished). Then the management review: a verdict (over-managed for a manager whose churn and trades cost him, under-managed for one who sat still while holes stayed open or left points on the bench, well managed, or mismanaged for one who got the big calls wrong) with a 3 to 5 sentence take on how he ran the team, and a sub-grade with a one-sentence note for each of draft (points_as_starters_from_own_picks, his first picks and best value pick), waivers (adds against the league average and what the pickups scored), trades (what came in against what went out) and lineups (efficiency, points left against the best lineup, losses the bench would have flipped). Compare each manager with the rest of the league, not in a vacuum. Then fix: 2 to 4 concrete things to change heading into next season (next_season). This is a redraft league, so no player carries over: the fixes are about approach (draft strategy and which positions to prioritize, how actively to work the wire, trading habits, lineup decisions), never about keeping or building around specific players. Mention awards in awards where they help tell the story. When regular_season_grades is given, say when a team's grade moved since then and why. Be honest and specific; praise and criticism both land harder with a number behind them. Then 4 to 6 social posts reacting to the grades.",
   grades: "Write the league's report card at the stage given (stage): a headline, a one-sentence dek, 2 to 3 body paragraphs on the big picture, then a letter grade for every team in report_card (use the exact team name; A+ to F with plus and minus), each with a short punchy headline and a 2 to 4 sentence blurb that explains the grade. Grade each team against what it was expected to do (title and playoff odds on draft day) and how it actually played, not on the record alone: weigh points scored and their rank, luck (wins minus expected wins from scoring; a lucky record earns less credit, an unlucky one some sympathy), how the season finished (last_five), and the manager's moves (trades and pickups) where they mattered. Use the full range: a clear best gets an A, a team that collapsed or never showed up can get a D or F, and most land in between. At the end of the season (stage mentions playoffs), grade the whole season with the postseason weighed heavily: the champion is graded on winning it all, a playoff team that flopped drops, the consolation ladder counts too, and last place (the Bum Bowl loser) takes a hit; regular_season_grades are the grades from the end of the regular season, so say when a grade moved and why. Then 4 to 6 social posts reacting to the grades.",
   review: "Write a season-in-review story for this finished season: a headline, a one-sentence dek, and 5 to 7 body paragraphs telling the story of the season from draft to Buckaroo Bowl, including the champion, the last-place finisher, the playoff games, and any notable notes.",
 };
@@ -753,8 +823,10 @@ function pending() {
   for (const z of D.seasons.filter((x) => x.year >= 2026)) {
     const regDone = z.matchups.filter((m) => m.wk <= z.regWeeks && m.a).every(done) && z.matchups.some((m) => m.wk === z.regWeeks);
     if (regDone && !have.has(`grades-${z.year}-reg`)) todo.push({ id: `grades-${z.year}-reg`, type: "grades", stage: "reg", s: z, wk: z.regWeeks + 0.7, facts: () => gradesFacts(z, "reg") });
-    if (z.done && !have.has(`grades-${z.year}-final`)) todo.push({ id: `grades-${z.year}-final`, type: "grades", stage: "final", s: z, wk: Math.max(...z.matchups.map((m) => m.wk)) + 0.7, facts: () => gradesFacts(z, "final") });
   }
+  // The postseason report card: every finished season, going up a week after its Buckaroo Bowl
+  for (const z of D.seasons.filter((x) => x.done)) { const lastWk = Math.max(...z.matchups.map((m) => m.wk)), due = natural({ id: `card-${z.year}`, type: "card", year: z.year, wk: lastWk }, z.periods);
+    if (!have.has(`card-${z.year}`) && due && due <= new Date()) todo.push({ id: `card-${z.year}`, type: "card", s: z, wk: lastWk, facts: () => cardFacts(z) }); }
   // Career profiles and the league history, rewritten once each season finishes
   const lastDone = Math.max(...D.seasons.filter((x) => x.done).map((x) => x.year));
   if (!have.has(`history-${lastDone}`)) todo.push({ id: `history-${lastDone}`, type: "history", s: S[lastDone], wk: 101, facts: () => historyFacts(lastDone) });
@@ -778,14 +850,14 @@ async function write(client, job) {
   const facts = job.facts();
   // Profiles stand on their own, and draft-day coverage mustn't know how the season went
   // Rankings for past weeks mustn't see later stories, so they get none
-  const recent = ["profile", "draft", "history", "rankings", "bowl", "class"].includes(job.type) ? [] : recentStories();
+  const recent = ["profile", "draft", "history", "rankings", "bowl", "class", "card"].includes(job.type) ? [] : recentStories();
   const wk = ["review", "profile", "history", "bowl", "class"].includes(job.type) ? null : job.type === "rankings" || job.type === "grades" ? Math.floor(job.wk) : Math.ceil(job.wk);
   const pub = published({ id: job.id, type: job.type, year: job.s.year, wk, at: job.at, created: new Date().toISOString() }, job.s.periods);
   const dated = pub ? `\n\nThis story goes up ${etLabel(pub)}; time the social posts' "when" from that.` : "";
   const avoid = recent.length ? `\n\nThe league's most recent stories, for reference only. Readers just read these, so don't reuse their jokes, nicknames-as-punchlines, or angles; find fresh ones:\n${JSON.stringify(recent)}` : "";
   const res = await client.beta.messages.create({
     model: MODELS[job.type] || MODEL,
-    max_tokens: 16000,
+    max_tokens: job.type === "card" ? 32000 : 16000,
     betas: ["server-side-fallback-2026-07-01"],
     fallbacks: "default", // if a safety check declines, Anthropic retries on its recommended fallback model
     cache_control: { type: "ephemeral" },
@@ -802,6 +874,7 @@ async function write(client, job) {
   // Stories are permanent, so don't keep one that came back hollow
   const hollow = job.type === "rankings" ? !(out.body || []).length || (out.power_rankings || []).length !== job.s.teams.length
     : job.type === "grades" ? !out.body || out.body.length < 2 || (out.grades || []).length !== job.s.teams.length
+    : job.type === "card" ? !out.body || out.body.length < 2 || (out.cards || []).length !== job.s.teams.length
     : !out.body || out.body.length < 2 || (schemas[job.type].required.includes("social") && !(out.social || []).length);
   if (hollow) { console.log(`::warning::${job.id}: came back with an empty story (${(out.body || []).length} paragraphs, ${(out.social || []).length} posts, title ${JSON.stringify(out.title || out.headline || "")}, stop ${res.stop_reason}), will retry next run`); return null; }
   // Bios name teams as written in the facts ("Name (Manager)"); match on the team-name part
@@ -816,6 +889,7 @@ async function write(client, job) {
     chances: job.type === "preview" ? job.s.matchups.filter((m) => m.wk === Math.ceil(job.wk) && m.a).map((m) => ({ h: m.h, a: m.a, p: m.psimFixed ?? m.psim })) : undefined,
     starters: job.type === "preview" ? startersAt(job.s, Math.ceil(job.wk)) : undefined,
     stage: job.stage, grades: out.grades ? out.grades.map((x) => ({ ...x, id: (teamFor(x.team) || {}).id })) : undefined,
+    cards: out.cards ? out.cards.map((x) => ({ ...x, id: (teamFor(x.team) || {}).id })) : undefined,
     power_rankings: out.power_rankings ? out.power_rankings.map((x) => ({ ...x, id: (teamFor(x.team) || {}).id })).sort((a, b) => a.rank - b.rank) : undefined,
     bios: out.bios ? Object.fromEntries(out.bios.map((b) => [(teamFor(b.team) || {}).id, b.bio]).filter(([id]) => id != null)) : undefined,
     // Cached input is billed separately (writes 1.25x, reads 0.1x), so keep those counts too

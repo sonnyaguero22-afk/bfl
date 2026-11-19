@@ -32,6 +32,7 @@ function natural(a, periods = {}) {
     case "draft": return eastern(y, openerDay(y) - 4, 20, j(60));                    // the Sunday before opening night
     case "grades": return eastern(y, thursday(y, last(Math.floor(a.wk))) + 6, 10, j(30)); // Wednesday morning after the week ends
     case "veto": return a.at ? new Date(new Date(a.at).getTime() + (10 + j(20)) * 60e3) : null; // breaks soon after the veto
+    case "card": return eastern(y, thursday(y, last(a.wk)) + 12, 10, j(30));  // the Tuesday a week after the Bowl's week ends
     case "review": return null;
     default: return null;
   }
