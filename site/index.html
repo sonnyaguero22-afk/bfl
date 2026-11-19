@@ -1449,7 +1449,7 @@ function treasuries() {
         if (!po) { if (m.win === id) add(k, s.year, TREASURE.win, "Wins"); else if (m.win === 0) add(k, s.year, TREASURE.tie, "Wins"); else add(k, s.year, TREASURE.loss, "Losses");
           if (s.spans(m.wk).length === 1 && (!top[m.wk] || p > top[m.wk].p)) top[m.wk] = { p, k }; }
         else if (m.tier === "WINNERS_BRACKET" && m.win === id) add(k, s.year, isBowl(s, m) ? TREASURE.bowl : TREASURE.playoff, isBowl(s, m) ? "Buckaroo Bowl" : "Playoff wins");
-        if (bum === m && m.win !== id) add(k, s.year, TREASURE.bum, "Bum Bowl fine"); } }
+        if (bum === m && m.win !== id) add(k, s.year, TREASURE.bum, "Bum Bowl fine (Marines)"); } }
     for (const wk in top) add(top[wk].k, s.year, TREASURE.top, "Manager of the Week");
     // Awards pay once a season is over
     if (s.done) { for (const w of Object.values(seasonMgrAwards(s))) if (w && w.ks) add(w.ks[0], s.year, TREASURE.mgrAward, "Manager awards");
@@ -1683,7 +1683,7 @@ function managers() {
   <div class="mgrs">${rows.map((r) => `<button class="box mgr" data-go="mgr-${r.k}"><div class="top">${mbadge(r.k)}<span><b>${mgrName(r.k)}</b><small class="muted">${r.seasons.length} season${r.seasons.length === 1 ? "" : "s"} · now “${esc(r.seasons[r.seasons.length - 1].teams.find((t) => t.mgr === r.k).name)}”</small></span></div>
     <div class="nums"><div>Record<b>${r.w}-${r.l}${r.t ? "-" + r.t : ""}${hasKick(r.k) ? "*" : ""}</b></div><div>Win %<b>${pct(r.w, r.l, r.t)}</b></div><div>Pts/Gm<b>${f1(r.ppg)}</b></div></div>
     <div class="rings">${r.titles.length ? "🏆".repeat(r.titles.length) + " " + r.titles.join(", ") : `<span class="muted" style="font-weight:400">No titles yet</span>`}</div><div class="treas">💰 ${berry((treasuries()[r.k] || { total: 0 }).total, 1)} <span class="muted">Bounty</span></div></button>`).join("")}</div>
-  <p class="note">💰 Bounty, in berries since ${D.firstYear}: ${berry(TREASURE.win, 1)} a regular-season win (a ${berry(-TREASURE.loss, 1)} hit for a loss), ${berry(TREASURE.top, 1)} for Manager of the Week (the week's top score), ${berry(TREASURE.playoff, 1)} a playoff win, ${berry(TREASURE.bowl, 1)} for winning the Buckaroo Bowl (the One Piece itself), ${berry(TREASURE.mgrAward, 1)} for each ${awLink("vegapunk", "manager award")}, ${berry(TREASURE.plyAward, 1)} when one of his players wins a ${awLink("king", "player award")}, ${berry(TREASURE.gear5, 1)} when his ${owLink("bounty", "Bounty Board")} pick goes Gear 5, and a ${berry(-TREASURE.bum, 1)} fine for losing the Bum Bowl. Awards pay when a season ends.</p>`;
+  <p class="note">💰 Bounty, in berries since ${D.firstYear}: ${berry(TREASURE.win, 1)} a regular-season win (a ${berry(-TREASURE.loss, 1)} hit for a loss), ${berry(TREASURE.top, 1)} for Manager of the Week (the week's top score), ${berry(TREASURE.playoff, 1)} a playoff win, ${berry(TREASURE.bowl, 1)} for winning the Buckaroo Bowl (the One Piece itself), ${berry(TREASURE.mgrAward, 1)} for each ${awLink("vegapunk", "manager award")}, ${berry(TREASURE.plyAward, 1)} when one of his players wins a ${awLink("king", "player award")}, ${berry(TREASURE.gear5, 1)} when his ${owLink("bounty", "Bounty Board")} pick goes Gear 5, and a ${berry(-TREASURE.bum, 1)} fine for losing the Bum Bowl, collected by the Marines. Awards pay when a season ends.</p>`;
 }
 
 // ---------- Manager pages read like a wiki article: infobox, a lead from the numbers, the career profile ----------
@@ -2055,7 +2055,7 @@ const AW_NAMED = {
   brook: "Named for the Strawhats' musician, a skeleton who waited decades on his own, like points left on a bench.",
   buggy: "Named for Buggy the Clown, who keeps rising in rank without ever quite earning it.",
   ace: "Named for Portgas D. Ace. Around the league, a zero is a donut, and a donut is an Ace.",
-  foxy: "Named for Foxy the Silver Fox, whose Davy Back Fights let him walk off with another crew's members: the player someone else picked up after you let him go.",
+  foxy: "Named for Foxy the Silver Fox, whose Davy Back Fights let him walk off with another crew's members: the player you sent to Impel Down (the waiver wire) whom someone else broke out.",
   karoo: "Named for Karoo, Princess Vivi's loyal super spot-billed duck, the fastest runner in the Alabasta desert, who shows up when it counts.",
   vegapunk: "Named for Dr. Vegapunk, the world's greatest scientist, who plans everything years ahead.",
   wapol: "Named for Wapol, the king of Drum Island whose Devil Fruit lets him eat anything, including what everyone else threw away.",
@@ -3186,8 +3186,8 @@ const LIVE = ALL_NEWS.filter((a) => a.type === "live");
 const HISTORY = ALL_NEWS.find((a) => a.type === "history");
 const PROFILE = {};
 for (const a of ALL_NEWS) if (a.type === "profile" && a.mgr && !PROFILE[a.mgr]) PROFILE[a.mgr] = a;
-const NEWS_TYPE = { card: "Report Card", veto: "Vetoed", grades: "Report Card", recap: "Weekly Recap", trade: "Trade", review: "Season in Review", draft: "Draft", preview: "Week Preview", final: "Final Word" };
-const newsWhen = (a) => (a.type === "card" ? `${a.year} · Postseason Report Card` : a.type === "grades" ? `${a.year} · ${a.stage === "final" ? "Final Grades" : "Regular Season Grades"}` : a.type === "review" ? `${a.year} Season` : a.type === "draft" ? `${a.year} Draft` : a.type === "preview" ? `${a.year} · Week ${a.wk} Preview` : a.type === "final" ? `${a.year} · Week ${a.wk} Final Word` : a.type === "trade" ? `${a.year} · Before Week ${a.wk}` : a.type === "veto" ? `${a.year} · Week ${a.wk} · Breaking` : `${a.year} · Week ${a.wk}`);
+const NEWS_TYPE = { card: "Report Card", veto: "Buster Call", grades: "Report Card", recap: "Weekly Recap", trade: "Trade", review: "Season in Review", draft: "Draft", preview: "Week Preview", final: "Final Word" };
+const newsWhen = (a) => (a.type === "card" ? `${a.year} · Postseason Report Card` : a.type === "grades" ? `${a.year} · ${a.stage === "final" ? "Final Grades" : "Regular Season Grades"}` : a.type === "review" ? `${a.year} Season` : a.type === "draft" ? `${a.year} Draft · The Reverie` : a.type === "preview" ? `${a.year} · Week ${a.wk} Preview` : a.type === "final" ? `${a.year} · Week ${a.wk} Final Word` : a.type === "trade" ? `${a.year} · Before Week ${a.wk}` : a.type === "veto" ? `${a.year} · Week ${a.wk} · Breaking` : `${a.year} · Week ${a.wk}`);
 const newsCard = (a, big) => `<button class="box newscard${big ? " big" : ""}" data-go="news-${a.id}"><span class="pill${a.type === "trade" ? " gold" : a.type === "veto" ? " l" : ""}">${NEWS_TYPE[a.type]}</span><b>${esc(a.title)}</b><span class="dek">${esc(a.dek)}</span><small class="muted">${bylineOf(a) ? `${esc(bylineOf(a).name)} · ` : ""}${newsWhen(a)}</small></button>`;
 const hasLogo = (t) => t && t.logo && !/\/images\/default|\/default[^/]*$/.test(t.logo);
 const teamAva = (t, cls = "") => (hasLogo(t) ? `<span class="tava ${cls}"><img src="${esc(t.logo)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add('nologo')">${badge(t)}</span>` : badge(t));
