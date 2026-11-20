@@ -2344,24 +2344,31 @@ const trPlinth = () => `${lgCloth(103, 243, 34, 18, 1.5)}${lgEmblem(120, 252, 0.
 // Names and links for a trophy: the awards, plus the Buckaroo Bowl
 const trInfo = (k) => (k === "bowl" ? { nm: "Buckaroo Bowl", cat: "Champion", go: "trophies" } : { ...awInfo(k), go: `aw-${k}` });
 // ---------- Championship rings: one per Buckaroo Bowl, in the champion's color, at the front of a ringed player's trophy case ----------
-// A ship's-wheel rim lettered BUCKAROO BOWL <n>, a pavé halo around a stone with the league emblem, the year and team on the band,
-// and a story: an ornament at six o'clock between the team and a phrase, plus a line on the band. Seasons without a story get
-// a star per title the manager has won and his regular-season record.
+// Each Buckaroo Bowl ring has its own build: a shape by Bowl number (ship's wheel, cushion, crown, Log Pose compass, shield,
+// then around again; RING_STORY can pick one), its own halo and stone cut, the gem nearest the champion's team color, and in the
+// stone the champion crew's own Jolly Roger (RING_SIGIL: crossed footballs plus the crew's mark). The team and a phrase sit on
+// either side of an ornament at six o'clock, the year, team and a line on the band. Seasons without a story get a star per
+// title the manager has won and his regular-season record.
 const RING_STORY = {
   2023: { right: "CHAMPIONS", band: "THE FIRST", mid: "star" },
   2024: { right: "BACK TO BACK", band: "2023 · 2024", mid: "stars" },
   2025: { right: "CHAMPIONS", band: "WORST TO FIRST", mid: "crown" },
 };
+// The crew's mark in the stone: a clone army that grows with each title (the Habibsters' logo), ivy for Sonny
+const RING_SIGIL = { 2023: { clones: 3 }, 2024: { clones: 5 }, 2025: { head: "ivy" } };
+const RING_FORMS = ["wheel", "cushion", "crown", "compass", "shield"];
 let ringN = 0;
 // The stone is the gem nearest the champion's team color, each at its own depth (a raw green reads as lime)
 const RING_GEMS = [[20, 32, 80, 48], [50, 146, 68, 38], [110, 160, 55, 34], [150, 185, 62, 42], [195, 216, 67, 54], [245, 272, 55, 50], [290, 325, 62, 42], [330, 352, 70, 45]];
 const ringGem = (h) => { const g = [...RING_GEMS].reverse().find(([from]) => h >= from) || RING_GEMS[RING_GEMS.length - 1], [, hh, sat, l] = g;
   return [`hsl(${hh} ${sat}% ${Math.min(l + 36, 86)}%)`, `hsl(${hh} ${sat}% ${l}%)`, `hsl(${hh} ${Math.min(sat + 8, 90)}% ${Math.round(l * 0.42)}%)`]; };
 const ringArt = (y, small) => { const s = S[y], c = s && s.teams.find((t) => t.final === 1); if (!c) return "";
-  const i = `r${ringN++}`, h = hue[c.mgr] ?? 210, R2 = Math.PI / 180, nm = nameAt(c, s.regWeeks).toUpperCase();
+  const i = `q${ringN++}`, h = hue[c.mgr] ?? 210, R2 = Math.PI / 180, nm = nameAt(c, s.regWeeks).toUpperCase(), bn = y - D.firstYear + 1;
   const titles = D.seasons.filter((x) => x.done && x.year <= y && x.teams.some((t) => t.final === 1 && t.mgr === c.mgr)).length;
   const st = RING_STORY[y] || { right: "CHAMPIONS", band: `${c.w}–${c.l}${c.t ? `–${c.t}` : ""}`, mid: titles > 1 ? "stars" : "star" };
-  const BX = 140, BY = 176, RX = 74, RY = 96, gem = `url(#d${i})`, ink = "#4a3008";
+  const form = st.form || RING_FORMS[(bn - 1) % RING_FORMS.length];
+  const BX = 140, BY = 176, RX = 74, RY = 96, gem = `url(#d${i})`, ink = "#4a3008", CX = 140, CY = 120;
+  const P = (r, a) => [CX + r * Math.cos(a * R2), CY + r * Math.sin(a * R2)], f = (n) => n.toFixed(1);
   const star = (x, yy) => `<path transform="translate(${x} ${yy}) scale(.72) translate(${-x} ${-yy})" d="M${x} ${yy - 9}l3 7 7 .5-5.5 4.5 2 7-6.5-4-6.5 4 2-7-5.5-4.5 7-.5z" fill="${gem}" stroke="#b8862b" stroke-width=".6"/>`;
   const n = st.mid === "stars" ? Math.min(Math.max(titles, 2), 3) : 1, mid = st.mid === "crown"
     ? `<path d="M132 197l-1.5-10 5 4.5 4.5-7 4.5 7 5-4.5-1.5 10z" fill="${gem}" stroke="#b8862b" stroke-width=".7" stroke-linejoin="round"/><path d="M132 197h16" stroke="#b8862b" stroke-width="1.2"/>`
@@ -2369,29 +2376,85 @@ const ringArt = (y, small) => { const s = S[y], c = s && s.teams.find((t) => t.f
   const gap = st.mid === "crown" ? 18 : 10 + 7 * n, L = 74.5 * (220 * Math.PI / 180), g = (gap / L) * 100;
   const left = nm.length <= 12 ? nm : (c.abbrev || "").toUpperCase();
   const eng = (path, off, txt, size) => `<text font-family="Georgia, serif" font-weight="700" font-size="${size}" fill="${ink}" letter-spacing="1.2" dominant-baseline="central"><textPath href="#${path}${i}" startOffset="${off}%" text-anchor="middle">${esc(txt)}</textPath></text>`;
-  return `<svg class="ring" data-zoom="r:${y}" viewBox="0 0 280 300" role="img" aria-label="Buckaroo Bowl ${roman(y - D.firstYear + 1)} ring" xmlns="http://www.w3.org/2000/svg"><defs>
+  const pave = (r, k, rr, fill) => [...Array(k)].map((_, j) => { const [x, yy] = P(r, (j / k) * 360); return `<circle cx="${f(x)}" cy="${f(yy)}" r="${rr}" fill="${typeof fill === "function" ? fill(j) : fill}" stroke="#b8862b" stroke-width=".6"/>`; }).join("");
+  const sq = (x, yy, r, fill, rot = 45) => `<rect x="${f(x - r)}" y="${f(yy - r)}" width="${2 * r}" height="${2 * r}" transform="rotate(${rot} ${f(x)} ${f(yy)})" fill="${fill}" stroke="#6e4a12" stroke-width=".8"/>`;
+  const rrect = (hw, rx) => `M${CX - hw + rx} ${CY - hw}H${CX + hw - rx}Q${CX + hw} ${CY - hw} ${CX + hw} ${CY - hw + rx}V${CY + hw - rx}Q${CX + hw} ${CY + hw} ${CX + hw - rx} ${CY + hw}H${CX - hw + rx}Q${CX - hw} ${CY + hw} ${CX - hw} ${CY + hw - rx}V${CY - hw + rx}Q${CX - hw} ${CY - hw} ${CX - hw + rx} ${CY - hw}Z`;
+  const poly = (r, k, rot) => [...Array(k)].map((_, j) => P(r, rot + (j * 360) / k).map(f).join(" ")).join("L");
+  const G = `url(#g${i})`, V = `url(#v${i})`, S_ = `url(#s${i})`, D_ = `url(#p${i})`;
+  // The champion crew's own Jolly Roger
+  const sg = { cross: "football", ...(RING_SIGIL[y] || {}) };
+  // Crossbones: two footballs crossing at the skull, the second a true mirror of the first (laced ends both up)
+  const ball = `<path d="M-54 0q54-30 108 0-54 30-108 0z" fill="url(#g${i})" stroke="#4a3008" stroke-width="2.2"/><path d="M-46 -4q46-17 92 0" fill="none" stroke="#fff6c8" stroke-width="1.6" opacity=".5"/><path d="M28 -4h16M31 -8v8M36 -8v8M41 -8v8" stroke="#4a3008" stroke-width="2"/><path d="M-42 -3q-1 3 0 6M42 -3q1 3 0 6" stroke="#4a3008" stroke-width="2" fill="none"/>`;
+  const crossed = () => `<g transform="rotate(-34)">${ball}</g><g transform="scale(-1 1) rotate(-34)">${ball}</g>`;
+  // An ivy wreath crowning the skull: a vine over the brow with leaves running down both sides
+  const ivy = () => { // classic three-point ivy leaves on a vine over the brow
+    const leaf = (x, yy, r) => `<g transform="translate(${x} ${yy}) rotate(${r})"><path d="M0 0L0 -3" stroke="#1f5a2b" stroke-width="1.4"/><path d="M0 -3C-3 -3 -8 -2 -9 -6C-7 -7 -5 -7 -4 -8C-6 -11 -4 -15 0 -18C4 -15 6 -11 4 -8C5 -7 7 -7 9 -6C8 -2 3 -3 0 -3Z" fill="#3c9a4e" stroke="#123d1d" stroke-width=".9" stroke-linejoin="round"/><path d="M0 -4V-15M0 -6L-6 -6M0 -6L6 -6" stroke="#9fd6a6" stroke-width=".6" opacity=".8"/></g>`;
+    return `<path d="M-26 12Q-29 -25 0 -26Q29 -25 26 12" fill="none" stroke="#2b6b36" stroke-width="2.4" stroke-linecap="round"/>${[[-27, 6, -100], [-23, -14, -60], [-9, -26, -20], [9, -26, 20], [23, -14, 60], [27, 6, 100]].map(([x, yy, r]) => leaf(x, yy, r)).join("")}`; };
+  const skull = (dx, dy, sc) => `<g transform="translate(${dx} ${dy}) scale(${sc})"><circle cx="0" cy="2" r="22" fill="#f2efe6" stroke="#4a3008" stroke-width="1.5"/><rect x="-13" y="16" width="26" height="13" rx="4" fill="#f2efe6" stroke="#4a3008" stroke-width="1.5"/>
+    <ellipse cx="-8" cy="4" rx="6" ry="7" fill="#141418"/><ellipse cx="8" cy="4" rx="6" ry="7" fill="#141418"/><path d="M0 11l-3 6h6z" fill="#141418"/><path d="M-6 22v6M0 22v6M6 22v6" stroke="#141418" stroke-width="1.6"/></g>`;
+  // A clone army: identical skulls fanned out behind the captain, outermost first so the front ones overlap them
+  const army = (n) => [...Array(n - 1)].map((_, k) => { const side = k % 2 ? 1 : -1, rank = Math.floor(k / 2) + 1; return { side, rank }; })
+    .sort((a, b) => b.rank - a.rank).map(({ side, rank }) => skull(side * (20 + 17 * (rank - 1)), -5 * rank, 1 - 0.2 * rank)).join("");
+  const sigil = (x, yy, sc) => `<g transform="translate(${x} ${yy}) scale(${sc})">${crossed()}${sg.clones ? army(sg.clones) : ""}${skull(0, 0, 1)}
+    ${sg.head === "ivy" ? ivy() : ""}</g>`;
+  // Silhouette behind the top, the bezel, the halo and the center stone, by form
+  let back = "", bezel = "", halo = "", stone = "", glints = "";
+  if (form === "wheel") { // Bowl I: the ship's wheel, a round brilliant
+    back = [...Array(8)].map((_, k) => { const a = k * 45 + 22.5, [x1, y1] = P(86, a), [x2, y2] = P(100, a), [x3, y3] = P(102, a);
+      return `<path d="M${f(x1)} ${f(y1)}L${f(x2)} ${f(y2)}" stroke="${V}" stroke-width="6" stroke-linecap="round"/><circle cx="${f(x3)}" cy="${f(y3)}" r="5.5" fill="${G}" stroke="#6e4a12" stroke-width=".8"/>`; }).join("");
+    bezel = `<circle cx="${CX}" cy="${CY}" r="88" fill="${G}" stroke="#6e4a12" stroke-width="1.5"/><circle cx="${CX}" cy="${CY}" r="83.5" fill="none" stroke="#fff6c8" stroke-width="1" opacity=".5"/>`
+      + `<path d="M${P(70, 200).map(f).join(" ")}A70 70 0 0 1 ${P(70, 340).map(f).join(" ")}" fill="none" stroke="#6e4a12" stroke-width="1" opacity=".5" stroke-dasharray="2 3"/>`;
+    halo = `<circle cx="${CX}" cy="${CY}" r="58" fill="#3a2a0e"/>${pave(53, 40, 3.3, D_)}`;
+    stone = `<circle cx="${CX}" cy="${CY}" r="46" fill="${S_}" stroke="${G}" stroke-width="3"/>${[0, 60, 120, 180, 240, 300].map((a) => `<path d="M${CX} ${CY}L${P(44, a).map(f).join(" ")}" stroke="#fff" stroke-width=".8" opacity=".18"/>`).join("")}`;
+  } else if (form === "cushion") { // Bowl II: a cushion top with princess-cut corners, a double halo for back to back, an emerald-cut stone
+    back = [225, 315].map((a) => { const [x, yy] = P(112, a); return sq(x, yy, 9, D_); }).join("");
+    bezel = `<path d="${rrect(88, 30)}" fill="${G}" stroke="#6e4a12" stroke-width="1.5"/><path d="${rrect(83.5, 27)}" fill="none" stroke="#fff6c8" stroke-width="1" opacity=".5"/>`;
+    const side = (hw, k, step, r, fill) => [...Array(4)].map((_, sd) => [...Array(k)].map((_, j) => { const t = (j - (k - 1) / 2) * step, xy = [[t, -hw], [hw, t], [-t, hw], [-hw, -t]][sd];
+      return `<circle cx="${CX + xy[0]}" cy="${CY + xy[1]}" r="${r}" fill="${fill(j)}" stroke="#b8862b" stroke-width=".6"/>`; }).join("")).join("");
+    halo = `<path d="${rrect(54, 26)}" fill="#3a2a0e"/>${side(48, 7, 10, 3.2, (j) => (j % 2 ? S_ : D_))}<path d="${rrect(42, 14)}" fill="#3a2a0e" stroke="#b8862b" stroke-width=".6"/>${side(37, 6, 10, 2.9, () => D_)}`;
+    const o = (hw, hh, k) => `M${CX - hw + k} ${CY - hh}H${CX + hw - k}L${CX + hw} ${CY - hh + k}V${CY + hh - k}L${CX + hw - k} ${CY + hh}H${CX - hw + k}L${CX - hw} ${CY + hh - k}V${CY - hh + k}Z`;
+    stone = `<path d="${o(30, 30, 9)}" fill="${S_}" stroke="${G}" stroke-width="3"/><path d="${o(22, 22, 7)}" fill="none" stroke="#fff" stroke-width=".8" opacity=".22"/><path d="${o(14, 14, 4.5)}" fill="none" stroke="#fff" stroke-width=".8" opacity=".18"/>`;
+  } else if (form === "crown") { // Bowl III: worst to first, a crown rising off the top, a baguette halo, an oval stone
+    back = [-150, -120, -90, -60, -30].map((a) => { const [x1, y1] = P(80, a - 13), [x2, y2] = P(100 + (a === -90 ? 6 : 0), a), [x3, y3] = P(80, a + 13), [gx, gy] = P(104 + (a === -90 ? 6 : 0), a);
+      return `<path d="M${f(x1)} ${f(y1)}L${f(x2)} ${f(y2)}L${f(x3)} ${f(y3)}Z" fill="${G}" stroke="#6e4a12" stroke-width="1.2" stroke-linejoin="round"/><circle cx="${f(gx)}" cy="${f(gy)}" r="${a === -90 ? 6.5 : 5}" fill="${a === -90 ? S_ : D_}" stroke="#6e4a12" stroke-width=".8"/>`; }).join("");
+    bezel = `<circle cx="${CX}" cy="${CY}" r="88" fill="${G}" stroke="#6e4a12" stroke-width="1.5"/><circle cx="${CX}" cy="${CY}" r="83.5" fill="none" stroke="#fff6c8" stroke-width="1" opacity=".5"/>`;
+    halo = `<ellipse cx="${CX}" cy="${CY}" rx="52" ry="60" fill="#3a2a0e"/>` + [...Array(28)].map((_, j) => { const a = (j / 28) * 360, [x, yy] = [CX + 46 * Math.cos(a * R2), CY + 54 * Math.sin(a * R2)];
+      return `<rect x="${f(x - 2.2)}" y="${f(yy - 5.5)}" width="4.4" height="11" rx=".8" transform="rotate(${f(a + 90)} ${f(x)} ${f(yy)})" fill="${D_}" stroke="#b8862b" stroke-width=".5"/>`; }).join("");
+    stone = `<ellipse cx="${CX}" cy="${CY}" rx="36" ry="44" fill="${S_}" stroke="${G}" stroke-width="3"/>${[0, 45, 90, 135, 180, 225, 270, 315].map((a) => `<path d="M${CX} ${CY}L${f(CX + 34 * Math.cos(a * R2))} ${f(CY + 42 * Math.sin(a * R2))}" stroke="#fff" stroke-width=".8" opacity=".16"/>`).join("")}`;
+  } else if (form === "compass") { // a log pose: an octagon with compass points
+    back = [0, 90, 180, 270].map((a) => { const [x1, y1] = P(84, a - 9), [x2, y2] = P(110, a), [x3, y3] = P(84, a + 9); return `<path d="M${f(x1)} ${f(y1)}L${f(x2)} ${f(y2)}L${f(x3)} ${f(y3)}Z" fill="${G}" stroke="#6e4a12" stroke-width="1.2"/>`; }).join("");
+    bezel = `<path d="M${poly(90, 8, 22.5)}Z" fill="${G}" stroke="#6e4a12" stroke-width="1.5"/><path d="M${poly(85, 8, 22.5)}Z" fill="none" stroke="#fff6c8" stroke-width="1" opacity=".5"/>`;
+    halo = `<path d="M${poly(60, 8, 22.5)}Z" fill="#3a2a0e"/>${pave(52, 32, 3.4, (j) => (j % 4 ? D_ : S_))}`;
+    stone = `<circle cx="${CX}" cy="${CY}" r="44" fill="${S_}" stroke="${G}" stroke-width="3"/>`;
+  } else { // shield
+    const sh = `M${CX} ${CY - 92}L${CX + 84} ${CY - 66}V${CY + 6}Q${CX + 80} ${CY + 66} ${CX} ${CY + 92}Q${CX - 80} ${CY + 66} ${CX - 84} ${CY + 6}V${CY - 66}Z`;
+    bezel = `<path d="${sh}" fill="${G}" stroke="#6e4a12" stroke-width="1.5"/>`;
+    halo = `<circle cx="${CX}" cy="${CY}" r="58" fill="#3a2a0e"/>${pave(53, 36, 3.3, D_)}`;
+    stone = `<circle cx="${CX}" cy="${CY}" r="46" fill="${S_}" stroke="${G}" stroke-width="3"/>`;
+  }
+  return `<svg class="ring" data-zoom="r:${y}" viewBox="0 0 280 300" role="img" aria-label="Buckaroo Bowl ${roman(bn)} ring" xmlns="http://www.w3.org/2000/svg"><defs>
   <linearGradient id="g${i}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff6c8"/><stop offset=".3" stop-color="#f2c94c"/><stop offset=".65" stop-color="#b8862b"/><stop offset="1" stop-color="#6e4a12"/></linearGradient>
   <linearGradient id="v${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6c8"/><stop offset=".45" stop-color="#e0b445"/><stop offset="1" stop-color="#7a5418"/></linearGradient>
   <radialGradient id="s${i}" cx=".38" cy=".32" r=".75">${ringGem(h).map((c, k) => `<stop offset="${[0, 0.55, 1][k]}" stop-color="${c}"/>`).join("")}</radialGradient>
   <radialGradient id="d${i}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#dfe9f5"/><stop offset="1" stop-color="#9fb2c8"/></radialGradient>
   <radialGradient id="p${i}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#f4f7fb"/><stop offset=".6" stop-color="#c7d2de"/><stop offset="1" stop-color="#8e9aa8"/></radialGradient>
   <radialGradient id="w${i}" cx=".5" cy=".42" r=".5"><stop offset="0" stop-color="#ffd75a" stop-opacity=".3"/><stop offset="1" stop-color="#ffd75a" stop-opacity="0"/></radialGradient>
-  <path id="t${i}" d="M73 120a67 67 0 0 1 134 0"/><path id="b${i}" d="M70 94.5A74.5 74.5 0 1 0 210 94.5"/>
+  <path id="b${i}" d="M70 94.5A74.5 74.5 0 1 0 210 94.5"/>
   <path id="l${i}" d="M${BX} ${BY + RY}A${RX} ${RY} 0 0 1 ${BX} ${BY - RY}"/><path id="k${i}" d="M${BX} ${BY - RY}A${RX} ${RY} 0 0 1 ${BX} ${BY + RY}"/><path id="u${i}" d="M${BX - RX} ${BY}A${RX} ${RY} 0 0 0 ${BX + RX} ${BY}"/></defs>
   <ellipse cx="140" cy="140" rx="135" ry="135" fill="url(#w${i})"/>
-  <ellipse cx="${BX}" cy="${BY}" rx="${RX}" ry="${RY}" fill="none" stroke="url(#v${i})" stroke-width="26"/>
+  <ellipse cx="${BX}" cy="${BY}" rx="${RX}" ry="${RY}" fill="none" stroke="${V}" stroke-width="26"/>
   ${[-13, 13].map((d) => `<ellipse cx="${BX}" cy="${BY}" rx="${RX + d}" ry="${RY + d}" fill="none" stroke="#6e4a12" stroke-width="1.2" opacity=".45"/>`).join("")}
-  ${small ? "" : `${eng("l", 33, String(y), 13)}${eng("k", 67, (c.abbrev || "").toUpperCase(), 13)}${eng("u", 50, st.band, 10)}`}
-  ${[...Array(8)].map((_, k) => { const a = (k * 45 + 22.5) * R2, x = Math.cos(a), yy = Math.sin(a);
-    return `<path d="M${140 + 86 * x} ${120 + 86 * yy}L${140 + 100 * x} ${120 + 100 * yy}" stroke="url(#v${i})" stroke-width="6" stroke-linecap="round"/><circle cx="${140 + 102 * x}" cy="${120 + 102 * yy}" r="5.5" fill="url(#g${i})" stroke="#6e4a12" stroke-width=".8"/>`; }).join("")}
-  <circle cx="140" cy="120" r="88" fill="url(#g${i})" stroke="#6e4a12" stroke-width="1.5"/><circle cx="140" cy="120" r="83.5" fill="none" stroke="#fff6c8" stroke-width="1" opacity=".5"/>
-  ${small ? "" : `<text font-family="Georgia, serif" font-weight="700" font-size="13" fill="${ink}" letter-spacing="2.5"><textPath href="#t${i}" startOffset="50%" text-anchor="middle">BUCKAROO BOWL ${roman(y - D.firstYear + 1)}</textPath></text>
-  ${[[left, 50 - g, "end"], [st.right, 50 + g, "start"]].map(([t, o, an]) => `<text font-family="Georgia, serif" font-weight="700" font-size="10" fill="${ink}" textLength="88" lengthAdjust="spacing"><textPath href="#b${i}" startOffset="${o.toFixed(2)}%" text-anchor="${an}" textLength="88" lengthAdjust="spacing">${esc(t)}</textPath></text>`).join("")}`}
-  ${mid}
-  <circle cx="140" cy="120" r="58" fill="#3a2a0e"/>${[...Array(40)].map((_, k) => { const a = (k / 40) * Math.PI * 2; return `<circle cx="${(140 + 53 * Math.cos(a)).toFixed(1)}" cy="${(120 + 53 * Math.sin(a)).toFixed(1)}" r="3.3" fill="url(#p${i})" stroke="#b8862b" stroke-width=".6"/>`; }).join("")}
-  <circle cx="140" cy="120" r="46" fill="url(#s${i})" stroke="url(#g${i})" stroke-width="3"/>
-  ${[0, 60, 120, 180, 240, 300].map((a) => `<path d="M140 120L${140 + 44 * Math.cos(a * R2)} ${120 + 44 * Math.sin(a * R2)}" stroke="#fff" stroke-width=".8" opacity=".18"/>`).join("")}
-  <g opacity=".95">${lgEmblem(140, 124, 0.62)}</g><path d="M96 88q20-26 52-30" stroke="#fff" stroke-width="3" fill="none" opacity=".35" stroke-linecap="round"/></svg>`; };
+  ${small ? "" : `${eng("l", form === "cushion" ? 29 : 33, String(y), 13)}${eng("k", form === "cushion" ? 71 : 67, (c.abbrev || "").toUpperCase(), 13)}${eng("u", 50, st.band, 10)}`}
+  ${back}${bezel}
+  ${small ? "" : [[left, 50 - g, "end"], [st.right, 50 + g, "start"]].map(([t, o, an]) => `<text font-family="Georgia, serif" font-weight="700" font-size="10" fill="${ink}" textLength="88" lengthAdjust="spacing"><textPath href="#b${i}" startOffset="${o.toFixed(2)}%" text-anchor="${an}" textLength="88" lengthAdjust="spacing">${esc(t)}</textPath></text>`).join("")}
+  ${mid}${halo}${stone}
+  ${sigil(140, 122, form === "crown" ? 0.6 : form === "cushion" ? 0.52 : 0.66)}<path d="M100 86q18-22 46-27" stroke="#fff" stroke-width="3" fill="none" opacity=".3" stroke-linecap="round"/></svg>`; }
+// One line on how a ring is built, for the trophy viewer
+const RING_FORM_TXT = { wheel: "a ship's-wheel top around a round stone", cushion: "a cushion top with a double halo around a step-cut stone", crown: "a crown rising off the top, baguettes around an oval stone",
+  compass: "a Log Pose top with compass points", shield: "a shield top" };
+const ringDesign = (y) => { const bn = y - D.firstYear + 1, form = (RING_STORY[y] || {}).form || RING_FORMS[(bn - 1) % RING_FORMS.length], g = RING_SIGIL[y] || {};
+  const mark = g.clones ? `a clone army of ${count(g.clones)} skulls` : g.head === "ivy" ? "a skull crowned in ivy" : "the crew's skull";
+  return `Built with ${RING_FORM_TXT[form]}; the stone carries the champions' own flag, ${mark} over crossed footballs.`; };
 // Each drawing gets its own gradient ids, so several trophies can share a page
 let trophyN = 0;
 const trophy = (k, small) => { const t = TROPHY[k], a = trInfo(k); if (!t || !a.nm) return ""; const i = `t${trophyN++}`;
@@ -3773,7 +3836,7 @@ function zoomOpen(z) {
   const [kind, v] = z.split(":"), y = +v;
   let art, title, sub, go;
   if (kind === "r") { const s = S[y], c = s && s.teams.find((t) => t.final === 1); if (!c) return;
-    art = ringArt(y); title = `Buckaroo Bowl ${roman(y - D.firstYear + 1)} ring`; sub = `${esc(nameAt(c, s.regWeeks))} · ${mgrName(c.mgr)} · ${y}`; go = `bowl-${y}`; }
+    art = ringArt(y); title = `Buckaroo Bowl ${roman(y - D.firstYear + 1)} ring`; sub = `${esc(nameAt(c, s.regWeeks))} · ${mgrName(c.mgr)} · ${y}</small><small>${ringDesign(y)}`; go = `bowl-${y}`; }
   else { const a = trInfo(v); if (!a.nm) return; art = trophy(v); title = v === "bowl" ? "The Buckaroo Bowl trophy" : `The ${esc(a.nm)} trophy`.replace("The The", "The");
     sub = v === "bowl" ? "Awarded to the league champion" : `${a.mgr ? "Manager" : "Player"} award · ${esc(a.cat)}`; go = a.go; }
   let el = document.getElementById("zoomview");
