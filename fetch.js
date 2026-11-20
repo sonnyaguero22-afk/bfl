@@ -77,6 +77,10 @@ async function get(url, file, headers = {}) {
     if (traded.size) await get(`${lg}?view=kona_player_info&scoringPeriodId=${last}`, `traded_${y}.json`, {
       "x-fantasy-filter": JSON.stringify({ players: { filterIds: { value: [...traded] }, filterStatsForTopScoringPeriodIds: { value: last + 1, additionalValue: [`00${y}`] } } }),
     });
+    // Every rostered player's injury status (the box score views leave it out), for lineups, rosters and injury news
+    if (!L.status.isExpired) await get(`${lg}?view=kona_player_info&scoringPeriodId=${last}`, `rostered_${y}.json`, {
+      "x-fantasy-filter": JSON.stringify({ players: { filterStatus: { value: ["ONTEAM"] }, limit: 300 } }),
+    });
     // Activity feed (has full trade details when logged in)
     await get(`${lg}/communication/?view=kona_league_communication`, `comm_${y}.json`, {
       "x-fantasy-filter": JSON.stringify({ topics: { filterType: { value: ["ACTIVITY_TRANSACTIONS"] }, limit: 1000, limitPerMessageSet: { value: 25 }, offset: 0, sortMessageDate: { sortPriority: 1, sortAsc: false }, sortFor: { sortPriority: 2, sortAsc: false }, filterIncludeMessageTypeIds: { value: [178, 180, 179, 239, 181, 244] } } }),

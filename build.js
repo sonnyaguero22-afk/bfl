@@ -85,6 +85,13 @@ for (const year of years) {
   // Byes in playoffs (no away team)
   const byes = L.schedule.filter((s) => !s.away).map((s) => ({ wk: s.matchupPeriodId, h: s.home.teamId, tier: s.playoffTierType }));
 
+  // Injury status by player id. The box scores leave it out, so it comes from the rosters and, fresher, the rostered players'
+  // info (fetch.js); ESPN's details, when it has them, say whether he's out for the season and when he's expected back
+  const injById = {};
+  const injOf = (p) => { if (!p || !p.injuryStatus || ["ACTIVE", "NORMAL"].includes(p.injuryStatus)) return; const d = p.injuryDetails || {}, r = d.expectedReturnDate;
+    injById[p.id] = { s: p.injuryStatus, season: d.outForSeason || undefined, back: Array.isArray(r) ? `${r[0]}-${String(r[1]).padStart(2, "0")}-${String(r[2]).padStart(2, "0")}` : typeof r === "string" ? r.slice(0, 10) : undefined }; };
+  for (const t of L.teams || []) for (const e of (t.roster || {}).entries || []) injOf(e.playerPoolEntry && e.playerPoolEntry.player);
+  if (exists(`rostered_${year}.json`)) for (const e of load(`rostered_${year}.json`).players || []) { const p = e.player || {}; if (p.id) delete injById[p.id]; injOf(p); }
   // Weekly lineups
   // NFL bye weeks by pro team id (proTeamSchedules_wl)
   const nflBye = {}, nflByes = {}; // by pro team id, and by abbreviation for odds.js (and the same-game measurement)
@@ -107,7 +114,7 @@ for (const year of years) {
           // st: "bye", or "out" when he has no stats for the week (settled below, once his game is over)
           const act = (p.stats || []).find((x) => x.statSourceId === 0 && x.scoringPeriodId === w);
           const st = nflBye[p.proTeamId] === w ? "bye" : !(act && Object.keys(act.stats || {}).length) && !e.playerPoolEntry.appliedStatTotal ? "dnp" : undefined;
-          return { n: p.fullName, pos: POS[p.defaultPositionId] || "", pro: PRO[p.proTeamId] || "", slot: SLOT[e.lineupSlotId] || "BN", pts: r2(e.playerPoolEntry.appliedStatTotal || 0), proj: pj ? r2(pj.appliedTotal) : null, st, _pt: p.proTeamId, _x: act && act.stats, _inj: p.injuryStatus };
+          return { n: p.fullName, pos: POS[p.defaultPositionId] || "", pro: PRO[p.proTeamId] || "", slot: SLOT[e.lineupSlotId] || "BN", pts: r2(e.playerPoolEntry.appliedStatTotal || 0), proj: pj ? r2(pj.appliedTotal) : null, st, _pt: p.proTeamId, _x: act && act.stats, _inj: p.injuryStatus || (injById[p.id] || {}).s };
         });
       }
     }
@@ -358,9 +365,12 @@ for (const year of years) {
   for (const t of L.teams) {
     rosters[t.id] = t.roster.entries.map((e) => {
       const p = e.playerPoolEntry.player;
-      return { n: p.fullName, pos: POS[p.defaultPositionId] || "", pro: PRO[p.proTeamId] || "", slot: SLOT[e.lineupSlotId] || "BN", how: e.acquisitionType, pts: r2(e.playerPoolEntry.appliedStatTotal || 0) };
+      const inj = injById[p.id];
+      return { n: p.fullName, pos: POS[p.defaultPositionId] || "", pro: PRO[p.proTeamId] || "", slot: SLOT[e.lineupSlotId] || "BN", how: e.acquisitionType, pts: r2(e.playerPoolEntry.appliedStatTotal || 0),
+        inj: inj && inj.s, injSeason: inj && inj.season, injBack: inj && inj.back };
     });
   }
+  if (!done) console.log(`::notice::${year} injured on rosters: ${Object.entries(rosters).flatMap(([id, ps]) => ps.filter((p) => p.inj).map((p) => `${p.n} (team ${id}, ${p.inj}${p.injSeason ? ", out for the season" : ""}${p.injBack ? `, back ${p.injBack}` : ""})`)).join("; ") || "none"}`);
 
   seasons.push({
     year: +year, name: L.settings.name, done, curWeek: L.status.currentMatchupPeriod, regWeeks,

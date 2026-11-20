@@ -63,6 +63,8 @@ const now = {
   // Players a manager vowed to start in this week's final word (QUOTES) who are now on his bench
   benched: (QUOTES[`final-${cur.year}-${W}`] || []).filter((q) => { const t = quoteTeam(q, cur, W);
     return q.starting && t && ((cur.lineups[W] || {})[t.id] || []).some((p) => p.n === q.starting && (p.slot === "BN" || p.slot === "IR")); }).map((q) => q.starting),
+  // Every rostered player's injury status, for injury news between games
+  rinj: Object.fromEntries(Object.entries(cur.rosters || {}).flatMap(([id, ps]) => ps.filter((p) => p.inj).map((p) => [`${id}|${p.n}`, p.inj]))),
   at: Date.now(),
 };
 const before = fs.existsSync(STATE) ? JSON.parse(fs.readFileSync(STATE, "utf8")) : null;
@@ -135,6 +137,25 @@ if (before && before.moves) {
     events.push(e); moveAt[e] = m.date;
   }
 }
+// Injury news, games or not: a rostered player who matters to his team (a regular starter or one of its top three scorers)
+// newly ruled out, doubtful, on IR or suspended. Carries how much he matters and what's at stake, so the reaction fits:
+// a star on IR in a playoff race sets off his team's fans, a role player out for a week barely registers.
+const SEVERITY = { QUESTIONABLE: 1, DAY_TO_DAY: 1, DOUBTFUL: 2, OUT: 3, SUSPENSION: 3, INJURY_RESERVE: 4 };
+if (before && before.rinj) {
+  const odds = (id) => { const t = cur.odds && cur.odds.t && cur.odds.t[id]; return t ? t.p[t.p.length - 1] : null; };
+  for (const [id, ps] of Object.entries(cur.rosters || {})) {
+    const startedFor = (n) => { let pts = 0, starts = 0, wks = 0; for (const w in cur.lineups) { const e = ((cur.lineups[w] || {})[id] || []).find((q) => q.n === n); if (!e || +w >= W) continue; wks++; if (e.slot !== "BN" && e.slot !== "IR") { starts++; pts += e.pts; } } return { pts: Math.round(pts * 10) / 10, starts, wks }; };
+    const ranked = ps.map((p) => ({ p, ...startedFor(p.n) })).sort((a, b) => b.pts - a.pts);
+    ranked.forEach((r, i) => {
+      const { p } = r, was = before.rinj[`${id}|${p.n}`];
+      if (!p.inj || (SEVERITY[p.inj] || 0) < 2 || (SEVERITY[p.inj] || 0) <= (SEVERITY[was] || 0) || events.some((e) => e.includes(p.n))) return;
+      if (!(i < 3 || (r.wks && r.starts / r.wks >= 0.5))) return;
+      const t = cur.byId[id], left = cur.regWeeks - W, o = odds(id);
+      const how = p.injSeason ? "is out for the season" : p.inj === "INJURY_RESERVE" ? `went on injured reserve, out at least four NFL weeks (${left > 0 ? `${left} regular-season week${left === 1 ? "" : "s"} left after this one` : "the playoffs are next"})` : `is now listed ${injured(p.inj)}`;
+      events.push(`INJURY NEWS: ${p.n} (${p.pos}, ${p.pro}) ${how}${p.injBack ? `, expected back around ${p.injBack}` : ""}. For ${team(+id)} he's ${i === 0 ? "the top scorer" : `${i + 1}${["", "st", "nd", "rd"][i + 1] || "th"} in scoring`} with ${r.pts} points in ${r.starts} starts; the team is ${t.w}-${t.l}${o != null ? ` with ${Math.round(o)}% playoff odds` : ""}`);
+    });
+  }
+}
 // Most important first, and at most 10 per update: finals, lead changes, touchdowns, injuries, swings, the Bounty Board's Gear 5s and Seastoneds, the biggest plays, turnovers, then moves
 const ORDER = ["FINAL", "LEAD CHANGE", "TOUCHDOWN", "INJURY", "BENCHED", "SWING", "GEAR 5", "SEASTONED", "BIG PLAY", "TURNOVER", "MOVE"];
 const gain = (e) => +((e.match(/\+([\d.]+)/) || [])[1] || 0);
@@ -159,7 +180,7 @@ const where = (id) => { const by = { done: [], on: [], pre: [] }; for (const p o
   return `${team(id)}: ${Object.entries(by).filter(([, xs]) => xs.length).map(([g, xs]) => `${GAME[g]}: ${xs.join(", ")}`).join("; ")}`; };
 const lineups = starters(games[0] ? games[0].h : 0).some((p) => p.g) ? games.flatMap((m) => [m.h, m.a]).map(where) : [];
 const clock = new Date().toLocaleString("en-US", { timeZone: "America/New_York", weekday: "long", hour: "numeric", minute: "2-digit" });
-const ask = `It's week ${W}, ${clock} ET. Write 2 to 4 social posts reacting to what just happened around the league, the way the timeline does: fans of the teams involved (celebrating, panicking, raging), a GLSN staffer with a quick take (Haredas on how the win chances just swung, Shakky on a lock going up in smoke, Absalom on a roster move, Pandaman from the stands), GLSN's own account for a final or a 🚨 big moment, maybe a team's official account after a big play, a final or a pickup ("welcome to the squad"). React to the play itself, the way people do when it happens: name the touchdown, the interception or the final and what it does to their matchup, and say it the way a real person in a group chat or on the timeline would, in their own voice. Vary it: some fans are hyped, some deadpan, some bitter, some just relieved; avoid stock hype phrases, catchphrases and forced slang, and don't open several posts the same way. Talk about players and what they did, never in stat-line shorthand like "+8.4". A player getting hurt gets the real mix: worry, lineup panic, and gallows humor about the fantasy fallout (the manager's luck, a curse, the bench guy who now has to save the week), the way fans actually react; aim the jokes at the fantasy side, not at how badly he's hurt. Only a numbers person (Dr. Nina Kessler, or a stats account) cites win chances. A depth add or a drop of a nobody gets a post only if there's a joke in it; a big bid, a big name dropped, or a pickup that fills a hole is worth talking about. Keep each post short, one or two sentences, and react to these events only; use the scores and game statuses as context. Mind the clock and each player's status: a player whose game is over has played (don't say he's due, or still to come), and one yet to play hasn't. event is the number of the event a post reacts to; minutes_ago is how long ago it was posted, from 0 to 14.
+const ask = `It's week ${W}, ${clock} ET. Write 2 to 4 social posts reacting to what just happened around the league, the way the timeline does: fans of the teams involved (celebrating, panicking, raging), a GLSN staffer with a quick take (Haredas on how the win chances just swung, Shakky on a lock going up in smoke, Absalom on a roster move, Pandaman from the stands), GLSN's own account for a final or a 🚨 big moment, maybe a team's official account after a big play, a final or a pickup ("welcome to the squad"). React to the play itself, the way people do when it happens: name the touchdown, the interception or the final and what it does to their matchup, and say it the way a real person in a group chat or on the timeline would, in their own voice. Vary it: some fans are hyped, some deadpan, some bitter, some just relieved; avoid stock hype phrases, catchphrases and forced slang, and don't open several posts the same way. Talk about players and what they did, never in stat-line shorthand like "+8.4". INJURY NEWS between games is about how much he matters: a team's best player on IR or out for the season in a playoff race sets off that fanbase (melodramatic despair: the season's over, deleting the app, begging the manager for a trade, blaming the injury-prone pick; never self-harm jokes) while rivals smell blood, and those posts can run hot; a role player ruled out for a week gets a shrug or nothing. A player getting hurt gets the real mix: worry, lineup panic, and gallows humor about the fantasy fallout (the manager's luck, a curse, the bench guy who now has to save the week), the way fans actually react; aim the jokes at the fantasy side, not at how badly he's hurt. Only a numbers person (Dr. Nina Kessler, or a stats account) cites win chances. A depth add or a drop of a nobody gets a post only if there's a joke in it; a big bid, a big name dropped, or a pickup that fills a hole is worth talking about. Keep each post short, one or two sentences, and react to these events only; use the scores and game statuses as context. Mind the clock and each player's status: a player whose game is over has played (don't say he's due, or still to come), and one yet to play hasn't. event is the number of the event a post reacts to; minutes_ago is how long ago it was posted, from 0 to 14.
 
 Events since the last update:
 ${events.map((e, i) => `${i + 1}. ${e}`).join("\n")}
