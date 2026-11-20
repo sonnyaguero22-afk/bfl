@@ -10,7 +10,7 @@
 const fs = require("fs");
 const path = require("path");
 const Anthropic = require("@anthropic-ai/sdk");
-const { S, SYSTEM, SOCIAL, LORE, NEWS, who, nameAt, QUOTES, quoteTeam } = require("./news");
+const { S, SYSTEM, SOCIAL, LORE, NEWS, who, nameAt, QUOTES, quoteTeam, missingStars } = require("./news");
 
 const MODEL = "claude-sonnet-5-5"; // short posts, many times a game day; the articles stay on Opus
 const MAX_BATCHES_PER_DAY = 20;    // keeps a wild Sunday's cost predictable
@@ -196,7 +196,7 @@ ${events.map((e, i) => `${i + 1}. ${e}`).join("\n")}
 
 Scoreboard now:
 ${scoreboard.join("\n")}
-${lineups.length ? `\nStarters by game status:\n${lineups.join("\n")}\n` : ""}
+${lineups.length ? `\nStarters by game status:\n${lineups.join("\n")}\n` : ""}${(() => { const x = missingStars(cur, W); return x.length ? `\nStars teams are playing without (background, not news: now and then, not every time, a fan can miss one, mostly when his team is struggling or the guy filling in flops; yearning, nostalgia, counting the days to his return, an old highlight):\n${x.join("\n")}\n` : ""; })()}
 Recent live posts, so you don't repeat them:
 ${JSON.stringify(feed.social.slice(-10).map((p) => `${p.author}: ${p.text}`))}`;
 
