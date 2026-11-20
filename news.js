@@ -550,6 +550,39 @@ function cardFacts(s) {
     league_format: "redraft: every roster is drafted fresh next season, nothing carries over (no keepers, not a dynasty league)",
     regular_season_grades: base.regular_season_grades, report_card: cards };
 }
+// Games a lineup call decided: a winner who benched a player who scored below zero (with the spot empty, or ESPN projecting
+// him at least as high as the starter), so starting him would have tied or lost
+// it (Sonny's empty D/ST spot in 2026 week 3, with the Eagles' -1 on his bench, beat Kai by 1), or a loser who left a spot
+// empty with a bench player who'd have won it. Single-week games only.
+const ELIG = { QB: ["QB"], RB: ["RB", "FLEX"], WR: ["WR", "FLEX"], TE: ["TE", "FLEX"], K: ["K"], "D/ST": ["D/ST"] };
+function lineupTwists(s) {
+  const need = {}; // a full lineup's spots: the most of each any team filled
+  for (const wk in s.lineups) for (const id in s.lineups[wk]) { const c = {};
+    for (const p of s.lineups[wk][id]) if (p.slot !== "BN" && p.slot !== "IR") c[p.slot] = (c[p.slot] || 0) + 1;
+    for (const k in c) need[k] = Math.max(need[k] || 0, c[k]); }
+  const out = [];
+  for (const m of s.matchups.filter((x) => done(x) && x.a && x.win && spans(s, x.wk).length === 1)) {
+    const margin = r1(Math.abs(m.hp - m.ap)), W = m.win, L = W === m.h ? m.a : m.h;
+    for (const [id, won] of [[W, true], [L, false]]) {
+      const ps = (s.lineups[m.wk] || {})[id] || [], st = ps.filter((p) => p.slot !== "BN" && p.slot !== "IR");
+      const isEmpty = (k) => st.filter((p) => p.slot === k).length < (need[k] || 0);
+      let best = null;
+      for (const b of ps.filter((p) => p.slot === "BN")) for (const slot of ELIG[b.pos] || []) {
+        const inSlot = st.filter((p) => p.slot === slot), empty = isEmpty(slot); if (!empty && !inSlot.length) continue;
+        const out_ = empty ? null : inSlot.reduce((a, c) => (c.pts < a.pts ? c : a)), swing = r1(b.pts - (out_ ? out_.pts : 0));
+        // A real call: the spot was empty, or ESPN projected the benched player at least as high as the starter
+        const hit = (empty || (b.proj || 0) >= (out_.proj || 0)) && (won ? b.pts < 0 && -swing >= margin : empty && swing >= margin);
+        if (hit && (!best || Math.abs(swing) > Math.abs(best.swing))) best = { b, out_, slot, empty, swing };
+      }
+      if (!best) continue;
+      const { b, out_, slot, empty, swing } = best, opp = id === W ? L : W, verdict = Math.abs(swing) === margin ? "a tie" : won ? "a loss" : "a win";
+      out.push({ wk: m.wk, teams: [id, opp], text: won
+        ? `${who(s.byId[id], m.wk)} beat ${who(s.byId[opp], m.wk)} by ${margin} in week ${m.wk}${empty ? ` with nobody in the ${slot} spot` : ""}; ${b.n} (${b.pos}) scored ${b.pts} on his bench, and starting him${empty ? "" : ` over ${out_.n} (${out_.pts})`} would have made it ${verdict}`
+        : `${who(s.byId[id], m.wk)} lost to ${who(s.byId[opp], m.wk)} by ${margin} in week ${m.wk} with nobody in the ${slot} spot, while ${b.n} (${b.pos}) scored ${b.pts} on his bench; starting him would have made it ${verdict}` });
+    }
+  }
+  return out;
+}
 function reviewFacts(s) {
   const last = Math.max(...s.matchups.map((m) => m.wk));
   const rec = recordsThrough(s, s.regWeeks);
@@ -565,6 +598,11 @@ function reviewFacts(s) {
     playoff_games: playoffs,
     highest_single_week: `${who(hi.t, hi.wk)} ${hi.p} in week ${hi.wk}`, lowest_single_week: `${who(lo.t, lo.wk)} ${lo.p} in week ${lo.wk}`,
     trades: s.trades.length, notes: s.notes || [],
+    // Flagged when the two teams finished within a game of each other on opposite sides of the playoff line or of last place
+    lineup_twists: (() => { const x = lineupTwists(s).map((tw) => { const [a, b] = tw.teams.map((id) => s.byId[id]), gap = Math.abs(rec[a.id].w - rec[b.id].w);
+      const line = !!a.seed !== !!b.seed || [a.final, b.final].includes(s.teams.length);
+      return { game: tw.text, decided_the_race: gap <= 1 && line ? `${who(a, last)} and ${who(b, last)} finished within a game of each other${!!a.seed !== !!b.seed ? " with only one making the playoffs" : " with last place between them"}` : undefined }; });
+      return x.length ? x : undefined; })(),
   };
 }
 
@@ -812,7 +850,7 @@ const asks = {
   bowl: "Write a thorough encyclopedia article about this game for the league's wiki, the way Wikipedia covers a Super Bowl: the title is just the game's name (the game field), a one-sentence dek, and 5 or 6 sections, each with a short heading and 2 to 4 paragraphs: Background (both teams' seasons: records, seeds, points, title chances going in, regular-season meetings, earlier titles and playoff history between these managers); Road to the game (each team's earlier playoff games and who carried them); Game summary (for a two-week total, a part for each NFL week: the score after the first week, who drove it, how the second week changed or settled it; scoring_sequence lists the NFL scoring plays involving these starters in the order they happened: tell the game through its key moments (who opened the scoring, the swings, the plays that put it away), not every play, and never give clock times; play_by_play, when present, adds the live win chance; with neither, never invent the order of scoring within a week); Key performers (stars against their projection and their season averages, flops, bench points that would have changed the result); and Aftermath (what it meant: a first or repeat title and where it puts the manager in league history, or last place and the Bum Bowl's shame). Encyclopedic: third person, past tense, specific numbers, no social posts, the league's personality in a light touch. Never mention what isn't recorded or how the site keeps its data; just tell what is known. Use only the facts given.",
   card: "Write the league's postseason report card for this season, published a week after the Buckaroo Bowl: a headline, a one-sentence dek and 3 to 4 body paragraphs on how the season played out across the league and what it says about how this league is won. Then a detailed card for every team in report_card (use the exact team name), in finishing order: a season letter grade (A+ to F with plus and minus, the full range: the champion and a dominant team near the top, a team that collapsed or never showed up can get a D or F), a punchy headline, and a 4 to 6 sentence summary of the whole season, playoffs or consolation ladder included. Then strengths and weaknesses: 2 to 4 short, specific points each, built on the numbers (position_groups ranks, top_starters, luck, points for rank, how it finished). Then the management review: a verdict (over-managed for a manager whose churn and trades cost him, under-managed for one who sat still while holes stayed open or left points on the bench, well managed, or mismanaged for one who got the big calls wrong) with a 3 to 5 sentence take on how he ran the team, and a sub-grade with a one-sentence note for each of draft (points_as_starters_from_own_picks, his first picks and best value pick), waivers (adds against the league average and what the pickups scored), trades (what came in against what went out) and lineups (efficiency, points left against the best lineup, losses the bench would have flipped). Compare each manager with the rest of the league, not in a vacuum. Then fix: 2 to 4 concrete things to change heading into next season (next_season). This is a redraft league, so no player carries over: the fixes are about approach (draft strategy and which positions to prioritize, how actively to work the wire, trading habits, lineup decisions), never about keeping or building around specific players. Mention awards in awards where they help tell the story. When regular_season_grades is given, say when a team's grade moved since then and why. Be honest and specific; praise and criticism both land harder with a number behind them. Then 4 to 6 social posts reacting to the grades.",
   grades: "Write the league's report card at the stage given (stage): a headline, a one-sentence dek, 2 to 3 body paragraphs on the big picture, then a letter grade for every team in report_card (use the exact team name; A+ to F with plus and minus), each with a short punchy headline and a 2 to 4 sentence blurb that explains the grade. Grade each team against what it was expected to do (title and playoff odds on draft day) and how it actually played, not on the record alone: weigh points scored and their rank, luck (wins minus expected wins from scoring; a lucky record earns less credit, an unlucky one some sympathy), how the season finished (last_five), and the manager's moves (trades and pickups) where they mattered. Use the full range: a clear best gets an A, a team that collapsed or never showed up can get a D or F, and most land in between. At the end of the season (stage mentions playoffs), grade the whole season with the postseason weighed heavily: the champion is graded on winning it all, a playoff team that flopped drops, the consolation ladder counts too, and last place (the Bum Bowl loser) takes a hit; regular_season_grades are the grades from the end of the regular season, so say when a grade moved and why. Then 4 to 6 social posts reacting to the grades.",
-  review: "Write a season-in-review story for this finished season: a headline, a one-sentence dek, and 5 to 7 body paragraphs telling the story of the season from draft to Buckaroo Bowl, including the champion, the last-place finisher, the playoff games, and any notable notes.",
+  review: "Write a season-in-review story for this finished season: a headline, a one-sentence dek, and 5 to 7 body paragraphs telling the story of the season from draft to Buckaroo Bowl, including the champion, the last-place finisher, the playoff games, and any notable notes. lineup_twists are games a lineup call decided (a winner whose benched player would have cost him the game, or a loser who left a spot empty); when one has decided_the_race, that game is part of how the race was settled and deserves a line, told with a straight face; skip the others unless they make a great story.",
 };
 
 // ---------- What still needs writing ----------
