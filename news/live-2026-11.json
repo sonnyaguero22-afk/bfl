@@ -237,6 +237,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-20T02:52:23.205Z"
+  },
+  {
+   "author": "Habib Hive",
+   "handle": "@HabibHive",
+   "text": "Puka out until January 10 after MCL surgery AND Maye's ankle has no diagnosis. Two of my guys gone in one afternoon. Kaushal at 5-5 needed a break and the universe sent a double dose of the opposite.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-20T17:47:13.336Z"
+  },
+  {
+   "author": "Absalom",
+   "handle": "@AbsalomScoops",
+   "text": "Sources say Kaushal's phone has been open to the Impel Down listings since the Nacua news broke. I was in the room. He is scrolling very fast.",
+   "heat": 4,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-20T17:51:13.336Z"
+  },
+  {
+   "author": "Pillbert Pete",
+   "handle": "@PillbertPete",
+   "text": "Nacua's season is over, Maye is questionable for a while, and Habibsters are 5-5. Alan has to be thrilled. Philly doesn't even need to play this week to feel good.",
+   "heat": 7,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-20T17:55:13.336Z"
+  },
+  {
+   "author": "Dawg Pound Dan",
+   "handle": "@DawgPoundDan",
+   "text": "Maye's ankle is the type of injury that gets a vague update and then a worse one. Habib, start shopping for a quarterback now.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-20T17:57:13.336Z"
   }
  ],
  "batches": [
@@ -246,7 +286,8 @@
   "2026-11-20T00:35:58.850Z",
   "2026-11-20T01:27:29.849Z",
   "2026-11-20T01:54:15.208Z",
-  "2026-11-20T02:53:23.205Z"
+  "2026-11-20T02:53:23.205Z",
+  "2026-11-20T17:58:13.336Z"
  ],
  "usage": [
   {
@@ -287,6 +328,14 @@
    "input": 4,
    "output": 385,
    "cache_write": 8930,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-20T17:58:13.336Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 487,
+   "cache_write": 9425,
    "cache_read": 0
   }
  ]
