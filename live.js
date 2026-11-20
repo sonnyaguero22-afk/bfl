@@ -161,7 +161,7 @@ if (before && before.rinj) {
       else if (sev >= 2 && p.injBack && !wasBack && wasSev >= 2) what = `now has an expected return date: ${when(p.injBack)}`;
       else if (wasSev >= 3 && sev <= 1) what = sev ? `is back from ${injured(was)} and now listed ${injured(p.inj)}, closer to a return` : `is healthy again after being ${injured(was)}, back in play`;
       if (!what) return;
-      events.push(`INJURY NEWS: ${p.n} (${p.pos}, ${p.pro}) ${what}${p.injBack && !p.injSeason && !/expected return/.test(what) ? `, expected back around ${when(p.injBack)}` : ""}. For ${team(+id)} he's ${i === 0 ? "the top scorer" : `${i + 1}${["", "st", "nd", "rd"][i + 1] || "th"} in scoring`} with ${r.pts} points in ${r.starts} starts; the team is ${t.w}-${t.l}${o != null ? ` with ${Math.round(o)}% playoff odds` : ""}`);
+      events.push(`INJURY NEWS: ${p.n} (${p.pos}, ${p.pro}) ${what}${p.injBack && !p.injSeason && !/expected return/.test(what) ? `, expected back around ${when(p.injBack)}` : ""}${p.injNote ? ` (ESPN: ${p.injNote})` : ""}. For ${team(+id)} he's ${i === 0 ? "the top scorer" : `${i + 1}${["", "st", "nd", "rd"][i + 1] || "th"} in scoring`} with ${r.pts} points in ${r.starts} starts; the team is ${t.w}-${t.l}${o != null ? ` with ${Math.round(o)}% playoff odds` : ""}`);
     });
   }
 }

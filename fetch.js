@@ -134,5 +134,10 @@ async function get(url, file, headers = {}) {
       const res = await fetch("https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard");
       if (res.ok) { fs.writeFileSync(path.join(DATA, "nfl_scoreboard.json"), await res.text()); console.log("NFL scoreboard saved"); }
     } catch (err) { console.log(`NFL scoreboard unavailable (${err.message})`); }
+    // ESPN's NFL injury report: expected return dates and a line on each injury, which the fantasy views leave out
+    try {
+      const res = await fetch("https://site.api.espn.com/apis/site/v2/sports/football/nfl/injuries");
+      if (res.ok) { fs.writeFileSync(path.join(DATA, "nfl_injuries.json"), await res.text()); console.log("NFL injury report saved"); }
+    } catch (err) { console.log(`NFL injury report unavailable (${err.message})`); }
   }
 })();

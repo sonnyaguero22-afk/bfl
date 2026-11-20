@@ -92,6 +92,15 @@ for (const year of years) {
     injById[p.id] = { s: p.injuryStatus, season: d.outForSeason || undefined, back: Array.isArray(r) ? `${r[0]}-${String(r[1]).padStart(2, "0")}-${String(r[2]).padStart(2, "0")}` : typeof r === "string" ? r.slice(0, 10) : undefined }; };
   for (const t of L.teams || []) for (const e of (t.roster || {}).entries || []) injOf(e.playerPoolEntry && e.playerPoolEntry.player);
   if (exists(`rostered_${year}.json`)) for (const e of load(`rostered_${year}.json`).players || []) { const p = e.player || {}; if (p.id) delete injById[p.id]; injOf(p); }
+  // ESPN's NFL injury report by player name: expected return date and its one-line comment. Read loosely, since the
+  // shape isn't documented: any entry with an athlete's name counts
+  const injReport = {};
+  if (!done && exists("nfl_injuries.json")) { const walk = (o) => { if (!o || typeof o !== "object") return; if (Array.isArray(o)) return o.forEach(walk);
+      const nm = o.athlete && (o.athlete.displayName || o.athlete.fullName), d = o.details || {};
+      if (nm && (d.returnDate || o.shortComment)) injReport[nm] = { back: d.returnDate ? String(d.returnDate).slice(0, 10) : undefined, note: o.shortComment ? String(o.shortComment).slice(0, 220) : undefined };
+      for (const k in o) if (k !== "athlete") walk(o[k]); };
+    try { walk(load("nfl_injuries.json")); } catch (e) { console.log(`::warning::NFL injury report unreadable: ${e.message}`); }
+    console.log(`::notice::${year} NFL injury report: ${Object.keys(injReport).length} players, ${Object.values(injReport).filter((x) => x.back).length} with return dates`); }
   // Weekly lineups
   // NFL bye weeks by pro team id (proTeamSchedules_wl)
   const nflBye = {}, nflByes = {}; // by pro team id, and by abbreviation for odds.js (and the same-game measurement)
@@ -365,12 +374,12 @@ for (const year of years) {
   for (const t of L.teams) {
     rosters[t.id] = t.roster.entries.map((e) => {
       const p = e.playerPoolEntry.player;
-      const inj = injById[p.id];
+      const inj = injById[p.id], rep = inj && injReport[p.fullName];
       return { n: p.fullName, pos: POS[p.defaultPositionId] || "", pro: PRO[p.proTeamId] || "", slot: SLOT[e.lineupSlotId] || "BN", how: e.acquisitionType, pts: r2(e.playerPoolEntry.appliedStatTotal || 0),
-        inj: inj && inj.s, injSeason: inj && inj.season, injBack: inj && inj.back };
+        inj: inj && inj.s, injSeason: inj && inj.season, injBack: inj && (inj.back || (rep && rep.back)), injNote: rep && rep.note };
     });
   }
-  if (!done) console.log(`::notice::${year} injured on rosters: ${Object.entries(rosters).flatMap(([id, ps]) => ps.filter((p) => p.inj).map((p) => `${p.n} (team ${id}, ${p.inj}${p.injSeason ? ", out for the season" : ""}${p.injBack ? `, back ${p.injBack}` : ""})`)).join("; ") || "none"}`);
+  if (!done) console.log(`::notice::${year} injured on rosters: ${Object.entries(rosters).flatMap(([id, ps]) => ps.filter((p) => p.inj).map((p) => `${p.n} (team ${id}, ${p.inj}${p.injSeason ? ", out for the season" : ""}${p.injBack ? `, back ${p.injBack}` : ""}${p.injNote ? `: ${p.injNote}` : ""})`)).join("; ") || "none"}`);
 
   seasons.push({
     year: +year, name: L.settings.name, done, curWeek: L.status.currentMatchupPeriod, regWeeks,
