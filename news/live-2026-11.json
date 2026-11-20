@@ -177,6 +177,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-20T01:24:29.849Z"
+  },
+  {
+   "author": "Ghostu Gal",
+   "handle": "@GhostuGal_SZN",
+   "text": "Nico Collins just caught a touchdown and Zoe went from down nine to up two before Saquon has even touched the ball. I'm not saying I called it but I said fine, loudly, an hour ago.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-20T01:53:15.208Z"
+  },
+  {
+   "author": "Horse Stable Report",
+   "handle": "@HorseStableRpt",
+   "text": "Texans defense gave Sonny a ten point head start and Nico Collins, a Texan, took it right back. Sonny's own defense just got beat by its teammate's receiver, in fantasy anyway.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-20T01:51:15.208Z"
+  },
+  {
+   "author": "Pandaman",
+   "handle": "@PandamanSeesAll",
+   "text": "Section behind the Houston bench just erupted when Collins got in the end zone. A guy two rows up is holding a Zoe lineup printout like a lottery ticket.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-20T01:54:15.208Z"
   }
  ],
  "batches": [
@@ -184,7 +214,8 @@
   "2026-11-19T05:05:20.536Z",
   "2026-11-19T22:37:42.711Z",
   "2026-11-20T00:35:58.850Z",
-  "2026-11-20T01:27:29.849Z"
+  "2026-11-20T01:27:29.849Z",
+  "2026-11-20T01:54:15.208Z"
  ],
  "usage": [
   {
@@ -209,6 +240,14 @@
    "input": 4,
    "output": 359,
    "cache_write": 9084,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-20T01:54:15.208Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 385,
+   "cache_write": 9036,
    "cache_read": 0
   }
  ]
