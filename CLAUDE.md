@@ -28,7 +28,7 @@ Story types in `news.js`, each dated in-world by `when.js`:
 
 | Type | When | Notes |
 | --- | --- | --- |
-| recap | after Monday night's game | awards, Trade Watch, playoff stakes, team bios, social |
+| recap | after Monday night's game | awards, Trade Watch, playoff stakes, team bios, social; `collapses` (`collapses` in `news.js`): a team eliminated that week after peaking at 60%+ playoff odds, with its record and odds at the peak and its record since, told as a storyline (a fitting team-name pun allowed once; Sonny wanted the 2026 fumblers' 3-0, 88% start called out if they miss) |
 | rankings | Tuesday 9am ET | NFL.com-style power rankings, own tab (News, Power Rankings); a green ▲ or red ▼ with the spots moved (gray dash if unchanged) under each rank number |
 | preview | 2 hours before the week's first NFL kickoff | storylines plus a four-person pundit panel picking every game (graded); win chances assume holes get filled, which are mentioned in passing at most |
 | final | Sunday, 75 minutes before the 1pm games | short Sonnet follow-up: lineup moves and win chance changes since the preview, Thursday's points, holes still unfilled; real manager quotes from `QUOTES` (keyed by story id, used word for word; if he benches the player the quote is about, the story says so and `live.js` posts a BENCHED reaction) |
