@@ -2326,8 +2326,9 @@ const trHat = (x, y, rot, sc = 1) => `<g transform="translate(${x} ${y}) rotate(
   ${[-14, -5, 4, 13].map((x) => `<path d="M${x} -26q3 6 2 13" stroke="#c49a45" stroke-width="1" fill="none" opacity=".7"/>`).join("")}
   <path d="M-16 -24q10-8 20-6" stroke="#fff8dc" stroke-width="2" fill="none" opacity=".7"/></g>`;
 // The league's flag: a skull in the straw hat over crossed footballs
+// The crossed footballs mirror each other (laced ends both up), like crossbones
 const lgEmblem = (x, y, sc) => `<g transform="translate(${x} ${y}) scale(${sc})">
-  ${[32, -32].map((a) => `<g transform="rotate(${a})"><path d="M-54 0q54-30 108 0-54 30-108 0z" fill="#8b4a22" stroke="#f2efe6" stroke-width="2.5"/><path d="M28 -4h16M31 -8v8M36 -8v8M41 -8v8" stroke="#f2efe6" stroke-width="2"/><path d="M-42 -3q-1 3 0 6M42 -3q1 3 0 6" stroke="#f2efe6" stroke-width="2" fill="none"/></g>`).join("")}
+  ${["rotate(-32)", "scale(-1 1) rotate(-32)"].map((tf) => `<g transform="${tf}"><path d="M-54 0q54-30 108 0-54 30-108 0z" fill="#8b4a22" stroke="#f2efe6" stroke-width="2.5"/><path d="M28 -4h16M31 -8v8M36 -8v8M41 -8v8" stroke="#f2efe6" stroke-width="2"/><path d="M-42 -3q-1 3 0 6M42 -3q1 3 0 6" stroke="#f2efe6" stroke-width="2" fill="none"/></g>`).join("")}
   <circle cx="0" cy="2" r="22" fill="#f2efe6"/><rect x="-13" y="16" width="26" height="13" rx="4" fill="#f2efe6"/>
   <ellipse cx="-8" cy="4" rx="6" ry="7" fill="#141418"/><ellipse cx="8" cy="4" rx="6" ry="7" fill="#141418"/><path d="M0 11l-3 6h6z" fill="#141418"/>
   <path d="M-6 22v6M0 22v6M6 22v6" stroke="#141418" stroke-width="1.6"/>
