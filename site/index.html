@@ -2783,9 +2783,30 @@ function seasonStory(p, y, ref = refMaker()) {
     const pts = sum(st, (w) => w.pts), rk = seasonRank(y, p);
     const where = rk.all === 1 ? ", the most of any player that season" : rk.all <= 3 ? `, the ${nth(rk.all)}-most of any player` : rk.pos === 1 ? `, the most among ${POS_PLURAL[p.pos]}` : rk.pos <= 10 ? `, ${nth(rk.pos)} among ${POS_PLURAL[p.pos]}` : "";
     out.push(`${He} started ${count(st.length)} game${st.length === 1 ? "" : "s"} and scored ${f1(pts)} points${where}${earned}.`);
-    if (st.length >= 3) { const top = [...st].sort((a, b) => b.pts - a.pts)[0], mp = s.sp2mp?.[top.wk] ?? top.wk, m = s.matchups.find((g) => g.wk === mp && (g.h === top.t.id || g.a === top.t.id));
-      const opp = m && s.byId[m.h === top.t.id ? m.a : m.h];
-      out.push(`${his.charAt(0).toUpperCase() + his.slice(1)} best game came in week ${top.wk}, ${f1(top.pts)} points${opp ? ` against ${ownTeam(opp, mp)}${m.win === top.t.id ? " in a win" : m.win === 0 ? " in a tie" : m.win ? " in a loss" : ""}` : ""}.`); }
+    // Highlights: his best game (and any record it set), Karoo weeks, a close win he carried, playoff games, career milestones
+    const Hs = his.charAt(0).toUpperCase() + his.slice(1), posN = POS_NAME[p.pos] || p.pos;
+    const mOf = (w) => { const mp = s.sp2mp?.[w.wk] ?? w.wk; return s.matchups.find((g) => g.wk === mp && (g.h === w.t.id || g.a === w.t.id)); };
+    const rec = gameRecords(p.pos), mine = new Set(st), allTime = rec.pos[0] && mine.has(rec.pos[0].w) ? rec.pos[0].w : null;
+    const seasonHi = (rec.byY[y] || []).length >= 10 && mine.has(rec.byY[y][0].w) ? rec.byY[y][0].w : null;
+    const mark = (w) => (w === allTime ? `, the most any ${posN} has scored in a BFL game` : w === seasonHi ? `, the most by any ${posN} that season` : "");
+    const result = (w, m) => { const mg = Math.abs(m.hp - m.ap); return m.win === w.t.id ? (mg <= 5 ? ` in ${aNum(f1(mg))} ${f1(mg)}-point win` : " in a win") : m.win === 0 ? " in a tie" : m.win ? " in a loss" : ""; };
+    const top = [...st].sort((a, b) => b.pts - a.pts)[0];
+    if (st.length >= 3) { const m = mOf(top), opp = m && s.byId[m.h === top.t.id ? m.a : m.h];
+      out.push(`${Hs} best game came in week ${top.wk}, ${f1(top.pts)} points${opp ? ` against ${ownTeam(opp, m.wk)}${result(top, m)}` : ""}${mark(top)}.`); }
+    for (const w of [allTime, seasonHi]) if (w && (w !== top || st.length < 3)) out.push(`${Hs} ${f1(w.pts)} in week ${w.wk} was${mark(w)}.`);
+    const kw = karooWeeks(s).filter((x) => x.p === p).map((x) => x.mp);
+    if (kw.length) out.push(`${He} was <button class="mlink" data-go="aw-karoo">Karoo's Player of the Week</button>${ref.karoo ? "" : ", the league's top-scoring starter,"} ${kw.length === 1 ? `in week ${kw[0]}` : `${kw.length === 2 ? "twice" : `${count(kw.length)} times`} (weeks ${andList(kw.map(String))})`}${has("karoo") ? `, the most of anyone, which earned ${him} the ${awLink("karoo")} award` : ""}.`), ref.karoo = 1;
+    // The close regular-season win where he was his team's top scorer (not his best game, already told)
+    const carried = st.filter((w) => w !== top || st.length < 3).map((w) => ({ w, m: mOf(w) })).filter(({ w, m }) => m && m.wk <= s.regWeeks && m.win === w.t.id && Math.abs(m.hp - m.ap) <= 5 && w.pts >= 15
+      && ((s.lineups[w.wk] || {})[w.t.id] || []).every((q) => q.slot === "BN" || q.slot === "IR" || q.pts <= w.pts)).sort((a, b) => b.w.pts - a.w.pts)[0];
+    if (carried) { const { w, m } = carried, opp = s.byId[m.h === w.t.id ? m.a : m.h];
+      out.push(`In week ${w.wk} ${his} ${f1(w.pts)} points led ${ownTeam(w.t, m.wk)} to ${aNum(f1(Math.abs(m.hp - m.ap)))} ${f1(Math.abs(m.hp - m.ap))}-point win over ${ownTeam(opp, m.wk)}.`); }
+    const po = st.map((w) => ({ w, m: mOf(w) })).filter(({ m }) => m && m.tier === "WINNERS_BRACKET" && m.wk > s.regWeeks);
+    if (po.length) { const by = new Map(); for (const { w, m } of po) { const x = by.get(m) || { m, t: w.t, pts: 0 }; x.pts += w.pts; by.set(m, x); }
+      const games = [...by.values()].filter((x) => !(isBowl(s, x.m) && has("onepiece")));
+      if (games.length) out.push(`In the playoffs ${he} scored ${andList(games.map((x) => { const r = x.m.win ? (x.m.win === x.t.id ? " win" : " loss") : "";
+        return `${f1(x.pts)} in the ${isBowl(s, x.m) ? `<button class="mlink" data-go="bowl-${y}">${roundName(s, x.m)}</button>` : roundName(s, x.m).toLowerCase()}${r}`; }))}.`); }
+    for (const ms of careerMilestones(p).filter((x) => x.y === y)) out.push(`${He} passed ${ms.n.toLocaleString()} career points as a starter in week ${ms.wk}${ms.n === 2000 ? `, a mark that puts a player in <button class="mlink" data-go="laughtale">Laugh Tale</button>` : ""}.`);
     const zeros = st.filter((w) => w.pts <= 0).length;
     if (zeros) out.push(`${cap(count(zeros))} of ${his} starts ended in ${zeros === 1 ? "a donut" : "donuts"}${has("ace") ? `, and the one in week ${has("ace").a.x.w.wk} (${f1(has("ace").a.x.w.pts)} on a ${f1(has("ace").a.x.w.proj || 0)} projection${has("ace").a.x.lost ? ` in ${aNum(f1(has("ace").a.x.margin))} ${f1(has("ace").a.x.margin)}-point loss` : ""}) made ${him} the season's ${awLink("ace")}` : ""}.`);
   } else if (ws.length) out.push(`${He} spent the season on the bench and never started a game that counted.`);
@@ -2822,6 +2843,20 @@ function seasonStory(p, y, ref = refMaker()) {
     else if (team.final) out.push(cap(`${ownTeam(team, s.regWeeks + 1)} finished ${nth(team.final)}.`));
   } else if (!s.done && team) out.push(`The season is still under way.`);
   return out.join(" ") || "On a roster, but never in a lineup that counted.";
+}
+// Every finished start at a position, best first, overall and by season (for "the most by any tight end")
+const GREC = {};
+function gameRecords(pos) {
+  if (GREC[pos]) return GREC[pos];
+  const all = PL.filter((q) => q.pos === pos).flatMap((q) => q.weeks.filter((w) => w.start && w.fin).map((w) => ({ w, p: q, pts: w.pts }))).sort((a, b) => b.pts - a.pts), byY = {};
+  for (const x of all) (byY[x.w.y] = byY[x.w.y] || []).push(x);
+  return (GREC[pos] = { pos: all, byY });
+}
+// The weeks his points as a starter passed each 500 (the 2,000 mark is a way into Laugh Tale)
+function careerMilestones(p) {
+  const out = []; let tot = 0, next = 500;
+  for (const w of p.weeks.filter((x) => x.start && x.fin).sort((a, b) => a.y - b.y || a.wk - b.wk)) { tot += w.pts; while (tot >= next) { out.push({ n: next, y: w.y, wk: w.wk }); next += 500; } }
+  return out;
 }
 const mostAtTeam = (ws) => { const c = new Map(); for (const w of ws) c.set(w.t, (c.get(w.t) || 0) + w.pts); return [...c.entries()].sort((a, b) => b[1] - a[1])[0][0]; };
 
