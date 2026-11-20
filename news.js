@@ -105,7 +105,7 @@ const STAFF = [
 const GLSN = { name: "GLSN", handle: "@GLSN" };
 // Whose byline each story type runs under
 const BYLINE = { recap: "Pandaman", rankings: "Duval", preview: "Haredas", final: "Haredas", trade: "Absalom", veto: "Absalom", draft: "Gaimon",
-  grades: "Morgans", card: "Morgans", review: "Morgans", history: "Morgans", profile: "Morgans", bowl: "Morgans", class: "Morgans" };
+  grades: "Morgans", card: "Morgans", review: "Morgans", regseason: "Morgans", team: "Morgans", playoffs: "Haredas", ladder: "Haredas", history: "Morgans", profile: "Morgans", bowl: "Morgans", class: "Morgans" };
 // The preview panel: four GLSN pundits who pick games (the writers above don't sit on it). The seats were held by Dana Whitfield, Marcus Pell, Sal Benedetto and Dr. Nina
 // Kessler before GLSN took over (2026, week 12); a seat's season record and berries carry over to whoever holds it now.
 const PANEL = [
@@ -511,7 +511,7 @@ function gradesFacts(s, stage) {
   const champ = s.teams.find((t) => t.final === 1), last = s.teams.find((t) => t.final === n);
   return { season: s.year, stage: stage === "reg" ? "end of the regular season" : "end of the season, playoffs and consolation ladder included", teams: n, playoff_teams: s.playoffTeams,
     champion: stage === "final" && champ ? who(champ, s.regWeeks) : undefined, last_place: stage === "final" && last ? who(last, s.regWeeks) : undefined,
-    regular_season_grades: stage === "final" ? (saved("grades", s.year).find((a) => a.stage === "reg") || {}).grades?.map((g) => `${g.team}: ${g.grade}`) : undefined,
+    regular_season_grades: stage === "final" ? ([...saved("regseason", s.year), ...saved("grades", s.year)].find((a) => a.type === "regseason" || a.stage === "reg") || {}).grades?.map((g) => `${g.team}: ${g.grade}`) : undefined,
     report_card: s.teams.map(team).sort((a, b) => (a.final_place || a.standing) - (b.final_place || b.standing)) };
 }
 // The postseason report card: a deep look at every team's season, a week after the Buckaroo Bowl. Built on the
@@ -576,6 +576,48 @@ function cardFacts(s) {
   return { season: s.year, teams: n, playoff_teams: s.playoffTeams, champion: base.champion, last_place: base.last_place, next_season: s.year + 1,
     league_format: "redraft: every roster is drafted fresh next season, nothing carries over (no keepers, not a dynasty league)",
     regular_season_grades: base.regular_season_grades, report_card: cards };
+}
+// The end-of-season run (2026 on): a regular season review with every team's grade once week 14 is final, a playoff
+// preview and a Bum Bowl preview as the brackets are set, then a season review per team as the season ends (worst to best,
+// one a day from the Tuesday after the Bowl, the report card inside), and the league's season review
+function regseasonFacts(s) {
+  const base = gradesFacts(s, "reg");
+  return { ...base, playoff_field: s.teams.filter((t) => t.seed && t.seed <= s.playoffTeams).sort((a, b) => a.seed - b.seed).map((t) => `${t.seed}. ${who(t, s.regWeeks)}`),
+    consolation_ladder: s.teams.filter((t) => !(t.seed && t.seed <= s.playoffTeams)).map((t) => who(t, s.regWeeks)) };
+}
+function bracketTeam(s, t) {
+  const rec = recordsThrough(s, s.regWeeks)[t.id], O = s.odds, i = O ? (O.weeks.includes(s.regWeeks) ? O.weeks.indexOf(s.regWeeks) : O.weeks.length - 1) : -1; // as the regular season ended
+  const last3 = s.matchups.filter((m) => m.wk <= s.regWeeks && m.a && (m.h === t.id || m.a === t.id)).sort((a, b) => a.wk - b.wk).slice(-3).map((m) => (m.h === t.id ? m.hp : m.ap));
+  const top = []; for (const w in s.lineups) if (+w <= s.regWeeks) for (const p of (s.lineups[w][t.id] || [])) if (p.slot !== "BN" && p.slot !== "IR") { const x = top.find((q) => q.n === p.n) || (top.push({ n: p.n, pos: p.pos, pts: 0 }), top[top.length - 1]); x.pts += p.pts; }
+  const onRoster = new Set(((s.rosters || {})[t.id] || []).map((p) => p.n));
+  return { team: who(t, s.regWeeks), seed: t.seed, record: `${rec.w}-${rec.l}`, points_for: r1(rec.pf), last_three_scores: last3,
+    title_odds: i >= 0 ? `${Math.round(O.t[t.id].c[i])}%` : undefined, last_place_odds: i >= 0 ? `${Math.round(O.t[t.id].l[i])}%` : undefined,
+    best_players: top.filter((x) => !onRoster.size || onRoster.has(x.n)).sort((a, b) => b.pts - a.pts).slice(0, 4).map((x) => `${x.n} (${x.pos}) ${r1(x.pts)}`) };
+}
+const pairs = (ts) => ts.flatMap((a, i) => ts.slice(i + 1).map((b) => [a, b]));
+function playoffsFacts(s) {
+  const field = s.teams.filter((t) => t.seed && t.seed <= s.playoffTeams).sort((a, b) => a.seed - b.seed), W = s.regWeeks + 1;
+  return { season: s.year, playoff_teams: s.playoffTeams, rounds: Object.keys(s.periods || {}).map(Number).filter((wk) => wk > s.regWeeks && wk <= s.regWeeks + 3).map((wk) => `round ${wk - s.regWeeks}: NFL week${(s.periods[wk] || [wk]).length > 1 ? "s" : ""} ${(s.periods[wk] || [wk]).join(" and ")}`),
+    first_round: s.matchups.filter((m) => m.wk === W && m.tier === "WINNERS_BRACKET" && m.a).map((m) => `${who(s.byId[m.h], W)} vs ${who(s.byId[m.a], W)}`),
+    byes: (s.byes || []).filter((b) => b.wk === W && b.tier === "WINNERS_BRACKET").map((b) => who(s.byId[b.h], W)),
+    teams: field.map((t) => bracketTeam(s, t)),
+    head_to_head: pairs(field).map(([a, b]) => ({ teams: `${nameAt(a, W)} vs ${nameAt(b, W)}`, ...h2hBefore(mgrAt(a, W), mgrAt(b, W), s.year, W) })),
+    panel: PANEL.map((p) => ({ name: p.name, role: p.role, style: p.style })) };
+}
+function ladderFacts(s) {
+  const field = s.teams.filter((t) => !(t.seed && t.seed <= s.playoffTeams)).sort((a, b) => (a.seed || 99) - (b.seed || 99)), W = s.regWeeks + 1;
+  return { season: s.year, how_it_works: "the teams that missed the playoffs play a consolation ladder; the loser of its final, the Bum Bowl, finishes last and pays the Marines a ฿25M fine",
+    first_round: s.matchups.filter((m) => m.wk === W && m.tier === "LOSERS_CONSOLATION_LADDER" && m.a).map((m) => `${who(s.byId[m.h], W)} vs ${who(s.byId[m.a], W)}`),
+    teams: field.map((t) => bracketTeam(s, t)), head_to_head: pairs(field).map(([a, b]) => ({ teams: `${nameAt(a, W)} vs ${nameAt(b, W)}`, ...h2hBefore(mgrAt(a, W), mgrAt(b, W), s.year, W) })),
+    panel: PANEL.map((p) => ({ name: p.name, role: p.role, style: p.style })) };
+}
+let CARD_FACTS = null;
+function teamFacts(s, id) {
+  if (!CARD_FACTS || CARD_FACTS.year !== s.year) CARD_FACTS = { year: s.year, f: cardFacts(s) };
+  const f = CARD_FACTS.f, t = s.byId[id], me = f.report_card.find((rc) => rc.team === who(t, s.regWeeks));
+  return { season: s.year, teams: f.teams, champion: f.champion, last_place: f.last_place, next_season: f.next_season, league_format: f.league_format,
+    final_standings: s.teams.slice().sort((a, b) => a.final - b.final).map((x) => `${x.final}. ${who(x, s.regWeeks)}`),
+    team: me, other_report_cards_so_far: saved("team", s.year).filter((a) => a.card).map((a) => `${a.card.team}: ${a.card.grade}`) };
 }
 // Games a lineup call decided: a winner who benched a player who scored below zero (with the spot empty, or ESPN projecting
 // him at least as high as the starter), so starting him would have tied or lost
@@ -845,6 +887,10 @@ const schemas = {
       verdict: { type: "string", enum: ["Well managed", "Over-managed", "Under-managed", "Mismanaged"] }, management: str,
       subgrades: { type: "array", items: { type: "object", additionalProperties: false, required: ["area", "grade", "note"], properties: { area: { type: "string", enum: ["Draft", "Waivers", "Trades", "Lineups"] }, grade: str, note: str } } },
       fix: { type: "array", items: str } } } } } },
+  playoffs: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "panel", "social"], properties: { ...ARTICLE, social: SOCIAL,
+    panel: { type: "array", items: { type: "object", additionalProperties: false, required: ["panelist", "champion", "runner_up", "take"], properties: { panelist: str, champion: str, runner_up: str, take: str } } } } },
+  ladder: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "panel", "social"], properties: { ...ARTICLE, social: SOCIAL,
+    panel: { type: "array", items: { type: "object", additionalProperties: false, required: ["panelist", "last_place", "take"], properties: { panelist: str, last_place: str, take: str } } } } },
   grades: { type: "object", additionalProperties: false, required: ["title", "dek", "body", "grades", "social"], properties: { ...ARTICLE, social: SOCIAL,
     grades: { type: "array", items: { type: "object", additionalProperties: false, required: ["team", "grade", "headline", "blurb"], properties: { team: str, grade: str, headline: str, blurb: str } } } } },
   class: { type: "object", additionalProperties: false, required: ["title", "dek", "chapters"], properties: { title: str, dek: str,
@@ -863,6 +909,9 @@ const schemas = {
     chapters: { type: "array", items: { type: "object", additionalProperties: false, required: ["heading", "body"], properties: { heading: str, body: { type: "array", items: str } } } } } },
   profile: { type: "object", additionalProperties: false, required: ["headline", "body"], properties: { headline: str, body: { type: "array", items: str } } },
 };
+schemas.regseason = schemas.grades;
+schemas.team = { type: "object", additionalProperties: false, required: ["title", "dek", "chapters", "card", "social"], properties: { title: str, dek: str, social: SOCIAL,
+  chapters: schemas.bowl.properties.chapters, card: schemas.card.properties.cards.items } };
 const asks = {
   recap: "Write the weekly recap for this week of the Buckaroo Football League: a headline, a one-sentence dek, and 5 to 8 body paragraphs covering the results (lead with the best storyline), standout and disappointing performances (a game's ones_to_watch show who had a Gear 5 or got Seastoned), the standings and title-odds picture, notable moves (a waiver pickup who's producing, or one flipped into a trade, and the waiver_king_race for the Wapol award are fair game when they make a story, without overdoing it; a pickup's reunions, a player back with a manager who had him before, can be a line too), and a look ahead to next week (if next_week_ones_to_watch is given, name a player or two whose game swings a matchup most, or a QB-receiver stack, without their percentages). Then write 6 to 10 social posts reacting to the week, and a fresh 2 to 3 sentence bio for every team in the standings that sums up where its season stands right now (use the exact team name in the team field). Finally, the trade watch: quick 1 to 2 sentence takes on how earlier trades in trade_watch are aging, for the 2 to 5 deals with the most to say this week (a deal that looked lopsided flipping, a player who carried his new team or sat on its bench, a winner pulling further ahead). These are quick hot takes, not articles; say how it looks now compared with before. Use the trade's id from the facts. If there are no trades yet, leave it empty. Then the week's awards: one entry for each award in the facts' awards (award is its name in title case, like 'Manager of the Week'; the player of the week is the Karoo's Player of the Week, named for Princess Vivi's racing duck; winner is who won it, short), with a one or two sentence blurb. The winners are already decided; don't change them. When playoff_picture is given, work any clinch, elimination or big stakes into the recap. missing_stars are players a team is without right now: worth a line when his absence showed this week (his replacement flopped, the team lost without him) and a fan post or two can miss him, without making every team's injuries a theme.",
   trade: "Write a trade reaction story: a headline, a one-sentence dek, and 3 to 5 body paragraphs explaining the deal, what each side got, and who won it on paper (use the title and playoff odds change; if the before odds are missing, use only the odds after and don't call them pre-trade). reunion says when a player is back with a manager who had him before (and former_managers lists his past stops): a homecoming is a storyline worth a line. how_the_other_side_got_him says where each player came from: a waiver claim or free-agent pickup flipped into a trade, a late draft pick turned trade chip, or a player traded twice is a storyline worth a line (who found him, what he turned into), without overselling it. Judge each player on season_points_before_trade, every week he played: a player who scored as a free agent (points_as_free_agent_before_trade) was producing even off a roster, so don't treat his roster points or weeks on a roster as his whole season, and say so when it changes the read; last_three_weeks shows his recent form. Then write 3 to 5 social posts reacting to it.",
@@ -876,6 +925,10 @@ const asks = {
   class: "Write the induction story for this class of Laugh Tale, the league's Hall of Fame, the way a Hall of Fame covers its enshrinement class, in the voice of the league's wiki: the title is just the class name (the class field), a one-sentence dek, then sections with short headings. Open with the class as a whole (who's in, what ties them together, the seasons it covers, the ranks they enter at). Then one section per inductee in the order given, the heading just his name, 1 to 3 paragraphs on why he belongs: the moments behind each of his ways_in, his numbers, who he won with or for, and what he meant to the league's story. Close with a short section that puts the class in the league's history. Use only the facts; never invent games, quotes or moments. Players' points cover their whole BFL career so far.",
   bowl: "Write a thorough encyclopedia article about this game for the league's wiki, the way Wikipedia covers a Super Bowl: the title is just the game's name (the game field), a one-sentence dek, and 5 or 6 sections, each with a short heading and 2 to 4 paragraphs: Background (both teams' seasons: records, seeds, points, title chances going in, regular-season meetings, earlier titles and playoff history between these managers); Road to the game (each team's earlier playoff games and who carried them); Game summary (for a two-week total, a part for each NFL week: the score after the first week, who drove it, how the second week changed or settled it; scoring_sequence lists the NFL scoring plays involving these starters in the order they happened: tell the game through its key moments (who opened the scoring, the swings, the plays that put it away), not every play, and never give clock times; play_by_play, when present, adds the live win chance; with neither, never invent the order of scoring within a week); Key performers (stars against their projection and their season averages, flops, bench points that would have changed the result); and Aftermath (what it meant: a first or repeat title and where it puts the manager in league history, or last place and the Bum Bowl's shame). Encyclopedic: third person, past tense, specific numbers, no social posts, the league's personality in a light touch. Never mention what isn't recorded or how the site keeps its data; just tell what is known. Use only the facts given.",
   card: "Write the league's postseason report card for this season, published a week after the Buckaroo Bowl: a headline, a one-sentence dek and 3 to 4 body paragraphs on how the season played out across the league and what it says about how this league is won. Then a detailed card for every team in report_card (use the exact team name), in finishing order: a season letter grade (A+ to F with plus and minus, the full range: the champion and a dominant team near the top, a team that collapsed or never showed up can get a D or F), a punchy headline, and a 4 to 6 sentence summary of the whole season, playoffs or consolation ladder included. Then strengths and weaknesses: 2 to 4 short, specific points each, built on the numbers (position_groups ranks, top_starters, luck, points for rank, how it finished). Then the management review: a verdict (over-managed for a manager whose churn and trades cost him, under-managed for one who sat still while holes stayed open or left points on the bench, well managed, or mismanaged for one who got the big calls wrong) with a 3 to 5 sentence take on how he ran the team, and a sub-grade with a one-sentence note for each of draft (points_as_starters_from_own_picks, his first picks and best value pick), waivers (adds against the league average and what the pickups scored), trades (what came in against what went out) and lineups (efficiency, points left against the best lineup, losses the bench would have flipped). Compare each manager with the rest of the league, not in a vacuum. Then fix: 2 to 4 concrete things to change heading into next season (next_season). This is a redraft league, so no player carries over: the fixes are about approach (draft strategy and which positions to prioritize, how actively to work the wire, trading habits, lineup decisions), never about keeping or building around specific players. Mention awards in awards where they help tell the story. When regular_season_grades is given, say when a team's grade moved since then and why. Be honest and specific; praise and criticism both land harder with a number behind them. Then 4 to 6 social posts reacting to the grades. season_arc is each team's playoff odds at its high and low points: use it only where it's really part of a team's story (a hot start that fell apart, a climb from nowhere), naturally and not for every team; a play on a team's name only if it lands on its own.",
+  regseason: "Write the regular season review, going up the Wednesday after the last regular-season week: a headline, a one-sentence dek and 5 to 7 body paragraphs on how the regular season played out: the race for the playoff spots and the No. 1 seed, the teams that surprised and disappointed, the standout players and managers, the trades that shaped it, and who goes into the playoffs (playoff_field) and the consolation ladder (consolation_ladder). Keep it balanced: every team gets its due somewhere, nothing is the whole story, and no single fact or player is hammered. Then a regular-season grade for every team in report_card (use the exact team name): a letter grade (A+ to F with plus and minus, the full range), a punchy headline and a 2 to 3 sentence blurb built on the numbers (record, points and their rank, luck from expected_wins_from_scoring, last_five, draft-day odds against now, trades and pickups). Then 4 to 6 social posts reacting to the review and its grades. season_arc is each team's playoff odds at its high and low points: use it only where it's really part of a team's story (a hot start that fell apart, a climb from nowhere), naturally and not for every team; a play on a team's name only if it lands on its own.",
+  playoffs: "Write the playoff preview as the bracket is set, like a network's postseason preview: a headline, a one-sentence dek and 4 to 6 body paragraphs: the field and how each team got here, the first-round matchups (first_round, and any byes), the paths to the Buckaroo Bowl, the players who decide it, head-to-head history worth knowing, and Luffy's title odds (title_odds) said once, in passing. Then each of the four panelists predicts the champion and the runner-up (exact team names, without the manager) with a 2 to 3 sentence take in their own voice; they should disagree some, and Professor Clover is the one who leans on the numbers. Then 4 to 6 social posts: fans of the playoff teams talking themselves into a title, and panelists hyping their pick.",
+  ladder: "Write the Bum Bowl preview as the consolation ladder is set, in a lighter, mock-serious tone: a headline, a one-sentence dek and 3 to 5 body paragraphs on the teams that missed the playoffs, how the ladder works (how_it_works), the first-round matchups, who's most at risk of finishing last (last_place_odds, said once, in passing) and what's at stake: pride, the ฿25M fine to the Marines, and a season remembered for the wrong reason. Keep it good-natured, roasting the managers' seasons rather than piling on any one thing. Then each of the four panelists predicts who finishes last (exact team name, without the manager) with a 1 to 2 sentence take in their own voice. Then 3 to 5 social posts, the trash talk of teams trying not to be last.",
+  team: "Write this team's season in review, the way a network publishes one for each team as its season ends (worst first, the champion last): a headline, a one-sentence dek, then 4 to 6 chapters with short headings, each 1 to 3 paragraphs, covering how the season unfolded from the draft to its last game (the turning points, playoffs or consolation ladder included), what went right and what went wrong, its most valuable player and its biggest move, and a look ahead to next season. Every number comes from team (its report card facts) and the league context; no one fact should dominate. Then its report card (card): a season letter grade (A+ to F with plus and minus, the full range, compared with the rest of the league; other_report_cards_so_far are the grades already given), a punchy headline, a 4 to 6 sentence summary, 2 to 4 strengths and weaknesses built on the numbers (position_groups, top_starters, luck, points for rank, how it finished), the management verdict (over-managed, under-managed, well managed or mismanaged) with a 3 to 5 sentence take, a sub-grade with a one-sentence note for each of draft, waivers, trades and lineups, and 2 to 4 fixes for next season (this is a redraft league, so they're about approach, never about keeping players). Then 3 to 5 social posts: the team's fans and rivals reacting to the review. season_arc is each team's playoff odds at its high and low points: use it only where it's really part of a team's story (a hot start that fell apart, a climb from nowhere), naturally and not for every team; a play on a team's name only if it lands on its own.",
   grades: "Write the league's report card at the stage given (stage): a headline, a one-sentence dek, 2 to 3 body paragraphs on the big picture, then a letter grade for every team in report_card (use the exact team name; A+ to F with plus and minus), each with a short punchy headline and a 2 to 4 sentence blurb that explains the grade. Grade each team against what it was expected to do (title and playoff odds on draft day) and how it actually played, not on the record alone: weigh points scored and their rank, luck (wins minus expected wins from scoring; a lucky record earns less credit, an unlucky one some sympathy), how the season finished (last_five), and the manager's moves (trades and pickups) where they mattered. Use the full range: a clear best gets an A, a team that collapsed or never showed up can get a D or F, and most land in between. At the end of the season (stage mentions playoffs), grade the whole season with the postseason weighed heavily: the champion is graded on winning it all, a playoff team that flopped drops, the consolation ladder counts too, and last place (the Bum Bowl loser) takes a hit; regular_season_grades are the grades from the end of the regular season, so say when a grade moved and why. Then 4 to 6 social posts reacting to the grades. season_arc is each team's playoff odds at its high and low points: use it only where it's really part of a team's story (a hot start that fell apart, a climb from nowhere), naturally and not for every team; a play on a team's name only if it lands on its own.",
   review: "Write a season-in-review story for this finished season: a headline, a one-sentence dek, and 5 to 7 body paragraphs telling the story of the season from draft to Buckaroo Bowl, including the champion, the last-place finisher, the playoff games, and any notable notes. lineup_twists are games a lineup call decided (a winner whose benched player would have cost him the game, or a loser who left a spot empty); when one has decided_the_race, that game is part of how the race was settled and deserves a line, told with a straight face; skip the others unless they make a great story. season_arc is each team's playoff odds at its high and low points: use it only where it's really part of a team's story (a hot start that fell apart, a climb from nowhere), naturally and not for every team; a play on a team's name only if it lands on its own.",
 };
@@ -928,10 +981,19 @@ function pending() {
   // Report cards: when the regular season's games are final, and again once the season is done (2026 on)
   for (const z of D.seasons.filter((x) => x.year >= 2026)) {
     const regDone = z.matchups.filter((m) => m.wk <= z.regWeeks && m.a).every(done) && z.matchups.some((m) => m.wk === z.regWeeks);
-    if (regDone && !have.has(`grades-${z.year}-reg`)) todo.push({ id: `grades-${z.year}-reg`, type: "grades", stage: "reg", s: z, wk: z.regWeeks + 0.7, facts: () => gradesFacts(z, "reg") });
+    // The regular season review (with every team's grade), then the playoff and Bum Bowl previews once the first round is set
+    if (regDone && !have.has(`regseason-${z.year}-reg`)) todo.push({ id: `regseason-${z.year}-reg`, type: "regseason", stage: "reg", s: z, wk: z.regWeeks + 0.7, facts: () => regseasonFacts(z) });
+    const set = (tier) => z.matchups.some((m) => m.wk === z.regWeeks + 1 && m.tier === tier && m.a);
+    if (regDone && set("WINNERS_BRACKET") && !have.has(`playoffs-${z.year}-bracket`)) todo.push({ id: `playoffs-${z.year}-bracket`, type: "playoffs", s: z, wk: z.regWeeks + 0.8, facts: () => playoffsFacts(z) });
+    if (regDone && set("LOSERS_CONSOLATION_LADDER") && !have.has(`ladder-${z.year}-bracket`)) todo.push({ id: `ladder-${z.year}-bracket`, type: "ladder", s: z, wk: z.regWeeks + 0.85, facts: () => ladderFacts(z) });
+    // Each team's season in review once the season is done, worst to best, one a day from the Tuesday after the Bowl
+    if (z.done) for (const t of [...z.teams].sort((a, b) => b.final - a.final)) { const id = `team-${z.year}-${t.id}`, lastWk = Math.max(...z.matchups.map((m) => m.wk));
+      const due = natural({ id, type: "team", year: z.year, wk: lastWk, place: t.final, n: z.teams.length }, z.periods);
+      if (!have.has(id) && due && due <= new Date()) todo.push({ id, type: "team", s: z, wk: lastWk, tid: t.id, place: t.final, facts: () => teamFacts(z, t.id) }); }
   }
-  // The postseason report card: every finished season, going up a week after its Buckaroo Bowl
-  for (const z of D.seasons.filter((x) => x.done)) { const lastWk = Math.max(...z.matchups.map((m) => m.wk)), due = natural({ id: `card-${z.year}`, type: "card", year: z.year, wk: lastWk }, z.periods);
+  // The postseason report card (2023-2025): every finished season, going up a week after its Buckaroo Bowl. From 2026 the
+  // Report Cards page is put together from the team reviews instead (cardIndex), without another story
+  for (const z of D.seasons.filter((x) => x.done && x.year < 2026)) { const lastWk = Math.max(...z.matchups.map((m) => m.wk)), due = natural({ id: `card-${z.year}`, type: "card", year: z.year, wk: lastWk }, z.periods);
     if (!have.has(`card-${z.year}`) && due && due <= new Date()) todo.push({ id: `card-${z.year}`, type: "card", s: z, wk: lastWk, facts: () => cardFacts(z) }); }
   // Career profiles and the league history, rewritten once each season finishes
   const lastDone = Math.max(...D.seasons.filter((x) => x.done).map((x) => x.year));
@@ -956,9 +1018,9 @@ async function write(client, job) {
   const facts = job.facts();
   // Profiles stand on their own, and draft-day coverage mustn't know how the season went
   // Rankings for past weeks mustn't see later stories, so they get none
-  const recent = ["profile", "draft", "history", "rankings", "bowl", "class", "card"].includes(job.type) ? [] : recentStories();
-  const wk = ["review", "profile", "history", "bowl", "class"].includes(job.type) ? null : job.type === "rankings" || job.type === "grades" ? Math.floor(job.wk) : Math.ceil(job.wk);
-  const pub = published({ id: job.id, type: job.type, year: job.s.year, wk, at: job.at, created: new Date().toISOString() }, job.s.periods);
+  const recent = ["profile", "draft", "history", "rankings", "bowl", "class", "card", "team"].includes(job.type) ? [] : recentStories();
+  const wk = ["review", "profile", "history", "bowl", "class"].includes(job.type) ? null : ["rankings", "grades", "regseason", "playoffs", "ladder"].includes(job.type) ? Math.floor(job.wk) : Math.ceil(job.wk);
+  const pub = published({ id: job.id, type: job.type, year: job.s.year, wk, at: job.at, place: job.place, n: job.s.teams.length, created: new Date().toISOString() }, job.s.periods);
   const dated = pub ? `\n\nThis story goes up ${etLabel(pub)}; time the social posts' "when" from that.` : "";
   // The byline: written in that staffer's voice, lightly (the facts and the story come first)
   const by = STAFF.find((p) => p.name === BYLINE[job.type]);
@@ -984,7 +1046,9 @@ async function write(client, job) {
   if (out.chapters) out.body = out.chapters.flatMap((c) => c.body);
   // Stories are permanent, so don't keep one that came back hollow
   const hollow = job.type === "rankings" ? !(out.body || []).length || (out.power_rankings || []).length !== job.s.teams.length
-    : job.type === "grades" ? !out.body || out.body.length < 2 || (out.grades || []).length !== job.s.teams.length
+    : job.type === "grades" || job.type === "regseason" ? !out.body || out.body.length < 2 || (out.grades || []).length !== job.s.teams.length
+    : job.type === "team" ? !out.body || out.body.length < 4 || !out.card || !out.card.grade
+    : job.type === "playoffs" || job.type === "ladder" ? !out.body || out.body.length < 2 || (out.panel || []).length < 4
     : job.type === "card" ? !out.body || out.body.length < 2 || (out.cards || []).length !== job.s.teams.length
     : !out.body || out.body.length < 2 || (schemas[job.type].required.includes("social") && !(out.social || []).length);
   if (hollow) { console.log(`::warning::${job.id}: came back with an empty story (${(out.body || []).length} paragraphs, ${(out.social || []).length} posts, title ${JSON.stringify(out.title || out.headline || "")}, stop ${res.stop_reason}), will retry next run`); return null; }
@@ -999,6 +1063,9 @@ async function write(client, job) {
     // What the preview saw, so Sunday's final word can say what changed
     chances: job.type === "preview" ? job.s.matchups.filter((m) => m.wk === Math.ceil(job.wk) && m.a).map((m) => ({ h: m.h, a: m.a, p: m.psimFixed ?? m.psim })) : undefined,
     starters: job.type === "preview" ? startersAt(job.s, Math.ceil(job.wk)) : undefined,
+    tid: job.tid, place: job.place, n: job.type === "team" ? job.s.teams.length : undefined,
+    card: out.card ? { ...out.card, team: who(job.s.byId[job.tid], job.wk), id: job.tid } : undefined,
+    panel: out.panel ? out.panel.map((p) => ({ ...p, id: (teamFor(p.champion || p.last_place || "") || {}).id, ru: p.runner_up ? (teamFor(p.runner_up) || {}).id : undefined })) : undefined,
     stage: job.stage, grades: out.grades ? out.grades.map((x) => ({ ...x, id: (teamFor(x.team) || {}).id })) : undefined,
     cards: out.cards ? out.cards.map((x) => ({ ...x, id: (teamFor(x.team) || {}).id })) : undefined,
     power_rankings: out.power_rankings ? out.power_rankings.map((x) => ({ ...x, id: (teamFor(x.team) || {}).id })).sort((a, b) => a.rank - b.rank) : undefined,
@@ -1008,10 +1075,26 @@ async function write(client, job) {
   };
 }
 
+// The Report Cards page (2026 on): once every team's season review is out, their cards gathered into card-<year>, the
+// page the season overview and News link to (each card links back to its review). Built here, no API call.
+function cardIndex() {
+  for (const z of D.seasons.filter((x) => x.done && x.year >= 2026)) {
+    const f = path.join(NEWS, `card-${z.year}.json`); if (fs.existsSync(f)) continue;
+    const reviews = saved("team", z.year).filter((a) => a.card); if (reviews.length < z.teams.length) continue;
+    const last = reviews.reduce((a, b) => (b.created > a.created ? b : a)), byPlace = (a) => (z.byId[a.tid] || {}).final || 99;
+    fs.mkdirSync(NEWS, { recursive: true });
+    fs.writeFileSync(f, JSON.stringify({ id: `card-${z.year}`, type: "card", year: z.year, wk: last.wk, by: "Morgans", created: last.created, place: 1, n: z.teams.length,
+      title: `${z.year} Report Cards`, dek: "Every team's season grade, management verdict and sub-grades, from GLSN's team-by-team season reviews.", body: [], social: [],
+      cards: reviews.sort((a, b) => byPlace(a) - byPlace(b)).map((a) => ({ ...a.card, review: a.id })) }, null, 1));
+    console.log(`::notice::${z.year} Report Cards page put together from the team reviews`);
+  }
+}
+
 // Run when called directly; live.js loads this file for the shared newsroom setup
 if (require.main === module) (async () => {
   // Says whether each lore secret arrived (lengths only, never the contents)
   console.log(`::notice::Lore: LEAGUE_LORE ${(process.env.LEAGUE_LORE || "").trim().length} characters, LEAGUE_LORE_EXTRA ${LORE_EXTRA.length} characters`);
+  if (!DRY) cardIndex();
   const todo = pending();
   if (!todo.length) { console.log("News is up to date."); return; }
   console.log(`${todo.length} stories to write: ${todo.map((j) => j.id).join(", ")}`);
@@ -1040,6 +1123,7 @@ if (require.main === module) (async () => {
       console.log(`::warning::${job.id}: ${err.message}`); tries[job.id] = (tries[job.id] || 0) + 1; saveTries();
     }
   }
+  cardIndex(); // the last team review may have just been written
 })();
 
 module.exports = { QUOTES, quoteTeam, missingStars, D, S, SYSTEM, SOCIAL, PANEL, STAFF, GLSN, GUESTS, guestFor, LORE, NEWS, who, mgrAt, nameAt };

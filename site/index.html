@@ -1066,6 +1066,11 @@ function seasonOverview(s) {
   const rv = review ? `<h3 class="wikisub">Season Review</h3><p><button class="mlink" data-go="news-${review.id}">“${esc(review.title)}”</button> <span class="muted">· ${esc(review.dek)}</span></p>` : "";
   // The postseason report card, a week after the Bowl: every team's grade at a glance, linking to the full card
   const card = ALL_NEWS.find((a) => a.id === `card-${y}`);
+  // The end-of-season run (2026 on): regular season review, the two previews, and a season review per team
+  const story = (id) => ALL_NEWS.find((a) => a.id === id), ln = (a) => `<button class="mlink" data-go="news-${a.id}">“${esc(a.title)}”</button>`;
+  const rsr = story(`regseason-${y}-reg`), pp = story(`playoffs-${y}-bracket`), lp = story(`ladder-${y}-bracket`);
+  const teamRv = ALL_NEWS.filter((a) => a.type === "team" && a.year === y).sort((a, b) => (a.place || 99) - (b.place || 99));
+  const run = rsr || pp || lp || teamRv.length ? `<h3 class="wikisub">Coverage</h3><ul>${[rsr && `<li>Regular season review: ${ln(rsr)}</li>`, pp && `<li>Playoff preview: ${ln(pp)}</li>`, lp && `<li>Bum Bowl preview: ${ln(lp)}</li>`].filter(Boolean).join("")}${teamRv.length ? `<li>Team by team: ${teamRv.map((a) => `<button class="mlink" data-go="news-${a.id}">${esc((s.byId[a.tid] || {}).name || "")}</button>${a.card ? ` <span class="muted">${esc(a.card.grade)}</span>` : ""}`).join(" · ")}</li>` : ""}</ul>` : "";
   const rc = card && card.cards ? `<h3 class="wikisub">Report Card</h3><p><button class="mlink" data-go="news-${card.id}">“${esc(card.title)}”</button> <span class="muted">· ${card.cards.map((c) => `${esc((s.byId[c.id] || {}).name || c.team)} ${esc(c.grade)}`).join(" · ")}</span></p>` : "";
   const row = (a, v) => (v ? `<tr><th>${a}</th><td>${v}</td></tr>` : "");
   const info = `<aside class="infobox box"><div class="ibhead">${y} season</div><div class="ibsub">Buckaroo Football League</div><table>
@@ -1073,7 +1078,7 @@ function seasonOverview(s) {
     ${s.done ? `<tr><th colspan="2" class="ibsec">Results</th></tr>${row("Champion", champ ? `${badge(champ, 1)} ${esc(champ.name)} <span class="muted">(${mgrName(champ.mgr)})</span>` : "")}${row("Runner-up", runner ? `${esc(runner.name)} <span class="muted">(${mgrName(runner.mgr)})</span>` : "")}${row("Last place", last ? `${esc(last.name)} <span class="muted">(${mgrName(last.mgr)})</span>` : "")}${row("Title game", gameLink("bowl", y, bowlName(y)))}` : ""}
     <tr><th colspan="2" class="ibsec">Season</th></tr>${row(s.done ? "No. 1 seed" : "Leader", `${esc(top.name)} <span class="muted">(${top.w}–${top.l})</span>`)}${row("Most points", `${esc(mostPf.name)} <span class="muted">(${f1(mostPf.pf)})</span>`)}${row(awInfo("king").e + " Pirate King", aw.king ? pn(aw.king.p.n) : "")}${row("Trades", s.trades.length)}
   </table>${succession("season", y)}</aside>`;
-  return `<div class="wiki"><article class="wikimain">${lead}${info.replace('class="infobox box"', 'class="infobox box ibm-only"')}${reg}${po}${awards}${rv}${rc}</article>${info.replace('class="infobox box"', 'class="infobox box ibd-only"')}</div>`;
+  return `<div class="wiki"><article class="wikimain">${lead}${info.replace('class="infobox box"', 'class="infobox box ibm-only"')}${reg}${po}${awards}${rv}${rc}${run}</article>${info.replace('class="infobox box"', 'class="infobox box ibd-only"')}</div>`;
 }
 const cap1 = (x) => x.replace(/^(<[^>]+>)?(\w)/, (m0, tag, c) => (tag || "") + c.toUpperCase());
 // "Preceded by / Succeeded by", like the box at the foot of a Wikipedia article
@@ -3320,8 +3325,8 @@ const LIVE = ALL_NEWS.filter((a) => a.type === "live");
 const HISTORY = ALL_NEWS.find((a) => a.type === "history");
 const PROFILE = {};
 for (const a of ALL_NEWS) if (a.type === "profile" && a.mgr && !PROFILE[a.mgr]) PROFILE[a.mgr] = a;
-const NEWS_TYPE = { card: "Report Card", veto: "Buster Call", grades: "Report Card", recap: "Weekly Recap", trade: "Trade", review: "Season in Review", draft: "Draft", preview: "Week Preview", final: "Final Word" };
-const newsWhen = (a) => (a.type === "card" ? `${a.year} · Postseason Report Card` : a.type === "grades" ? `${a.year} · ${a.stage === "final" ? "Final Grades" : "Regular Season Grades"}` : a.type === "review" ? `${a.year} Season` : a.type === "draft" ? `${a.year} Draft · The Reverie` : a.type === "preview" ? `${a.year} · Week ${a.wk} Preview` : a.type === "final" ? `${a.year} · Week ${a.wk} Final Word` : a.type === "trade" ? `${a.year} · Before Week ${a.wk}` : a.type === "veto" ? `${a.year} · Week ${a.wk} · Breaking` : `${a.year} · Week ${a.wk}`);
+const NEWS_TYPE = { regseason: "Regular Season Review", playoffs: "Playoff Preview", ladder: "Bum Bowl Preview", team: "Season in Review", card: "Report Card", veto: "Buster Call", grades: "Report Card", recap: "Weekly Recap", trade: "Trade", review: "Season in Review", draft: "Draft", preview: "Week Preview", final: "Final Word" };
+const newsWhen = (a) => (a.type === "regseason" ? `${a.year} · After Week ${(S[a.year] || {}).regWeeks || a.wk}` : a.type === "playoffs" || a.type === "ladder" ? `${a.year} · Postseason` : a.type === "team" ? `${a.year} · ${esc(((S[a.year] || {}).byId || {})[a.tid] ? S[a.year].byId[a.tid].name : "Team")}` : a.type === "card" ? `${a.year} · ${a.year >= 2026 ? "Report Cards" : "Postseason Report Card"}` : a.type === "grades" ? `${a.year} · ${a.stage === "final" ? "Final Grades" : "Regular Season Grades"}` : a.type === "review" ? `${a.year} Season` : a.type === "draft" ? `${a.year} Draft · The Reverie` : a.type === "preview" ? `${a.year} · Week ${a.wk} Preview` : a.type === "final" ? `${a.year} · Week ${a.wk} Final Word` : a.type === "trade" ? `${a.year} · Before Week ${a.wk}` : a.type === "veto" ? `${a.year} · Week ${a.wk} · Breaking` : `${a.year} · Week ${a.wk}`);
 const newsCard = (a, big) => `<button class="box newscard${big ? " big" : ""}" data-go="news-${a.id}"><span class="pill${a.type === "trade" ? " gold" : a.type === "veto" ? " l" : ""}">${NEWS_TYPE[a.type]}</span><b>${esc(a.title)}</b><span class="dek">${esc(a.dek)}</span><small class="muted">${bylineOf(a) ? `${esc(bylineOf(a).name)} · ` : ""}${newsWhen(a)}</small></button>`;
 const hasLogo = (t) => t && t.logo && !/\/images\/default|\/default[^/]*$/.test(t.logo);
 const teamAva = (t, cls = "") => (hasLogo(t) ? `<span class="tava ${cls}"><img src="${esc(t.logo)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add('nologo')">${badge(t)}</span>` : badge(t));
@@ -3460,7 +3465,7 @@ function whoToFollow() {
 const newsHead = (which) => `<div class="vhead"><div><div class="eyebrow">Around the League</div><h2>${which === "social" ? "Social" : "News"}</h2><p>${which === "news" ? "From GLSN, the Grand Line Sports Network: AI-written stories after every week, trade and season." : "What the (made-up) fans, pundits and insiders are saying. Tap a post's source to read the story behind it."}</p></div></div>`;
 // News filter chips: each story type falls under one (Power Rankings has its own tab)
 const NEWS_KINDS = [["", "All"], ["recap", "Recaps"], ["preview", "Previews"], ["trade", "Trades"], ["grades", "Report Cards"], ["season", "Season"]];
-const newsKind = (a) => ({ final: "preview", veto: "trade", card: "grades", review: "season", draft: "season" })[a.type] || a.type;
+const newsKind = (a) => ({ final: "preview", veto: "trade", card: "grades", team: "grades", regseason: "season", playoffs: "preview", ladder: "preview", review: "season", draft: "season" })[a.type] || a.type;
 function newsView() {
   const head = newsHead("news");
   if (!NEWS.length) return head + newsEmpty;
@@ -3489,6 +3494,13 @@ function guestRecord(name) { let w = 0, l = 0, n = 0;
     const m = (S[pv.year] || { matchups: [] }).matchups.find((x) => x.wk === pv.wk && x.h === g.h && x.a === g.a); n++;
     if (m && m.win !== null && !m.live) p.id === m.win ? w++ : l++; }
   return { w, l, weeks: new Set(NEWS.filter((x) => x.type === "preview" && (x.picks || []).some((g) => g.panel.some((p) => p.panelist === name))).map((x) => `${x.year}-${x.wk}`)).size }; }
+// The panel's calls in the playoff preview (champion and runner-up) and the Bum Bowl preview (who finishes last)
+function panelHtml(a) {
+  if (!a.panel || !["playoffs", "ladder"].includes(a.type)) return "";
+  const s = S[a.year], tm = (id, nm) => { const t = s && s.byId[id]; return t ? `${badge(t, 1)} ${esc(t.name)}` : esc(nm || ""); }, lad = a.type === "ladder";
+  return `<section><h3>${lad ? "Who Finishes Last" : "The Panel's Picks"}</h3><div class="box scroll"><table class="compact"><thead><tr><th>Panelist</th><th>${lad ? "Last place" : "Champion"}</th>${lad ? "" : "<th class=\"ibm-hide\">Runner-up</th>"}</tr></thead><tbody>
+    ${a.panel.map((p) => `<tr><td><b>${esc(p.panelist)}</b></td><td>${tm(p.id, lad ? p.last_place : p.champion)}</td>${lad ? "" : `<td class="ibm-hide">${tm(p.ru, p.runner_up)}</td>`}</tr><tr><td colspan="${lad ? 2 : 3}" class="muted" style="padding-top:0">${esc(p.take)}</td></tr>`).join("")}</tbody></table></div></section>`;
+}
 function picksHtml(a) {
   if (a.type !== "preview" || !a.picks || !a.picks.length) return "";
   const s = S[a.year], res = (g) => s && s.matchups.find((x) => x.wk === a.wk && x.h === g.h && x.a === g.a);
@@ -3532,26 +3544,31 @@ function tradeWatchHtml(a) {
 const GRADE_HUE = (g) => ({ A: 140, B: 95, C: 45, D: 25, F: 0 })[g[0]] ?? 210;
 // The postseason report card: a summary table, then every team's card (grade, strengths and weaknesses, the
 // management review with sub-grades, and what to fix next season)
+// A season's regular-season grades: the regular season review's (2026 on) or the older grades story's
+const regGrades = (y) => (ALL_NEWS.find((x) => x.year === y && (x.type === "regseason" || (x.type === "grades" && x.stage === "reg"))) || {}).grades || [];
 function cardHtml(a) {
-  if (a.type !== "card" || !a.cards) return "";
-  const s = S[a.year], reg = (ALL_NEWS.find((x) => x.type === "grades" && x.year === a.year && x.stage === "reg") || {}).grades || [];
+  // A team's season review carries its own card; the Report Cards page has every team's
+  const solo = a.type === "team" && a.card; if (!solo && (a.type !== "card" || !a.cards)) return "";
+  const list = solo ? [a.card] : a.cards;
+  const s = S[a.year], reg = regGrades(a.year);
   const vcls = (v) => (v === "Well managed" ? " v-well" : v === "Mismanaged" ? " v-mis" : "");
   const g = (x) => `<span class="grade" style="--gh:${GRADE_HUE(x)}">${esc(x)}</span>`;
   const place = (t) => (t && t.final ? (t.final === 1 ? "🏆 Champion" : t.final === s.teams.length ? "Bum Bowl loser" : `${ordinal(t.final)} place`) : "");
-  const sum = `<div class="box scroll"><table class="compact cardsum"><thead><tr><th>Team</th><th class="ibm-hide">Finish</th><th>Grade</th><th>Managed</th>${["Draft", "Waivers", "Trades", "Lineups"].map((x) => `<th class="ibm-hide">${x}</th>`).join("")}</tr></thead><tbody>${a.cards.map((c) => { const t = s && s.byId[c.id];
+  const sum = `<div class="box scroll"><table class="compact cardsum"><thead><tr><th>Team</th><th class="ibm-hide">Finish</th><th>Grade</th><th>Managed</th>${["Draft", "Waivers", "Trades", "Lineups"].map((x) => `<th class="ibm-hide">${x}</th>`).join("")}</tr></thead><tbody>${list.map((c) => { const t = s && s.byId[c.id];
     return `<tr><td><button class="mlink" onclick="document.getElementById('card-${c.id}').scrollIntoView({ behavior: 'smooth' })">${t ? badge(t, 1) : ""} ${esc(t ? t.name : c.team)}</button></td><td class="muted ibm-hide">${place(t)}</td><td>${g(c.grade)}</td><td><span class="verdict${vcls(c.verdict)}">${esc(c.verdict)}</span></td>${["Draft", "Waivers", "Trades", "Lineups"].map((x) => `<td class="num ibm-hide">${esc((c.subgrades.find((y) => y.area === x) || {}).grade || "")}</td>`).join("")}</tr>`; }).join("")}</tbody></table></div>`;
-  const cards = a.cards.map((c) => { const t = s && s.byId[c.id], was = reg.find((x) => x.id === c.id);
+  const cards = list.map((c) => { const t = s && s.byId[c.id], was = reg.find((x) => x.id === c.id);
     return `<div class="box card2" id="card-${c.id}"><div class="chead">${g(c.grade)}<div class="rhead">${t ? badge(t) : ""}<span><b>${esc(t ? t.name : c.team)}</b><small class="muted">${t ? mgrName(mgrAt(t, s.regWeeks)) : ""}${place(t) ? ` · ${place(t)}` : ""}${was ? ` · Regular season: ${esc(was.grade)}` : ""}</small></span></div></div>
       <div><b class="ghead">${esc(c.headline)}</b><p style="margin-top:4px">${esc(c.summary)}</p></div>
       <div class="sw"><div class="cs"><h4>Strengths</h4><ul>${c.strengths.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div><div class="cw"><h4>Weaknesses</h4><ul>${c.weaknesses.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div></div>
       <div><h4>Management · <span class="verdict${vcls(c.verdict)}">${esc(c.verdict)}</span></h4><p>${esc(c.management)}</p></div>
       <div class="subs">${c.subgrades.map((x) => `<div class="sg"><b>${esc(x.area)}</b>${g(x.grade)}<span>${esc(x.note)}</span></div>`).join("")}</div>
-      <div class="fix"><h4>Fix for ${a.year + 1}</h4><ul>${c.fix.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div></div>`; }).join("");
+      <div class="fix"><h4>Fix for ${a.year + 1}</h4><ul>${c.fix.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>${c.review ? `<button class="mlink" data-go="news-${c.review}">Read the full season review →</button>` : ""}</div>`; }).join("");
+  if (solo) return `<section><h3>Report Card</h3><div class="grades">${cards}</div></section>`;
   return `<section><h3>At a Glance</h3>${sum}</section><section><h3>Team by Team</h3><div class="grades">${cards}</div></section>`;
 }
 function gradesHtml(a) {
-  if (a.type !== "grades" || !a.grades) return "";
-  const s = S[a.year], prev = a.stage === "final" ? (ALL_NEWS.find((x) => x.type === "grades" && x.year === a.year && x.stage === "reg") || {}).grades || [] : [];
+  if ((a.type !== "grades" && a.type !== "regseason") || !a.grades) return "";
+  const s = S[a.year], prev = a.stage === "final" ? regGrades(a.year) : [];
   return `<section><h3>${a.stage === "final" ? "Final Grades" : "Regular Season Grades"}</h3><div class="grades">${a.grades.map((g) => { const t = s && s.byId[g.id], was = prev.find((x) => x.id === g.id);
     return `<div class="box gradecard"><span class="grade" style="--gh:${GRADE_HUE(g.grade)}">${esc(g.grade)}</span><div><div class="rhead">${t ? badge(t) : ""}<span><b>${esc(t ? t.name : g.team)}</b><small class="muted">${t ? mgrName(t.mgr) : ""}${was ? ` · Regular season: ${esc(was.grade)}` : ""}</small></span></div>
       <b class="ghead">${esc(g.headline)}</b><p>${esc(g.blurb)}</p></div></div>`; }).join("")}</div></section>`;
@@ -3562,9 +3579,9 @@ function articleView() {
   const i = NEWS.indexOf(a), newer = NEWS[i - 1], older = NEWS[i + 1];
   return `<article class="article"><button class="pill" data-go="news" style="border:0;cursor:pointer">← All News</button>
     <div class="eyebrow" style="margin-top:18px">${NEWS_TYPE[a.type]} · ${newsWhen(a)}${a.published ? ` · <span style="text-transform:none;letter-spacing:0">${stamp(a.published)}</span>` : ""}</div><h2 class="headline">${esc(a.title)}</h2><p class="dek big">${esc(a.dek)}</p>${bylineOf(a) ? `<p class="byline muted">${letterAva(bylineOf(a).name, bylineOf(a).handle)} <span>${byHtml(a)}</span></p>` : ""}
-    <div class="artbody">${a.body.map((p) => `<p>${esc(p)}</p>`).join("")}</div>
+    <div class="artbody">${a.chapters ? a.chapters.map((c) => `<h3>${esc(c.heading)}</h3>${c.body.map((p) => `<p>${esc(p)}</p>`).join("")}`).join("") : a.body.map((p) => `<p>${esc(p)}</p>`).join("")}</div>
     ${gradesHtml(a)}${cardHtml(a)}
-    ${picksHtml(a)}
+    ${panelHtml(a)}${picksHtml(a)}
     ${awardsHtml(a)}
     ${tradeWatchHtml(a)}
     ${a.social && a.social.some(posted) ? `<section><h3>The Reaction</h3><div class="box rec"><div class="feed">${[...a.social].filter(posted).sort((x, y) => (x.at || "").localeCompare(y.at || "")).map((p) => postHtml(p, null, a)).join("")}</div></div></section>` : ""}

@@ -33,6 +33,11 @@ function natural(a, periods = {}) {
     case "grades": return eastern(y, thursday(y, last(Math.floor(a.wk))) + 6, 10, j(30)); // Wednesday morning after the week ends
     case "veto": return a.at ? new Date(new Date(a.at).getTime() + (10 + j(20)) * 60e3) : null; // breaks soon after the veto
     case "card": return eastern(y, thursday(y, last(a.wk)) + 12, 10, j(30));  // the Tuesday a week after the Bowl's week ends
+    case "regseason": return eastern(y, thursday(y, last(Math.floor(a.wk))) + 6, 10, j(30)); // Wednesday morning after the regular season ends
+    case "playoffs": return eastern(y, thursday(y, last(Math.floor(a.wk))) + 6, 13, j(30));  // that afternoon, as the bracket is set
+    case "ladder": return eastern(y, thursday(y, last(Math.floor(a.wk))) + 6, 16, j(30));    // and the Bum Bowl ladder later that day
+    // One team a day from the Tuesday after the Bowl, worst first, the champion a week later
+    case "team": return a.place ? eastern(y, thursday(y, last(a.wk)) + 5 + ((a.n || 8) - a.place), 10, j(30)) : null;
     case "review": return null;
     default: return null;
   }
