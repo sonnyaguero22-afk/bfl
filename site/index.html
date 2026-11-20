@@ -2771,6 +2771,38 @@ function seasonStory(p, y, ref = refMaker()) {
   const ev = p.ev.filter((e) => e.y === y), ws = p.weeks.filter((w) => w.y === y && w.fin), st = ws.filter((w) => w.start);
   const aw = s.done ? (() => { const a = seasonAwards(s); return AWARDS.filter(([k]) => a[k] && a[k].p === p).map(([k]) => ({ k, a: a[k] })); })() : [];
   const has = (k) => aw.find((x) => x.k === k), out = [];
+  // Moves after he arrived, told right after his season totals (or on their own if he never started)
+  let movesTold = false;
+  const moves = () => { if (movesTold) return; movesTold = true;
+  // Moves after he arrived
+  for (const e of ev.slice(1)) {
+    const wk = Math.ceil(e.wk);
+    if (e.type === "trade") { const tr = s.trades.find((t) => t.wk === wk && (t.got[e.t.id] || []).some((x) => sameName(x.split("|")[0], p.n)));
+      const back = tr && e.from ? (tr.got[e.from.id] || []).map((x) => x.split("|")[0]) : [], with_ = tr ? (tr.got[e.t.id] || []).map((x) => x.split("|")[0]).filter((n) => !sameName(n, p.n)) : [];
+      // GLSN's story on the deal, when there is one
+      const story = tr && ALL_NEWS.find((a) => a.type === "trade" && a.year === y && a.wk === tr.wk && [...(a.teams || [])].sort((a1, b1) => a1 - b1).join() === [...tr.teams].sort((a1, b1) => a1 - b1).join());
+      const verb = story ? `<button class="mlink" data-go="news-${story.id}">traded</button>` : "traded";
+      out.push(`Before week ${wk}, ${e.from ? ref(mgrAt(e.from, wk)) : "his team"} ${verb} ${him}${with_.length ? ` and ${andList(with_.map(esc))}` : ""} to ${ownTeam(e.t, wk)}${back.length ? ` for ${andList(back.map(esc))}` : ""}.`);
+      // How it turned out: his starts on each side of the deal, and what the other side got from its return
+      const startsFor = (q, t, after) => q ? q.weeks.filter((w) => w.y === y && w.fin && w.start && w.t === t && (after ? w.wk >= wk : w.wk < wk)) : [];
+      const pre = e.from ? startsFor(p, e.from, false) : [], post = startsFor(p, e.t, true);
+      const pts = (ws) => `${f1(sum(ws, (w) => w.pts))} point${sum(ws, (w) => w.pts) === 1 ? "" : "s"} in ${count(ws.length)} start${ws.length === 1 ? "" : "s"}`;
+      if (pre.length && post.length) out.push(`${He} had scored ${pts(pre)} before the deal and added ${pts(post)} for ${teamThe(nameAt(e.t, wk))} after it.`);
+      else if (post.length) out.push(`${He} gave ${teamThe(nameAt(e.t, wk))} ${pts(post)} after the deal.`);
+      else if (s.done || s.curWeek > wk + 2) out.push(`${He} never started a game that counted for ${teamThe(nameAt(e.t, wk))}.`);
+      const ret = e.from ? back.map((n) => ({ n, ws: startsFor(PL.find((q) => sameName(q.n, n)), e.from, true) })) : [];
+      if (ret.length && (s.done || s.curWeek > wk + 2)) { const got = sum(ret, (r) => sum(r.ws, (w) => w.pts)), mine = sum(post, (w) => w.pts);
+        out.push(`${cap(ownTeam(e.from, wk))} got ${f1(got)} points as a starter from ${andList(ret.map((r) => esc(r.n)))} the rest of the way${s.done ? "" : " so far"}${Math.abs(got - mine) >= 20 ? `, ${got > mine ? "the better end of it" : "the worse end of it"} on points` : ""}.`); }
+    }
+    else if (e.type === "drop") out.push(cap(`${ownTeam(e.t, wk)} released ${him} in week ${wk}.`));
+    else if (e.type === "add") out.push(cap(`${ownTeam(e.t, wk)} picked ${him} up in week ${wk}.`));
+  }
+  // Vetoed trades he was part of (public: the league voted them down; declined offers stay private)
+  for (const v of (s.vetoed || [])) { const to = Object.keys(v.got).find((id) => v.got[id].some((x) => sameName(x.split("|")[0], p.n))); if (!to) continue;
+    const dest = s.byId[to], from = s.byId[v.teams.find((id) => id !== +to)], ret = (v.got[from.id] || []).map((x) => esc(x.split("|")[0]));
+    const story = ALL_NEWS.find((a) => a.type === "veto" && a.year === y && a.wk === v.wk && [...(a.teams || [])].sort().join() === [...v.teams].sort().join());
+    out.push(`In week ${v.wk}, a trade that would have sent ${him} from ${ownTeam(from, v.wk)} to ${ownTeam(dest, v.wk)}${ret.length ? ` for ${andList(ret)}` : ""} was ${story ? `<button class="mlink" data-go="news-${story.id}">vetoed</button>` : "vetoed"}.`); }
+  };
   // How he arrived
   const first = ev[0];
   if (first && first.type === "draft") out.push(`${He} entered the season as ${/^(eighth|11th|18th)/.test(nth(first.rd)) ? "an" : "a"} ${nth(first.rd)}-round pick (${first.rd}.${String(first.rp).padStart(2, "0")}) of ${ownTeam(first.t, 1)}.`);
@@ -2783,6 +2815,7 @@ function seasonStory(p, y, ref = refMaker()) {
     const pts = sum(st, (w) => w.pts), rk = seasonRank(y, p);
     const where = rk.all === 1 ? ", the most of any player that season" : rk.all <= 3 ? `, the ${nth(rk.all)}-most of any player` : rk.pos === 1 ? `, the most among ${POS_PLURAL[p.pos]}` : rk.pos <= 10 ? `, ${nth(rk.pos)} among ${POS_PLURAL[p.pos]}` : "";
     out.push(`${He} started ${count(st.length)} game${st.length === 1 ? "" : "s"} and scored ${f1(pts)} points${where}${earned}.`);
+    moves();
     // Highlights: his best game (and any record it set), Karoo weeks, a close win he carried, playoff games, career milestones
     const Hs = his.charAt(0).toUpperCase() + his.slice(1), posN = POS_NAME[p.pos] || p.pos;
     const mOf = (w) => { const mp = s.sp2mp?.[w.wk] ?? w.wk; return s.matchups.find((g) => g.wk === mp && (g.h === w.t.id || g.a === w.t.id)); };
@@ -2810,15 +2843,7 @@ function seasonStory(p, y, ref = refMaker()) {
     const zeros = st.filter((w) => w.pts <= 0).length;
     if (zeros) out.push(`${cap(count(zeros))} of ${his} starts ended in ${zeros === 1 ? "a donut" : "donuts"}${has("ace") ? `, and the one in week ${has("ace").a.x.w.wk} (${f1(has("ace").a.x.w.pts)} on a ${f1(has("ace").a.x.w.proj || 0)} projection${has("ace").a.x.lost ? ` in ${aNum(f1(has("ace").a.x.margin))} ${f1(has("ace").a.x.margin)}-point loss` : ""}) made ${him} the season's ${awLink("ace")}` : ""}.`);
   } else if (ws.length) out.push(`${He} spent the season on the bench and never started a game that counted.`);
-  // Moves after he arrived
-  for (const e of ev.slice(1)) {
-    const wk = Math.ceil(e.wk);
-    if (e.type === "trade") { const tr = s.trades.find((t) => t.wk === wk && (t.got[e.t.id] || []).some((x) => sameName(x.split("|")[0], p.n)));
-      const back = tr && e.from ? (tr.got[e.from.id] || []).map((x) => x.split("|")[0]) : [], with_ = tr ? (tr.got[e.t.id] || []).map((x) => x.split("|")[0]).filter((n) => !sameName(n, p.n)) : [];
-      out.push(`Before week ${wk}, ${e.from ? ref(mgrAt(e.from, wk)) : "his team"} traded ${him}${with_.length ? ` and ${andList(with_.map(esc))}` : ""} to ${ownTeam(e.t, wk)}${back.length ? ` for ${andList(back.map(esc))}` : ""}.`); }
-    else if (e.type === "drop") out.push(cap(`${ownTeam(e.t, wk)} released ${him} in week ${wk}.`));
-    else if (e.type === "add") out.push(cap(`${ownTeam(e.t, wk)} picked ${him} up in week ${wk}.`));
-  }
+  moves();
   // Other awards
   if (has("robin")) out.push(`The pickup paid off: ${he} won the ${awLink("robin")} award as the season's best pickup.`);
   if (has("sunny")) out.push(`The trade paid off: ${he} won the ${awLink("sunny")} award as the season's best trade acquisition.`);
@@ -2835,14 +2860,15 @@ function seasonStory(p, y, ref = refMaker()) {
     const how = [big && `went ${owLink("gear5")} ${times(big)}`, sunk && `got ${owLink("seastone")} ${times(sunk)}`].filter(Boolean);
     out.push(`Luffy put ${him} on ${owLink("bounty", "the Bounty Board")} ${n === 1 ? "once" : `${n} times`}${how.length ? `, and ${he} ${how.join(" and ")}` : ""}.`); }
   // How his team finished
-  const team = st.length ? mostAtTeam(st) : ws.length ? ws[ws.length - 1].t : null;
+  // The team he finished the season with (where he last started), so a deadline deal ends with his new team
+  const team = st.length ? [...st].sort((a, b) => a.wk - b.wk)[st.length - 1].t : ws.length ? ws[ws.length - 1].t : null;
   if (s.done && team) {
     const bowl = has("onepiece");
     if (team.final === 1) out.push(cap(`${ownTeam(team, s.regWeeks + 1)} went on to win <button class="mlink" data-go="bowl-${y}">Buckaroo Bowl ${roman(y - D.firstYear + 1)}</button>${bowl ? `, and ${his} ${f1(bowl.a.v)} points in the final, the most on the team, won ${him} ${theAw("onepiece")}` : ""}.`));
     else if (team.final === s.teams.length) out.push(cap(`${ownTeam(team, s.regWeeks + 1)} finished last.`));
     else if (team.final) out.push(cap(`${ownTeam(team, s.regWeeks + 1)} finished ${nth(team.final)}.`));
   } else if (!s.done && team) out.push(`The season is still under way.`);
-  return out.join(" ") || "On a roster, but never in a lineup that counted.";
+  return out.join(" ").replace(/([A-Za-z])\.\.(\s|$)/g, "$1.$2") || "On a roster, but never in a lineup that counted.";
 }
 // Every finished start at a position, best first, overall and by season (for "the most by any tight end")
 const GREC = {};
@@ -2858,7 +2884,6 @@ function careerMilestones(p) {
   for (const w of p.weeks.filter((x) => x.start && x.fin).sort((a, b) => a.y - b.y || a.wk - b.wk)) { tot += w.pts; while (tot >= next) { out.push({ n: next, y: w.y, wk: w.wk }); next += 500; } }
   return out;
 }
-const mostAtTeam = (ws) => { const c = new Map(); for (const w of ws) c.set(w.t, (c.get(w.t) || 0) + w.pts); return [...c.entries()].sort((a, b) => b[1] - a[1])[0][0]; };
 
 // Is he on a league roster right now? (in a lineup, starting or bench, in the newest week of the newest season)
 const lastOnRoster = (p) => { const s = S[lastYear]; if (!s) return false; const wk = Math.max(0, ...Object.keys(s.lineups).map(Number)); return Object.values(s.lineups[wk] || {}).some((L) => L.some((e) => sameName(e.n, p.n))); };
