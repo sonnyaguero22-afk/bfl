@@ -10,7 +10,7 @@
 const fs = require("fs");
 const path = require("path");
 const Anthropic = require("@anthropic-ai/sdk");
-const { S, SYSTEM, SOCIAL, LORE, NEWS, who, nameAt } = require("./news");
+const { S, SYSTEM, SOCIAL, LORE, NEWS, who, nameAt, QUOTES, quoteTeam } = require("./news");
 
 const MODEL = "claude-sonnet-5-5"; // short posts, many times a game day; the articles stay on Opus
 const MAX_BATCHES_PER_DAY = 20;    // keeps a wild Sunday's cost predictable
@@ -60,6 +60,9 @@ const now = {
   inj: Object.fromEntries(games.flatMap((m) => [m.h, m.a]).flatMap((id) => starters(id).filter((p) => p.inj).map((p) => [`${id}|${p.n}`, p.inj]))),
   // Starters whose NFL game is over, so a Bounty Board pick's Seastoned is told once, when his game ends
   done: Object.fromEntries(games.flatMap((m) => [m.h, m.a]).flatMap((id) => starters(id).filter((p) => p.g === "done").map((p) => [`${id}|${p.n}`, 1]))),
+  // Players a manager vowed to start in this week's final word (QUOTES) who are now on his bench
+  benched: (QUOTES[`final-${cur.year}-${W}`] || []).filter((q) => { const t = quoteTeam(q, cur, W);
+    return q.starting && t && ((cur.lineups[W] || {})[t.id] || []).some((p) => p.n === q.starting && (p.slot === "BN" || p.slot === "IR")); }).map((q) => q.starting),
   at: Date.now(),
 };
 const before = fs.existsSync(STATE) ? JSON.parse(fs.readFileSync(STATE, "utf8")) : null;
@@ -115,6 +118,10 @@ if (!DRY && Object.keys(plays).length && fs.existsSync(HIST)) {
   for (const k in plays) { const pts = wp[k], last = pts && pts[pts.length - 1]; if (last && last[0] > (before.at || 0) && !last[4]) { last[4] = plays[k]; changed = true; } }
   if (changed) fs.writeFileSync(HIST, JSON.stringify(wp));
 }
+// A manager benching a player after promising GLSN he wouldn't
+if (before && before.wk === W && fs.existsSync(path.join(NEWS, `final-${cur.year}-${W}.json`))) for (const q of QUOTES[`final-${cur.year}-${W}`] || [])
+  if (now.benched.includes(q.starting) && !(before.benched || []).includes(q.starting))
+    events.push(`BENCHED: ${q.manager} told GLSN "${q.quote}" when asked ${q.asked}, and has now benched ${q.starting} anyway`);
 // Roster moves since the last update (the first run only takes note of them). Each one carries
 // what the players have done this season, so the posts know a big pickup from a depth add.
 const moveAt = {};
@@ -129,7 +136,7 @@ if (before && before.moves) {
   }
 }
 // Most important first, and at most 10 per update: finals, lead changes, touchdowns, injuries, swings, the Bounty Board's Gear 5s and Seastoneds, the biggest plays, turnovers, then moves
-const ORDER = ["FINAL", "LEAD CHANGE", "TOUCHDOWN", "INJURY", "SWING", "GEAR 5", "SEASTONED", "BIG PLAY", "TURNOVER", "MOVE"];
+const ORDER = ["FINAL", "LEAD CHANGE", "TOUCHDOWN", "INJURY", "BENCHED", "SWING", "GEAR 5", "SEASTONED", "BIG PLAY", "TURNOVER", "MOVE"];
 const gain = (e) => +((e.match(/\+([\d.]+)/) || [])[1] || 0);
 events.sort((a, b) => ORDER.findIndex((k) => a.startsWith(k)) - ORDER.findIndex((k) => b.startsWith(k)) || gain(b) - gain(a)).splice(10);
 if (!events.length) { console.log(before && before.wk === W ? "Nothing new since the last update." : "First snapshot saved."); save(); process.exit(0); }
