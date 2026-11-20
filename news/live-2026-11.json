@@ -107,12 +107,53 @@
    "team": "",
    "about": "game",
    "at": "2026-11-19T22:35:42.711Z"
+  },
+  {
+   "author": "Gridiron Gus",
+   "handle": "@GridironGusFF",
+   "text": "Randy picked up a kicker nobody asked for and swapped Buccaneers D/ST for the Chiefs. Still hasn't traded anyone, but he'll rebuild a whole special teams unit off the wire.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-20T00:35:58.850Z"
+  },
+  {
+   "author": "Absalom",
+   "handle": "@AbsalomScoops",
+   "text": "Sources say Randy sent the Buccaneers D/ST to Impel Down and broke the Chiefs out. I was in the room. He did not hear me.",
+   "heat": 4,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-20T00:35:58.850Z"
+  },
+  {
+   "author": "Habib Hive",
+   "handle": "@HabibHive",
+   "text": "Randy grabbing a Chiefs defense that scored fourteen points over two weeks right before facing Habib. Fine. Our defense is the Jaguars and I'm choosing to be calm.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-20T00:35:58.850Z"
+  },
+  {
+   "author": "The fumblers",
+   "handle": "@Thefumblers",
+   "text": "Roster refresh before the Habibsters matchup: welcome to the squad, Chiefs D/ST and Jason Sanders.",
+   "heat": 2,
+   "kind": "team",
+   "team": "The fumblers",
+   "about": "move",
+   "at": "2026-11-20T00:35:58.850Z"
   }
  ],
  "batches": [
   "2026-11-18T16:32:56.431Z",
   "2026-11-19T05:05:20.536Z",
-  "2026-11-19T22:37:42.711Z"
+  "2026-11-19T22:37:42.711Z",
+  "2026-11-20T00:35:58.850Z"
  ],
  "usage": [
   {
@@ -121,6 +162,14 @@
    "input": 4,
    "output": 374,
    "cache_write": 8707,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-20T00:35:58.850Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 479,
+   "cache_write": 9002,
    "cache_read": 0
   }
  ]
