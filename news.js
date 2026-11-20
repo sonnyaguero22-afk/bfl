@@ -1180,4 +1180,4 @@ if (require.main === module) (async () => {
   cardIndex(); // the last team review may have just been written
 })();
 
-module.exports = { QUOTES, quoteTeam, missingStars, NAMESAKES, D, S, SYSTEM, SOCIAL, PANEL, STAFF, GLSN, GUESTS, guestFor, LORE, NEWS, who, mgrAt, nameAt };
+module.exports = { QUOTES, quoteTeam, missingStars, NAMESAKES, NAMESAKE_AWARD, awardRaces, D, S, SYSTEM, SOCIAL, PANEL, STAFF, GLSN, GUESTS, guestFor, LORE, NEWS, who, mgrAt, nameAt };

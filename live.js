@@ -10,7 +10,7 @@
 const fs = require("fs");
 const path = require("path");
 const Anthropic = require("@anthropic-ai/sdk");
-const { S, SYSTEM, SOCIAL, LORE, NEWS, who, nameAt, QUOTES, quoteTeam, missingStars } = require("./news");
+const { S, SYSTEM, SOCIAL, LORE, NEWS, who, nameAt, QUOTES, quoteTeam, missingStars, NAMESAKES, NAMESAKE_AWARD, awardRaces } = require("./news");
 
 const MODEL = "claude-sonnet-5-5"; // short posts, many times a game day; the articles stay on Opus
 const MAX_BATCHES_PER_DAY = 20;    // keeps a wild Sunday's cost predictable
@@ -170,11 +170,24 @@ const ORDER = ["FINAL", "LEAD CHANGE", "TOUCHDOWN", "INJURY", "BENCHED", "SWING"
 const gain = (e) => +((e.match(/\+([\d.]+)/) || [])[1] || 0);
 events.sort((a, b) => ORDER.findIndex((k) => a.startsWith(k)) - ORDER.findIndex((k) => b.startsWith(k)) || gain(b) - gain(a)).splice(10);
 if (!events.length) { console.log(before && before.wk === W ? "Nothing new since the last update." : "First snapshot saved."); save(); process.exit(0); }
+// Award namesakes on the timeline: now and then (about one batch in three, at most two a day, checked below) the namesake
+// of a position award reacts when a player in its race (top three so far) makes a play, the way legends chime in
+const POS_AWARD = { QB: "nami", RB: "sanji", WR: "zoro", TE: "franky", K: "usopp", "D/ST": "jinbe" };
+let cameo = null;
+if (Math.random() < 1 / 3) { const races = awardRaces(cur.year), cands = [];
+  events.forEach((e, i) => { const m = e.match(/^(TOUCHDOWN|BIG PLAY|TURNOVER): (.+?) \((QB|RB|WR|TE|K|D\/ST), /); if (!m) return;
+    const k = POS_AWARD[m[3]], race = races[k] || [], rank = race.findIndex((r) => r.startsWith(`${m[2]} (`) || r.startsWith(`${m[2]}:`));
+    if (rank >= 0) cands.push({ k, i, rank, player: m[2] }); });
+  const c = cands.sort((a, b) => a.rank - b.rank)[0];
+  if (c) cameo = { ...c, who: NAMESAKES[c.k], award: NAMESAKE_AWARD[c.k], race: races[c.k] }; }
 console.log(`${events.length} live events:\n${events.join("\n")}`);
+if (cameo) console.log(`Namesake cameo: ${cameo.who.name} on ${cameo.player} (event ${cameo.i + 1})`);
 if (DRY) process.exit(0);
 
 const feed = fs.existsSync(FEED) ? JSON.parse(fs.readFileSync(FEED, "utf8")) : { id: `live-${cur.year}-${W}`, type: "live", year: cur.year, wk: W, created: new Date().toISOString(), title: `Week ${W} Live`, dek: "", body: [], social: [], batches: [] };
 const today = new Date().toLocaleDateString("en-US", { timeZone: "America/New_York" });
+if (cameo) { const hs = new Set(Object.values(NAMESAKES).map((x) => x.handle));
+  if (feed.social.filter((p) => hs.has(p.handle) && new Date(p.at).toLocaleDateString("en-US", { timeZone: "America/New_York" }) === today).length >= 2) cameo = null; }
 if (feed.batches.filter((b) => new Date(b).toLocaleDateString("en-US", { timeZone: "America/New_York" }) === today).length >= MAX_BATCHES_PER_DAY) { console.log("Daily cap on live posts reached; skipping."); save(); process.exit(0); }
 if (feed.batches.filter((b) => Date.now() - new Date(b).getTime() < 3600e3).length >= MAX_BATCHES_PER_HOUR) { console.log("Hourly cap on live posts reached; skipping."); save(); process.exit(0); }
 if (!process.env.ANTHROPIC_API_KEY || !LORE) { console.log("No API key or lore; skipping live posts."); save(); process.exit(0); }
@@ -197,7 +210,7 @@ ${events.map((e, i) => `${i + 1}. ${e}`).join("\n")}
 Scoreboard now:
 ${scoreboard.join("\n")}
 ${lineups.length ? `\nStarters by game status:\n${lineups.join("\n")}\n` : ""}${(() => { const x = missingStars(cur, W); return x.length ? `\nStars teams are playing without (background, not news: now and then, not every time, a fan can miss one, mostly when his team is struggling or the guy filling in flops; yearning, nostalgia, counting the days to his return, an old highlight):\n${x.join("\n")}\n` : ""; })()}
-Recent live posts, so you don't repeat them:
+${cameo ? `\nOne of the posts comes from an award's namesake: ${cameo.who.name} (${cameo.who.handle}, kind pundit, heat 2 to 5), the namesake of the ${cameo.award} award, reacting to event ${cameo.i + 1} because ${cameo.player} is in the race for it (${cameo.race.join("; ")}). In character (${cameo.who.style}), a short reaction the way a legend chimes in on someone chasing his award; a parody that never quotes the series.\n` : ""}Recent live posts, so you don't repeat them:
 ${JSON.stringify(feed.social.slice(-10).map((p) => `${p.author}: ${p.text}`))}`;
 
 (async () => {
