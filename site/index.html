@@ -675,6 +675,7 @@ h3.subhead { margin: 0 0 10px; font-size: 15px; color: var(--muted); }
 .tick { color: var(--brass); font-weight: 800; font-size: 12px; }
 .phead .pill { padding: 1px 6px; font-size: 10px; margin-left: 2px; }
 .avatar { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; color: var(--surface); background: hsl(var(--h) var(--mgr-s) var(--mgr-l)); }
+.avatar.lgava { display: flex; align-items: center; justify-content: center; background: #141418; overflow: hidden; } .avatar.lgava svg { width: 76%; height: 76%; flex: none; display: block; }
 .byline { display: flex; align-items: center; gap: 10px; margin: 6px 0 14px; font-size: 14px; } .byline .avatar { width: 30px; height: 30px; font-size: 16px; }
 .avatar.staff { background: linear-gradient(135deg, #1d2b4a, #0b1222); font-size: 19px; box-shadow: inset 0 0 0 1.5px #f2c94c88; }
 .phead { font-size: 13.5px; }
@@ -3436,6 +3437,8 @@ const byHtml = (a) => { const w = bylineOf(a); return w ? `By <button class="mli
 const SEAT = { "Dana Whitfield": "Brannew", "Marcus Pell": "Crocus", "Sal Benedetto": "Shakky", "Dr. Nina Kessler": "Professor Clover" };
 // Staff get their emoji; everyone else a letter on a color
 function letterAva(author, handle) { const st = STAFF_KEY[hkey(handle)];
+  // The league's own account wears the league flag's emblem
+  if (hkey(handle) === "buckaroofl") return `<span class="avatar lgava" aria-hidden="true"><svg viewBox="-64 -64 128 128" xmlns="http://www.w3.org/2000/svg">${lgEmblem(0, 0, 1)}</svg></span>`;
   return st ? `<span class="avatar staff" aria-hidden="true">${st.e}</span>` : `<span class="avatar" style="--h:${avatarHue(handle)}" aria-hidden="true">${esc((String(author).match(/[A-Za-z0-9]/) || ["?"])[0].toUpperCase())}</span>`; }
 const PANEL_BIO = { "Brannew": "GLSN insider on the preview panel. Briefing begins now.", "Crocus": "GLSN columnist. Kept the lighthouse fifty years. I've seen your team's story before.", "Shakky": "I set the lines. Information costs extra.", "Professor Clover": "GLSN analytics. The evidence says otherwise.", "Dana Whitfield": "League insider. If it's happening in the BFL, I heard it first.", "Marcus Pell": "Columnist. Long takes on short benches.", "Sal Benedetto": "I bet on everything. Ask me about my locks.", "Dr. Nina Kessler": "Analytics. In Luffy we trust (mostly)." };
 function userView() {
