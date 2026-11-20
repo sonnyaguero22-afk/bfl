@@ -3403,6 +3403,13 @@ const GUEST_BIO = { "Roronoa Zoro": "Guest picker. Swordsman. Not lost.", "Nami"
   "Boa Hancock": "Guest picker. The Pirate Empress. You may look at my picks.", "Buggy": "Guest picker. Captain. Every right pick was mine.",
   "Shanks": "Special guest. Here for the playoffs.", "Whitebeard": "Special guest. Every manager is my son.", "Monkey D. Garp": "Special guest. Hero of the Marines. Snacks welcome.",
   "Dracule Mihawk": "Special guest. Rarely interested.", "Kizaru": "Special guest. Admiral. Sooo scary.", "Big Mom": "Special guest. Tribute in sweets only." };
+// The awards' namesakes, who post now and then about the race for their award (same list as NAMESAKES in news.js; the Straw Hats
+// among them use their guest-star accounts)
+const NAMESAKE_BIO = { "Jinbe": "Fishman karate master. Defense is a duty.", "Nico Robin": "Scholar. I read the waiver wire like history.", "Portgas D. Ace": "A zero in a loss? I take that personally.",
+  "Foxy": "Captain. You dropped him? Your loss.", "Karoo": "Quack. 🦆💨", "Vegapunk": "Genius. A draft is an experiment.", "Wapol": "Deposed king. The waiver wire is a buffet.",
+  "Doflamingo": "Dealmaker. Every trade has strings.", "Blackbeard": "Luck is just fate with good timing.", "Bon Clay": "Friend to every unlucky manager.", "Bellamy": "I'll laugh at your bench. I've earned it.", "Marco": "Phoenix. Everyone rises eventually." };
+const NAMESAKE_OF = { "Nami": "nami", "Sanji": "sanji", "Roronoa Zoro": "zoro", "Franky": "franky", "Usopp": "usopp", "Tony Tony Chopper": "chopper", "Brook": "brook", "Buggy": "buggy", "Jinbe": "jinbe", "Nico Robin": "robin",
+  "Portgas D. Ace": "ace", "Foxy": "foxy", "Karoo": "karoo", "Vegapunk": "vegapunk", "Wapol": "wapol", "Doflamingo": "doflamingo", "Blackbeard": "blackbeard", "Bon Clay": "bonclay", "Bellamy": "bellamy", "Marco": "marco" };
 const LEGENDS = new Set(["Shanks", "Whitebeard", "Monkey D. Garp", "Dracule Mihawk", "Kizaru", "Big Mom"]);
 // GLSN, the Grand Line Sports Network: the league's made-up network and its staff (parody One Piece characters; same list in news.js)
 const GLSN_STAFF = [
@@ -3434,15 +3441,16 @@ const PANEL_BIO = { "Brannew": "GLSN insider on the preview panel. Briefing begi
 function userView() {
   const u = accounts()[state.user] || accounts()[ACCT_ALIAS[state.user]];
   if (!u) return `<div class="vhead"><div><div class="eyebrow">Social</div><h2>Account not found</h2></div></div><p><button class="mlink" data-go="social">← Back to Social</button></p>`;
-  const tm = u.team && u.team.t, fan = u.kind === "fan" || u.kind === "pundit" ? fanOf(u) : null, panel = PANEL_BIO[u.author] || GUEST_BIO[u.author], st = STAFF_KEY[u.k];
+  const tm = u.team && u.team.t, fan = u.kind === "fan" || u.kind === "pundit" ? fanOf(u) : null, panel = PANEL_BIO[u.author] || GUEST_BIO[u.author] || NAMESAKE_BIO[u.author], st = STAFF_KEY[u.k];
   const bio = (st && st.bio) || panel || (u.kind === "league" ? "The official account of the Buckaroo Football League. Est. 2023." : tm ? `The official account of ${esc(tm.name)}.` : u.kind === "reporter" ? "Covering the Buckaroo Football League." : u.kind === "pundit" ? "Fantasy football opinions, free of charge and worth it." : fan ? `${esc(fan.name)} fan. Opinions are my own and correct.` : "Fantasy football fan. Here for the takes.");
   const ava = tm ? teamAva(tm, "big") : `${letterAva(u.author, u.handle)}`;
   // Extras by kind: a team's season, a panelist's picks and berries
   const extra = [];
   if (tm) { const s = S[u.team.y], k = mgrAt(tm, s.curWeek || s.regWeeks), tr = (treasuries()[k] || { by: {} }).by[s.year];
     extra.push(`<button class="mlink" data-go="mgr-${k}">${mbadge(k, 1)} ${mgrName(k)}</button>`, `${s.year}: <b>${tm.w}–${tm.l}${tm.t ? `–${tm.t}` : ""}</b>`); if (tr) extra.push(`💰 ${berry(tr, 1)} this season`); }
+  if (NAMESAKE_OF[u.author]) extra.push(`Namesake of the ${awLink(NAMESAKE_OF[u.author])} award`);
   if (GUEST_BIO[u.author]) { const g = guestRecord(u.author); if (g.weeks) extra.push(`Guest picks <b>${g.w}-${g.l}</b>`, `${g.weeks} appearance${g.weeks === 1 ? "" : "s"}`); }
-  else if (panel) { const y = Math.max(...NEWS.filter((a) => a.type === "preview").map((a) => a.year), 0), r = panelRecord(y, 99)[u.author];
+  else if (panel && !NAMESAKE_BIO[u.author]) { const y = Math.max(...NEWS.filter((a) => a.type === "preview").map((a) => a.year), 0), r = panelRecord(y, 99)[u.author];
     if (r) extra.push(`${y} picks <b>${r.w}-${r.l}</b>`, `locks <b>${r.lw}-${r.ll}</b>`, `<b>${berry(r.b, 1)}</b> bankroll`); }
   if (fan) extra.push(`Fan of ${badge(fan, 1)} <b>${esc(fan.name)}</b>`);
   if (st && st.role) extra.unshift(`GLSN ${esc(st.role)}`, `Covers: ${esc(st.beat)}`);
