@@ -797,6 +797,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-22T23:35:06.777Z"
+  },
+  {
+   "author": "Bear Down Brenda",
+   "handle": "@BearDownBrenda",
+   "text": "Coleman gets another touchdown for Denver and Randy's score is now 87. Habibsters are at 112 and Tee Higgins is the only player left. I'll take the points, but I don't see a miracle in this.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T23:40:04.984Z"
+  },
+  {
+   "author": "Habib Hive",
+   "handle": "@HabibHive",
+   "text": "Denver is still handing the ball to Coleman and he's at 22 points for Randy. Habib is up 24 with just Chase Brown left, and I'm checking every score on the app anyway.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T23:44:04.984Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Coleman's run into the end zone brings The fumblers within 24, but Luffy still has Habibsters at 98%. Tee Higgins would have to be the whole thunderstorm, and I only see a few clouds so far.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T23:47:04.984Z"
   }
  ],
  "batches": [
@@ -823,7 +853,8 @@
   "2026-11-22T21:26:02.888Z",
   "2026-11-22T22:16:44.195Z",
   "2026-11-22T22:42:57.826Z",
-  "2026-11-22T23:40:06.777Z"
+  "2026-11-22T23:40:06.777Z",
+  "2026-11-22T23:49:04.984Z"
  ],
  "usage": [
   {
@@ -1000,6 +1031,14 @@
    "input": 4,
    "output": 353,
    "cache_write": 9688,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-22T23:49:04.984Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 393,
+   "cache_write": 9656,
    "cache_read": 0
   }
  ]
