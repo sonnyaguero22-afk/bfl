@@ -407,6 +407,36 @@
    "team": "",
    "about": "move",
    "at": "2026-11-22T16:00:48.016Z"
+  },
+  {
+   "author": "Ghost Web Gabby",
+   "handle": "@GabbyWebSZN",
+   "text": "Zoe swapped Chase McLaughlin out for Dawson Knox with Nico Collins already banked. Cutting a kicker who scored 10 in two weeks for a tight end with 0 is a bold read of the room, but I'm intrigued.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-22T16:39:55.385Z"
+  },
+  {
+   "author": "Absalom",
+   "handle": "@AbsalomScoops",
+   "text": "Sources say Zoe sent Chase McLaughlin to Impel Down and broke Dawson Knox out, with her team down 15 to 13.3 and Saquon Barkley still to play. I was in the room. She did not blink.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-22T16:39:55.385Z"
+  },
+  {
+   "author": "Sonny Side Up",
+   "handle": "@HorseHeaFaithful",
+   "text": "Zoe dropping a kicker for a tight end who scored nothing last week is a lot of faith. Meanwhile the Texans defense is carrying The Horse is Hea early and I will not question it.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-22T16:39:55.385Z"
   }
  ],
  "batches": [
@@ -421,7 +451,8 @@
   "2026-11-20T18:35:45.897Z",
   "2026-11-20T21:54:52.666Z",
   "2026-11-22T14:33:37.342Z",
-  "2026-11-22T16:00:48.016Z"
+  "2026-11-22T16:00:48.016Z",
+  "2026-11-22T16:39:55.385Z"
  ],
  "usage": [
   {
@@ -502,6 +533,14 @@
    "input": 4,
    "output": 347,
    "cache_write": 9562,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-22T16:39:55.385Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 422,
+   "cache_write": 9554,
    "cache_read": 0
   }
  ]
