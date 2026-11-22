@@ -507,6 +507,36 @@
    "team": "No Banner only HULK",
    "about": "game",
    "at": "2026-11-22T17:55:38.903Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "The forecast over The Horse is Hea just turned stormy: 59% down to 33%. Zoe is up 50.04 to 33.64 with Saquon Barkley and Jared Goff still going, and Sonny's remaining player to start is George Kittle. A front like that is hard to outrun.",
+   "heat": 4,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T18:54:12.493Z"
+  },
+  {
+   "author": "Ghost Web Gabby",
+   "handle": "@GhostWebGabby",
+   "text": "Zoe up by 16 on Sonny and the Knox swap I was side-eyeing is looking fine. Z² gets to be smug for a while.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T18:55:12.493Z"
+  },
+  {
+   "author": "Horse Hay Hank",
+   "handle": "@HorseHayHank",
+   "text": "George Pickens has a zero, Ollie Gordon II has 0.8, and the Texans defense can't carry us alone. Down 16 and I'm bargaining with Kittle.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T18:56:12.493Z"
   }
  ],
  "batches": [
@@ -524,7 +554,8 @@
   "2026-11-22T16:00:48.016Z",
   "2026-11-22T16:39:55.385Z",
   "2026-11-22T17:52:08.968Z",
-  "2026-11-22T18:06:38.903Z"
+  "2026-11-22T18:06:38.903Z",
+  "2026-11-22T18:56:12.493Z"
  ],
  "usage": [
   {
@@ -629,6 +660,14 @@
    "input": 4,
    "output": 515,
    "cache_write": 10521,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-22T18:56:12.493Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 400,
+   "cache_write": 9566,
    "cache_read": 0
   }
  ]
