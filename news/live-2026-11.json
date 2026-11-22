@@ -617,6 +617,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-22T19:57:18.740Z"
+  },
+  {
+   "author": "Horse Hay Hank",
+   "handle": "@HorseHayHank",
+   "text": "Mahomes throws another touchdown and The Horse is Hea has flipped it, up eight on Zoe. I'd say I never doubted the barn, but I was in it the whole time.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T20:02:13.437Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Mahomes' touchdown pass lifts The Horse is Hea to 90% by Luffy's count, with Kittle and Nabers still to play against Zoe's Hampton and Cam Little. A front that wide still has room for a late storm.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T20:05:13.437Z"
+  },
+  {
+   "author": "Ghost Web Gabby",
+   "handle": "@GhostWebGabby",
+   "text": "Mahomes again. Zoe had a 16-point lead an hour ago and now it's eight the wrong way. Omarion Hampton, please wake up.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T20:09:13.437Z"
   }
  ],
  "batches": [
@@ -637,7 +667,8 @@
   "2026-11-22T18:06:38.903Z",
   "2026-11-22T18:56:12.493Z",
   "2026-11-22T19:09:34.474Z",
-  "2026-11-22T19:58:18.740Z"
+  "2026-11-22T19:58:18.740Z",
+  "2026-11-22T20:13:13.437Z"
  ],
  "usage": [
   {
@@ -766,6 +797,14 @@
    "input": 4,
    "output": 524,
    "cache_write": 9689,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-22T20:13:13.437Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 385,
+   "cache_write": 9685,
    "cache_read": 0
   }
  ]
