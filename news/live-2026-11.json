@@ -347,6 +347,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-20T21:53:52.666Z"
+  },
+  {
+   "author": "Habib Hive",
+   "handle": "@HabibHive",
+   "text": "Puka moved from January 10 to February 15 and the surgery is for the MCL. So no playoffs, no comeback, nothing. Second-leading scorer gone for the whole stretch run and we are 5-5. I'm done refreshing ESPN.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T14:24:37.342Z"
+  },
+  {
+   "author": "Shakky",
+   "handle": "@ShakkysBar",
+   "text": "Puka's return date moving to February 15 is the kind of news that makes my bar's Habibsters futures very cheap. Habib built a champion twice, but this roster is down to LaPorta and prayer.",
+   "heat": 5,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T14:28:37.342Z"
+  },
+  {
+   "author": "Dawg Pound Dan",
+   "handle": "@DawgPoundDan",
+   "text": "4-to-5 months for Puka after the MCL surgery. Harsh for Habib, but it clears one playoff rival out of my way in the standings. Sorry, I'm not sorry.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T14:31:37.342Z"
   }
  ],
  "batches": [
@@ -359,7 +389,8 @@
   "2026-11-20T02:53:23.205Z",
   "2026-11-20T17:58:13.336Z",
   "2026-11-20T18:35:45.897Z",
-  "2026-11-20T21:54:52.666Z"
+  "2026-11-20T21:54:52.666Z",
+  "2026-11-22T14:33:37.342Z"
  ],
  "usage": [
   {
@@ -424,6 +455,14 @@
    "input": 4,
    "output": 549,
    "cache_write": 9662,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-22T14:33:37.342Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 400,
+   "cache_write": 9616,
    "cache_read": 0
   }
  ]
