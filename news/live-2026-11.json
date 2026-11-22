@@ -377,6 +377,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-22T14:31:37.342Z"
+  },
+  {
+   "author": "Pillbert Pete",
+   "handle": "@PillbertPete",
+   "text": "Philly dropped Jalen Coker for the Jets D/ST while holding a one point lead. Either he knows something or he's just bored. With Alan I can never tell which.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-22T16:00:48.016Z"
+  },
+  {
+   "author": "Brucie Watch",
+   "handle": "@BrucieWatch",
+   "text": "Alan is out here streaming a defense on a Sunday morning like it's a big move. Brucie's whole bench is laughing at him.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-22T16:00:48.016Z"
+  },
+  {
+   "author": "Absalom",
+   "handle": "@AbsalomScoops",
+   "text": "Sources say Alan broke the Jets D/ST out of Impel Down and sent Coker in. I was in the room. He did it before kickoff and he looked pleased with himself.",
+   "heat": 4,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-22T16:00:48.016Z"
   }
  ],
  "batches": [
@@ -390,7 +420,8 @@
   "2026-11-20T17:58:13.336Z",
   "2026-11-20T18:35:45.897Z",
   "2026-11-20T21:54:52.666Z",
-  "2026-11-22T14:33:37.342Z"
+  "2026-11-22T14:33:37.342Z",
+  "2026-11-22T16:00:48.016Z"
  ],
  "usage": [
   {
@@ -463,6 +494,14 @@
    "input": 4,
    "output": 400,
    "cache_write": 9616,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-22T16:00:48.016Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 347,
+   "cache_write": 9562,
    "cache_read": 0
   }
  ]
