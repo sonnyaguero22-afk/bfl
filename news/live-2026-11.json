@@ -467,6 +467,46 @@
    "team": "The fumblers",
    "about": "move",
    "at": "2026-11-22T17:52:08.968Z"
+  },
+  {
+   "author": "Jinbe",
+   "handle": "@JinbeTheWall",
+   "text": "Ten points from the Steelers D/ST and the Seahawks still lead the race for my award. A defense is a wall that stands for others, and Zoe's is standing tall today.",
+   "heat": 3,
+   "kind": "pundit",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T18:03:38.903Z"
+  },
+  {
+   "author": "Maye Day Mourner",
+   "handle": "@MayeDayMourner",
+   "text": "Drake Maye pushed back to December 27 with a broken fibula. Habib is 5-5, down to Randy, and now his quarterback is a Christmas gift that arrives after the playoffs. Deleting the app until further notice.",
+   "heat": 7,
+   "kind": "fan",
+   "team": "Habibsters",
+   "about": "game",
+   "at": "2026-11-22T17:57:38.903Z"
+  },
+  {
+   "author": "Dawg Pound Dan",
+   "handle": "@DawgPoundDan",
+   "text": "The Bills defense is already at 10 and the Lions defense is at 11 for Jordan. Kai leads by under four, so none of us are relaxing.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "Dawgs",
+   "about": "game",
+   "at": "2026-11-22T18:01:38.903Z"
+  },
+  {
+   "author": "Brucie Watch",
+   "handle": "@BrucieWatch",
+   "text": "Brucie is up 8 to 1.9 on Philly and Alan has one kicker's point and a bunch of zeroes. Tell me this isn't a good Sunday.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "No Banner only HULK",
+   "about": "game",
+   "at": "2026-11-22T17:55:38.903Z"
   }
  ],
  "batches": [
@@ -483,7 +523,8 @@
   "2026-11-22T14:33:37.342Z",
   "2026-11-22T16:00:48.016Z",
   "2026-11-22T16:39:55.385Z",
-  "2026-11-22T17:52:08.968Z"
+  "2026-11-22T17:52:08.968Z",
+  "2026-11-22T18:06:38.903Z"
  ],
  "usage": [
   {
@@ -580,6 +621,14 @@
    "input": 4,
    "output": 419,
    "cache_write": 9377,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-22T18:06:38.903Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 515,
+   "cache_write": 10521,
    "cache_read": 0
   }
  ]
