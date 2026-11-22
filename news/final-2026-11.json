@@ -1,0 +1,70 @@
+{
+ "id": "final-2026-11",
+ "type": "final",
+ "year": 2026,
+ "wk": 11,
+ "by": "Haredas",
+ "created": "2026-11-22T16:54:37.219Z",
+ "title": "Sunday Final Word, Week 11: Frost Moves In Over Habibsters, and Sonny Leaves a Window Open",
+ "dek": "The inactives are out, Randy's frantic Saturday has turned the Habibsters forecast, and Sonny's bye-week receiver is still sitting in his lineup an hour before kickoff.",
+ "body": [
+  "The biggest change in the atmosphere is down the coast. Randy made four lineup swaps and three roster moves since Thursday, sending Matt Gay, Trevor Lawrence, Mike Evans and the Buccaneers D/ST out of his lineup for Jason Sanders, Caleb Williams, Rome Odunze and the Chiefs D/ST. Luffy has moved from 62% Habibsters to 37%, a drop of 25 points, and Caleb Williams is Randy's name on the Bounty Board with an 80% chance for The fumblers if he reaches 25 or more. Kaushal has Ka'imi Fairbairn's 6 points in the bank, and CeeDee Lamb still has to answer the board. Brannew, Shakky and Professor Clover all stood with Habibsters on Thursday, and the forecaster notes that their picks were made before this front arrived.",
+  "The unfilled spot is the real news. Jaxon Smith-Njigba is on bye and sits in The Horse is Hea's lineup an hour before kickoff, which means Sonny is starting a receiver who will score nothing. Luffy now has Sonny at 70%, and with the slot filled it would be 82%, so the forgotten starter costs 12 points of win chance. Asked by GLSN why Smith-Njigba is still in his lineup Sunday morning, Sonny said: \"I'm not resting my sunshine.\" The sunshine, I am sorry to report, is on bye. Sonny does lead 15 to 13.3 after the Texans D/ST scored 15 and Nico Collins answered with 13.3 for Ghostu-Spider SZN, and Zoe swapped Dawson Knox in for Dalton Kincaid.",
+  "The rest of the map is quieter. Ramon moved to the Broncos D/ST and Alan to the Jets D/ST, and Luffy now reads No Banner only HULK at 64%, up from 56%, with Spencer Shrader's single point the only scoring so far. Jonathan Taylor has put 4.7 on the board for Dawgs, and Jordan's chances in that game have crept from 12% to 19%, which is still a lot of clouds. Crocus stands by his Team Pillbert lock, and the forecaster respects a man who does not check the radar."
+ ],
+ "social": [
+  {
+   "author": "Shakky",
+   "handle": "@ShakkysBar",
+   "text": "Sonny's lock stays a lock. A bye week is a rounding error with a bar tab. Fix it or don't, I'm collecting either way.",
+   "when": 8,
+   "heat": 5,
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Brannew",
+   "handle": "@BrannewBriefing",
+   "text": "Intel update: Smith-Njigba is on bye and still in Sonny's lineup. I've informed the relevant parties. The relevant parties are 'not resting my sunshine.' I'll hold at confident.",
+   "when": 15,
+   "heat": 4,
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Z² Nation",
+   "handle": "@ZSquaredNation",
+   "text": "Sonny is starting a guy who isn't playing. Zoey is up on points and Dawson Knox is in. Z² SZN, let's go. 🕷️",
+   "when": 22,
+   "heat": 5,
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Habib Hive",
+   "handle": "@HabibHiveBFL",
+   "text": "Randy dropped FOUR starters and picked up Caleb Williams on a Sunday and Luffy flipped us from 62 to 37. Stingy about trades, absolutely reckless about the lineup. Habib needs Lamb to eat.",
+   "when": 35,
+   "heat": 8,
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Final word is up. A 12-point cost for one empty receiver slot on The Horse is Hea, and a 25-point swing against Habibsters. Check your lineups before kickoff.",
+   "when": 5,
+   "heat": 3,
+   "kind": "reporter",
+   "team": ""
+  }
+ ],
+ "teams": [],
+ "model": "claude-sonnet-5-5",
+ "usage": {
+  "input": 4,
+  "output": 1451,
+  "cache_write": 15687,
+  "cache_read": 0
+ }
+}
