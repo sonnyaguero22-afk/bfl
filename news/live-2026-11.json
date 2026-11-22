@@ -437,6 +437,36 @@
    "team": "",
    "about": "move",
    "at": "2026-11-22T16:39:55.385Z"
+  },
+  {
+   "author": "Habib Hive",
+   "handle": "@HabibHive",
+   "text": "Habib dropped Puka Nacua. The same Puka who was our second-leading scorer, hurt or not. Putting him in Impel Down with the season on the line feels like giving up on a dog because it has a limp.",
+   "heat": 7,
+   "kind": "fan",
+   "team": "Habibsters",
+   "about": "move",
+   "at": "2026-11-22T17:52:08.968Z"
+  },
+  {
+   "author": "Absalom",
+   "handle": "@AbsalomScoops",
+   "text": "Sources say Kaushal sent Puka Nacua to Impel Down and broke Carnell Tate out in his place. I was in the room. He did not look back, and the room did not enjoy it.",
+   "heat": 4,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-22T17:52:08.968Z"
+  },
+  {
+   "author": "Fumbler Faithful",
+   "handle": "@FumblerFaithful",
+   "text": "Habib is trading a 138-point receiver for a guy with 5.8 points in two weeks and we are all supposed to nod along? Meanwhile Randy still hasn't traded anyone. Fine by me, the fumblers are sitting here with a clean sheet.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "The fumblers",
+   "about": "move",
+   "at": "2026-11-22T17:52:08.968Z"
   }
  ],
  "batches": [
@@ -452,7 +482,8 @@
   "2026-11-20T21:54:52.666Z",
   "2026-11-22T14:33:37.342Z",
   "2026-11-22T16:00:48.016Z",
-  "2026-11-22T16:39:55.385Z"
+  "2026-11-22T16:39:55.385Z",
+  "2026-11-22T17:52:08.968Z"
  ],
  "usage": [
   {
@@ -541,6 +572,14 @@
    "input": 4,
    "output": 422,
    "cache_write": 9554,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-22T17:52:08.968Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 419,
+   "cache_write": 9377,
    "cache_read": 0
   }
  ]
