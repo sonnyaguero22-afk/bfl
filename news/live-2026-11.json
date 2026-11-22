@@ -647,6 +647,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-22T20:09:13.437Z"
+  },
+  {
+   "author": "Sanji",
+   "handle": "@SanjiKicks",
+   "text": "Gibbs just plated another touchdown and 25.8 already. A back like that is the main course, but Philly's kitchen is missing every other ingredient. McCaffrey is still waiting in the pantry for the Sanji race.",
+   "heat": 4,
+   "kind": "pundit",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T20:57:44.794Z"
+  },
+  {
+   "author": "Philly Phanatic Phil",
+   "handle": "@PhillyPhil_PB",
+   "text": "Gibbs runs one in and Team Pillbert is still down 57. I'll take the points, but we're polishing the trophy for a game that's already gone.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T20:55:44.794Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Gibbs' touchdown trims some of the gap, but Luffy still has No Banner only HULK at 87% with McCaffrey and the Broncos D/ST yet to play. Alan needs a hurricane and the radar is clear.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T20:53:44.794Z"
   }
  ],
  "batches": [
@@ -668,7 +698,8 @@
   "2026-11-22T18:56:12.493Z",
   "2026-11-22T19:09:34.474Z",
   "2026-11-22T19:58:18.740Z",
-  "2026-11-22T20:13:13.437Z"
+  "2026-11-22T20:13:13.437Z",
+  "2026-11-22T20:58:44.794Z"
  ],
  "usage": [
   {
@@ -805,6 +836,14 @@
    "input": 4,
    "output": 385,
    "cache_write": 9685,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-22T20:58:44.794Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 395,
+   "cache_write": 10052,
    "cache_read": 0
   }
  ]
