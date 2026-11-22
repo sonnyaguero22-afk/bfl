@@ -737,6 +737,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-22T22:13:44.195Z"
+  },
+  {
+   "author": "Horse Hea Hank",
+   "handle": "@HankHorseHea",
+   "text": "Nabers finally gets in the end zone and Sonny's lead is back to double digits. Zoe still has Cam Little and Omarion Hampton in the building, but I'm breathing again.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T22:40:57.826Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Nabers' touchdown keeps The Horse is Hea at 99% on Luffy's chart. Zoe needs a storm from Hampton and Cam Little, and the sky over her side is mostly clear.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T22:41:57.826Z"
+  },
+  {
+   "author": "Ghost Web Gabby",
+   "handle": "@GhostWebGabby",
+   "text": "Nabers scores and Sonny gets his cushion back. Mahomes already took half my lead, and now a Giants receiver is finishing the job. Rude.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T22:42:57.826Z"
   }
  ],
  "batches": [
@@ -761,7 +791,8 @@
   "2026-11-22T20:13:13.437Z",
   "2026-11-22T20:58:44.794Z",
   "2026-11-22T21:26:02.888Z",
-  "2026-11-22T22:16:44.195Z"
+  "2026-11-22T22:16:44.195Z",
+  "2026-11-22T22:42:57.826Z"
  ],
  "usage": [
   {
@@ -922,6 +953,14 @@
    "input": 4,
    "output": 363,
    "cache_write": 9708,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-22T22:42:57.826Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 377,
+   "cache_write": 9696,
    "cache_read": 0
   }
  ]
