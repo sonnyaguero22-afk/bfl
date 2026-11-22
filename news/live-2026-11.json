@@ -537,6 +537,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-22T18:56:12.493Z"
+  },
+  {
+   "author": "Fumbler Faithful",
+   "handle": "@FumblerFaithful",
+   "text": "Habibsters takes the lead by two with CeeDee Lamb going off, and Caleb Williams is still playing. Randy, please don't touch the lineup out of spite. Actually do, it's the only move you make.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T18:58:34.474Z"
+  },
+  {
+   "author": "Brucie Watch",
+   "handle": "@BrucieWatch",
+   "text": "Kelce caught another touchdown for No Banner only HULK and it's 77 to 15 over Philly with McCaffrey not even on the field yet. Alan is playing a different sport at this point.",
+   "heat": 8,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T19:01:34.474Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "James Cook III's touchdown pushes Dawgs to 47.5 against 17 for Counting or not Counting GV. Jordan still has Burrow, Wilson and Dobbins to come, but Luffy has him at only 20% and a gap that size is a long climb.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T19:04:34.474Z"
+  },
+  {
+   "author": "Horse Hay Hank",
+   "handle": "@HorseHayHank",
+   "text": "Mahomes finally threw one for The Horse is Hea and we're still behind Zoe by eight. Kittle, you're the last one in the barn, no pressure.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T19:07:34.474Z"
   }
  ],
  "batches": [
@@ -555,7 +595,8 @@
   "2026-11-22T16:39:55.385Z",
   "2026-11-22T17:52:08.968Z",
   "2026-11-22T18:06:38.903Z",
-  "2026-11-22T18:56:12.493Z"
+  "2026-11-22T18:56:12.493Z",
+  "2026-11-22T19:09:34.474Z"
  ],
  "usage": [
   {
@@ -668,6 +709,14 @@
    "input": 4,
    "output": 400,
    "cache_write": 9566,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-22T19:09:34.474Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 530,
+   "cache_write": 9838,
    "cache_read": 0
   }
  ]
