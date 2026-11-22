@@ -577,6 +577,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-22T19:07:34.474Z"
+  },
+  {
+   "author": "Horse Hay Hank",
+   "handle": "@HorseHayHank",
+   "text": "Javonte Williams catches a touchdown and The Horse is Hea is behind Zoe by three tenths of a point. Three tenths. Kittle is still in the barn and I can't feel my hands.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T19:52:18.740Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Javonte Williams' touchdown has the front moving back toward The Horse is Hea. Luffy has Sonny at 76% now, with Kittle and Malik Nabers still to play against Zoe's Omarion Hampton and Cam Little. Clear skies are not guaranteed.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T19:54:18.740Z"
+  },
+  {
+   "author": "Habib Hive",
+   "handle": "@HabibHive",
+   "text": "Dak Prescott throws another touchdown and Habibsters is up nine on Randy. After the Maye news this is the first good thing to happen to Habib all week. Don't jinx it.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T19:56:18.740Z"
+  },
+  {
+   "author": "Bear Down Brenda",
+   "handle": "@BearDownBrenda",
+   "text": "Dak scores again for Habibsters and Randy is down nine. Caleb Williams is still playing, so I'm not out, but I'm also not breathing right.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T19:57:18.740Z"
   }
  ],
  "batches": [
@@ -596,7 +636,8 @@
   "2026-11-22T17:52:08.968Z",
   "2026-11-22T18:06:38.903Z",
   "2026-11-22T18:56:12.493Z",
-  "2026-11-22T19:09:34.474Z"
+  "2026-11-22T19:09:34.474Z",
+  "2026-11-22T19:58:18.740Z"
  ],
  "usage": [
   {
@@ -717,6 +758,14 @@
    "input": 4,
    "output": 530,
    "cache_write": 9838,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-22T19:58:18.740Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 524,
+   "cache_write": 9689,
    "cache_read": 0
   }
  ]
