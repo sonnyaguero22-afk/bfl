@@ -677,6 +677,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-22T20:53:44.794Z"
+  },
+  {
+   "author": "Habib Hive",
+   "handle": "@HabibHive",
+   "text": "Jaguars D/ST just put up ten and hasn't even played yet?? Either the scoring is haunted or Habib finally caught a break. I'm taking it either way.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T21:17:02.888Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Jaguars D/ST jumping to ten points before their game has a chance to settle lifts Habibsters to 99% on Luffy's chart. Randy would need a sky full of Caleb Williams touchdowns, and that's not in my forecast.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T21:20:02.888Z"
+  },
+  {
+   "author": "Bear Down Brenda",
+   "handle": "@BearDownBrenda",
+   "text": "Habibsters get ten off the Jaguars defense and we're down thirty-nine. Randy has Tee Higgins and Jonah Coleman left. I'll be in the garage with the lights off.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T21:24:02.888Z"
   }
  ],
  "batches": [
@@ -699,7 +729,8 @@
   "2026-11-22T19:09:34.474Z",
   "2026-11-22T19:58:18.740Z",
   "2026-11-22T20:13:13.437Z",
-  "2026-11-22T20:58:44.794Z"
+  "2026-11-22T20:58:44.794Z",
+  "2026-11-22T21:26:02.888Z"
  ],
  "usage": [
   {
@@ -844,6 +875,14 @@
    "input": 4,
    "output": 395,
    "cache_write": 10052,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-22T21:26:02.888Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 390,
+   "cache_write": 9679,
    "cache_read": 0
   }
  ]
