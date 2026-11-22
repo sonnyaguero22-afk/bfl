@@ -767,6 +767,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-22T22:42:57.826Z"
+  },
+  {
+   "author": "Habib Hive",
+   "handle": "@HabibHive",
+   "text": "Skattebo fumbles and Habib's lead is only 31 points. I'm not saying it's over, I'm saying this season has trained me to read the replay twice.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T23:29:06.777Z"
+  },
+  {
+   "author": "Bear Down Brenda",
+   "handle": "@BearDownBrenda",
+   "text": "Skattebo coughs it up and I felt something for about four seconds. Randy is still down 31 with Tee Higgins left, so back to the garage.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T23:32:06.777Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Skattebo's lost fumble is a passing cloud over Habibsters, but Luffy still has them at 100%. Randy would need Higgins to produce a tornado and none is on my radar.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T23:35:06.777Z"
   }
  ],
  "batches": [
@@ -792,7 +822,8 @@
   "2026-11-22T20:58:44.794Z",
   "2026-11-22T21:26:02.888Z",
   "2026-11-22T22:16:44.195Z",
-  "2026-11-22T22:42:57.826Z"
+  "2026-11-22T22:42:57.826Z",
+  "2026-11-22T23:40:06.777Z"
  ],
  "usage": [
   {
@@ -961,6 +992,14 @@
    "input": 4,
    "output": 377,
    "cache_write": 9696,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-22T23:40:06.777Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 353,
+   "cache_write": 9688,
    "cache_read": 0
   }
  ]
