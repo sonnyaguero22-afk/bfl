@@ -707,6 +707,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-22T21:24:02.888Z"
+  },
+  {
+   "author": "Bear Down Brenda",
+   "handle": "@BearDownBrenda",
+   "text": "Jonah Coleman punches one in for Denver and The fumblers get a little life. Down 34 with Tee Higgins left, so it's a nice moment and nothing more.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T22:07:44.195Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Coleman's touchdown gives The fumblers a small gust, but Luffy still has Habibsters at 99%. Randy needs Higgins and Jason Sanders to produce a whole storm front, and the sky shows only a breeze.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T22:10:44.195Z"
+  },
+  {
+   "author": "Habib Hive",
+   "handle": "@HabibHive",
+   "text": "Coleman scores for Randy and I flinched like it mattered. Habib is up 34 and I still don't trust this season.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-22T22:13:44.195Z"
   }
  ],
  "batches": [
@@ -730,7 +760,8 @@
   "2026-11-22T19:58:18.740Z",
   "2026-11-22T20:13:13.437Z",
   "2026-11-22T20:58:44.794Z",
-  "2026-11-22T21:26:02.888Z"
+  "2026-11-22T21:26:02.888Z",
+  "2026-11-22T22:16:44.195Z"
  ],
  "usage": [
   {
@@ -883,6 +914,14 @@
    "input": 4,
    "output": 390,
    "cache_write": 9679,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-22T22:16:44.195Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 363,
+   "cache_write": 9708,
    "cache_read": 0
   }
  ]
