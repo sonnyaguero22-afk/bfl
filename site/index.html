@@ -2249,13 +2249,27 @@ const TROPHY = {
     <path d="M118 100v66" stroke="#6e4a12" stroke-width="2"/>
     <path d="M98 166h44l-6 20h-32z" fill="url(#g${i})"/><path d="M112 186h16v26h-16z" fill="url(#v${i})"/><path d="M90 212h60l6 26H84z" fill="url(#g${i})"/>
     ${[[84, 70], [104, 58], [138, 60], [156, 74]].map(([x, y]) => `<g transform="translate(${x} ${y})">${[0, 72, 144, 216, 288].map((a) => `<ellipse cx="0" cy="-5" rx="3" ry="5" fill="#ff8fb8" transform="rotate(${a})"/>`).join("")}<circle r="2.2" fill="#ffd75a"/></g>`).join("")}` },
-  sunny: { art: (i) => `
-    ${[...Array(16)].map((_, k) => `<path d="M120 84L${120 + 58 * Math.cos(k * Math.PI / 8)} ${84 + 58 * Math.sin(k * Math.PI / 8)}" stroke="url(#g${i})" stroke-width="${k % 2 ? 3 : 6}" stroke-linecap="round"/>`).join("")}
-    <circle cx="120" cy="84" r="34" fill="url(#g${i})" stroke="#6e4a12" stroke-width="1"/>
-    <path d="M106 80a3 3 0 0 0 6 0M128 80a3 3 0 0 0 6 0M106 96q14 12 28 0" stroke="#6e4a12" stroke-width="3" fill="none" stroke-linecap="round"/>
-    <path d="M78 176h84l-12 22H90z" fill="url(#g${i})"/><path d="M120 120v56" stroke="#6e4a12" stroke-width="3"/><path d="M122 126q30 20 26 46h-26z" fill="#fbf1d6" stroke="#b8a77a"/><path d="M118 132q-22 18-20 40h20z" fill="#fbf1d6" stroke="#b8a77a"/>
-    <path d="M70 204q12-8 25 0t25 0 25 0 25 0" stroke="#4fb3ff" stroke-width="4" fill="none"/>
-    <path d="M88 212h64l6 26H82z" fill="url(#g${i})"/>` },
+  // Thousand Sunny: the Going Merry's bigger successor, in profile like her: two masts, a full main sail with a football,
+  // a raised stern and the lion-sun figurehead at the bow, riding a wave
+  sunny: { art: (i) => `<g transform="translate(-12 0)">
+    <path d="M118 30v10" stroke="#4b525c" stroke-width="2"/><path d="M118 30l20 5-20 5z" fill="#d6452f"/>
+    <path d="M118 40v112" stroke="#4b525c" stroke-width="4"/><path d="M160 74v78" stroke="#4b525c" stroke-width="3"/>
+    <path d="M110 50h16v8h-16z" fill="url(#g${i})" stroke="#4b525c" stroke-width="1.2"/>
+    <path d="M82 64q36-12 72 0l5 62q-41 9-82 0z" fill="#fbf1d6" stroke="#b8a77a" stroke-width="1.5"/>
+    <path d="M88 74q30-8 60 0M86 116q32 6 66 0" stroke="#e3d6b0" stroke-width="1" fill="none"/>
+    <g transform="rotate(-18 118 96)"><path d="M98 96q20-14 40 0-20 14-40 0z" fill="#8b4a22" stroke="#4a2a10" stroke-width="1"/><path d="M111 96h14" stroke="#fbf1d6" stroke-width="1.6"/>${[113, 118, 123].map((x) => `<path d="M${x} 92v8" stroke="#fbf1d6" stroke-width="1.3"/>`).join("")}</g>
+    <path d="M150 86q16-4 30 4l2 32q-16 4-32 0z" fill="#fbf1d6" stroke="#b8a77a" stroke-width="1.3"/>
+    <path d="M40 152v-34h34v34z" fill="url(#g${i})" stroke="#4b525c" stroke-width="1.2"/><path d="M36 118h42" stroke="#4b525c" stroke-width="2"/>
+    ${[46, 57].map((x) => `<rect x="${x}" y="126" width="8" height="8" rx="1" fill="#2a2a30" opacity=".55"/>`).join("")}
+    <path d="M34 152h160q8 0 8 7-12 28-46 30H82q-38-2-48-30 0-7 0-7z" fill="url(#g${i})" stroke="#4b525c" stroke-width="1.5"/>
+    <path d="M40 165h156" stroke="#4b525c" stroke-width="1" opacity=".45"/>${[62, 86, 110, 134, 158].map((x) => `<circle cx="${x}" cy="172" r="2.4" fill="#4b525c" opacity=".5"/>`).join("")}
+    <path d="M196 152q8-10 10-20" stroke="#4b525c" stroke-width="3" fill="none" stroke-linecap="round"/>
+    ${[...Array(16)].map((_, k) => { const a = (k * Math.PI) / 8; return `<path d="M${212 + 12 * Math.cos(a)} ${120 + 12 * Math.sin(a)}L${212 + (k % 2 ? 19 : 23) * Math.cos(a)} ${120 + (k % 2 ? 19 : 23) * Math.sin(a)}" stroke="url(#g${i})" stroke-width="${k % 2 ? 2.5 : 4}" stroke-linecap="round"/>`; }).join("")}
+    <circle cx="212" cy="120" r="13" fill="url(#g${i})" stroke="#4b525c" stroke-width="1.2"/>
+    <path d="M206 117a2 2 0 0 0 4 0M214 117a2 2 0 0 0 4 0M206 125q6 5 12 0" stroke="#4b525c" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <path d="M30 196q21-10 42 0t42 0 42 0 42 0" stroke="#4fb3ff" stroke-width="4" fill="none" stroke-linecap="round"/></g>
+    <path d="M112 200h16v12h-16z" fill="url(#v${i})"/><path d="M88 212h64l6 26H82z" fill="url(#g${i})"/>` },
+
   // Going Merry: the little caravel herself, in profile: her ram figurehead at the bow, the stern cabin, a full sail with a
   // football on it, the crow's nest and a pennant, riding a wave
   merry: { art: (i) => `<g transform="translate(-9 0)">
