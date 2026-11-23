@@ -937,6 +937,36 @@
    "team": "The Horse is Hea",
    "about": "game",
    "at": "2026-11-23T02:02:15.435Z"
+  },
+  {
+   "author": "Brucie Bandwagon",
+   "handle": "@BrucieBandwagon",
+   "text": "Jefferson coughs it up and Alan is down 26 with Okonkwo as his last hope. Brucie can probably put the controller down now.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-23T03:16:35.676Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Jefferson's fumble sends No Banner only HULK up to 91% on Luffy's chart. Team Pillbert needed a storm and just lost its last cloud. Clear skies for Ramon.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-23T03:19:35.676Z"
+  },
+  {
+   "author": "Pillbert Pessimist",
+   "handle": "@PillbertPessimist",
+   "text": "Jefferson fumbles and the whole season of Philly's luck fits in one play. Nothing left but Chig Okonkwo and prayers.",
+   "heat": 8,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-23T03:21:35.676Z"
   }
  ],
  "batches": [
@@ -967,7 +997,8 @@
   "2026-11-22T23:49:04.984Z",
   "2026-11-23T00:56:12.215Z",
   "2026-11-23T01:33:57.575Z",
-  "2026-11-23T02:10:15.435Z"
+  "2026-11-23T02:10:15.435Z",
+  "2026-11-23T03:22:35.676Z"
  ],
  "usage": [
   {
@@ -1176,6 +1207,14 @@
    "input": 4,
    "output": 498,
    "cache_write": 9911,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-23T03:22:35.676Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 359,
+   "cache_write": 9741,
    "cache_read": 0
   }
  ]
