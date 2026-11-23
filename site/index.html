@@ -1957,7 +1957,8 @@ function seasonAwards(s) {
     const ws = x.ws.filter((w) => w.start && w.t.id === e.t.id && (s.sp2mp?.[w.wk] ?? w.wk) < to), own = sum(ws, (w) => w.pts);
     let ret = 0, got = [];
     if (end && end.type === "trade") { const wk = Math.ceil(end.wk), tr = s.trades.find((t) => t.wk === wk && (t.got[end.t.id] || []).some((g) => sameName(g.split("|")[0], x.p.n)));
-      if (tr) { got = (tr.got[e.t.id] || []).map((g) => g.split("|")[0]); ret = sum(got, (g) => stayPts(g, e.t, wk)) / ((tr.got[end.t.id] || []).length || 1); } }
+      // The Thousand Sunny winner's points already won an award, so they don't count again here
+      if (tr) { got = (tr.got[e.t.id] || []).map((g) => g.split("|")[0]).filter((g) => !(out.sunny && sameName(out.sunny.p.n, g) && out.sunny.t === e.t)); ret = sum(got, (g) => stayPts(g, e.t, wk)) / ((tr.got[end.t.id] || []).length || 1); } }
     return { p: x.p, t: e.t, rd: e.rd, own, ret, got, n: ws.length }; }).filter(Boolean); }),
     (x) => x.own + x.ret, (x) => `${f1(x.own + x.ret)} pts from a round ${x.rd} pick${x.ret ? ` (${f1(x.own)} his own, ${f1(x.ret)} from ${andList(x.got)}, whom he was traded for)` : ` in ${x.n} starts`}`);
   // Foxy: what a dropped player scored as a starter for other teams from the week of the drop on, charged to the team that dropped him
@@ -2255,18 +2256,24 @@ const TROPHY = {
     <path d="M78 176h84l-12 22H90z" fill="url(#g${i})"/><path d="M120 120v56" stroke="#6e4a12" stroke-width="3"/><path d="M122 126q30 20 26 46h-26z" fill="#fbf1d6" stroke="#b8a77a"/><path d="M118 132q-22 18-20 40h20z" fill="#fbf1d6" stroke="#b8a77a"/>
     <path d="M70 204q12-8 25 0t25 0 25 0 25 0" stroke="#4fb3ff" stroke-width="4" fill="none"/>
     <path d="M88 212h64l6 26H82z" fill="url(#g${i})"/>` },
-  // Going Merry: her sheep figurehead, curled horns and all, over the little caravel, a football on the sail
-  merry: { art: (i) => `
-    ${[-1, 1].map((d) => `<path d="M${120 + d * 20} 70c${d * 18} -14 ${d * 34} 0 ${d * 26} 16c${d * -6} 12 ${d * -22} 8 ${d * -16} -2c${d * 4} -6 ${d * 12} -2 ${d * 8} 4" fill="none" stroke="url(#v${i})" stroke-width="7" stroke-linecap="round"/>`).join("")}
-    <ellipse cx="120" cy="88" rx="26" ry="30" fill="url(#g${i})" stroke="#4b525c" stroke-width="1.5"/>
-    <path d="M100 66q20-14 40 0" stroke="url(#v${i})" stroke-width="6" fill="none" stroke-linecap="round"/>
-    <path d="M110 86a3 3 0 0 0 6 0M124 86a3 3 0 0 0 6 0" stroke="#2a2a30" stroke-width="3" fill="none" stroke-linecap="round"/>
-    <ellipse cx="120" cy="104" rx="11" ry="7" fill="#f4f6fa" opacity=".75"/><path d="M116 102h2M122 102h2" stroke="#2a2a30" stroke-width="2" stroke-linecap="round"/>
-    <path d="M84 178h72l-10 20H94z" fill="url(#g${i})"/><path d="M120 130v48" stroke="#4b525c" stroke-width="3"/>
-    <path d="M122 134q26 18 22 40h-22z" fill="#fbf1d6" stroke="#b8a77a"/>
-    <g transform="rotate(-20 133 156)"><path d="M124 156q9-7 18 0-9 7-18 0z" fill="#8b4a22"/><path d="M130 156h6" stroke="#fbf1d6" stroke-width="1.2"/></g>
-    <path d="M70 204q12-8 25 0t25 0 25 0 25 0" stroke="#4fb3ff" stroke-width="4" fill="none"/>
-    <path d="M88 212h64l6 26H82z" fill="url(#g${i})"/>` },
+  // Going Merry: the little caravel herself, in profile: her ram figurehead at the bow, the stern cabin, a full sail with a
+  // football on it, the crow's nest and a pennant, riding a wave
+  merry: { art: (i) => `<g transform="translate(-9 0)">
+    <path d="M124 40v12" stroke="#4b525c" stroke-width="2"/><path d="M124 40l18 5-18 5z" fill="#d6452f"/>
+    <path d="M124 52v100" stroke="#4b525c" stroke-width="3.5"/>
+    <path d="M116 62h16v8h-16z" fill="url(#g${i})" stroke="#4b525c" stroke-width="1.2"/>
+    <path d="M94 76q30-10 60 0l4 52q-34 8-68 0z" fill="#fbf1d6" stroke="#b8a77a" stroke-width="1.5"/>
+    <path d="M100 84q24-7 48 0M98 118q28 6 56 0" stroke="#e3d6b0" stroke-width="1" fill="none"/>
+    <g transform="rotate(-18 124 102)"><path d="M108 102q16-12 32 0-16 12-32 0z" fill="#8b4a22" stroke="#4a2a10" stroke-width="1"/><path d="M118 102h12" stroke="#fbf1d6" stroke-width="1.5"/>${[120, 124, 128].map((x) => `<path d="M${x} 99v6" stroke="#fbf1d6" stroke-width="1.2"/>`).join("")}</g>
+    <path d="M58 150h-2v-24h26v24z" fill="url(#g${i})" stroke="#4b525c" stroke-width="1.2"/><rect x="62" y="132" width="7" height="7" rx="1" fill="#2a2a30" opacity=".55"/><rect x="72" y="132" width="7" height="7" rx="1" fill="#2a2a30" opacity=".55"/>
+    <path d="M52 150h132q6 0 6 6-10 26-40 28H92q-30-2-40-28 0-6 0-6z" fill="url(#g${i})" stroke="#4b525c" stroke-width="1.5"/>
+    <path d="M58 162h124" stroke="#4b525c" stroke-width="1" opacity=".45"/>${[78, 98, 118, 138, 158].map((x) => `<circle cx="${x}" cy="168" r="2.2" fill="#4b525c" opacity=".5"/>`).join("")}
+    <path d="M184 150q8-10 10-22" stroke="#4b525c" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <circle cx="196" cy="123" r="11" fill="url(#g${i})" stroke="#4b525c" stroke-width="1.2"/>
+    <path d="M188 116c-8-8-16 0-11 7 4 4 8 0 5-3M204 116c8-8 16 0 11 7-4 4-8 0-5-3" fill="none" stroke="url(#v${i})" stroke-width="3.5" stroke-linecap="round"/>
+    <circle cx="192.5" cy="123" r="1.5" fill="#2a2a30"/><circle cx="199.5" cy="123" r="1.5" fill="#2a2a30"/><path d="M193 129q3 2 6 0" stroke="#2a2a30" stroke-width="1.2" fill="none"/>
+    <path d="M44 190q19-10 38 0t38 0 38 0 38 0" stroke="#4fb3ff" stroke-width="4" fill="none" stroke-linecap="round"/></g>
+    <path d="M112 196h16v16h-16z" fill="url(#v${i})"/><path d="M88 212h64l6 26H82z" fill="url(#g${i})"/>` },
   chopper: { art: (i) => `
     <path d="M120 54v-18M120 46l-12-12M120 40l12-10" stroke="url(#v${i})" stroke-width="5" stroke-linecap="round" fill="none" transform="translate(-26 18) rotate(-20 120 54)"/>
     <path d="M120 54v-18M120 46l12-12M120 40l-12-10" stroke="url(#v${i})" stroke-width="5" stroke-linecap="round" fill="none" transform="translate(26 18) rotate(20 120 54)"/>
