@@ -97,10 +97,11 @@ for (const year of years) {
   const injReport = {};
   if (!done && exists("nfl_injuries.json")) { const walk = (o) => { if (!o || typeof o !== "object") return; if (Array.isArray(o)) return o.forEach(walk);
       const nm = o.athlete && (o.athlete.displayName || o.athlete.fullName), d = o.details || {};
-      if (nm && (d.returnDate || o.shortComment)) injReport[nm] = { back: d.returnDate ? String(d.returnDate).slice(0, 10) : undefined, note: o.shortComment ? String(o.shortComment).slice(0, 220) : undefined };
+      // Kept per name with the position, since namesakes share a name (a linebacker Josh Allen, a defensive back Lamar Jackson)
+      if (nm && (d.returnDate || o.shortComment)) (injReport[nm] = injReport[nm] || []).push({ pos: (o.athlete.position || {}).abbreviation, back: d.returnDate ? String(d.returnDate).slice(0, 10) : undefined, note: o.shortComment ? String(o.shortComment).slice(0, 220) : undefined });
       for (const k in o) if (k !== "athlete") walk(o[k]); };
     try { walk(load("nfl_injuries.json")); } catch (e) { console.log(`::warning::NFL injury report unreadable: ${e.message}`); }
-    console.log(`::notice::${year} NFL injury report: ${Object.keys(injReport).length} players, ${Object.values(injReport).filter((x) => x.back).length} with return dates`); }
+    console.log(`::notice::${year} NFL injury report: ${Object.keys(injReport).length} players, ${Object.values(injReport).flat().filter((x) => x.back).length} with return dates`); }
   // Weekly lineups
   // NFL bye weeks by pro team id (proTeamSchedules_wl)
   const nflBye = {}, nflByes = {}; // by pro team id, and by abbreviation for odds.js (and the same-game measurement)
@@ -374,7 +375,9 @@ for (const year of years) {
   for (const t of L.teams) {
     rosters[t.id] = t.roster.entries.map((e) => {
       const p = e.playerPoolEntry.player;
-      const inj = injById[p.id], rep = inj && injReport[p.fullName];
+      const inj = injById[p.id], reps = (inj && injReport[p.fullName]) || [], fpos = { K: "PK" }[POS[p.defaultPositionId]] || POS[p.defaultPositionId];
+      // The report entry at his position; with namesakes and no position to tell them apart, none rather than the wrong man's news
+      const rep = reps.find((r) => r.pos === fpos) || (reps.length === 1 && !reps[0].pos ? reps[0] : null);
       return { n: p.fullName, pos: POS[p.defaultPositionId] || "", pro: PRO[p.proTeamId] || "", slot: SLOT[e.lineupSlotId] || "BN", how: e.acquisitionType, pts: r2(e.playerPoolEntry.appliedStatTotal || 0),
         inj: inj && inj.s, injSeason: inj && inj.season, injBack: inj && (inj.back || (rep && rep.back)), injNote: rep && rep.note };
     });
@@ -436,12 +439,24 @@ const nflStatus = (() => { try {
   if (!f || !fs.existsSync(f)) return null;
   // Matched without suffixes: older seasons say "James Cook", ESPN now says "James Cook III"
   const base = (n) => String(n || "").toLowerCase().replace(/[.']/g, "").replace(/\s+(jr|sr|ii|iii|iv|v)$/, "");
-  const pool = new Map(JSON.parse(fs.readFileSync(f, "utf8")).map((p) => [base(p.fullName), p]));
-  const names = new Set(seasons.flatMap((s) => [...Object.values(s.lineups).flatMap((L) => Object.values(L).flat().map((e) => e.n)), ...s.draft.map((d) => d.n)]));
+  // Every pool player under a name: ESPN lists namesakes (a defensive back also called Lamar Jackson, a Justin Jefferson
+  // on the Browns), so a name alone isn't enough
+  const pool = new Map();
+  for (const p of JSON.parse(fs.readFileSync(f, "utf8"))) { const k = base(p.fullName); if (!pool.has(k)) pool.set(k, []); pool.get(k).push(p); }
+  // Each league player's position and the NFL team he was last seen on, newest season and week last
+  const seen = new Map();
+  for (const s of seasons) { for (const d of s.draft) if (!seen.has(d.n)) seen.set(d.n, { pos: d.pos, pro: d.pro });
+    for (const w of Object.keys(s.lineups).map(Number).sort((a, b) => a - b)) for (const L of Object.values(s.lineups[w])) for (const e of L) seen.set(e.n, { pos: e.pos, pro: e.pro }); }
+  // The pool player who is ours: same fantasy position, then the team we last saw him on, then whoever is on a team
+  const pick = (n) => { const c = pool.get(base(n)) || [], me = seen.get(n) || {};
+    if (c.length < 2) return c[0];
+    const same = c.filter((p) => POS[p.defaultPositionId] === me.pos), list = same.length ? same : c;
+    return list.find((p) => PRO[p.proTeamId] === me.pro) || list.find((p) => p.proTeamId) || list[0]; };
+  const names = new Set(seen.keys());
   const out = {};
   for (const n of names) {
     if (/D\/ST$/.test(n)) continue;
-    const p = pool.get(base(n));
+    const p = pick(n);
     if (!p) continue; // not found is usually a name change ("Hollywood" Brown), not a retirement
     out[n] = p.active === false ? "r" : p.proTeamId ? `t:${PRO[p.proTeamId] || "?"}` : "f";
   }
