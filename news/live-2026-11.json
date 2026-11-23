@@ -967,6 +967,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-23T03:21:35.676Z"
+  },
+  {
+   "author": "GLSN",
+   "handle": "@GLSN",
+   "text": "🚨 Christian McCaffrey punches in a touchdown for No Banner only HULK, who now lead Team Pillbert 136.76 to 107.12 with 99% win chance on Luffy's chart.",
+   "heat": 2,
+   "kind": "network",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-23T03:53:02.560Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "McCaffrey's touchdown takes No Banner only HULK to 99% on Luffy's chart. Alan needs Okonkwo to hit a tornado and Jefferson to finish the job. The barometer says pack the umbrellas, Team Pillbert.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-23T03:53:02.560Z"
+  },
+  {
+   "author": "Hulk Smash Hannah",
+   "handle": "@HulkSmashHannah",
+   "text": "CMC walks in for the touchdown and Brucie's lead is now 30. Philly can stop checking the app, the week is over.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-23T03:54:02.560Z"
+  },
+  {
+   "author": "Pillbert Pessimist",
+   "handle": "@PillbertPessimist",
+   "text": "McCaffrey scores against us too, naturally. Brucie's got a stacked team plus a touchdown from the one guy still playing, and I'm out of jokes.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-23T03:54:02.560Z"
   }
  ],
  "batches": [
@@ -998,7 +1038,8 @@
   "2026-11-23T00:56:12.215Z",
   "2026-11-23T01:33:57.575Z",
   "2026-11-23T02:10:15.435Z",
-  "2026-11-23T03:22:35.676Z"
+  "2026-11-23T03:22:35.676Z",
+  "2026-11-23T03:54:02.560Z"
  ],
  "usage": [
   {
@@ -1215,6 +1256,14 @@
    "input": 4,
    "output": 359,
    "cache_write": 9741,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-23T03:54:02.560Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 504,
+   "cache_write": 9736,
    "cache_read": 0
   }
  ]
