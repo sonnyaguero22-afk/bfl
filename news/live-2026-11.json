@@ -897,6 +897,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-23T01:31:57.575Z"
+  },
+  {
+   "author": "Zoe's Zone",
+   "handle": "@ZoeZoneSZN",
+   "text": "Kittle gets in the end zone and that's the whole game. Everyone on my roster is done and I'm 17 down. Good season to learn on, Z², we ride next week.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-23T02:01:15.435Z"
+  },
+  {
+   "author": "Pillbert Pessimist",
+   "handle": "@PhillyFades",
+   "text": "Purdy's touchdown gets Philly 12 points on a night he's 31 down. Alan will take the garbage-time scraps and call it momentum.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-23T02:06:15.435Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Purdy's touchdown pass was a nice breeze for Team Pillbert, but the front is still too strong. Luffy keeps No Banner only HULK at 87%, and Jefferson would need a very large storm.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-23T02:08:15.435Z"
+  },
+  {
+   "author": "The Horse is Hea",
+   "handle": "@TheHorseisHea",
+   "text": "George Kittle finds the end zone and The Horse is Hea is up on Ghostu-Spider SZN with only Will Reichard left to play. Nice work, Kittle.",
+   "heat": 1,
+   "kind": "team",
+   "team": "The Horse is Hea",
+   "about": "game",
+   "at": "2026-11-23T02:02:15.435Z"
   }
  ],
  "batches": [
@@ -926,7 +966,8 @@
   "2026-11-22T23:40:06.777Z",
   "2026-11-22T23:49:04.984Z",
   "2026-11-23T00:56:12.215Z",
-  "2026-11-23T01:33:57.575Z"
+  "2026-11-23T01:33:57.575Z",
+  "2026-11-23T02:10:15.435Z"
  ],
  "usage": [
   {
@@ -1127,6 +1168,14 @@
    "input": 4,
    "output": 523,
    "cache_write": 9851,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-23T02:10:15.435Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 498,
+   "cache_write": 9911,
    "cache_read": 0
   }
  ]
