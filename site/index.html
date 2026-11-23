@@ -1900,6 +1900,7 @@ const AWARDS = [
   ["jinbe", "🌊", "Jinbe", "Best D/ST", "Most points as a starter at D/ST; the wall"],
   ["robin", "📜", "Robin", "Best Pickup", "Most points as a starter for the team that picked him up, before he left it; buried treasure"],
   ["sunny", "☀️", "Thousand Sunny", "Best Trade Acquisition", "Most points as a starter for the team that traded for him"],
+  ["merry", "🐑", "Going Merry", "Best Late-Round Pick", "Most points from a pick in round 8 or later (no kickers or defenses) for the team that drafted him: his own as a starter while he stayed, plus what his trade return scored for that team"],
   ["chopper", "🩺", "Chopper", "Comeback Player", "Biggest jump in points per start from the first half of the season to the second (3+ starts in each)"],
   ["brook", "🎻", "Brook", "Bench King", "Most points left on the bench"],
   ["buggy", "🤡", "Buggy", "Biggest Bust", "A top-three-round pick who finished furthest below where he was drafted (all points while rostered)"],
@@ -1944,6 +1945,21 @@ function seasonAwards(s) {
     return { p: x.p, t: e.t, pts: sum(ws, (w) => w.pts), n: ws.length, wk: from }; }).filter(Boolean); });
   best("robin", stint("add"), (x) => x.pts, (x) => `${f1(x.pts)} pts in ${x.n} starts after a week ${x.wk} pickup`);
   best("sunny", stint("trade"), (x) => x.pts, (x) => `${f1(x.pts)} pts in ${x.n} starts after the week ${x.wk} trade`);
+  // Going Merry: a pick from round 8 on, for the team that drafted him: his starts while he stayed, plus what he turned into
+  // if that team traded him (the return's points for it until they left, split among the players it sent)
+  const stayPts = (n, t, from) => { const q = PL.find((z) => sameName(z.n, n)); if (!q) return 0; const ev = q.ev.filter((e) => e.y === y);
+    const k = ev.findIndex((e) => e.t === t && Math.ceil(e.wk) >= from - 0.5); if (k < 0) return 0;
+    const end = ev.slice(k + 1).find((f) => f.type !== "add" || f.t !== t), to = end ? end.wk : 99;
+    return sum(q.weeks.filter((w) => w.y === y && w.fin && w.start && w.t === t && (s.sp2mp?.[w.wk] ?? w.wk) >= from && (s.sp2mp?.[w.wk] ?? w.wk) < to), (w) => w.pts); };
+  best("merry", rows.filter((x) => x.p.pos !== "K" && x.p.pos !== "D/ST").flatMap((x) => { const ev = x.p.ev.filter((e) => e.y === y); return ev.map((e, i) => {
+    if (e.type !== "draft" || !(e.rd >= 8)) return null;
+    const end = ev.slice(i + 1).find((f) => f.type !== "add" || f.t.id !== e.t.id), to = end ? end.wk : 99;
+    const ws = x.ws.filter((w) => w.start && w.t.id === e.t.id && (s.sp2mp?.[w.wk] ?? w.wk) < to), own = sum(ws, (w) => w.pts);
+    let ret = 0, got = [];
+    if (end && end.type === "trade") { const wk = Math.ceil(end.wk), tr = s.trades.find((t) => t.wk === wk && (t.got[end.t.id] || []).some((g) => sameName(g.split("|")[0], x.p.n)));
+      if (tr) { got = (tr.got[e.t.id] || []).map((g) => g.split("|")[0]); ret = sum(got, (g) => stayPts(g, e.t, wk)) / ((tr.got[end.t.id] || []).length || 1); } }
+    return { p: x.p, t: e.t, rd: e.rd, own, ret, got, n: ws.length }; }).filter(Boolean); }),
+    (x) => x.own + x.ret, (x) => `${f1(x.own + x.ret)} pts from a round ${x.rd} pick${x.ret ? ` (${f1(x.own)} his own, ${f1(x.ret)} from ${andList(x.got)}, whom he was traded for)` : ` in ${x.n} starts`}`);
   // Foxy: what a dropped player scored as a starter for other teams from the week of the drop on, charged to the team that dropped him
   best("foxy", rows.flatMap((x) => x.p.ev.filter((e) => e.y === y && e.type === "drop").map((e) => { const ws = x.ws.filter((w) => w.start && w.t.id !== e.t.id && w.wk >= e.wk);
     return ws.length ? { p: x.p, t: e.t, pts: sum(ws, (w) => w.pts), n: ws.length, wk: e.wk } : null; }).filter(Boolean)),
@@ -2082,6 +2098,7 @@ const AW_NAMED = {
   jinbe: "Named for the Strawhats' helmsman, a Fish-Man Karate master and the crew's wall.",
   robin: "Named for the Strawhats' archaeologist, who digs up what history buried.",
   sunny: "Named for the Thousand Sunny, the ship Franky built to replace the Going Merry: the upgrade you trade for.",
+  merry: "Named for the Going Merry, the Strawhats' first ship: small, humble, never built for the Grand Line, and it carried its crew further than anyone thought it could. The late-round pick that does the same.",
   chopper: "Named for the Strawhats' doctor, who gets people back on their feet.",
   brook: "Named for the Strawhats' musician, a skeleton who waited decades on his own, like points left on a bench.",
   buggy: "Named for Buggy the Clown, who keeps rising in rank without ever quite earning it.",
@@ -2105,6 +2122,7 @@ const AW_DEF = {
   usopp: "the kicker who scores the most points as a starter", jinbe: "the defense that scores the most points as a starter",
   robin: "the player who scores the most for the team that picked him up off the wire",
   sunny: "the player who scores the most for the team that traded for him",
+  merry: "the late-round pick (round 8 or later, not a kicker or defense) worth the most to the team that drafted him: his own points as a starter while he stayed, plus what his trade return scored for that team if it traded him",
   chopper: "the player with the biggest jump in points per start from the first half of the season to the second",
   brook: "the player who scores the most points while sitting on a bench",
   buggy: "the early-round pick who finishes furthest below where he was drafted",
@@ -2235,6 +2253,18 @@ const TROPHY = {
     <circle cx="120" cy="84" r="34" fill="url(#g${i})" stroke="#6e4a12" stroke-width="1"/>
     <path d="M106 80a3 3 0 0 0 6 0M128 80a3 3 0 0 0 6 0M106 96q14 12 28 0" stroke="#6e4a12" stroke-width="3" fill="none" stroke-linecap="round"/>
     <path d="M78 176h84l-12 22H90z" fill="url(#g${i})"/><path d="M120 120v56" stroke="#6e4a12" stroke-width="3"/><path d="M122 126q30 20 26 46h-26z" fill="#fbf1d6" stroke="#b8a77a"/><path d="M118 132q-22 18-20 40h20z" fill="#fbf1d6" stroke="#b8a77a"/>
+    <path d="M70 204q12-8 25 0t25 0 25 0 25 0" stroke="#4fb3ff" stroke-width="4" fill="none"/>
+    <path d="M88 212h64l6 26H82z" fill="url(#g${i})"/>` },
+  // Going Merry: her sheep figurehead, curled horns and all, over the little caravel, a football on the sail
+  merry: { art: (i) => `
+    ${[-1, 1].map((d) => `<path d="M${120 + d * 20} 70c${d * 18} -14 ${d * 34} 0 ${d * 26} 16c${d * -6} 12 ${d * -22} 8 ${d * -16} -2c${d * 4} -6 ${d * 12} -2 ${d * 8} 4" fill="none" stroke="url(#v${i})" stroke-width="7" stroke-linecap="round"/>`).join("")}
+    <ellipse cx="120" cy="88" rx="26" ry="30" fill="url(#g${i})" stroke="#4b525c" stroke-width="1.5"/>
+    <path d="M100 66q20-14 40 0" stroke="url(#v${i})" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M110 86a3 3 0 0 0 6 0M124 86a3 3 0 0 0 6 0" stroke="#2a2a30" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <ellipse cx="120" cy="104" rx="11" ry="7" fill="#f4f6fa" opacity=".75"/><path d="M116 102h2M122 102h2" stroke="#2a2a30" stroke-width="2" stroke-linecap="round"/>
+    <path d="M84 178h72l-10 20H94z" fill="url(#g${i})"/><path d="M120 130v48" stroke="#4b525c" stroke-width="3"/>
+    <path d="M122 134q26 18 22 40h-22z" fill="#fbf1d6" stroke="#b8a77a"/>
+    <g transform="rotate(-20 133 156)"><path d="M124 156q9-7 18 0-9 7-18 0z" fill="#8b4a22"/><path d="M130 156h6" stroke="#fbf1d6" stroke-width="1.2"/></g>
     <path d="M70 204q12-8 25 0t25 0 25 0 25 0" stroke="#4fb3ff" stroke-width="4" fill="none"/>
     <path d="M88 212h64l6 26H82z" fill="url(#g${i})"/>` },
   chopper: { art: (i) => `
@@ -2948,6 +2978,7 @@ function seasonStory(p, y, ref = refMaker()) {
   // Other awards
   if (has("robin")) out.push(`The pickup paid off: ${he} won the ${awLink("robin")} award as the season's best pickup.`);
   if (has("sunny")) out.push(`The trade paid off: ${he} won the ${awLink("sunny")} award as the season's best trade acquisition.`);
+  if (has("merry")) out.push(`The late pick paid off: ${he} won the ${awLink("merry")} award as the season's best late-round pick (${esc(has("merry").a.stat)}).`);
   if (has("chopper")) out.push(`${He} went from ${f1(has("chopper").a.x.a)} points a start in the first half to ${f1(has("chopper").a.x.b)} in the second, the season's best turnaround, which earned ${him} the ${awLink("chopper")} award.`);
   const bn = ws.filter((w) => w.slot === "BN"), bpts = sum(bn, (w) => w.pts);
   if (has("brook")) out.push(`No one left more points on a bench that season: ${f1(bpts)} over ${bn.length} weeks, which earned ${him} the ${awLink("brook")} award.`);
