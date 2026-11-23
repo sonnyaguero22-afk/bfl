@@ -1736,6 +1736,7 @@ function mgrWiki(k, r) {
     ${row("Regular season", `${r.w}–${r.l}${r.t ? `–${r.t}` : ""} <span class="muted">(${pct(r.w, r.l, r.t)})</span>`)}
     ${row("Playoffs", r.playoffs ? `${r.playoffs} appearance${r.playoffs === 1 ? "" : "s"}${r.pw + r.pl ? ` · ${r.pw}–${r.pl}` : ""}` : "None yet")}
     ${row("Points per game", f1(r.ppg))}
+    ${((w) => (w.length ? row(`🫧 ${awLink("rayleigh", "Rayleigh's MOTW")}`, `${w.length}× <small class="muted">(${w.map((x) => `${x.y} wk ${x.wk}`).join(", ")})</small>`) : ""))(D.seasons.flatMap((z) => mowWeeks(z).filter((x) => x.k === k).map((x) => ({ ...x, y: z.year }))))}
     ${row("Laboon", now ? `${Math.round(now.r)}${lrank ? ` <span class="muted">(${nth(lrank)})</span>` : ""}` : "")}
     ${((t) => (t ? row("Bounty", `💰 <b>${berry(t.total)}</b><br><small class="muted">${Object.entries(t.why).sort((a, b) => b[1] - a[1]).map(([w, v]) => `${w} ${berry(v, 1)}`).join(" · ")}</small>`) : ""))(treasuries()[k])}
     ${bowls.length || grouped.length ? `<tr><th colspan="2" class="ibsec">Honors</th></tr><tr><td colspan="2">${r.titles.map((y) => `<div class="ibh gold">🏆 <button class="mlink" data-go="bowl-${y}">Buckaroo Bowl ${roman(y - D.firstYear + 1)}</button> Champion</div>`).join("")}${grouped.map((a) => `<div class="ibh${a.key === "bellamy" ? " l" : ""}">${a.e} ${awLink(a.key)} <span class="muted">${yrs(a.ys)}</span></div>`).join("")}</td></tr>` : ""}
@@ -1982,8 +1983,20 @@ const MGR_AWARDS = [
   ["bonclay", "🦢", "Bon Clay", "Unluckiest", "Most regular-season losses while scoring above that week's median (a tie goes to whoever was further above)"],
   ["bellamy", "🙃", "Bellamy", "Lineup Blunders", "Most losses where one of his benched players outscored the margin (a tie goes to whoever left more on the bench)"],
   ["marco", "🔥", "Marco", "Biggest Laboon Climber", "The biggest rise in Laboon rating over the season"],
+  ["rayleigh", "🫧", "Rayleigh", "Manager of the Week", "Most weeks as Rayleigh's Manager of the Week, the week's top score (regular season); a tie on weeks goes to more points in them"],
 ];
 const MAW = {};
+// Rayleigh's Manager of the Week: each regular-season week's top score (single-week games; a tie shares it), the weeks that
+// also pay ฿5M of bounty, for the managers what Karoo's Player of the Week is for the players
+const MOW = {};
+function mowWeeks(s) {
+  if (MOW[s.year]) return MOW[s.year];
+  const by = {};
+  for (const m of s.played) { if (!m.a || (m.tier && m.tier !== "NONE") || s.spans(m.wk).length !== 1) continue;
+    for (const [id, p] of [[m.h, m.hp], [m.a, m.ap]]) (by[m.wk] = by[m.wk] || []).push({ wk: m.wk, k: mgrAt(s.byId[id], m.wk), t: s.byId[id], p }); }
+  const out = []; for (const wk of Object.keys(by).map(Number).sort((a, b) => a - b)) { const hi = Math.max(...by[wk].map((x) => x.p)); out.push(...by[wk].filter((x) => x.p === hi)); }
+  return (MOW[s.year] = out);
+}
 function seasonMgrAwards(s) {
   if (MAW[s.year]) return MAW[s.year];
   const y = s.year, out = {}, add = (o, k, v) => { if (k && k !== "nomanager") o[k] = (o[k] || 0) + v; };
@@ -2031,6 +2044,8 @@ function seasonMgrAwards(s) {
   const climb = {};
   for (const [k, hs] of Object.entries(ELO.hist)) { const h = hs.filter((x) => x.y === y); if (h.length) climb[k] = h[h.length - 1].r - h[0].pre; }
   top("marco", climb, (v) => `+${Math.round(v)} Laboon`);
+  const mow = {}, mowPts = {}; for (const x of mowWeeks(s)) if (x.k !== "nomanager") { mow[x.k] = (mow[x.k] || 0) + 1; mowPts[x.k] = (mowPts[x.k] || 0) + x.p; }
+  top("rayleigh", mow, (v, k) => `${v} week${v === 1 ? "" : "s"} as Manager of the Week, ${f1(mowPts[k])} pts in them`, mowPts);
   return (MAW[y] = out);
 }
 const mgrAwardsOf = (k) => D.seasons.filter((s) => s.done).flatMap((s) => { const a = seasonMgrAwards(s); return MGR_AWARDS.filter(([key]) => a[key] && a[key].ks.includes(k)).map(([key, e, nm, cat]) => ({ key, e, nm, cat, y: s.year, stat: a[key].stat })); });
@@ -2080,6 +2095,7 @@ const AW_NAMED = {
   bonclay: "Named for Mr. 2 Bon Clay, who gives everything for his friends and gets nothing back.",
   bellamy: "Named for Bellamy the Hyena, who picks the wrong fight every time.",
   marco: "Named for Marco the Phoenix, who rises from the flames.",
+  rayleigh: "Named for Silvers Rayleigh, the Dark King: the Pirate King's right hand, who coats ships for the deep at Sabaody and taught a captain how to win. The week's best-run team is his.",
 };
 const AW_DEF = {
   king: "the player who scores the most fantasy points as a starter over the whole season, playoffs included",
@@ -2101,6 +2117,7 @@ const AW_DEF = {
   bonclay: "the manager who loses the most games he should have won, with a score above that week's median",
   bellamy: "the manager who loses the most games with the answer sitting on his bench",
   marco: "the manager whose Laboon rating climbs the most over the season",
+  rayleigh: "the manager named Rayleigh's Manager of the Week, the week's top score in the regular season, the most times",
 };
 const awInfo = (k) => { const a = AWARDS.find((x) => x[0] === k); if (a) return { k, e: a[1], nm: a[2], cat: a[3], why: a[4], mgr: false }; const m = MGR_AWARDS.find((x) => x[0] === k); return m && { k, e: m[1], nm: m[2], cat: m[3], why: m[4], mgr: true }; };
 // "the Pirate King" but "The One Piece" (its name already has the article)
@@ -2312,6 +2329,19 @@ const TROPHY = {
     <circle cx="80" cy="84" r="20" fill="url(#g${i})" stroke="#4b525c" stroke-width="1.5"/><circle cx="80" cy="84" r="14" fill="#f4f6fa"/>
     <path d="M80 84v-10M80 84l7 4" stroke="#2a2a30" stroke-width="2" stroke-linecap="round"/><rect x="76" y="58" width="8" height="6" rx="1" fill="url(#v${i})"/>
     <path d="M112 196h16v16h-16z" fill="url(#v${i})"/><path d="M90 212h60l6 26H84z" fill="url(#g${i})"/>` },
+  // Rayleigh: a ship sealed in a coating bubble, the way he readies a crew for the deep at Sabaody, with his round glasses on top
+  rayleigh: { art: (i) => `
+    <circle cx="120" cy="116" r="64" fill="#dfe7f2" fill-opacity=".18" stroke="url(#g${i})" stroke-width="3"/>
+    <circle cx="120" cy="116" r="57" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="1"/>
+    <path d="M78 92q12-30 46-36" stroke="#fff" stroke-opacity=".55" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M120 70v66" stroke="#4b525c" stroke-width="2.5"/>
+    <path d="M123 74q30 22 2 52z" fill="url(#g${i})" stroke="#4b525c" stroke-width="1.2"/><path d="M117 82q-22 16-2 40z" fill="url(#g${i})" stroke="#4b525c" stroke-width="1.2"/>
+    <path d="M120 70l12 4-12 4z" fill="#4b525c"/>
+    <path d="M84 136h72l-9 16H93z" fill="url(#g${i})" stroke="#4b525c" stroke-width="1.5"/><path d="M90 142h60" stroke="#4b525c" stroke-width="1" opacity=".5"/>
+    <path d="M70 160q25-8 50 0t50 0" stroke="#9fb2c8" stroke-width="2" fill="none" opacity=".6"/>
+    <circle cx="108" cy="50" r="9" fill="#e9eef5" fill-opacity=".35" stroke="#2a2a30" stroke-width="2.5"/><circle cx="132" cy="50" r="9" fill="#e9eef5" fill-opacity=".35" stroke="#2a2a30" stroke-width="2.5"/>
+    <path d="M117 49q3-3 6 0M99 48l-6-3M141 48l6-3" stroke="#2a2a30" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M112 180h16v32h-16z" fill="url(#v${i})"/><path d="M90 212h60l6 26H84z" fill="url(#g${i})"/>` },
   buggy: { metal: "bronze", art: (i) => `<g transform="rotate(-9 120 220)">${trCup(i)}</g>
     <path d="M128 112l-6 18 8 10-5 16 4 10" stroke="#2a160a" stroke-width="2.5" fill="none"/>
     <circle cx="112" cy="138" r="14" fill="#e01b24"/><circle cx="107" cy="133" r="4" fill="#fff" opacity=".6"/>
@@ -2468,6 +2498,7 @@ const trophy = (k, small) => { const t = TROPHY[k], a = trInfo(k); if (!t || !a.
 // A shelf of the trophies someone has won, with the seasons under each ({ k, ys })
 const trophyCase = (list) => `<div class="box tcase">${list.map((a) => a.ring ? `<button class="tc ringc" data-go="bowl-${a.ring}">${ringArt(a.ring, 1)}<b>Bowl ${roman(a.ring - D.firstYear + 1)}</b><small>${a.ring}</small></button>` : `<button class="tc${a.k === "bowl" ? " big" : ""}" data-go="${trInfo(a.k).go}">${trophy(a.k, 1)}<b>${esc(trInfo(a.k).nm)}</b><small>${a.ys.join(", ")}</small></button>`).join("")}</div>`;
 // Every Karoo's Player of the Week winner, newest first
+const rayleighTable = () => `<h3 class="wikisub">Every Rayleigh's Manager of the Week</h3><div class="box scroll"><table class="compact"><thead><tr><th>Season</th><th class="n">Week</th><th>Manager</th><th>Team</th><th class="n">Pts</th></tr></thead><tbody>${D.seasons.slice().reverse().flatMap((z) => mowWeeks(z).slice().reverse().map((x) => `<tr><td class="num"><button class="mlink" data-go="${z.year}">${z.year}</button></td><td class="num">${x.wk}</td><td><button class="mlink" data-go="mgr-${x.k}">${mbadge(x.k, 1)} ${mgrName(x.k)}</button></td><td>${badge(x.t, 1)} ${esc(nameAt(x.t, x.wk))}</td><td class="num">${f1(x.p)}</td></tr>`)).join("")}</tbody></table></div>`;
 const karooTable = () => `<h3 class="wikisub">Every Karoo's Player of the Week Winner</h3><div class="box scroll"><table class="compact"><thead><tr><th>Season</th><th class="n">Week</th><th>Player</th><th>Team</th><th class="n">Pts</th></tr></thead><tbody>${D.seasons.slice().reverse().flatMap((z) => karooWeeks(z).slice().reverse().map((x) => `<tr><td class="num"><button class="mlink" data-go="${z.year}">${z.year}</button></td><td class="num">${x.mp}</td><td>${posTag(x.p.pos)}${pn(x.p.n)}</td><td>${badge(x.t, 1)} ${esc(x.t.name)}</td><td class="num">${f1(x.pts)}</td></tr>`)).join("")}</tbody></table></div>`;
 function awardView() {
   const a = awInfo(state.aw); if (!a) return "";
@@ -2505,7 +2536,7 @@ function awardView() {
     ${multi.length ? `<tr><th>Most wins</th><td>${whoName(multi[0].r)} <span class="muted">(${multi[0].n})</span></td></tr>` : ""}
   </table></aside>`;
   return `<div class="vhead"><div><div class="eyebrow">${a.mgr ? "Manager" : "Player"} Award</div><h2>${a.e} ${esc(a.nm)}</h2></div><button class="pill" data-go="${a.mgr ? "mgrawards" : "awards"}" style="border:0;cursor:pointer">← All ${a.mgr ? "manager" : "player"} awards</button></div>
-  <div class="wiki"><article class="wikimain">${lead}${info.replace("ibd-only", "ibm-only").replace("%TROPHY%", trophy(a.k))}${history}<h3 class="wikisub">Winners</h3>${table}${a.k === "karoo" ? karooTable() : ""}${criteria}<h3 class="wikisub">See Also</h3><p>${others}</p></article>${info.replace("%TROPHY%", trophy(a.k))}</div>`;
+  <div class="wiki"><article class="wikimain">${lead}${info.replace("ibd-only", "ibm-only").replace("%TROPHY%", trophy(a.k))}${history}<h3 class="wikisub">Winners</h3>${table}${a.k === "karoo" ? karooTable() : a.k === "rayleigh" ? rayleighTable() : ""}${criteria}<h3 class="wikisub">See Also</h3><p>${others}</p></article>${info.replace("%TROPHY%", trophy(a.k))}</div>`;
 }
 
 // Wiki pages for the Bounty Board (Ones to Watch in the code), its joke sponsor the Baratie, Gear 5 and Seastoned
@@ -3408,9 +3439,9 @@ const GUEST_BIO = { "Roronoa Zoro": "Guest picker. Swordsman. Not lost.", "Nami"
 // among them use their guest-star accounts)
 const NAMESAKE_BIO = { "Jinbe": "Fishman karate master. Defense is a duty.", "Nico Robin": "Scholar. I read the waiver wire like history.", "Portgas D. Ace": "A zero in a loss? I take that personally.",
   "Foxy": "Captain. You dropped him? Your loss.", "Karoo": "Quack. 🦆💨", "Vegapunk": "Genius. A draft is an experiment.", "Wapol": "Deposed king. The waiver wire is a buffet.",
-  "Doflamingo": "Dealmaker. Every trade has strings.", "Blackbeard": "Luck is just fate with good timing.", "Bon Clay": "Friend to every unlucky manager.", "Bellamy": "I'll laugh at your bench. I've earned it.", "Marco": "Phoenix. Everyone rises eventually." };
+  "Doflamingo": "Dealmaker. Every trade has strings.", "Blackbeard": "Luck is just fate with good timing.", "Bon Clay": "Friend to every unlucky manager.", "Bellamy": "I'll laugh at your bench. I've earned it.", "Marco": "Phoenix. Everyone rises eventually.", "Silvers Rayleigh": "Coating ships at Sabaody. The week's best-run crew gets my nod." };
 const NAMESAKE_OF = { "Nami": "nami", "Sanji": "sanji", "Roronoa Zoro": "zoro", "Franky": "franky", "Usopp": "usopp", "Tony Tony Chopper": "chopper", "Brook": "brook", "Buggy": "buggy", "Jinbe": "jinbe", "Nico Robin": "robin",
-  "Portgas D. Ace": "ace", "Foxy": "foxy", "Karoo": "karoo", "Vegapunk": "vegapunk", "Wapol": "wapol", "Doflamingo": "doflamingo", "Blackbeard": "blackbeard", "Bon Clay": "bonclay", "Bellamy": "bellamy", "Marco": "marco" };
+  "Portgas D. Ace": "ace", "Foxy": "foxy", "Karoo": "karoo", "Vegapunk": "vegapunk", "Wapol": "wapol", "Doflamingo": "doflamingo", "Blackbeard": "blackbeard", "Bon Clay": "bonclay", "Bellamy": "bellamy", "Marco": "marco", "Silvers Rayleigh": "rayleigh" };
 const LEGENDS = new Set(["Shanks", "Whitebeard", "Monkey D. Garp", "Dracule Mihawk", "Kizaru", "Big Mom"]);
 // GLSN, the Grand Line Sports Network: the league's made-up network and its staff (parody One Piece characters; same list in news.js)
 const GLSN_STAFF = [
