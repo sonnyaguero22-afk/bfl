@@ -857,6 +857,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-23T00:56:12.215Z"
+  },
+  {
+   "author": "Horse Stable Hank",
+   "handle": "@StableHankHorse",
+   "text": "Kittle just caught a touchdown and Sonny's lead over Zoe is back above ten. The Horse is Hea has one more guy playing and I'm already pacing the kitchen.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-23T01:24:57.575Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Kittle's touchdown puts The Horse is Hea at 100% on Luffy's chart. Ghostu-Spider SZN has everyone finished, so the sky is clear for Sonny. The only front left is a Zoe miracle, and I see none.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-23T01:25:57.575Z"
+  },
+  {
+   "author": "Philly Hater Phil",
+   "handle": "@PhillyHaterPhil",
+   "text": "Purdy throws a touchdown for Team Pillbert and Alan is still 40 behind Brucie with only Jefferson and Okonkwo left. Nice little consolation prize, Philly.",
+   "heat": 8,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-23T01:30:57.575Z"
+  },
+  {
+   "author": "GLSN",
+   "handle": "@GLSN",
+   "text": "🚨 Purdy hits a touchdown pass for Team Pillbert, but No Banner only HULK still leads 124.56 to 83.6 with only Christian McCaffrey left to play.",
+   "heat": 2,
+   "kind": "network",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-23T01:31:57.575Z"
   }
  ],
  "batches": [
@@ -885,7 +925,8 @@
   "2026-11-22T22:42:57.826Z",
   "2026-11-22T23:40:06.777Z",
   "2026-11-22T23:49:04.984Z",
-  "2026-11-23T00:56:12.215Z"
+  "2026-11-23T00:56:12.215Z",
+  "2026-11-23T01:33:57.575Z"
  ],
  "usage": [
   {
@@ -1078,6 +1119,14 @@
    "input": 4,
    "output": 404,
    "cache_write": 9640,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-23T01:33:57.575Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 523,
+   "cache_write": 9851,
    "cache_read": 0
   }
  ]
