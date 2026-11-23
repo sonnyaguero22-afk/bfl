@@ -114,6 +114,8 @@ a.mlink:hover b, button.mlink:hover b, button.mlink:hover { text-decoration: und
 .pill.gold { background: var(--brass-soft); color: var(--brass); }
 .pill.live { background: var(--loss-bg); color: var(--loss); }
 .pill.w { background: var(--win-bg); } .pill.l { background: var(--loss-bg); }
+/* Standings: a streak reads green or red at a glance */
+.stand .pill.w { color: var(--win); font-weight: 700; } .stand .pill.l { color: var(--loss); font-weight: 700; }
 .muted { color: var(--muted); }
 .note { color: var(--muted); font-size: 13px; margin-top: 10px; }
 
@@ -1209,10 +1211,10 @@ function standings(s) {
   const body = rows.map((x, i) => `<tr class="${showCut && i === s.playoffTeams - 1 ? "cut" : ""}">
     <td class="n">${i + 1}</td><td>${teamCell(x.t)}</td>
     <td class="n"><b>${recStr(x)}</b></td><td class="n">${f2(x.pf)}</td><td class="n">${f2(x.pa)}</td>
-    <td class="n">${x.apW}-${x.apL}</td><td class="n ${x.luck > 0.4 ? "w" : x.luck < -0.4 ? "l" : ""}">${x.luck >= 0 ? "+" : ""}${f1(x.luck)}</td>
+    <td class="n">${((xw) => `${f1(xw)}-${f1(x.w + x.l + (x.tie || 0) - xw)}`)(x.w - x.luck)}</td><td class="n ${x.luck > 0.4 ? "w" : x.luck < -0.4 ? "l" : ""}">${x.luck >= 0 ? "+" : ""}${f1(x.luck)}</td>
     <td class="n">${x.high}</td><td class="n">${x.streak ? `<span class="pill ${x.streak[0] === "W" ? "w" : x.streak[0] === "L" ? "l" : ""}">${x.streak}</span>` : ""}</td><td class="n">${x.adds}</td><td class="n">${x.trades}</td></tr>`).join("");
-  const table = `<section><div class="box scroll"><table class="stand"><thead><tr><th class="n">#</th><th>Team</th><th class="n">Record</th><th class="n">PF</th><th class="n">PA</th><th class="n" title="Record if you played every team every week">All-Play</th><th class="n" title="Actual wins minus all-play expected wins">Luck</th><th class="n" title="Weeks as the league's top scorer">Top Wk</th><th class="n">Streak</th><th class="n">Adds</th><th class="n">Trades</th></tr></thead><tbody>${body}</tbody></table></div>
-    <p class="note">${isFinal && s.done ? `Final regular-season standings; the dashed line marks the ${s.playoffTeams}-team playoff cut. Where everyone finished after the playoffs is on the Playoffs tab.` : `Regular season through week ${lim}. Dashed line marks the ${s.playoffTeams}-team playoff cut.`} All-play is your record if you'd played every other team every week; luck is real wins minus that expectation.</p></section>`;
+  const table = `<section><div class="box scroll"><table class="stand"><thead><tr><th class="n">#</th><th>Team</th><th class="n">Record</th><th class="n">PF</th><th class="n">PA</th><th class="n" title="Expected record: the wins and losses your scores earned, as if you played every team every week">xW-L</th><th class="n" title="Actual wins minus all-play expected wins">Luck</th><th class="n" title="Weeks as the league's top scorer">Top Wk</th><th class="n">Streak</th><th class="n">Adds</th><th class="n">Trades</th></tr></thead><tbody>${body}</tbody></table></div>
+    <p class="note">${isFinal && s.done ? `Final regular-season standings; the dashed line marks the ${s.playoffTeams}-team playoff cut. Where everyone finished after the playoffs is on the Playoffs tab.` : `Regular season through week ${lim}. Dashed line marks the ${s.playoffTeams}-team playoff cut.`} xW-L is your expected record: what your scores would have earned playing every other team every week, scaled to your games; luck is real wins minus expected wins.</p></section>`;
   const wks = Object.keys(s.weekScores).map(Number).filter((w) => w <= lim).sort((a, b) => a - b);
   const all = sides.map((x) => x.p); const lo = Math.min(...all), hi = Math.max(...all);
   const cell = (p, isTop) => { const r = hi > lo ? (p - lo) / (hi - lo) : 0.5; return `<td class="c${isTop ? " hi" : ""}" style="background:color-mix(in oklab, var(--heat-hi) ${Math.round(r * 100)}%, var(--heat-lo))">${f1(p)}</td>`; };
