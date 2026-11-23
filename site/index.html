@@ -3421,7 +3421,7 @@ const avatarHue = (handle) => [...handle].reduce((x, c) => (x * 31 + c.charCodeA
 const OFFICIAL = { network: "Network", league: "League", team: "Official", reporter: "GLSN" };
 const postTeam = (p, a) => p.kind === "team" && a && S[a.year] ? S[a.year].teams.find((t) => [t, ...(t.eras || [])].some((e) => e.name === p.team || (p.team || "").startsWith(e.name + " ("))) : null;
 // Story and post times, in the viewer's own time zone; posts timed in the future haven't been posted yet
-const stamp = (iso) => new Date(iso).toLocaleString(undefined, { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+const stamp = (iso) => new Date(iso).toLocaleString(undefined, { weekday: "short", month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
 const posted = (p) => !p.at || new Date(p.at).getTime() <= Date.now();
 // Likes, reposts and replies: from the post's heat (the writer's 1-10 for how likely it is to blow up; older
 // posts get a stable stand-in) and who posted it, growing over the hours after it went up
