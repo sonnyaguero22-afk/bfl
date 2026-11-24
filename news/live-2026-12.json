@@ -47,10 +47,41 @@
    "team": "",
    "about": "game",
    "at": "2026-11-24T11:30:01.402Z"
+  },
+  {
+   "author": "Dawg Pound Dispatch",
+   "handle": "@DawgPoundDispatch",
+   "text": "Bowers going from out to questionable is the best thing to happen to this team all week. Back around the 29th, right when the playoff race gets tight. Mekhi, keep the lineup clean.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-24T13:29:50.946Z"
+  },
+  {
+   "author": "Brucie Haters Club",
+   "handle": "@BrucieHatersClub",
+   "text": "Walker is questionable and wasn't even practicing Monday. 9-2 and 100% to make the playoffs and Ramon still has a groin to worry about. I'll allow myself a small smile.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-24T13:34:50.946Z"
+  },
+  {
+   "author": "Absalom",
+   "handle": "@AbsalomScoops",
+   "text": "Sonny dropped Jordyn Tyson to the free agent pool. 1.5 points in his one week on that roster. Sources say the Impel Down gates swung open without a fuss.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-24T13:40:50.946Z"
   }
  ],
  "batches": [
-  "2026-11-24T11:32:01.402Z"
+  "2026-11-24T11:32:01.402Z",
+  "2026-11-24T13:40:50.946Z"
  ],
  "usage": [
   {
@@ -59,6 +90,14 @@
    "input": 4,
    "output": 506,
    "cache_write": 8140,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-24T13:40:50.946Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 387,
+   "cache_write": 8323,
    "cache_read": 0
   }
  ]
