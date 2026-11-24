@@ -1077,6 +1077,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-24T02:24:11.839Z"
+  },
+  {
+   "author": "Nami",
+   "handle": "@NamiCharts",
+   "text": "Another Burrow touchdown pass and the Nami race is still his to lose. Josh Allen is sitting 10 points back and Purdy is further behind. The Burrow bettors are collecting, and the people who laughed at him at the start of the season are not.",
+   "heat": 3,
+   "kind": "pundit",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-24T03:15:14.683Z"
+  },
+  {
+   "author": "Mekhi's Mailbag",
+   "handle": "@DawgsDeepCuts",
+   "text": "Burrow keeps throwing scores for Jordan and Chase is somewhere at 3.5 for us. We lead by 30 and I still don't like it.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-24T03:16:14.683Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Burrow's touchdown moves Counting or not Counting GV's total, but Luffy still reads 0% against Dawgs. A late gust cannot move a 30-point wall.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-24T03:17:14.683Z"
   }
  ],
  "batches": [
@@ -1111,7 +1141,8 @@
   "2026-11-23T03:22:35.676Z",
   "2026-11-23T03:54:02.560Z",
   "2026-11-23T22:59:04.201Z",
-  "2026-11-24T02:25:11.839Z"
+  "2026-11-24T02:25:11.839Z",
+  "2026-11-24T03:17:14.683Z"
  ],
  "usage": [
   {
@@ -1352,6 +1383,14 @@
    "input": 4,
    "output": 514,
    "cache_write": 10343,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-24T03:17:14.683Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 383,
+   "cache_write": 10280,
    "cache_read": 0
   }
  ]
