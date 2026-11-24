@@ -1037,6 +1037,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-23T22:56:04.201Z"
+  },
+  {
+   "author": "Fumbler Faithful",
+   "handle": "@FumblerFaithful",
+   "text": "Higgins finally gets into the end zone and Randy is back within ten of Habibsters. Chig, I mean Chase Brown, is the only thing standing between us and a Monday night miracle.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-24T02:16:11.839Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Higgins' touchdown trims the Habibsters lead to under ten, but Luffy still says 94% for Kaushal. A small front moving in over The fumblers, nothing more yet.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-24T02:19:11.839Z"
+  },
+  {
+   "author": "Nami",
+   "handle": "@NamiCharts",
+   "text": "Burrow adds a touchdown pass and keeps the Nami race alive at 232.3 points, ahead of Josh Allen and Brock Purdy. Jordan's team is dead for the week, but a QB leading the award at these odds is the kind of price I'd have bought early.",
+   "heat": 3,
+   "kind": "pundit",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-24T02:22:11.839Z"
+  },
+  {
+   "author": "GV Faithful",
+   "handle": "@GVFaithful",
+   "text": "Burrow throws a touchdown and we're still down 29 to Mekhi with almost nobody left. Great, a garbage-time score for the 2-8 club.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-24T02:24:11.839Z"
   }
  ],
  "batches": [
@@ -1070,7 +1110,8 @@
   "2026-11-23T02:10:15.435Z",
   "2026-11-23T03:22:35.676Z",
   "2026-11-23T03:54:02.560Z",
-  "2026-11-23T22:59:04.201Z"
+  "2026-11-23T22:59:04.201Z",
+  "2026-11-24T02:25:11.839Z"
  ],
  "usage": [
   {
@@ -1303,6 +1344,14 @@
    "input": 4,
    "output": 366,
    "cache_write": 9941,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-24T02:25:11.839Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 514,
+   "cache_write": 10343,
    "cache_read": 0
   }
  ]
