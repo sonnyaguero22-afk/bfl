@@ -1,0 +1,73 @@
+{
+ "id": "rankings-2026-11",
+ "type": "rankings",
+ "year": 2026,
+ "wk": 11,
+ "by": "Duval",
+ "created": "2026-11-24T14:03:49.327Z",
+ "title": "Power Rankings Week 11: Sonny Works the Phones, Brucie Keeps the Crown, and the Runway Gets Crowded",
+ "dek": "Two trades, one heavyweight result and a shrinking playoff door reshuffle the middle of the league with three weeks left in the regular season.",
+ "body": [
+  "The crown did not move this week. No Banner only HULK beat Team Pillbert 136.76 to 118.4 in the week's marquee matchup, clinched a playoff spot and stayed atop the league in points by a wide margin. What did move was everything underneath it, starting with Sonny. He made two trades in one week: Bucky Irving went to Dawgs for Kyren Williams and Malik Nabers, and then Nabers went straight to Ramon for D'Andre Swift. The net result is that The Horse is Hea turned one running back into two, won by 22 and watched Luffy nearly double its title odds, from 13% to 24%.",
+  "Luffy cooled on two winners. HULK's title odds fell from 30% to 16% despite the win, and Dawgs dropped from 81% to 69% to make the playoffs despite a fourth straight victory. Meanwhile the bottom of the league is settling into place: The fumblers are eliminated, Counting or not Counting GV is eliminated, and Ghostu-Spider SZN is one loss from joining them. Darling, I have judged many a pageant, and I have never seen a crowd this tight at the top of the stage."
+ ],
+ "social": [],
+ "teams": [],
+ "power_rankings": [
+  {
+   "rank": 1,
+   "team": "No Banner only HULK",
+   "blurb": "Brucie's crew beat the No. 2 team by 18, got 22.4 from Travis Kelce and clinched a playoff spot at 9-2 with a league-best 1,493.8 points. Luffy halved its title odds to 16%, maybe because the field behind it just got deeper, but nobody else has scored like this all season. Ramon also added Malik Nabers in the Swift deal, so the sash stays put. Next up is Randy's fumblers, a game that looks like a tune-up on paper.",
+   "id": 7
+  },
+  {
+   "rank": 2,
+   "team": "The Horse is Hea",
+   "blurb": "Up two spots after the busiest week in the league. Sonny beat Ghostu-Spider SZN 126.96 to 105.06 behind 24.96 from Patrick Mahomes, then turned Bucky Irving into Kyren Williams and D'Andre Swift through two trades. Luffy loved it: the title odds jumped from 13% to 24%, and playoff odds rose from 80% to 93%. A win over Habibsters next week clinches a playoff spot.",
+   "id": 1
+  },
+  {
+   "rank": 3,
+   "team": "Team Pillbert",
+   "blurb": "Philly slips one spot, and losing 136.76 to 118.4 to the best team in the league is no disgrace. Chuba Hubbard put up 26, Team Pillbert is second in the league in points, and Luffy actually raised its title odds to 28%, the best in the league. It drops here mostly because Sonny had the better week. Beat Dawgs next week and Philliberto is in.",
+   "id": 4
+  },
+  {
+   "rank": 4,
+   "team": "Dawgs",
+   "blurb": "Four straight wins, a 100.26 to 67.7 handling of JMoney's squad, and Bucky Irving led the team with 17.5. So why the slide from No. 3? Kai sent Kyren Williams and Malik Nabers to Sonny for Irving, and Luffy dropped the playoff odds from 81% to 69%, apparently preferring two starters to one. It is 79% with a win against Team Pillbert and 56% with a loss, which makes next week a real test.",
+   "id": 5
+  },
+  {
+   "rank": 5,
+   "team": "Habibsters",
+   "blurb": "Dak Prescott went off for 35.9, and Habib took down The fumblers 120 to 109.34 to get back to 6-5. The playoff odds climbed from 33% to 40%, and the points (fourth in the league) say this roster is better than its record. Next week against Sonny is close to a playoff game: a win pushes Habibsters to 60%, a loss sinks them to 25%. The two-time champ holds at No. 5 with a real shot to move up.",
+   "id": 6
+  },
+  {
+   "rank": 6,
+   "team": "Ghostu-Spider SZN",
+   "blurb": "Z² ran into the league's hottest trade machine and lost 126.96 to 105.06, with Jared Goff leading the way at 20.36. The playoff odds fell from 6% to 1%, and a loss next week ends the chase. Zoe's rookie season has had plenty of fight, and a win over Counting or not Counting GV would keep the door open at 2%. She holds at No. 6 because no one below her is threatening.",
+   "id": 8
+  },
+  {
+   "rank": 7,
+   "team": "The fumblers",
+   "blurb": "Jonah Coleman scored 32.9, Randy's team put up 109.34, and the result was still a loss, the eighth in a row. The fumblers are officially eliminated at 3-8. Both of this week's trades happened without them, which is a very Randy way to watch the deadline go by. Next comes a date with the league's best team, so spoiler duty is all that's left.",
+   "id": 2
+  },
+  {
+   "rank": 8,
+   "team": "Counting or not Counting GV",
+   "blurb": "JMoney's squad managed 67.7 points, the lowest score of the week, in a 32-point loss to Dawgs. Joe Burrow's 19.9 was the lone bright spot. At 2-9, eliminated and last in the league in points, Counting or not Counting GV holds the bottom spot. The consolation ladder awaits, and next week Jordan gets a chance to knock Zoe out of the playoff race.",
+   "id": 3
+  }
+ ],
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 3158,
+  "cache_write": 8978,
+  "cache_read": 0
+ }
+}
