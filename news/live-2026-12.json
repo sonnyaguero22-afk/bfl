@@ -1,0 +1,65 @@
+{
+ "id": "live-2026-12",
+ "type": "live",
+ "year": 2026,
+ "wk": 12,
+ "created": "2026-11-24T11:31:55.991Z",
+ "title": "Week 12 Live",
+ "dek": "",
+ "body": [],
+ "social": [
+  {
+   "author": "Dawg Pound Dispatch",
+   "handle": "@DawgPoundDispatch",
+   "text": "Dawgs at 70% to make the playoffs, up from 42%. Mekhi spent all season in Impel Down's revolving door and somehow it's paying off. Sleeping fine for once.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-24T11:21:01.402Z"
+  },
+  {
+   "author": "Habib Hive",
+   "handle": "@HabibHive",
+   "text": "39%. Down from 70%. At 6-5. Kaushal has been unlucky all year and the odds just noticed too. Please let somebody else absorb the bad luck this week.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-24T11:24:01.402Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "A front moved through the standings overnight: Dawgs up 28 points to 70%, Habibsters down 31 to 39%. Habibsters face The Horse is Hea at 58% for Sonny, so the forecast stays cloudy for Habib.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-24T11:27:01.402Z"
+  },
+  {
+   "author": "Shakky",
+   "handle": "@ShakkysBar",
+   "text": "Habibsters at 39% and Sonny's the favorite? Bar's open, Kaushal. I'll set the line on how many times he blames luck this week.",
+   "heat": 6,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-24T11:30:01.402Z"
+  }
+ ],
+ "batches": [
+  "2026-11-24T11:32:01.402Z"
+ ],
+ "usage": [
+  {
+   "at": "2026-11-24T11:32:01.402Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 506,
+   "cache_write": 8140,
+   "cache_read": 0
+  }
+ ]
+}
