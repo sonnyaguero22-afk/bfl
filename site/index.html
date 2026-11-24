@@ -114,6 +114,7 @@ a.mlink:hover b, button.mlink:hover b, button.mlink:hover { text-decoration: und
 .pill.gold { background: var(--brass-soft); color: var(--brass); }
 .pill.live { background: var(--loss-bg); color: var(--loss); }
 .pill.w { background: var(--win-bg); } .pill.l { background: var(--loss-bg); }
+.weekbar button.fut { opacity: .6; } .weekbar button.fut[aria-current="true"] { opacity: 1; }
 /* Standings: a streak reads green or red at a glance */
 .stand .pill.w { color: var(--win); font-weight: 700; } .stand .pill.l { color: var(--loss); font-weight: 700; }
 .muted { color: var(--muted); }
@@ -1313,9 +1314,15 @@ function tint() { const k = myTeam(), st = document.documentElement.style;
   if (k && hue[k] != null) { st.setProperty("--tint", hue[k]); st.setProperty("--glow", `hsl(${hue[k]} 55% 26%)`); } else { st.removeProperty("--tint"); st.removeProperty("--glow"); } }
 
 function weekly(s) {
-  const wk = state.week && s.weeks.includes(state.week) ? state.week : (s.done ? s.weeks[0] : s.curWeek);
+  // The rest of the regular-season schedule shows too, so upcoming weeks can be looked at before they're played
+  const fut = s.done ? [] : [...new Set((s.future || []).filter((m) => m.a).map((m) => m.wk))].filter((w) => !s.weeks.includes(w)).sort((a, b) => a - b), all = [...s.weeks, ...fut];
+  const wk = state.week && all.includes(state.week) ? state.week : (s.done ? s.weeks[0] : s.curWeek);
   state.week = wk;
-  const bar = `<div class="weekbar" aria-label="Week">${s.weeks.map((w) => `<button data-week="${w}" class="${w > s.regWeeks ? "po" : ""}" aria-current="${w === wk}">${w === bowlWeek(s) ? "🏆 Bowl" : w > s.regWeeks ? (w === bowlWeek(s) - 1 ? "Semifinals" : "Playoffs R" + (w - s.regWeeks)) : "Wk " + w}</button>`).join("")}</div>`;
+  const bar = `<div class="weekbar" aria-label="Week">${all.map((w) => `<button data-week="${w}" class="${w > s.regWeeks ? "po" : ""}${fut.includes(w) ? " fut" : ""}" aria-current="${w === wk}">${w === bowlWeek(s) ? "🏆 Bowl" : w > s.regWeeks ? (w === bowlWeek(s) - 1 ? "Semifinals" : "Playoffs R" + (w - s.regWeeks)) : "Wk " + w}</button>`).join("")}</div>`;
+  // An upcoming week: its games with each team's record now and Luffy's early read (the season ratings), not clickable yet
+  if (fut.includes(wk)) { const games = s.future.filter((m) => m.wk === wk && m.a).map((m) => ({ ...m, hp: 0, ap: 0, win: null, live: false }));
+    const now = Object.fromEntries(asOf(s, Math.max(...s.weeks)).rows.map((x) => [x.t.id, x]));
+    return bar + scoreList(s, wk, games, now, () => "", `Week ${wk} · Upcoming`) + `<p class="note">Not played yet. Records are as they stand now; win chances are Luffy's early read from each team's season so far and firm up once lineups are set that week.</p>`; }
   const ms = s.matchups.filter((m) => m.wk === wk);
   // Record as it stood after this week's game (or going into it, if it's still live)
   const rec = Object.fromEntries(asOf(s, wk).rows.map((x) => [x.t.id, x]));
