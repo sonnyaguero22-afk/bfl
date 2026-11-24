@@ -158,11 +158,16 @@ function seasonOdds(s) {
   const calib = prj > 0 ? act / prj : 1;
   // Next week's projected starting lineup. Starters projected at zero (byes, injuries) are treated
   // like an average starter, since a manager normally fills that spot.
+  // Scaled to a full lineup (the most starters any team has set), so a slot left empty, a starter moved to IR and not yet
+  // replaced, gets the same fill-in as a hole instead of counting as zero for the rest of the season: it cut the 2026 HULK's
+  // title odds from 30% to 11% the week Kenneth Walker went to IR. Backtest on 2023-25 games 2+ weeks out (669): Brier
+  // 0.2554 against 0.2557 before; using the best lineup the roster could field instead tested worse (0.2569) and wasn't kept.
+  const fullLineup = Math.max(0, ...Object.values(s.lineups).flatMap((W) => Object.values(W).map((L) => L.filter(isStart).length)));
   const projFor = (id, mp) => {
     const L = (s.lineups[spans(mp)[0]] || {})[id]; if (!L) return null;
     const st = L.filter(isStart), live = st.filter((p) => p.proj != null && p.proj > 0.5);
     if (live.length < 5) return null;
-    return (live.reduce((a, p) => a + p.proj, 0) / live.length) * st.length * calib;
+    return (live.reduce((a, p) => a + p.proj, 0) / live.length) * Math.max(st.length, fullLineup) * calib;
   };
 
   // The lineup a team has actually set for a week, as ESPN projects it (byes and injuries count as zero)
