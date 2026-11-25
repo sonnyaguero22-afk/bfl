@@ -77,11 +77,52 @@
    "team": "",
    "about": "move",
    "at": "2026-11-24T13:40:50.946Z"
+  },
+  {
+   "author": "Dawg Pound Dispatch",
+   "handle": "@DawgPoundDispatch",
+   "text": "Mekhi swapped Bills D/ST for Bengals D/ST off waivers before kickoff. Kai is out here treating Impel Down like a drive-thru and honestly the man's earned the right.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-25T09:02:02.244Z"
+  },
+  {
+   "author": "Habib Hive",
+   "handle": "@HabibHive",
+   "text": "Kaushal dropped a Jaguars defense that gave him 55 points over five weeks for the 49ers. I need him to explain this to me slowly.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-25T09:18:02.245Z"
+  },
+  {
+   "author": "Shakky",
+   "handle": "@ShakkysBar",
+   "text": "Habib cut a 55-point defense for a 4-point one the week he's the underdog. I'd call that a bold strategy but I just set the line on it.",
+   "heat": 5,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-25T09:30:02.245Z"
+  },
+  {
+   "author": "Horse Stable Talk",
+   "handle": "@HorseStableTalk",
+   "text": "Sonny picked up Antonio Williams off waivers. Zero points in his one week of data, so it's either a hidden gem or a very quiet roster spot.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-25T09:42:02.272Z"
   }
  ],
  "batches": [
   "2026-11-24T11:32:01.402Z",
-  "2026-11-24T13:40:50.946Z"
+  "2026-11-24T13:40:50.946Z",
+  "2026-11-25T12:39:46.323Z"
  ],
  "usage": [
   {
@@ -98,6 +139,14 @@
    "input": 4,
    "output": 387,
    "cache_write": 8323,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-25T12:39:46.323Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 474,
+   "cache_write": 9436,
    "cache_read": 0
   }
  ]
