@@ -117,12 +117,43 @@
    "team": "",
    "about": "move",
    "at": "2026-11-25T09:42:02.272Z"
+  },
+  {
+   "author": "Brucie Haters Club",
+   "handle": "@BrucieHatersClub",
+   "text": "Walker is now officially out for Thursday against the Bills. 9-2, 100% to make the playoffs, and the groin finally got a vote. Ramon, how's the controller holding up?",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-25T17:20:17.874Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Walker is out and back around December 3. No Banner only HULK still sits at 100% to make the playoffs, so this is a drizzle on a sunny day. The fumblers at 57% will take it anyway.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-25T17:24:17.874Z"
+  },
+  {
+   "author": "Fumbler Faithful",
+   "handle": "@FumblerFaithful",
+   "text": "Walker out for a week and Randy's the favorite against the best team in the league. Nobody tell Randy how close this is, he'll start complaining about it.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-25T17:27:17.874Z"
   }
  ],
  "batches": [
   "2026-11-24T11:32:01.402Z",
   "2026-11-24T13:40:50.946Z",
-  "2026-11-25T12:39:46.323Z"
+  "2026-11-25T12:39:46.323Z",
+  "2026-11-25T17:29:17.874Z"
  ],
  "usage": [
   {
@@ -147,6 +178,14 @@
    "input": 4,
    "output": 474,
    "cache_write": 9436,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-25T17:29:17.874Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 372,
+   "cache_write": 9660,
    "cache_read": 0
   }
  ]
