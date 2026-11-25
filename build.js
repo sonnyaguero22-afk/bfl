@@ -679,7 +679,11 @@ const locations = exists("locations.json") ? load("locations.json") : null;
 const order = [];
 for (const s of seasons) for (const t of [...s.teams].sort((a, b) => a.id - b.id)) for (const k of [t.mgr, ...(t.eras || []).map((e) => e.mgr)]) if (!order.includes(k)) order.push(k);
 const orderedManagers = Object.fromEntries(order.filter((k) => managers[k]).map((k) => [k, managers[k]]));
-const dataJs = "window.LEAGUE = " + JSON.stringify({ league: "Buckaroo Football League", firstYear: 2023, built: new Date().toISOString(), managers: orderedManagers, seasons, locations, news, nflStatus }) + ";\n";
+// Awards ceremony decks (deck.js, saved once per finished season in archive/decks) go out with the site
+const decks = (() => { const dir = path.join(__dirname, "archive", "decks"); if (!fs.existsSync(dir)) return [];
+  fs.mkdirSync(path.join(__dirname, "public", "decks"), { recursive: true });
+  return fs.readdirSync(dir).filter((f) => /^awards-\d{4}\.pptx$/.test(f)).map((f) => { fs.copyFileSync(path.join(dir, f), path.join(__dirname, "public", "decks", f)); return +f.match(/\d{4}/)[0]; }); })();
+const dataJs = "window.LEAGUE = " + JSON.stringify({ league: "Buckaroo Football League", firstYear: 2023, built: new Date().toISOString(), managers: orderedManagers, seasons, locations, news, nflStatus, decks }) + ";\n";
 fs.mkdirSync(path.join(__dirname, "site"), { recursive: true });
 fs.writeFileSync(path.join(__dirname, "site", "data.js"), dataJs);
 // public/ is the standalone website: site/index.html is a page body, so give it a full document shell
