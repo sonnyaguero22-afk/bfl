@@ -1,0 +1,351 @@
+{
+ "id": "preview-2026-12",
+ "type": "preview",
+ "year": 2026,
+ "wk": 12,
+ "by": "Haredas",
+ "created": "2026-11-25T23:11:41.208Z",
+ "title": "Week 12 Preview: Philly and Sonny Play to Clinch, Kai Plays for His Season, and Luffy Likes an Eight-Game Loser",
+ "dek": "Two clinch parties are on the table, Zoe faces elimination, and Luffy has The fumblers favored over the best team in the league.",
+ "body": [
+  "The marquee forecast for Week 12 is warm and unsettled over Team Pillbert's place. Philly clinches a playoff spot with a win, and he gets to try it against Kai's Dawgs, who have won four straight and still sit as the first team out. A win keeps Mekhi in strong shape; a loss drops him to not much better than a coin flip, which makes this the biggest game of his season. Alan owns the series 6-4 and won the Week 5 meeting 143.66 to 108.44, but Luffy gives Dawgs a 60% chance this time. Jayden Daniels against Brock Purdy makes it a quarterback duel, and the Bounty Board names Jahmyr Gibbs, who spent all of last season on Mekhi's roster, and Ja'Marr Chase, who owes Kai one after last week.",
+  "Down the coast, a seeding storm. The Horse is Hea clinches with a win over Habibsters, and Sonny gets to unwrap his new backfield at the same time: Kyren Williams and D'Andre Swift both start for him for the first time, next to Javonte Williams. Habib has to answer, because a win keeps him squarely in the race and a loss leaves him needing help over the last two weeks. The two-time champ leads the series 6-5, and his Dak Prescott to CeeDee Lamb stack produced 60.6 points last week. Luffy reads a 62% chance of The Horse is Hea, and the board says Jaxon Smith-Njigba, back from his bye, and Lamb decide it.",
+  "Now the reading that made me tap the barometer twice. The fumblers have lost eight straight and are eliminated; No Banner only HULK is 9-2, clinched and riding three straight wins. Luffy still gives Randy a 57% chance, with his Chiefs D/ST on the Bounty Board opposite Josh Allen, who got Seastoned last week and needs to find his footing. Randy leads this series 7-4, though Brucie took the Week 5 meeting 134 to 99.64, and Randy's lineup runs through a Bears stack of Caleb Williams to Colston Loveland and Rome Odunze. The sleeper is Jonah Coleman, the waiver find who went for 32.9 last week and is projected for 15.1 again.",
+  "Ghostu-Spider SZN against Counting or not Counting GV is the only game with an elimination clause: Zoe is out with a loss and needs a win just to keep a sliver alive. JMoney is already eliminated, which makes him the most dangerous kind of opponent, one with nothing to protect and Joe Burrow at quarterback. He won the first meeting 119.68 to 69.14, and Luffy has this one close, 54% Zoey, with Saquon Barkley and Burrow on the board. On the panel, Crocus, 4-12 on the season, slams a lock on The fumblers, Shakky locks Dawgs and The Horse is Hea, and Brannew, the panel's best at 13-3 and up to ฿148M, quietly joins Crocus on Randy."
+ ],
+ "social": [
+  {
+   "author": "GLSN",
+   "handle": "@GLSN",
+   "text": "📰 New from @HaredasForecast: the Week 12 preview. Team Pillbert and The Horse is Hea can both clinch. Ghostu-Spider SZN is eliminated with a loss. And Luffy favors The fumblers, losers of eight straight, over 9-2 No Banner only HULK.",
+   "when": 3,
+   "heat": 2,
+   "kind": "network",
+   "team": ""
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Preview is up. The reading of the week: The fumblers at 57% against a clinched 9-2 team. I checked the instruments twice. The instruments are fine.",
+   "when": 6,
+   "heat": 3,
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Crocus",
+   "handle": "@CrocusLighthouse",
+   "text": "The fumblers. LOCK. Eight straight losses, eliminated, facing the best team in the league, and Randy owns that series 7-4. Write it on the lighthouse wall.",
+   "when": 18,
+   "heat": 5,
+   "kind": "reporter",
+   "team": ""
+  },
+  {
+   "author": "Hulk Smash Club",
+   "handle": "@HulkSmashClub",
+   "text": "Crocus is 4-12 and just locked The fumblers against us. Brucie, frame this. Safest I've felt all season.",
+   "when": 31,
+   "heat": 7,
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Fumbled Again",
+   "handle": "@FumbleSZNForever",
+   "text": "First person to believe in The fumblers since Week 3 and it's Crocus. It's like getting a love letter from the guy who sank every ship he ever boarded.",
+   "when": 44,
+   "heat": 8,
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Dawg Pound BFL",
+   "handle": "@DawgPoundBFL",
+   "text": "Shakky: 'I drink with the crew that pays. Lock.' Four straight and the bar's on Kai's side. Philly, the clinch party can wait a week.",
+   "when": 57,
+   "heat": 5,
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Habib Hive",
+   "handle": "@HabibHiveBFL",
+   "text": "Crocus: 'Champions remember how to win in November.' Somebody at GLSN finally said it. Dak and CeeDee, run it back.",
+   "when": 70,
+   "heat": 4,
+   "kind": "fan",
+   "team": ""
+  },
+  {
+   "author": "Shakky",
+   "handle": "@ShakkysBar",
+   "text": "Two locks tonight: Dawgs and The Horse is Hea. HULK at confident, and no, I won't explain the menu. Tabs close at kickoff.",
+   "when": 88,
+   "heat": 4,
+   "kind": "reporter",
+   "team": ""
+  }
+ ],
+ "teams": [],
+ "picks": [
+  {
+   "game": "Team Pillbert (Alan) vs Dawgs (Mekhi)",
+   "h": 4,
+   "a": 5,
+   "panel": [
+    {
+     "panelist": "Brannew",
+     "pick": "Dawgs",
+     "confidence": "confident",
+     "take": "Every Dawgs starter checks out active on my sheet, which was not the case last Sunday. Bucky Irving is settled in, and Kai won four straight with less.",
+     "id": 5
+    },
+    {
+     "panelist": "Crocus",
+     "pick": "Team Pillbert",
+     "confidence": "lean",
+     "take": "Philly is 6-4 against Kai and beat him by 35 the last time. I've watched plenty of four-game streaks wash up on these rocks; they always look bigger from the water.",
+     "id": 4
+    },
+    {
+     "panelist": "Shakky",
+     "pick": "Dawgs",
+     "confidence": "lock",
+     "take": "Kai paid me last week and Philly cost Crocus his shirt. I drink with the crew that pays. Lock.",
+     "id": 5
+    },
+    {
+     "panelist": "Professor Clover",
+     "pick": "Dawgs",
+     "confidence": "confident",
+     "take": "Luffy gives Dawgs 60%, and the Bounty Board tilts further: if Ja'Marr Chase reaches 31, Kai's chances climb to 80%. Chase scored 5.6 last week, and I expect him closer to his 21-point projection.",
+     "id": 5
+    }
+   ]
+  },
+  {
+   "game": "The fumblers (Randy) vs No Banner only HULK (Ramon)",
+   "h": 2,
+   "a": 7,
+   "panel": [
+    {
+     "panelist": "Brannew",
+     "pick": "The fumblers",
+     "confidence": "lean",
+     "take": "My sheet flags Jonah Coleman as the most underrated starter on the slate: 32.9 off the wire last week and projected for 15.1 now. Randy finally has a lineup that matches his effort.",
+     "id": 2
+    },
+    {
+     "panelist": "Crocus",
+     "pick": "The fumblers",
+     "confidence": "lock",
+     "take": "Eight straight losses, eliminated, facing the best team in the league. That is exactly when a proud crew sinks the big ship on its way down, and Randy owns this series 7-4. LOCK, and write it on the lighthouse wall.",
+     "id": 2
+    },
+    {
+     "panelist": "Shakky",
+     "pick": "No Banner only HULK",
+     "confidence": "confident",
+     "take": "I don't run a tab for a team that hasn't paid in eight weeks. Confident, not lock, because Luffy leaning the other way makes a bartender count the register twice.",
+     "id": 7
+    },
+    {
+     "panelist": "Professor Clover",
+     "pick": "The fumblers",
+     "confidence": "confident",
+     "take": "Luffy has The fumblers at 57%, records notwithstanding. The Chiefs D/ST is on the Bounty Board, and 10 points from that defense pushes Randy to 76%. I side with the evidence, even when it's on an eight-game skid.",
+     "id": 2
+    }
+   ]
+  },
+  {
+   "game": "Ghostu-Spider SZN (Zoe) vs Counting or not Counting GV (Jordan)",
+   "h": 8,
+   "a": 3,
+   "panel": [
+    {
+     "panelist": "Brannew",
+     "pick": "Ghostu-Spider SZN",
+     "confidence": "lean",
+     "take": "Zoe's season is on the line and JMoney's is already over. Motivation doesn't score points, but in my experience it gets lineups set on time.",
+     "id": 8
+    },
+    {
+     "panelist": "Crocus",
+     "pick": "Counting or not Counting GV",
+     "confidence": "lean",
+     "take": "JMoney beat her by 50 the first time around. The spoiler is the oldest story at sea.",
+     "id": 3
+    },
+    {
+     "panelist": "Shakky",
+     "pick": "Counting or not Counting GV",
+     "confidence": "lean",
+     "take": "Joe Burrow is the best player in this game, projected at 24.3. A small taste of the 2-9 side; nobody tell my regulars.",
+     "id": 3
+    },
+    {
+     "panelist": "Professor Clover",
+     "pick": "Ghostu-Spider SZN",
+     "confidence": "lean",
+     "take": "Luffy says 54% for Zoe, barely off a coin toss. Saquon Barkley at 19 or more moves it to 72%. That's my reason, and I'll admit it isn't a strong one.",
+     "id": 8
+    }
+   ]
+  },
+  {
+   "game": "The Horse is Hea (Sonny) vs Habibsters (Kaushal)",
+   "h": 1,
+   "a": 6,
+   "panel": [
+    {
+     "panelist": "Brannew",
+     "pick": "The Horse is Hea",
+     "confidence": "confident",
+     "take": "Kyren Williams and D'Andre Swift both start for Sonny for the first time, and Jaxon Smith-Njigba is back from his bye. Full lineup, fresh backs, clinch on the table.",
+     "id": 1
+    },
+    {
+     "panelist": "Crocus",
+     "pick": "Habibsters",
+     "confidence": "lean",
+     "take": "Habib has won two of these Bowls and leads this series 6-5. Champions remember how to win in November; Sonny only recently learned.",
+     "id": 6
+    },
+    {
+     "panelist": "Shakky",
+     "pick": "The Horse is Hea",
+     "confidence": "lock",
+     "take": "Sonny has paid me all season. Lock, and Habib can settle up at the bar.",
+     "id": 1
+    },
+    {
+     "panelist": "Professor Clover",
+     "pick": "The Horse is Hea",
+     "confidence": "confident",
+     "take": "Luffy gives Sonny 62%, and Smith-Njigba is the swing: 24 or more puts it at 82%. Dak and Lamb went for 60.6 together last week, which is exactly why this stops at confident.",
+     "id": 1
+    }
+   ]
+  }
+ ],
+ "chances": [
+  {
+   "h": 4,
+   "a": 5,
+   "p": 0.404
+  },
+  {
+   "h": 2,
+   "a": 7,
+   "p": 0.571
+  },
+  {
+   "h": 8,
+   "a": 3,
+   "p": 0.539
+  },
+  {
+   "h": 1,
+   "a": 6,
+   "p": 0.622
+  }
+ ],
+ "starters": {
+  "1": [
+   "Jaxon Smith-Njigba",
+   "George Kittle",
+   "George Pickens",
+   "Will Reichard",
+   "C.J. Stroud",
+   "Texans D/ST",
+   "Javonte Williams",
+   "Kyren Williams",
+   "D'Andre Swift"
+  ],
+  "2": [
+   "Colston Loveland",
+   "Caleb Williams",
+   "Jaylen Warren",
+   "Tee Higgins",
+   "Jonah Coleman",
+   "Tony Pollard",
+   "Rome Odunze",
+   "Jason Sanders",
+   "Chiefs D/ST"
+  ],
+  "3": [
+   "Joe Burrow",
+   "Garrett Wilson",
+   "Bhayshul Tuten",
+   "Emeka Egbuka",
+   "Isaiah Likely",
+   "Evan McPherson",
+   "J.K. Dobbins",
+   "Khalil Shakir",
+   "Lions D/ST"
+  ],
+  "4": [
+   "Jahmyr Gibbs",
+   "Harold Fannin Jr.",
+   "Brock Purdy",
+   "Luther Burden III",
+   "Seahawks D/ST",
+   "Spencer Shrader",
+   "Justin Jefferson",
+   "Chuba Hubbard",
+   "Parker Washington"
+  ],
+  "5": [
+   "Ja'Marr Chase",
+   "Trey McBride",
+   "Jayden Daniels",
+   "James Cook III",
+   "Tyler Bass",
+   "Jonathan Taylor",
+   "Amon-Ra St. Brown",
+   "Bucky Irving",
+   "Bengals D/ST"
+  ],
+  "6": [
+   "CeeDee Lamb",
+   "Chase Brown",
+   "Breece Hall",
+   "Dak Prescott",
+   "Ka'imi Fairbairn",
+   "Sam LaPorta",
+   "Cam Skattebo",
+   "Stefon Diggs",
+   "49ers D/ST"
+  ],
+  "7": [
+   "Christian McCaffrey",
+   "Chris Olave",
+   "Josh Allen",
+   "Travis Kelce",
+   "DJ Moore",
+   "Brandon Aubrey",
+   "Emmett Johnson",
+   "Broncos D/ST"
+  ],
+  "8": [
+   "Saquon Barkley",
+   "Nico Collins",
+   "Tetairoa McMillan",
+   "Steelers D/ST",
+   "Josh Downs",
+   "Jared Goff",
+   "Cam Little",
+   "Omarion Hampton",
+   "Dawson Knox"
+  ]
+ },
+ "model": "claude-opus-5-5",
+ "usage": {
+  "input": 4,
+  "output": 10506,
+  "cache_write": 19884,
+  "cache_read": 0
+ }
+}
