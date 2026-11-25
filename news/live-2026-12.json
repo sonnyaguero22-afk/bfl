@@ -147,13 +147,54 @@
    "team": "",
    "about": "game",
    "at": "2026-11-25T17:27:17.874Z"
+  },
+  {
+   "author": "Counting Crew Corner",
+   "handle": "@CountingCrewCorner",
+   "text": "J.K. Dobbins is suspended and still sitting in Jordan's starting lineup an hour before Denver kicks off. Somebody check on JMoney, because a zero is about to go in that slot.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-25T22:02:00.931Z"
+  },
+  {
+   "author": "Zoe's Web Slingers",
+   "handle": "@ZWebSlingers",
+   "text": "Dobbins is suspended and Jordan hasn't moved him. Z² is a 54% favorite and I'd like to thank the Dobbins situation for the help.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-25T22:05:00.931Z"
+  },
+  {
+   "author": "Shakky",
+   "handle": "@ShakkysBar",
+   "text": "A suspended running back in the lineup is the kind of free money I usually have to charge for. Jordan, the bench is right there and I'm not telling you again.",
+   "heat": 5,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-25T22:08:00.931Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Dobbins is suspended and still starting for Counting or not Counting GV. Ghostu-Spider SZN sits at 54%, and a zero from that slot could push the front higher before the first kickoff.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-25T22:10:00.931Z"
   }
  ],
  "batches": [
   "2026-11-24T11:32:01.402Z",
   "2026-11-24T13:40:50.946Z",
   "2026-11-25T12:39:46.323Z",
-  "2026-11-25T17:29:17.874Z"
+  "2026-11-25T17:29:17.874Z",
+  "2026-11-25T22:11:00.931Z"
  ],
  "usage": [
   {
@@ -186,6 +227,14 @@
    "input": 4,
    "output": 372,
    "cache_write": 9660,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-25T22:11:00.931Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 491,
+   "cache_write": 9558,
    "cache_read": 0
   }
  ]
