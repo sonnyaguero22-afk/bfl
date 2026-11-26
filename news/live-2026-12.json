@@ -547,6 +547,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-26T21:34:50.952Z"
+  },
+  {
+   "author": "Horse Stable Sonny",
+   "handle": "@HorseStableSonny",
+   "text": "Javonte Williams punches it in for Dallas and Sonny's lead over Habib is 50.7 to 17.02. Swift already did the heavy lifting, this is just gravy.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T21:50:37.655Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Javonte Williams crossing the goal line puts The Horse is Hea at 82% against Habibsters. Lamb and Dak are still playing, but Habib needs a very large storm to close this gap.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T21:53:37.655Z"
+  },
+  {
+   "author": "Habib Hopeful",
+   "handle": "@HabibsHopeful",
+   "text": "A Dallas running back scores and it's the wrong one. CeeDee and Dak are playing in the same game and have 4.6 points between them. Habibi needs a miracle.",
+   "heat": 8,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T21:56:37.655Z"
+  },
+  {
+   "author": "The Horse is Hea",
+   "handle": "@TheHorseisHea",
+   "text": "Javonte Williams finds the end zone and we're up to 50.7 on the day. Good afternoon for the stable.",
+   "heat": 2,
+   "kind": "team",
+   "team": "The Horse is Hea",
+   "about": "game",
+   "at": "2026-11-26T21:58:37.655Z"
   }
  ],
  "batches": [
@@ -565,7 +605,8 @@
   "2026-11-26T19:37:50.623Z",
   "2026-11-26T20:22:53.990Z",
   "2026-11-26T20:54:07.503Z",
-  "2026-11-26T21:36:50.952Z"
+  "2026-11-26T21:36:50.952Z",
+  "2026-11-26T21:59:37.655Z"
  ],
  "usage": [
   {
@@ -694,6 +735,14 @@
    "input": 4,
    "output": 386,
    "cache_write": 9701,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-26T21:59:37.655Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 486,
+   "cache_write": 9671,
    "cache_read": 0
   }
  ]
