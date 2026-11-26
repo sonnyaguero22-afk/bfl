@@ -627,6 +627,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-26T22:48:07.542Z"
+  },
+  {
+   "author": "Dallas Horse Girl",
+   "handle": "@StableDallasRB",
+   "text": "Javonte Williams in again and now the Horse is Hea has 63 against Habib's 29. Sonny has the 'worst to first' act on a steady loop at this point.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T22:53:35.958Z"
+  },
+  {
+   "author": "Habib Hopeful",
+   "handle": "@HabibHopeful",
+   "text": "Williams scores, Sonny's lead gets bigger, and I still have Chase Brown, Breece Hall and Skattebo yet to play. Nobody tell me the odds, I'm choosing to be an optimist.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T22:57:35.958Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Javonte Williams's touchdown has pushed The Horse is Hea to 86% over Habibsters. The sky is clear for Sonny, with Kittle, Stroud and Smith-Njigba still to play.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T23:00:35.958Z"
   }
  ],
  "batches": [
@@ -647,7 +677,8 @@
   "2026-11-26T20:54:07.503Z",
   "2026-11-26T21:36:50.952Z",
   "2026-11-26T21:59:37.655Z",
-  "2026-11-26T22:49:07.542Z"
+  "2026-11-26T22:49:07.542Z",
+  "2026-11-26T23:02:35.958Z"
  ],
  "usage": [
   {
@@ -792,6 +823,14 @@
    "input": 4,
    "output": 517,
    "cache_write": 9613,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-26T23:02:35.958Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 391,
+   "cache_write": 9636,
    "cache_read": 0
   }
  ]
