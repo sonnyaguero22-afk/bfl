@@ -187,6 +187,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-25T22:10:00.931Z"
+  },
+  {
+   "author": "Web Slinger Weekly",
+   "handle": "@WebSlingerWeekly",
+   "text": "Tucker Kraft fumbled and Zoe's first points of the night are half a point in the hole. Some of us have been in this lineup since the first snap, and we are tired.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T01:28:36.952Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Kraft's fumble drops Ghostu-Spider SZN to -0.5, and the win chance only slips to 51%. Counting or not Counting GV hasn't scored yet, so this front is barely a breeze. Check again once Bijan and Saquon kick off.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T01:32:36.952Z"
+  },
+  {
+   "author": "Counting Crew Corner",
+   "handle": "@CountingCrewCorner",
+   "text": "Kraft coughs it up, and JMoney leads a matchup for the first time all week by exactly half a point. I'll take it and I'm not looking at the rest of the lineup.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T01:35:36.952Z"
   }
  ],
  "batches": [
@@ -194,7 +224,8 @@
   "2026-11-24T13:40:50.946Z",
   "2026-11-25T12:39:46.323Z",
   "2026-11-25T17:29:17.874Z",
-  "2026-11-25T22:11:00.931Z"
+  "2026-11-25T22:11:00.931Z",
+  "2026-11-26T01:37:36.952Z"
  ],
  "usage": [
   {
@@ -235,6 +266,14 @@
    "input": 4,
    "output": 491,
    "cache_write": 9558,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-26T01:37:36.952Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 401,
+   "cache_write": 9473,
    "cache_read": 0
   }
  ]
