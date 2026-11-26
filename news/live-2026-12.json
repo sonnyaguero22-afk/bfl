@@ -477,6 +477,46 @@
    "team": "Team Pillbert",
    "about": "game",
    "at": "2026-11-26T20:14:53.990Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Gibbs clearing his line is a real shift in the pressure system. Team Pillbert sits at 60% against Dawgs, but Chase, Taylor and Daniels are all still ahead, so I would keep the umbrella handy.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T20:52:07.503Z"
+  },
+  {
+   "author": "Gibbs Gang Philly",
+   "handle": "@PhillyGibbsSZN",
+   "text": "Gibbs just went Gear 5 for Alan and he's at 41. I hate that the guy I'm supposed to root against is this good at picking running backs.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T20:53:07.503Z"
+  },
+  {
+   "author": "Dawg Pound Mekhi",
+   "handle": "@DawgPoundKai",
+   "text": "Another Gibbs touchdown and Amon-Ra is carrying the whole Dawgs roster by himself. Eight guys on my bench of the future are about to earn their keep, I hope.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T20:51:07.503Z"
+  },
+  {
+   "author": "Sanji",
+   "handle": "@SanjiKicks",
+   "text": "Gibbs is cooking like a man with a Sanji award in his sights. Great legs, great finish, and McCaffrey is going to need more than leftovers to catch that pace.",
+   "heat": 4,
+   "kind": "pundit",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T20:54:07.503Z"
   }
  ],
  "batches": [
@@ -493,7 +533,8 @@
   "2026-11-26T18:19:25.527Z",
   "2026-11-26T18:37:30.117Z",
   "2026-11-26T19:37:50.623Z",
-  "2026-11-26T20:22:53.990Z"
+  "2026-11-26T20:22:53.990Z",
+  "2026-11-26T20:54:07.503Z"
  ],
  "usage": [
   {
@@ -606,6 +647,14 @@
    "input": 4,
    "output": 539,
    "cache_write": 10102,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-26T20:54:07.503Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 509,
+   "cache_write": 10201,
    "cache_read": 0
   }
  ]
