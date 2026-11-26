@@ -587,6 +587,46 @@
    "team": "The Horse is Hea",
    "about": "game",
    "at": "2026-11-26T21:58:37.655Z"
+  },
+  {
+   "author": "Web Z Squared",
+   "handle": "@WebZSquared",
+   "text": "Barkley is questionable with 0.7 points and Zoe is already down 18.42 to nothing's worth of Jordan's lineup. Bijan and Nico better show up, because the Saquon slot just became a prayer.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T22:40:07.542Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Barkley going down questionable drops Ghostu-Spider SZN to 38% against Counting or not Counting GV. Zoe still has Bijan Robinson and Nico Collins to play, but the cloud cover just got thicker.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T22:43:07.542Z"
+  },
+  {
+   "author": "Cheesehead Zilgit",
+   "handle": "@CheeseheadZilgit",
+   "text": "Saquon limping off in his one game, of course. Rookie manager, veteran injury luck. Somebody tell Omarion Hampton it's time to earn that roster spot.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T22:46:07.542Z"
+  },
+  {
+   "author": "JMoney Band Camp",
+   "handle": "@JMoneyBandCamp",
+   "text": "Jordan has zero points and Saquon just got hurt on the other side. I'm taking a win however it shows up, even if nobody on my roster has played yet.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T22:48:07.542Z"
   }
  ],
  "batches": [
@@ -606,7 +646,8 @@
   "2026-11-26T20:22:53.990Z",
   "2026-11-26T20:54:07.503Z",
   "2026-11-26T21:36:50.952Z",
-  "2026-11-26T21:59:37.655Z"
+  "2026-11-26T21:59:37.655Z",
+  "2026-11-26T22:49:07.542Z"
  ],
  "usage": [
   {
@@ -743,6 +784,14 @@
    "input": 4,
    "output": 486,
    "cache_write": 9671,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-26T22:49:07.542Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 517,
+   "cache_write": 9613,
    "cache_read": 0
   }
  ]
