@@ -287,6 +287,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-26T03:09:44.562Z"
+  },
+  {
+   "author": "Gridiron Gallows",
+   "handle": "@GridironGallows",
+   "text": "Watson's return just got pushed from November 25 to December 6, so the concussion that ended his night now costs him a couple more weeks. He was 10th on The Horse is Hea in scoring, so I'm sure Sonny can survive on spite and Kyren.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T03:12:37.162Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Watson's return moving to December 6 is a small front for The Horse is Hea. At 7-4 with 94% playoff odds, Sonny only has some light rain in the forecast, though it could linger into the playoff push.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T03:15:37.162Z"
+  },
+  {
+   "author": "Habib Hurts",
+   "handle": "@HabibHurts",
+   "text": "Watson's setback is the second Sonny injury headline tonight and I'm still down 11 with nobody on the field. I'll take any good news I can find, even someone else's bad news.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T03:17:37.162Z"
   }
  ],
  "batches": [
@@ -297,7 +327,8 @@
   "2026-11-25T22:11:00.931Z",
   "2026-11-26T01:37:36.952Z",
   "2026-11-26T02:04:03.965Z",
-  "2026-11-26T03:12:44.562Z"
+  "2026-11-26T03:12:44.562Z",
+  "2026-11-26T03:18:37.162Z"
  ],
  "usage": [
   {
@@ -362,6 +393,14 @@
    "input": 4,
    "output": 392,
    "cache_write": 9540,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-26T03:18:37.162Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 401,
+   "cache_write": 9577,
    "cache_read": 0
   }
  ]
