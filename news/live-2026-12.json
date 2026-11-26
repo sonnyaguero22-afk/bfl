@@ -347,6 +347,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-26T04:43:52.635Z"
+  },
+  {
+   "author": "Windy City Fumbles",
+   "handle": "@WindyCityFumbles",
+   "text": "Loveland coughs it up on the very first thing that happens to The fumblers this week. Randy is going to find a way to blame the Bears for this and he'll be technically right.",
+   "heat": 7,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T18:10:25.527Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Loveland's lost fumble drops The fumblers to -1 against No Banner only HULK, but the win chance only slips to 49%. Almost the entire slate is still ahead, so this is a passing shower, not a storm.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T18:13:25.527Z"
+  },
+  {
+   "author": "Hulk Smash Central",
+   "handle": "@HulkSmashCentral",
+   "text": "Randy's tight end gives it away and Brucie hasn't even had a player take the field yet. Free points, and Kenneth Walker III isn't even here to collect them.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T18:16:25.527Z"
   }
  ],
  "batches": [
@@ -359,7 +389,8 @@
   "2026-11-26T02:04:03.965Z",
   "2026-11-26T03:12:44.562Z",
   "2026-11-26T03:18:37.162Z",
-  "2026-11-26T04:45:52.635Z"
+  "2026-11-26T04:45:52.635Z",
+  "2026-11-26T18:19:25.527Z"
  ],
  "usage": [
   {
@@ -440,6 +471,14 @@
    "input": 4,
    "output": 422,
    "cache_write": 9605,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-26T18:19:25.527Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 379,
+   "cache_write": 9639,
    "cache_read": 0
   }
  ]
