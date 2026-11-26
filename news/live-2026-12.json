@@ -437,6 +437,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-26T19:34:50.623Z"
+  },
+  {
+   "author": "Sanji",
+   "handle": "@SanjiKicks",
+   "text": "Gibbs finishing that drive is a proper dish: crisp on the outside, nothing wasted. Philly has the best running back on the menu this week, and McCaffrey had better show up with something more than a side salad.",
+   "heat": 4,
+   "kind": "pundit",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T20:21:53.990Z"
+  },
+  {
+   "author": "Pillbert Watch",
+   "handle": "@PillbertWatch",
+   "text": "Gibbs punches in another touchdown and Team Pillbert is up 28 to 14 on Dawgs with Amon-Ra the only Dawg on the field. Alan is going to be unbearable about this until Jefferson and Chase play.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T20:19:53.990Z"
+  },
+  {
+   "author": "Dawg Pound Mekhi",
+   "handle": "@DawgPoundKai",
+   "text": "Gibbs scores again and I'm just staring at Kai's bench of guys who haven't played yet. Chase, Taylor, Daniels, Cook, all still coming. 43% for Philly says this thing is nowhere near done.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T20:16:53.990Z"
+  },
+  {
+   "author": "Team Pillbert",
+   "handle": "@TeamPillbert",
+   "text": "Jahmyr Gibbs takes it in for the touchdown and is up to 24.3 points. Team Pillbert leads 28.3 to 13.9.",
+   "heat": 2,
+   "kind": "team",
+   "team": "Team Pillbert",
+   "about": "game",
+   "at": "2026-11-26T20:14:53.990Z"
   }
  ],
  "batches": [
@@ -452,7 +492,8 @@
   "2026-11-26T04:45:52.635Z",
   "2026-11-26T18:19:25.527Z",
   "2026-11-26T18:37:30.117Z",
-  "2026-11-26T19:37:50.623Z"
+  "2026-11-26T19:37:50.623Z",
+  "2026-11-26T20:22:53.990Z"
  ],
  "usage": [
   {
@@ -557,6 +598,14 @@
    "input": 4,
    "output": 399,
    "cache_write": 9854,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-26T20:22:53.990Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 539,
+   "cache_write": 10102,
    "cache_read": 0
   }
  ]
