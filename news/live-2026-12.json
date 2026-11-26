@@ -317,6 +317,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-26T03:17:37.162Z"
+  },
+  {
+   "author": "Gridiron Gallows",
+   "handle": "@GridironGallows",
+   "text": "Watson's date is still December 6 and now he's listed questionable, which is the NFL's way of saying maybe, eventually, who knows. Sonny has the 10th-best scorer on his roster and the cushion to treat it like a footnote.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T04:36:52.635Z"
+  },
+  {
+   "author": "Ghostu Gang",
+   "handle": "@GhostuGang",
+   "text": "Ghostu-Spider SZN has Tucker Kraft's 1.9 in the books and everyone else still to go. Zoe, tonight is going to be a long one and I'm already stress eating cheese curds.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T04:40:52.635Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Watson is now questionable but the December 6 return date holds, so this front is moving slowly. The Horse is Hea is 7-4 with 94% playoff odds and a 62% win chance against Habibsters, so Sonny can keep the umbrella in the car.",
+   "heat": 2,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T04:43:52.635Z"
   }
  ],
  "batches": [
@@ -328,7 +358,8 @@
   "2026-11-26T01:37:36.952Z",
   "2026-11-26T02:04:03.965Z",
   "2026-11-26T03:12:44.562Z",
-  "2026-11-26T03:18:37.162Z"
+  "2026-11-26T03:18:37.162Z",
+  "2026-11-26T04:45:52.635Z"
  ],
  "usage": [
   {
@@ -401,6 +432,14 @@
    "input": 4,
    "output": 401,
    "cache_write": 9577,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-26T04:45:52.635Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 422,
+   "cache_write": 9605,
    "cache_read": 0
   }
  ]
