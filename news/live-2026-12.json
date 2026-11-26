@@ -517,6 +517,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-26T20:54:07.503Z"
+  },
+  {
+   "author": "Fumbler Faithful",
+   "handle": "@FumblerFaithful",
+   "text": "Loveland is back to questionable and he's already out of the Detroit game with the knee. Randy is 3-8 and he's still going to complain about this like it cost him something.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T21:27:50.952Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Loveland coming back from out to questionable is a small clearing, but he's out of tonight's game with the knee and expected back around December 6. For a 3-8 team with 0% playoff odds, that's a clear sky over a very empty field.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T21:31:50.952Z"
+  },
+  {
+   "author": "Bear Down Brucie",
+   "handle": "@BearDownBrucie",
+   "text": "Loveland hurt his knee again, which is the most Bears thing that could happen to Randy's roster. 45.9 points in 7 starts and now he gets taken out of the game in the first half.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-26T21:34:50.952Z"
   }
  ],
  "batches": [
@@ -534,7 +564,8 @@
   "2026-11-26T18:37:30.117Z",
   "2026-11-26T19:37:50.623Z",
   "2026-11-26T20:22:53.990Z",
-  "2026-11-26T20:54:07.503Z"
+  "2026-11-26T20:54:07.503Z",
+  "2026-11-26T21:36:50.952Z"
  ],
  "usage": [
   {
@@ -655,6 +686,14 @@
    "input": 4,
    "output": 509,
    "cache_write": 10201,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-26T21:36:50.952Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 386,
+   "cache_write": 9701,
    "cache_read": 0
   }
  ]
