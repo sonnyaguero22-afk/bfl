@@ -657,6 +657,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-26T23:00:35.958Z"
+  },
+  {
+   "author": "Habib Hopeful",
+   "handle": "@HabibHopeful",
+   "text": "Dak just walked it in himself and he's at 26 now. Sonny's lead is 20 and I've got Chase Brown, Breece Hall and Skattebo still to go. I'm allowed to breathe again.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T00:41:50.083Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Dak Prescott's rushing touchdown pulls Habibsters back into the picture, and the front is moving. Luffy now has The Horse is Hea at 78%, down from 86%, with Lamb and Dak both still on the field.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T00:42:50.083Z"
+  },
+  {
+   "author": "Dallas Horse Girl",
+   "handle": "@DallasHorseGirl",
+   "text": "Dak keeps it himself and it counts for Habib. Of all the Cowboys to score for the other side, it's the quarterback. Sonny, I need you to take this personally.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T00:40:50.083Z"
   }
  ],
  "batches": [
@@ -678,7 +708,8 @@
   "2026-11-26T21:36:50.952Z",
   "2026-11-26T21:59:37.655Z",
   "2026-11-26T22:49:07.542Z",
-  "2026-11-26T23:02:35.958Z"
+  "2026-11-26T23:02:35.958Z",
+  "2026-11-27T00:42:50.083Z"
  ],
  "usage": [
   {
@@ -831,6 +862,14 @@
    "input": 4,
    "output": 391,
    "cache_write": 9636,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-27T00:42:50.083Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 398,
+   "cache_write": 9606,
    "cache_read": 0
   }
  ]
