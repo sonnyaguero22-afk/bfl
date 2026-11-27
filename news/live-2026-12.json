@@ -727,6 +727,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-27T01:28:46.023Z"
+  },
+  {
+   "author": "Dawg Pound Mekhi Stan",
+   "handle": "@KaiDawgsSZN",
+   "text": "Cook finally punches it in and the Dawgs get some life. Still down 22, but Chase, Taylor and Daniels haven't played yet, so I'm not leaving.",
+   "heat": 3,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T02:00:23.859Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "James Cook's touchdown is a small gust for Dawgs against Team Pillbert, who still lead 51.7 to 29.6. Luffy has Team Pillbert at 53%, which is closer than the scoreboard suggests with Chase, Taylor and Daniels still to play.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T02:02:23.859Z"
+  },
+  {
+   "author": "Philly Hater Club",
+   "handle": "@PhillibertWatch",
+   "text": "Cook scores for Mekhi and suddenly I'm nervous about a 22 point lead. Gibbs did all the work and Philly has a questionable Purdy to lean on. This is how the bad guy blows it.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T02:04:23.859Z"
   }
  ],
  "batches": [
@@ -750,7 +780,8 @@
   "2026-11-26T22:49:07.542Z",
   "2026-11-26T23:02:35.958Z",
   "2026-11-27T00:42:50.083Z",
-  "2026-11-27T01:29:46.023Z"
+  "2026-11-27T01:29:46.023Z",
+  "2026-11-27T02:06:23.859Z"
  ],
  "usage": [
   {
@@ -919,6 +950,14 @@
    "input": 4,
    "output": 543,
    "cache_write": 9723,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-27T02:06:23.859Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 423,
+   "cache_write": 9703,
    "cache_read": 0
   }
  ]
