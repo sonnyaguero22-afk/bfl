@@ -1087,6 +1087,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-27T21:17:45.787Z"
+  },
+  {
+   "author": "Gridiron Gwen",
+   "handle": "@GwenGridiron",
+   "text": "Alan lost Brock Purdy until December 6 and answered by grabbing Deshaun Watson, who has scored zero in his one week this year. Purdy was his second-leading scorer. Philly can enjoy 94% playoff odds, but that move is not helping him close out Mekhi.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T22:18:45.247Z"
+  },
+  {
+   "author": "Shakky",
+   "handle": "@ShakkysBar",
+   "text": "Philly drops the Jets D/ST for Watson and has Gibbs sitting on 45.7. Luffy has him at 46% against Mekhi, who still has Chase, Taylor and Daniels left. I hold grudges, and I'm not backing a backup quarterback with a lead that thin.",
+   "heat": 5,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-27T22:27:45.247Z"
+  },
+  {
+   "author": "Dawgs Den",
+   "handle": "@DawgsDenMekhi",
+   "text": "Purdy is out, Alan is down to Watson, and Mekhi is only 3.6 behind with Chase, McBride, Daniels and Taylor still to play. I like those odds.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T22:25:45.247Z"
   }
  ],
  "batches": [
@@ -1120,7 +1150,8 @@
   "2026-11-27T17:29:27.213Z",
   "2026-11-27T20:09:44.838Z",
   "2026-11-27T20:28:14.609Z",
-  "2026-11-27T21:17:45.787Z"
+  "2026-11-27T21:17:45.787Z",
+  "2026-11-27T22:27:45.247Z"
  ],
  "usage": [
   {
@@ -1369,6 +1400,14 @@
    "input": 4,
    "output": 511,
    "cache_write": 9817,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-27T22:27:45.247Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 447,
+   "cache_write": 9957,
    "cache_read": 0
   }
  ]
