@@ -797,6 +797,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-27T03:12:31.330Z"
+  },
+  {
+   "author": "Fumbler Faithful",
+   "handle": "@FumblerFaithful",
+   "text": "Josh Allen coughs it up and The fumblers get a free breath. Two points for the best quarterback in the league, I'll take it, but Randy's got a kicker and a prayer and McCaffrey is still coming for us.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T03:24:24.469Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Josh Allen's turnover is a small cold front for No Banner only HULK. Luffy has The fumblers at 55% against Ramon, with McCaffrey, Flowers and Nabers still to play. Patience, one fumble does not clear the sky.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T03:25:24.469Z"
+  },
+  {
+   "author": "Hulk Smash Brucie",
+   "handle": "@HulkSmashBrucie",
+   "text": "Josh Allen gives it away and I'm still up 33 to 9. Chiefs D/ST had one drive of glory and it's already history. Randy can keep his one good defense.",
+   "heat": 8,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T03:26:24.469Z"
+  },
+  {
+   "author": "The fumblers",
+   "handle": "@Thefumblers",
+   "text": "Chiefs D/ST was the Bounty Board pick and it cleared its line. Josh Allen then gave one back. Tee Higgins, Jaylen Warren and Trevor Lawrence are still to come. #Fumblers",
+   "heat": 2,
+   "kind": "team",
+   "team": "The fumblers (Randy)",
+   "about": "game",
+   "at": "2026-11-27T03:27:24.469Z"
   }
  ],
  "batches": [
@@ -822,7 +862,8 @@
   "2026-11-27T00:42:50.083Z",
   "2026-11-27T01:29:46.023Z",
   "2026-11-27T02:06:23.859Z",
-  "2026-11-27T03:13:31.330Z"
+  "2026-11-27T03:13:31.330Z",
+  "2026-11-27T03:27:24.469Z"
  ],
  "usage": [
   {
@@ -1007,6 +1048,14 @@
    "input": 4,
    "output": 561,
    "cache_write": 9737,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-27T03:27:24.469Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 556,
+   "cache_write": 9839,
    "cache_read": 0
   }
  ]
