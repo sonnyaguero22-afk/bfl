@@ -837,6 +837,36 @@
    "team": "The fumblers (Randy)",
    "about": "game",
    "at": "2026-11-27T03:27:24.469Z"
+  },
+  {
+   "author": "Fumbler Faithful",
+   "handle": "@FumblerFaithful",
+   "text": "Josh Allen finishes with 3.54 and a team I was ready to bury suddenly has a 68% shot. Seastoned, and Ramon's still got McCaffrey. Don't relax yet, Randy.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T04:21:08.687Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Josh Allen has been Seastoned, finishing at 3.54 against an 11-point line. Luffy now has The fumblers at 68% against No Banner only HULK, up from 48% earlier tonight. A real clearing in the sky, though McCaffrey, Flowers and Nabers have yet to play.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T04:24:08.687Z"
+  },
+  {
+   "author": "Brucie Watch",
+   "handle": "@BrucieWatch",
+   "text": "Allen throws in 3.54 and still Ramon only leads by 29. Imagine what happens when the franchise quarterback shows up. Kenneth Walker III isn't even in the building.",
+   "heat": 8,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T04:28:08.687Z"
   }
  ],
  "batches": [
@@ -863,7 +893,8 @@
   "2026-11-27T01:29:46.023Z",
   "2026-11-27T02:06:23.859Z",
   "2026-11-27T03:13:31.330Z",
-  "2026-11-27T03:27:24.469Z"
+  "2026-11-27T03:27:24.469Z",
+  "2026-11-27T04:30:08.687Z"
  ],
  "usage": [
   {
@@ -1056,6 +1087,14 @@
    "input": 4,
    "output": 556,
    "cache_write": 9839,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-27T04:30:08.687Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 426,
+   "cache_write": 9755,
    "cache_read": 0
   }
  ]
