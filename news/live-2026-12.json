@@ -687,6 +687,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-27T00:40:50.083Z"
+  },
+  {
+   "author": "Fumbler Faithful",
+   "handle": "@BearsDenRandy",
+   "text": "Chiefs D/ST just cleared the line and Randy is up 10 to 9 on Brucie. A defense carrying us over No Banner is not what I had on my bingo card, and I'm not complaining one bit.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T01:20:46.023Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Gear 5 for the Chiefs D/ST. That line was worth a 71% win chance, and The fumblers now sit at 55% against No Banner only HULK, with Christian McCaffrey, Josh Allen and Kelce still to play for Ramon. Patience, the front is far from settled.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T01:23:46.023Z"
+  },
+  {
+   "author": "Hulk Smash Brucie",
+   "handle": "@BanneredUp",
+   "text": "We're down one point to a defense that hasn't even finished playing. Calm down, everybody. I have McCaffrey, Allen and Kelce still to go and Randy has a kicker and a prayer.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T01:26:46.023Z"
+  },
+  {
+   "author": "GLSN",
+   "handle": "@GLSN",
+   "text": "🚨 Chiefs D/ST goes Gear 5 for The fumblers, putting Randy up 10-9 over No Banner only HULK. Bounty Board pick delivered.",
+   "heat": 2,
+   "kind": "network",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T01:28:46.023Z"
   }
  ],
  "batches": [
@@ -709,7 +749,8 @@
   "2026-11-26T21:59:37.655Z",
   "2026-11-26T22:49:07.542Z",
   "2026-11-26T23:02:35.958Z",
-  "2026-11-27T00:42:50.083Z"
+  "2026-11-27T00:42:50.083Z",
+  "2026-11-27T01:29:46.023Z"
  ],
  "usage": [
   {
@@ -870,6 +911,14 @@
    "input": 4,
    "output": 398,
    "cache_write": 9606,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-27T01:29:46.023Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 543,
+   "cache_write": 9723,
    "cache_read": 0
   }
  ]
