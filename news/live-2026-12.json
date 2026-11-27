@@ -867,6 +867,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-27T04:28:08.687Z"
+  },
+  {
+   "author": "Pillbert Pessimist",
+   "handle": "@PhillyPanic11",
+   "text": "Parker Washington out with a shoulder and Team Pillbert is already down 3.6 to Mekhi with Chase, McBride and Daniels all still to go. Philly better hope Justin Jefferson wakes up swinging.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T15:37:41.229Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Parker Washington being ruled out is a minor front for Team Pillbert, not a storm. Luffy still has Alan at 44% against Dawgs with Jefferson, Purdy and Hubbard yet to play, and the 94% playoff odds barely flinch. Keep the umbrella nearby.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T15:41:41.229Z"
+  },
+  {
+   "author": "Dawgs Den",
+   "handle": "@DawgsDenMK",
+   "text": "Alan's WR Parker Washington is out and Mekhi has Ja'Marr Chase and Jonathan Taylor waiting in the wings. Not saying we smell blood, but we are sniffing.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T15:44:41.229Z"
   }
  ],
  "batches": [
@@ -894,7 +924,8 @@
   "2026-11-27T02:06:23.859Z",
   "2026-11-27T03:13:31.330Z",
   "2026-11-27T03:27:24.469Z",
-  "2026-11-27T04:30:08.687Z"
+  "2026-11-27T04:30:08.687Z",
+  "2026-11-27T15:46:41.229Z"
  ],
  "usage": [
   {
@@ -1095,6 +1126,14 @@
    "input": 4,
    "output": 426,
    "cache_write": 9755,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-27T15:46:41.229Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 437,
+   "cache_write": 9792,
    "cache_read": 0
   }
  ]
