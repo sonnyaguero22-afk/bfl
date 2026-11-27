@@ -1007,6 +1007,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-27T20:08:44.838Z"
+  },
+  {
+   "author": "Steel Curtain Zoe Fan",
+   "handle": "@SteelCurtainZoe",
+   "text": "Steelers D/ST just took one to the house and Zoe's defense is sitting on 18. Eight more on top of the ten we already had. Jordan still has a zero and nine guys waiting, but this lead is real.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T20:19:14.609Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "The Steelers D/ST return touchdown moves Ghostu-Spider SZN to a 52% chance against Counting or not Counting GV. It's a nice gust, but Jordan's whole lineup is still to play, and Burrow can change the forecast quickly.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T20:22:14.609Z"
+  },
+  {
+   "author": "Counting GV Faithful",
+   "handle": "@GVFaithful",
+   "text": "Steelers D/ST scores and Zoe is up 36 to nothing. Cool. We have Burrow, Wilson, Egbuka and a kicker coming. Zero is just a starting point.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T20:25:14.609Z"
+  },
+  {
+   "author": "GLSN",
+   "handle": "@GLSN",
+   "text": "🚨 Steelers D/ST scores a defensive touchdown and Ghostu-Spider SZN climbs to 36.42 against Counting or not Counting GV, who haven't started yet.",
+   "heat": 2,
+   "kind": "network",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T20:27:14.609Z"
   }
  ],
  "batches": [
@@ -1038,7 +1078,8 @@
   "2026-11-27T15:46:41.229Z",
   "2026-11-27T16:46:13.160Z",
   "2026-11-27T17:29:27.213Z",
-  "2026-11-27T20:09:44.838Z"
+  "2026-11-27T20:09:44.838Z",
+  "2026-11-27T20:28:14.609Z"
  ],
  "usage": [
   {
@@ -1271,6 +1312,14 @@
    "input": 4,
    "output": 555,
    "cache_write": 9811,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-27T20:28:14.609Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 539,
+   "cache_write": 9720,
    "cache_read": 0
   }
  ]
