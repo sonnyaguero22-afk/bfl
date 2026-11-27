@@ -927,6 +927,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-27T16:43:13.160Z"
+  },
+  {
+   "author": "Fumbler Faithful",
+   "handle": "@FumblerFaithful",
+   "text": "Loveland doubtful with a knee and an MRI on the way. Sixth on the team in scoring, 3-8, zero percent playoff odds. The only thing left to lose was a tight end who gave us minus one tonight.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T17:18:27.213Z"
+  },
+  {
+   "author": "Shakky",
+   "handle": "@ShakkysBar",
+   "text": "Loveland's knee is bad news for Randy, sure, but the odds on that season were already printed in permanent ink. Nobody's cashing a ticket on The fumblers, MRI or no MRI.",
+   "heat": 4,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T17:22:27.213Z"
+  },
+  {
+   "author": "Bears Brain",
+   "handle": "@BearsBrainTrust",
+   "text": "Loveland leaves a 39-35 win on Thursday with a knee injury and the MRI is today. Bears fans know this feeling. Great game, then everyone holds their breath.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T17:26:27.213Z"
+  },
+  {
+   "author": "Waiver Wire Wendy",
+   "handle": "@WendyWiresIt",
+   "text": "Randy has one tight end and a lot of complaints. Free agency is open, but he'd rather hold Loveland on IR than cut bait. Not trading him either, obviously.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T17:28:27.213Z"
   }
  ],
  "batches": [
@@ -956,7 +996,8 @@
   "2026-11-27T03:27:24.469Z",
   "2026-11-27T04:30:08.687Z",
   "2026-11-27T15:46:41.229Z",
-  "2026-11-27T16:46:13.160Z"
+  "2026-11-27T16:46:13.160Z",
+  "2026-11-27T17:29:27.213Z"
  ],
  "usage": [
   {
@@ -1173,6 +1214,14 @@
    "input": 4,
    "output": 403,
    "cache_write": 9828,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-27T17:29:27.213Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 512,
+   "cache_write": 9830,
    "cache_read": 0
   }
  ]
