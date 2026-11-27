@@ -897,6 +897,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-27T15:44:41.229Z"
+  },
+  {
+   "author": "Gibbs Szn",
+   "handle": "@GibbsSznOnly",
+   "text": "Washington moving from Nov 29 to Dec 6 is annoying, but Jahmyr Gibbs already put up 45.7 and Philly's 7-4 with a cushion. Shoulder stuff stinks, the playoffs are fine.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T16:35:13.160Z"
+  },
+  {
+   "author": "Shakky",
+   "handle": "@ShakkysBar",
+   "text": "Washington's return slipping a week and everyone's writing Alan's obituary. He's 94% to make the playoffs. I'd lay that line all day, so keep your berries in your pocket.",
+   "heat": 5,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T16:39:13.160Z"
+  },
+  {
+   "author": "Dawgs Den",
+   "handle": "@DawgsDenPod",
+   "text": "Washington week-to-week means Philly is leaning on Jefferson and Hubbard tonight while Chase and Taylor wait on our side. I'm not saying it's over, I'm saying I like our spot.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T16:43:13.160Z"
   }
  ],
  "batches": [
@@ -925,7 +955,8 @@
   "2026-11-27T03:13:31.330Z",
   "2026-11-27T03:27:24.469Z",
   "2026-11-27T04:30:08.687Z",
-  "2026-11-27T15:46:41.229Z"
+  "2026-11-27T15:46:41.229Z",
+  "2026-11-27T16:46:13.160Z"
  ],
  "usage": [
   {
@@ -1134,6 +1165,14 @@
    "input": 4,
    "output": 437,
    "cache_write": 9792,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-27T16:46:13.160Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 403,
+   "cache_write": 9828,
    "cache_read": 0
   }
  ]
