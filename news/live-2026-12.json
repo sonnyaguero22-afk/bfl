@@ -1117,6 +1117,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-27T22:25:45.247Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Ghostu-Spider SZN jumps from 58% to 90% against Counting or not Counting GV without a single point scored. The front moved because of lineup and injury news, and with Bhayshul Tuten ruled out, Jordan has a hole in his forecast he has to patch.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T22:43:11.385Z"
+  },
+  {
+   "author": "Web Slinger Wendy",
+   "handle": "@WendyWebSlings",
+   "text": "Tuten out and Zoe's win chance goes from 58 to 90 before Jordan's guys have even touched the ball. That's a quiet kind of cruelty. 🕷️",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T22:41:11.385Z"
+  },
+  {
+   "author": "Counting GV Faithful",
+   "handle": "@CountingGVFaithful",
+   "text": "Tuten ruled out, Zoe up 45 to nothing, and Luffy has us at 10%. I'm going to need Burrow and the whole supporting cast to play like they're being paid by the point.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T22:45:11.385Z"
   }
  ],
  "batches": [
@@ -1151,7 +1181,8 @@
   "2026-11-27T20:09:44.838Z",
   "2026-11-27T20:28:14.609Z",
   "2026-11-27T21:17:45.787Z",
-  "2026-11-27T22:27:45.247Z"
+  "2026-11-27T22:27:45.247Z",
+  "2026-11-27T22:46:11.385Z"
  ],
  "usage": [
   {
@@ -1408,6 +1439,14 @@
    "input": 4,
    "output": 447,
    "cache_write": 9957,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-27T22:46:11.385Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 414,
+   "cache_write": 9997,
    "cache_read": 0
   }
  ]
