@@ -757,6 +757,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-27T02:04:23.859Z"
+  },
+  {
+   "author": "Hulk Smash Brucie",
+   "handle": "@HulkSmashBrucie",
+   "text": "Emmett Johnson just walked into the end zone and No Banner is back in front 31.84 to 7. Randy's Chiefs defense had its moment and it lasted about one drive. McCaffrey hasn't even played yet.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T03:04:31.330Z"
+  },
+  {
+   "author": "Fumbler Faithful",
+   "handle": "@FumblerFaithful",
+   "text": "Emmett Johnson scores and we go from ahead to chasing in a single play. Colston Loveland is sitting on negative one and that's the kind of week it's been. Please, Tee Higgins, do something.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T03:07:31.330Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Emmett Johnson's touchdown for No Banner only HULK is a real shift in the front. Luffy now has The fumblers at 48%, down from 55%, with Jaylen Warren, Lawrence and Higgins still to play. Still close enough to keep the umbrella handy.",
+   "heat": 3,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T03:10:31.330Z"
+  },
+  {
+   "author": "Bills Mafia Brucie Hater",
+   "handle": "@BrucieHaterBills",
+   "text": "Ramon's backup running back scores and the best team in the league gets another gift. Meanwhile Kenneth Walker III is not even needed. Unfair to the rest of us.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T03:12:31.330Z"
   }
  ],
  "batches": [
@@ -781,7 +821,8 @@
   "2026-11-26T23:02:35.958Z",
   "2026-11-27T00:42:50.083Z",
   "2026-11-27T01:29:46.023Z",
-  "2026-11-27T02:06:23.859Z"
+  "2026-11-27T02:06:23.859Z",
+  "2026-11-27T03:13:31.330Z"
  ],
  "usage": [
   {
@@ -958,6 +999,14 @@
    "input": 4,
    "output": 423,
    "cache_write": 9703,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-27T03:13:31.330Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 561,
+   "cache_write": 9737,
    "cache_read": 0
   }
  ]
