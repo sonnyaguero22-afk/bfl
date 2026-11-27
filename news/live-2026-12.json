@@ -967,6 +967,46 @@
    "team": "",
    "about": "game",
    "at": "2026-11-27T17:28:27.213Z"
+  },
+  {
+   "author": "Bronco Bill",
+   "handle": "@BroncoBillDen",
+   "text": "Broncos D/ST just handed Brucie ten points while Randy's lineup is mostly names that haven't played yet. 49.24 to 12 is not a close one.",
+   "heat": 5,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T20:00:44.838Z"
+  },
+  {
+   "author": "Haredas",
+   "handle": "@HaredasForecast",
+   "text": "Luffy still gives The fumblers 53% against No Banner only HULK, and I want it noted that this is a forecast of potential, not points. With 12 on the board against 49.24, a lot of sunshine has to arrive from Trevor Lawrence, Tee Higgins and Tony Pollard.",
+   "heat": 4,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T20:03:44.838Z"
+  },
+  {
+   "author": "Steel Curtain Zoe Fan",
+   "handle": "@SteelCurtainSZN",
+   "text": "Steelers D/ST got Ghostu-Spider SZN ten points and Zoe is at 28.42 while Jordan sits on a flat zero. Bijan and Nico are still to play. This is a gift.",
+   "heat": 4,
+   "kind": "fan",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T20:06:44.838Z"
+  },
+  {
+   "author": "Shakky",
+   "handle": "@ShakkysBar",
+   "text": "Zoe up 28.42 to nothing and Luffy still has her at 40%? Jordan has a full nine-man lineup waiting, and I don't hold that against the numbers. Keep an eye on Joe Burrow.",
+   "heat": 4,
+   "kind": "reporter",
+   "team": "",
+   "about": "game",
+   "at": "2026-11-27T20:08:44.838Z"
   }
  ],
  "batches": [
@@ -997,7 +1037,8 @@
   "2026-11-27T04:30:08.687Z",
   "2026-11-27T15:46:41.229Z",
   "2026-11-27T16:46:13.160Z",
-  "2026-11-27T17:29:27.213Z"
+  "2026-11-27T17:29:27.213Z",
+  "2026-11-27T20:09:44.838Z"
  ],
  "usage": [
   {
@@ -1222,6 +1263,14 @@
    "input": 4,
    "output": 512,
    "cache_write": 9830,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-27T20:09:44.838Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 555,
+   "cache_write": 9811,
    "cache_read": 0
   }
  ]
