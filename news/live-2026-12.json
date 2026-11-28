@@ -1147,6 +1147,36 @@
    "team": "",
    "about": "game",
    "at": "2026-11-27T22:45:11.385Z"
+  },
+  {
+   "author": "Habib Hive",
+   "handle": "@HabibHiveUGA",
+   "text": "Kaushal cuts Keenan Allen for Chris Rodriguez Jr., who has zero points in his one week this season. Down 26 to Sonny with six players left, grabbing a guy with a zero on his résumé is a bold way to chase a comeback.",
+   "heat": 6,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-28T10:07:42.121Z"
+  },
+  {
+   "author": "Shakky",
+   "handle": "@ShakkysBar",
+   "text": "Kaushal sends Keenan Allen to Impel Down for a back with a goose egg to his name. Luffy gives him 19% against Sonny and I don't see this move changing the odds. Wouldn't have bet on it at any price.",
+   "heat": 4,
+   "kind": "reporter",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-28T10:23:42.121Z"
+  },
+  {
+   "author": "Horse Stable Hank",
+   "handle": "@StableHankHorse",
+   "text": "Habibsters are down 26 to The Horse is Hea and the answer is a zero-point running back off the wire? Kaushal, please just sit down and let Javonte Williams's 31.8 points do the talking.",
+   "heat": 8,
+   "kind": "fan",
+   "team": "",
+   "about": "move",
+   "at": "2026-11-28T10:35:42.121Z"
   }
  ],
  "batches": [
@@ -1182,7 +1212,8 @@
   "2026-11-27T20:28:14.609Z",
   "2026-11-27T21:17:45.787Z",
   "2026-11-27T22:27:45.247Z",
-  "2026-11-27T22:46:11.385Z"
+  "2026-11-27T22:46:11.385Z",
+  "2026-11-28T13:15:28.266Z"
  ],
  "usage": [
   {
@@ -1447,6 +1478,14 @@
    "input": 4,
    "output": 414,
    "cache_write": 9997,
+   "cache_read": 0
+  },
+  {
+   "at": "2026-11-28T13:15:28.266Z",
+   "model": "claude-sonnet-5-5",
+   "input": 4,
+   "output": 423,
+   "cache_write": 9961,
    "cache_read": 0
   }
  ]
